@@ -40,7 +40,7 @@ yarn dev
 ```
 If successful, you should see the message `"Server is running at [URL]"`.
 
-### Backend
+### Frontend
 The following instructions assume you have yarn installed and are working in the `frontend` directory.
 
 To install necessary dependencies:
