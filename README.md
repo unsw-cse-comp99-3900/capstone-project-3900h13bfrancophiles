@@ -2,6 +2,11 @@
 This is the project.
 
 ## Local Setup
+You might be able to run everything with:
+```
+docker compose up --build -d
+```
+
 ### Postgres
 If you haven't already, install Postgres:
 ```

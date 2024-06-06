@@ -16,7 +16,7 @@ export default function Home() {
   if (!numVisits) return null;
 
   let suffix;
-  if (numVisits % 100 == 1) {
+  if (numVisits % 100 >= 11 && numVisits % 100 <= 13) {
     suffix = "th";
   } else if (numVisits % 10 == 1) {
     suffix = "st";
