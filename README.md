@@ -20,6 +20,14 @@ psql 3900 -f postgres/init.sql
 ```
 For now any changes to the database schema will mean you need to edit `init.sql`, drop the database, recreate it, and reinitialise it with the updated `init.sql`.
 
+[For a WSL installation](https://learn.microsoft.com/en-us/windows/wsl/tutorials/wsl-database): 
+```
+sudo apt update
+sudo apt install postgresql postgresql-contrib
+```
+Set a password for postgres `sudo passwd postgres`, then `sudo service postgresql start` and `sudo -u postgres psql` to connect to the psql shell. 
+
+
 ### Backend
 The following instructions assume you have yarn installed and are working in the `backend` directory. 
 
