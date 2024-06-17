@@ -9,7 +9,7 @@ export default function Home() {
 
   React.useEffect(() => {
     fetch(`${BACKEND_URL}/visit`, { method: "POST" })
-      .then(res => res.text())
+      .then(res => res.json())
       .then(res => setNumVisits(parseInt(res)));
   }, []);
 

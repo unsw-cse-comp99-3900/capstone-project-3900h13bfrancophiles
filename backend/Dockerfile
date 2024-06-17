@@ -18,10 +18,6 @@ WORKDIR /app
 COPY package.json yarn.lock ./
 RUN yarn install --frozen-lockfile --production
 
-# Generate prisma client
-COPY prisma ./prisma
-RUN npx prisma generate
-
 COPY .env ./
 COPY --from=builder /app/dist ./
 
@@ -29,4 +25,4 @@ EXPOSE 2000
 
 ENV NODE_ENV production
 
-CMD ["node", "index.js"]
+CMD ["node", "src/index.js"]

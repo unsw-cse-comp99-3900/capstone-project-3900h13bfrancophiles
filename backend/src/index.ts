@@ -1,26 +1,33 @@
 import cors from "cors";
+import { drizzle } from "drizzle-orm/node-postgres";
 import express, { Request, Response } from "express";
-import { PrismaClient } from '@prisma/client';
+import { Pool } from 'pg';
 
-import { PORT } from './config';
+import { DATABASE_URL, PORT } from '../config';
+import { visits } from '../drizzle/schema';
+import { count } from 'drizzle-orm';
 
-const prisma = new PrismaClient();
+const pool = new Pool({
+  connectionString: DATABASE_URL,
+});
+const db = drizzle(pool);
+
 const app = express();
 app.use(cors());
 
 app.get("/", (req: Request, res: Response) => {
-  res.send("Hello world!");
+  res.json("Hello world!");
 });
 
 app.post("/visit", async (req: Request, res: Response) => {
-  await prisma.visits.create({
-    data: {
-      time: new Date().toISOString(),
-    },
-  });
+  await db
+    .insert(visits)
+    .values({ time: new Date().toISOString() });
 
-  const visitCount = await prisma.visits.count();
-  res.send(`${visitCount}`);
+  const results = await db
+    .select({ count: count() })
+    .from(visits);
+  res.json(`${results[0].count}`);
 });
  
 app.listen(PORT, () => {

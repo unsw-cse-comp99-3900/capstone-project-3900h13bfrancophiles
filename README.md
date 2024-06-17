@@ -18,7 +18,12 @@ Create and initialise a database for the project:
 createdb 3900
 psql 3900 -f postgres/init.sql
 ```
-For now any changes to the database schema will mean you need to edit `init.sql`, drop the database, recreate it, and reinitialise it with the updated `init.sql`.
+For now any changes to the database schema will mean you need to edit `init.sql`, drop the database, recreate it, and reinitialise it with the updated `init.sql`. Commands for this:
+```
+dropdb 3900
+createdb 3900
+psql 3900 -f postgres/init.sql
+```
 
 ### Backend
 The following instructions assume you have yarn installed and are working in the `backend` directory. 
@@ -26,9 +31,9 @@ The following instructions assume you have yarn installed and are working in the
 To install necessary dependencies:
 ```
 yarn install
-yarn prisma
+yarn drizzle
 ```
-The `yarn prisma` above generates a Prisma schema from the database, so will need to be re-run whenever the database schema changes.
+The `yarn drizzle` above generates a Drizzle schema from the database, so will need to be re-run whenever the database schema changes.
 
 You will need to configure the `.env` file, there is an example file provided. The required environment variables are:
 - `PORT` - the port to run the backend on
