@@ -1,11 +1,12 @@
 "use client"
 
-import {Sheet, Stack, Typography} from "@mui/joy";
+import {AspectRatio, Link, Sheet, Stack, Typography} from "@mui/joy";
 import Image from "next/image";
-import Link from "next/link";
 import LogoutIcon from "@mui/icons-material/Logout";
 import {pink} from '@mui/material/colors';
 import {usePathname} from "next/navigation";
+import React from "react";
+import NextLink from "next/link";
 
 
 interface NavProps {
@@ -16,8 +17,7 @@ interface NavProps {
 function NavItem({title, navigateTo}: NavProps) {
   const activePage = usePathname();
 
-  return (
-    <Stack
+  return (<Stack
       component={Link}
       href={navigateTo}
       sx={{
@@ -37,28 +37,27 @@ function NavItem({title, navigateTo}: NavProps) {
         sx={{textAlign: "center"}}>
         {title}
       </Typography>
-    </Stack>
-  )
+    </Stack>)
 }
 
 export default function NavBar() {
-  const activePage = usePathname();
 
-  return (
-    <Sheet sx={{height: 60, "display": {xs: "none", sm: "flex"}}}>
-      <Stack width="100%" height="100%" boxShadow="md" direction="row" alignItems="center" px={2}>
-        <Link href="/">
-          <Image src={"/logo.png"} alt={"logo"} height={35} width={40}/>
-        </Link>
-        <Stack direction="row" alignItems="center" width="100%" height="100%" ml={2}
-               sx={{justifyContent: 'space-between'}}>
-          <Stack direction="row" alignItems="center" height="100%">
-            <NavItem title="Dashboard" navigateTo="/dashboard"/>
-            <NavItem title="Rooms" navigateTo="/rooms"/>
-            <NavItem title="Desks" navigateTo="/desks"/>
-          </Stack>
-          <LogoutIcon width={25} height={25} sx={{color: pink[500]}}/>
+  return (<Sheet sx={{boxShadow: "md", height: 60, "display": {xs: 'none', sm: 'flex'}}}>
+    <Stack width="100%" height="100%" direction="row" alignItems="center" px={2}>
+      <Link component={NextLink} href="/">
+        <AspectRatio variant="plain" ratio="15/12" objectFit="contain" sx={{width: 60}}>
+          <Image fill src='/logo.png' alt='logo'/>
+        </AspectRatio>
+      </Link>
+      <Stack direction="row" alignItems="center" width="100%" height="100%" ml={2}
+             sx={{justifyContent: 'space-between'}}>
+        <Stack direction="row" alignItems="center" height="100%">
+          <NavItem title="Dashboard" navigateTo="/dashboard"/>
+          <NavItem title="Rooms" navigateTo="/rooms"/>
+          <NavItem title="Desks" navigateTo="/desks"/>
         </Stack>
+        <LogoutIcon width={25} height={25} sx={{color: pink[500]}}/>
       </Stack>
-    </Sheet>)
+    </Stack>
+  </Sheet>)
 }

@@ -18,7 +18,6 @@ type ThemeRegistryProps = {
 export default function ThemeRegistry({
                                         children
                                       }: ThemeRegistryProps) {
-  const path = usePathname();
 
   const theme = extendTheme({})
 
