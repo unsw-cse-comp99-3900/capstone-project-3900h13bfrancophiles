@@ -21,9 +21,7 @@ export default function RootLayout({
     <html lang='en'>
     <body className={inter.className}>
     <ThemeRegistry>
-      <NavBar/>
-      <MobileNavBar/>
-        {children}
+      {children}
     </ThemeRegistry>
     </body>
     </html>
