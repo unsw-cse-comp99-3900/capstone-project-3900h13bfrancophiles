@@ -25,6 +25,7 @@ CREATE TABLE IF NOT EXISTS space (
 CREATE TABLE IF NOT EXISTS hotdesk (
     id            SERIAL PRIMARY KEY,
     floor         INTEGER NOT NULL,
+    room          INTEGER NOT NULL,
     deskNumber    INTEGER NOT NULL,
     FOREIGN KEY(id) REFERENCES space(id) ON DELETE CASCADE
 );
@@ -44,5 +45,6 @@ CREATE TABLE IF NOT EXISTS booking (
     endTime       TIMESTAMP NOT NULL,
     spaceId       INTEGER NOT NULL,
     currentStatus TEXT NOT NULL,
-    FOREIGN KEY(zId) REFERENCES person(zId)
+    FOREIGN KEY(zId) REFERENCES person(zId),
+    FOREIGN KEY(spaceId) REFERENCES space(id)
 );
