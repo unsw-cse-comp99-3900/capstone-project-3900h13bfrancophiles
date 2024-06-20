@@ -1,5 +1,5 @@
 CREATE TABLE IF NOT EXISTS person (
-    zId           INT PRIMARY KEY
+    zId           INT PRIMARY KEY,
     email         TEXT NOT NULL,
     fullname      TEXT NOT NULL,
     school        TEXT NOT NULL,
