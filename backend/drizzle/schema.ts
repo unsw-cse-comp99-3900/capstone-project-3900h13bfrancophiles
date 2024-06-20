@@ -1,5 +1,5 @@
 import { pgTable, serial, foreignKey, integer, text, boolean, timestamp } from "drizzle-orm/pg-core"
-  import { sql } from "drizzle-orm"
+import { sql } from "drizzle-orm"
 
 export const space = pgTable("space", {
 	id: serial("id").primaryKey().notNull(),
