@@ -47,7 +47,7 @@ export default function NavBar() {
     <Stack width="100%" height="100%" direction="row" alignItems="center" px={2}>
       <Link component={NextLink} href="/">
         <AspectRatio variant="plain" ratio="15/12" objectFit="contain" sx={{width: 60}}>
-          <Image fill src='/logo.png' alt='logo'/>
+          <Image fill src='/roomalloclogo.svg' alt='logo'/>
         </AspectRatio>
       </Link>
       <Stack direction="row" alignItems="center" width="100%" height="100%" ml={2} justifyContent='space-between'>

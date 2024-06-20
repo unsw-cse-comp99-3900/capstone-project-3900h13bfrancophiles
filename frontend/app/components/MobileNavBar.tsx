@@ -17,7 +17,7 @@ const NavBar = () => {
         <Stack direction='row' height='100%' width='100%' p={2} justifyContent='space-between' alignItems='center'>
           <Link component={NextLink} href="/">
             <AspectRatio variant="plain" ratio="15/12" objectFit="contain" sx={{width: 60}}>
-              <Image fill src='/logo.png' alt='logo'/>
+              <Image fill src='/roomalloclogo.svg' alt='logo'/>
             </AspectRatio>
           </Link>
           <IconButton variant="plain" sx={{color: '#fff'}} onClick={() => setOpen(true)}>
