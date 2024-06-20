@@ -5,8 +5,6 @@ import { Button, Card, CardContent, CardOverflow, Typography } from "@mui/joy";
 import PeopleIcon from "@mui/icons-material/People";
 import MeetingRoomOutlinedIcon from "@mui/icons-material/MeetingRoomOutlined";
 import EditCalendarOutlinedIcon from "@mui/icons-material/EditCalendarOutlined";
-import Icon from '@mui/material/Icon';
-
 
 export default function RoomCard() {
   // TODO: set status based on database for the room
