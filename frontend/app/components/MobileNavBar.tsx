@@ -7,6 +7,7 @@ import React from 'react';
 import {Menu as MenuIcon} from '@mui/icons-material';
 import LogoutIcon from "@mui/icons-material/Logout";
 import {pink} from "@mui/material/colors";
+import {navData} from "@/app/data";
 
 const NavBar = () => {
   const [open, setOpen] = React.useState(false);
@@ -48,21 +49,13 @@ const MenuDrawer: React.FC<MenuDrawerProps> = ({open, setOpen}) => {
           flex: 'none', fontSize: 'xl', '& > div': {justifyContent: 'center'},
         }}
       >
-        <ListItemButton onClick={() => setOpen(false)}>
-          <Link component={NextLink} href={'/dashboard'} underline='none' sx={{color: 'inherit', fontSize: 'inherit'}}>
-            Dashboard
-          </Link>
-        </ListItemButton>
-        <ListItemButton onClick={() => setOpen(false)}>
-          <Link component={NextLink} href={'/rooms'} underline='none' sx={{color: 'inherit', fontSize: 'inherit'}}>
-            Rooms
-          </Link>
-        </ListItemButton>
-        <ListItemButton onClick={() => setOpen(false)}>
-          <Link component={NextLink} href={'/desks'} underline='none' sx={{color: 'inherit', fontSize: 'inherit'}}>
-            Desks
-          </Link>
-        </ListItemButton>
+        {navData.map(({ text, href }, idx) => (
+          <ListItemButton key={idx} onClick={() => setOpen(false)} >
+            <Link component={NextLink} href={href} key={idx} underline='none' sx={{ color: 'inherit', fontSize: 'inherit' }}>
+              {text}
+            </Link>
+          </ListItemButton>
+        ))}
       </List>
       <Divider/>
       <Stack mx='auto' my={2}>

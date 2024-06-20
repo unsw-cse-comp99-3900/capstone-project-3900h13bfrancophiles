@@ -7,6 +7,7 @@ import {pink} from '@mui/material/colors';
 import {usePathname} from "next/navigation";
 import React from "react";
 import NextLink from "next/link";
+import {navData} from "@/app/data";
 
 
 interface NavProps {
@@ -49,12 +50,11 @@ export default function NavBar() {
           <Image fill src='/logo.png' alt='logo'/>
         </AspectRatio>
       </Link>
-      <Stack direction="row" alignItems="center" width="100%" height="100%" ml={2}
-             sx={{justifyContent: 'space-between'}}>
+      <Stack direction="row" alignItems="center" width="100%" height="100%" ml={2} justifyContent='space-between'>
         <Stack direction="row" alignItems="center" height="100%">
-          <NavItem title="Dashboard" navigateTo="/dashboard"/>
-          <NavItem title="Rooms" navigateTo="/rooms"/>
-          <NavItem title="Desks" navigateTo="/desks"/>
+          {navData.map(({ text, href }, idx) => (
+            <NavItem title={text} navigateTo={href} key={idx}/>
+          ))}
         </Stack>
         <LogoutIcon width={25} height={25} sx={{color: pink[500]}}/>
       </Stack>
