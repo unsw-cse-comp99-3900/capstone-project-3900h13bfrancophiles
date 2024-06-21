@@ -12,8 +12,13 @@ const LogoutButton = () => {
   const router = useRouter();
 
   const handleLogout = async () => {
-    await logout();
-    deleteCookie("token");
+    try {
+      await logout();
+      deleteCookie("token");
+    } catch (e: any) {
+      // TODO: alert user that token is expired and they need to log in again
+      // though it doesn't really make sense in logout lol
+    }
     router.push('/login');
   }
 

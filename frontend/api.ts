@@ -34,10 +34,7 @@ const apiCall = <T>(
   return new Promise((resolve, reject) => {
     fetch(BACKEND_URL + route, options)
       .then(response => {
-        if (response.status === 401) {
-          deleteCookie("token");
-          throw new Error("Unauthenticated");
-        }
+        if (response.status === 401) deleteCookie("token");
         return response.json();
       })
       .then(json => {

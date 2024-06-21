@@ -17,16 +17,16 @@ export function getUserGroup(zid: number): UserGroup {
 }
 
 // Helpers for managing tokens
-const EXPIRY_TIME_SECS = 60 * 60 * 24;
+const EXPIRY_TIME_MS = 1000 * 60 * 60 * 24;
 const activeTokenIds = new Set<string>();
 
 export function createToken(user: number, group: UserGroup): string {
   const id = crypto.randomUUID();
   const payload: TokenPayload = { id, user, group };
-  const token = jwt.sign(payload, AUTH_SECRET, { expiresIn: EXPIRY_TIME_SECS });
+  const token = jwt.sign(payload, AUTH_SECRET, { expiresIn: EXPIRY_TIME_MS });
 
   activeTokenIds.add(id);
-  setTimeout(() => activeTokenIds.delete(id), EXPIRY_TIME_SECS);
+  setTimeout(() => activeTokenIds.delete(id), EXPIRY_TIME_MS);
 
   return token;
 }
