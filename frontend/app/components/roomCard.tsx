@@ -1,14 +1,14 @@
 "use client";
 
 import * as React from "react";
-import { Button, Card, CardContent, CardOverflow, Typography } from "@mui/joy";
+import {Card, CardContent, CardOverflow, Stack, Typography } from "@mui/joy";
 import PeopleIcon from "@mui/icons-material/People";
 import MeetingRoomOutlinedIcon from "@mui/icons-material/MeetingRoomOutlined";
 import EditCalendarOutlinedIcon from "@mui/icons-material/EditCalendarOutlined";
 
 export default function RoomCard() {
   // TODO: set status based on database for the room
-  const [avalible, setAvalible] = React.useState(true);
+  const [available, setAvailable] = React.useState(true);
 
   return (
     <Card
@@ -17,46 +17,42 @@ export default function RoomCard() {
         maxWidth: "100%",
         boxShadow: "lg",
         background: "#F0F4F8",
+        margin: "20px",
       }}
     >
       <CardContent>
         {/* TODO: Make link to the cal for individual room page */}
-        <div
-          style={{
-            display: "inline-flex",
-            justifyContent: "space-between",
-            flexDirection: "row",
-            alignItems: "center"
-          }}
-        >
-          <Typography level="title-lg" sx={{ mt: 1, fontWeight: "xl" }}>
-            {/* TODO: Make Varible from data */}
-            K17 G02
+        <Stack spacing={'10px'}>
+          <Stack
+            justifyContent="space-between"
+            alignItems="center"
+            sx={{ flexDirection: "row" }}
+          >
+            <Typography level="title-lg" sx={{ mt: 1, fontWeight: "xl" }}>
+              {/* TODO: Make Variable from data */}
+              K17 G02
+            </Typography>
+            <EditCalendarOutlinedIcon />
+          </Stack>
+          <Typography
+            level="body-sm"
+            startDecorator={<MeetingRoomOutlinedIcon />}
+          >
+            {/* TODO: Make Variable from data */}
+            Consultation Room
           </Typography>
-          <EditCalendarOutlinedIcon />
-          {/* <IconButton>{<EditCalendarOutlinedIcon />}</IconButton> */}
-        </div>
-        <Typography
-          level="body-sm"
-          startDecorator={<MeetingRoomOutlinedIcon />}
-        >
-          {/* TODO: Make Varible from data */}
-          Consultation Room
-        </Typography>
-        <Typography level="body-sm" startDecorator={<PeopleIcon />}>
-          {/* TODO: Make Varible from data */}
-          25
-        </Typography>
+          <Typography level="body-sm" startDecorator={<PeopleIcon />}>
+            {/* TODO: Make Variable from data */}
+            25
+          </Typography>
+        </Stack>
       </CardContent>
-      <CardOverflow>
-        <Button
-          variant="solid"
-          color={avalible ? "success" : "danger"}
-          size="lg"
-        >
-          {/* TODO: Make Varible from data */}
-          {avalible ? "Avalible" : "Unavalible"}
-        </Button>
+      <CardOverflow
+        variant="solid"
+        color={available ? "success" : "danger"}
+        sx={{ padding: "12px", alignItems: "center", flexWrap: "wrap" }}
+      >
+        {available ? "Available" : "Unavailable"}
       </CardOverflow>
     </Card>
   );
