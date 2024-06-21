@@ -88,6 +88,7 @@ export default function Rooms() {
           alignItems: "center",
         }}
       >
+				{/* TODO: Make this actually search and apply the filter */}
         <FormControl sx={{ flex: 2 }} size="sm">
           <Input
             size="sm"
@@ -133,6 +134,7 @@ export default function Rooms() {
         >
           Filter
         </Button>
+				{/* TODO: Make this actually apply sort */}
 				<Button
           startDecorator={<SwapVertIcon />}
           variant="soft"
