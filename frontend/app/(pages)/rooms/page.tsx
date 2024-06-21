@@ -52,11 +52,6 @@ export default function Rooms() {
 	const [sort, setSort] = React.useState(false);
   const [date, setDate] = React.useState(new Date().toISOString().split('T')[0].toString());
 
-  // adds a year to the current date and in the form yyyy-mm-dd
-  const currentDate = new Date();
-  currentDate.setFullYear(currentDate.getFullYear() + 1);
-  const yearFromNow: string = currentDate.toISOString().split('T')[0].toString();
-
   const toggleFilters = () => {
     setFiltersOpen(!filtersOpen);
   };
@@ -64,6 +59,7 @@ export default function Rooms() {
 	const toggleSort = () => {
 		setSort(!sort);
 	}
+
   return (
     <>
 		<h1>Rooms</h1>
@@ -92,13 +88,9 @@ export default function Rooms() {
         <FormControl size="sm">
           <Input
             type="date"
-            slotProps={{
-              input: {
-                min: {date},
-              }}}
+            defaultValue={date}
             onChange={(event) => {
               const d = new Date(event.target.value).toISOString().split('T')[0];
-              console.log(d);
               setDate(d);
             }}
           />
