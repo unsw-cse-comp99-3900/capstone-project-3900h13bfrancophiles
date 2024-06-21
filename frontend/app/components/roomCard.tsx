@@ -50,9 +50,9 @@ export default function RoomCard() {
       <CardOverflow
         variant="solid"
         color={available ? "success" : "danger"}
-        sx={{ padding: "12px", alignItems: "center", flexWrap: "wrap" }}
+        sx={{ padding: "8px", alignItems: "center", flexWrap: "wrap" }}
       >
-        {available ? "Available" : "Unavailable"}
+        <b>{available ? "Available" : "Unavailable"}</b>
       </CardOverflow>
     </Card>
   );
