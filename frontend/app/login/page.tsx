@@ -14,7 +14,7 @@ export default function Login() {
     } catch (e: any) {
       console.error("Login failed " + e);
     }
-    router.replace('/');
+    router.push('/');
   }
 
   return (

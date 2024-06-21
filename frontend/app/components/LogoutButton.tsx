@@ -6,12 +6,14 @@ import { pink } from '@mui/material/colors';
 import React from 'react';
 import { useRouter } from 'next/navigation';
 import { logout } from '@/api';
+import { deleteCookie } from 'cookies-next';
 
 const LogoutButton = () => {
   const router = useRouter();
 
   const handleLogout = async () => {
     await logout();
+    deleteCookie("token");
     router.push('/login');
   }
 
