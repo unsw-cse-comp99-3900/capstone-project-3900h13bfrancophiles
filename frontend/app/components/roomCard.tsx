@@ -17,7 +17,7 @@ export default function RoomCard() {
         maxWidth: "100%",
         boxShadow: "lg",
         background: "#F0F4F8",
-        margin: "20px",
+        marginTop: "20px",
       }}
     >
       <CardContent>
