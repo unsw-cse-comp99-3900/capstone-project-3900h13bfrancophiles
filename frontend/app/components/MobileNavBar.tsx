@@ -5,9 +5,8 @@ import Image from 'next/image';
 import NextLink from 'next/link';
 import React from 'react';
 import {Menu as MenuIcon} from '@mui/icons-material';
-import LogoutIcon from "@mui/icons-material/Logout";
-import {pink} from "@mui/material/colors";
 import {navData} from "@/app/data";
+import LogoutButton from '@/app/components/LogoutButton';
 
 const NavBar = () => {
   const [open, setOpen] = React.useState(false);
@@ -60,7 +59,7 @@ const MenuDrawer: React.FC<MenuDrawerProps> = ({open, setOpen}) => {
       <Divider/>
       <Stack mx='auto' my={2}>
         <AspectRatio variant="plain" ratio="15/15" objectFit="contain" sx={{width: 35}}>
-          <LogoutIcon width={25} height={25} sx={{color: pink[500]}}/>
+          <LogoutButton />
         </AspectRatio>
       </Stack>
 

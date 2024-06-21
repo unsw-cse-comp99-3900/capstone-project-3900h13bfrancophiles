@@ -1,24 +1,30 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { hasCookie } from 'cookies-next';
 
-export function middleware(request: NextRequest) {
-  const isAuthenticated = request.cookies.get("token") !== undefined;
+export function middleware(req: NextRequest) {
+  const res = NextResponse.next();
+  const isAuthenticated = hasCookie('token', { req, res });
 
-  // If the user is authenticated, continue as normal
-  if (request.nextUrl.pathname === "/login") {
+  if (req.nextUrl.pathname === "/login") {
     // Send through to site if authenticated
     if (isAuthenticated) {
-      return NextResponse.redirect(new URL('/dashboard', request.url));
+      return NextResponse.redirect(new URL('/dashboard', req.url));
     }
   } else {
     // Redirect to login page if not authenticated
     if (!isAuthenticated) {
-      return NextResponse.redirect(new URL('/login', request.url));
+      return NextResponse.redirect(new URL('/login', req.url));
     }
   }
 
-  return NextResponse.next();
+  return res;
 }
 
 export const config = {
-  matcher: '/:path*',
+  matcher: [
+    '/rooms/:path*',
+    '/dashboard/:path*',
+    '/hotdesks/:path*',
+    '/login/:path*'
+  ],
 }
