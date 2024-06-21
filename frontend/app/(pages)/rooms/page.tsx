@@ -44,24 +44,18 @@ const renderFilters = () => (
         <Option value="debit">6+</Option>
       </Select>
     </FormControl>
-    <FormControl size="sm">
-      <FormLabel>Customer</FormLabel>
-      <Select size="sm" placeholder="All">
-        <Option value="all">All</Option>
-        <Option value="olivia">Olivia Rhye</Option>
-        <Option value="steve">Steve Hampton</Option>
-        <Option value="ciaran">Ciaran Murray</Option>
-        <Option value="marina">Marina Macdonald</Option>
-        <Option value="charles">Charles Fulton</Option>
-        <Option value="jay">Jay Hoper</Option>
-      </Select>
-    </FormControl>
   </React.Fragment>
 );
 
 export default function Rooms() {
   const [filtersOpen, setFiltersOpen] = React.useState(false);
 	const [sort, setSort] = React.useState(false);
+  const [date, setDate] = React.useState(new Date().toISOString().split('T')[0].toString());
+
+  // adds a year to the current date and in the form yyyy-mm-dd
+  const currentDate = new Date();
+  currentDate.setFullYear(currentDate.getFullYear() + 1);
+  const yearFromNow: string = currentDate.toISOString().split('T')[0].toString();
 
   const toggleFilters = () => {
     setFiltersOpen(!filtersOpen);
@@ -70,7 +64,6 @@ export default function Rooms() {
 	const toggleSort = () => {
 		setSort(!sort);
 	}
-
   return (
     <>
 		<h1>Rooms</h1>
@@ -101,9 +94,12 @@ export default function Rooms() {
             type="date"
             slotProps={{
               input: {
-                min: "2018-06-07",
-                max: "2020-06-14",
-              },
+                min: {date},
+              }}}
+            onChange={(event) => {
+              const d = new Date(event.target.value).toISOString().split('T')[0];
+              console.log(d);
+              setDate(d);
             }}
           />
         </FormControl>
