@@ -19,7 +19,7 @@ export function login(
 
   const match = req.body.zid.match(ZID_REGEX);
   if (!match) {
-    res.status(400).json({ error: "Non-existent zID" });
+    res.status(400).json({ error: "Invalid zID" });
     return;
   }
   const zid = parseInt(match[1]);

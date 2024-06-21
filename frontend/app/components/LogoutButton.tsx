@@ -5,13 +5,13 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import { pink } from '@mui/material/colors';
 import React from 'react';
 import { useRouter } from 'next/navigation';
-import { deleteCookie } from 'cookies-next';
+import { logout } from '@/api';
 
 const LogoutButton = () => {
   const router = useRouter();
 
   const handleLogout = async () => {
-    deleteCookie("token");
+    await logout();
     router.push('/login');
   }
 
