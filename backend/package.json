@@ -7,7 +7,7 @@
     "build": "npx tsc -p tsconfig.json",
     "start": "node dist/src/index.js",
     "dev": "nodemon src/index.ts",
-    "drizzle": "drizzle-kit introspect --config=config.ts",
+    "drizzle": "drizzle-kit introspect",
     "prepare": "ts-patch install && typia patch"
   },
   "dependencies": {
