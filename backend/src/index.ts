@@ -18,8 +18,8 @@ app.post("/auth/login", login);
 app.post("/auth/logout", validateToken, logout);
 
 app.get("/bookings/current", currentBookings);
-app.get("/bookings/current", upcomingBookings);
-app.get("/bookings/current", pastBookings);
+app.get("/bookings/upcoming", upcomingBookings);
+app.post("/bookings/past", pastBookings);
 
 app.listen(PORT, () => {
   console.log(`Server is running at http://localhost:${PORT}`);
