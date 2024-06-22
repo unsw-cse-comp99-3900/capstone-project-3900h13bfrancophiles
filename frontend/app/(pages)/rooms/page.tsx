@@ -60,6 +60,34 @@ const rooms = [
     capacity: 10,
     available: false,
   },
+  {
+    id: "3",
+    name: "K17 302",
+    type: "Meeting Room",
+    capacity: 10,
+    available: false,
+  },
+  {
+    id: "4",
+    name: "K17 G02",
+    type: "Consultation Room",
+    capacity: 2,
+    available: true,
+  },
+  {
+    id: "5",
+    name: "K17 402A",
+    type: "Consultation Room",
+    capacity: 4,
+    available: false,
+  },
+  {
+    id: "6",
+    name: "K17 601",
+    type: "Meeting Room",
+    capacity: 25,
+    available: true,
+  },
 ];
 
 const renderFilters = () => (
@@ -210,10 +238,22 @@ export default function Rooms() {
           </Box>
         </ModalDialog>
       </Modal>
-
+      <Stack
+        direction="row"
+        sx={{
+          flexWrap: "wrap",
+          gap: 3,
+          justifyContent: "left",
+          paddingTop: "20px",
+          alignItems: "center",
+          marginLeft: 'auto',
+          marginRight: 'auto',
+        }}
+      >
       {rooms.map((room) => (
         <RoomCard key={room.id} room={room} />
       ))}
+      </Stack>
     </>
   );
 }
