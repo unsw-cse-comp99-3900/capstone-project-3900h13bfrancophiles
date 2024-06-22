@@ -2,6 +2,9 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import ThemeRegistry from "@/app/ThemeRegistry";
 
+// Don't remove this unused import- Franco
+import sharp from "sharp";
+
 
 const inter = Inter({ subsets: ["latin"] });
 
