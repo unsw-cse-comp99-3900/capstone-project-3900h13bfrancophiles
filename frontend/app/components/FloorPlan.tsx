@@ -1,45 +1,29 @@
 'use client';
 
-import React, { useRef, useEffect, useState, createRef } from 'react';
-import {
-    TransformWrapper,
-    TransformComponent,
-    useControls,
-    ReactZoomPanPinchContentRef
-  } from "react-zoom-pan-pinch";
+import React from 'react';
+import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 import { Box } from '@mui/joy';
 import Image from 'next/image';
 
 const FloorPlan = () => {
-    const wrapperRef = createRef<ReactZoomPanPinchContentRef>();
-    const wrapperStyle = {
-        // border: "10px solid lightblue",
-        //borderRadius: 30,
-        //maxWidth: 2000,
+    const transformStyle: React.CSSProperties = {
         width:"100%",
         height: "100%",
-        margin: 0,
-        padding: 0
+        position: "relative"
     };
 
     return (
-        <Box
-            sx={{
-                //width: "100%",
-                //height: "100%",
-                //display: "flex",
-                //justifyContent: "center"
-            }}
-        >
+        <Box sx={{ height: "100%" }}>
             <TransformWrapper
                 centerOnInit
-                initialScale={1.3}
+                initialScale={1.5}
                 initialPositionX={0}
                 initialPositionY={0}
+                maxScale={3}
                 disablePadding
             >
-                <TransformComponent wrapperStyle={wrapperStyle} contentStyle={wrapperStyle}>
-                    <Image src="/K17L3.svg" height={1000} width={1000} alt="level 3" />
+                <TransformComponent wrapperStyle={transformStyle} contentStyle={transformStyle}>
+                    <Image src="/K17L3.svg" fill alt="level 3" />
                 </TransformComponent>
             </TransformWrapper>
         </Box>
