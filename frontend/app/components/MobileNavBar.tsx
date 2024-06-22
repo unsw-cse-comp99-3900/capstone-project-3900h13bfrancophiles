@@ -63,7 +63,6 @@ const MenuDrawer: React.FC<MenuDrawerProps> = ({open, setOpen}) => {
           <LogoutIcon width={25} height={25} sx={{color: pink[500]}}/>
         </AspectRatio>
       </Stack>
-
     </Drawer>)
 }
 

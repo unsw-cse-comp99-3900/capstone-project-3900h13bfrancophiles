@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import ThemeRegistry from "@/app/ThemeRegistry";
-import NavBar from "@/app/components/NavBar";
-import MobileNavBar from "@/app/components/MobileNavBar";
-import {Sheet} from "@mui/joy";
+import NavBar from ".//components/NavBar";
+import MobileNavBar from ".//components/MobileNavBar"
+import {Box, Stack} from "@mui/joy";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -23,7 +23,12 @@ export default function RootLayout({
     <ThemeRegistry>
       <NavBar/>
       <MobileNavBar/>
-        {children}
+      <Stack alignItems='center'>
+        <Box sx={{width:{xs: '85%'}}}>
+          {children}
+        </Box>
+      </Stack>
+
     </ThemeRegistry>
     </body>
     </html>

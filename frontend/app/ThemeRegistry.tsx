@@ -1,12 +1,13 @@
 'use client';
 
 import React from 'react';
-import { usePathname } from 'next/navigation';
-import { CssVarsProvider, extendTheme } from '@mui/joy/styles';
+import {CssVarsProvider, extendTheme} from '@mui/joy/styles';
 import CssBaseline from '@mui/joy/CssBaseline';
 
 declare module '@mui/joy/styles' {
-
+  interface TypographySystemOverrides {
+    body: true;
+  }
 }
 
 type ThemeRegistryProps = {
@@ -19,7 +20,44 @@ export default function ThemeRegistry({
                                         children
                                       }: ThemeRegistryProps) {
 
-  const theme = extendTheme({})
+  // default font family is Inter
+  const theme = extendTheme({
+    typography: {
+      // defining custom levels
+      h1: {
+        fontSize: '3rem',
+        fontWeight: '600',
+        color: '#33373D',
+        letterSpacing: '0.4px',
+        lineHeight: '1.7',
+        margin: '30px 0px'
+      },
+      h2: {
+        fontSize: '2rem',
+        fontWeight: '700',
+        color: '#33373D',
+        letterSpacing: '0.4px',
+        lineHeight: '1.7',
+        margin: '30px 0px'
+      },
+      h3: {
+        fontSize: '2rem',
+        fontWeight: '500',
+        color: '#33373D',
+        letterSpacing: '0.4px',
+        lineHeight: '1.7',
+        margin: '30px 0px'
+      },
+      body: {
+        fontSize: '1rem',
+        fontWeight: '400',
+        color: '#33373D',
+        letterSpacing: '0.4px',
+        lineHeight: '1.7',
+        whiteSpace: 'pre-line'
+      },
+    },
+  });
 
   return (
     <CssVarsProvider theme={theme}>
