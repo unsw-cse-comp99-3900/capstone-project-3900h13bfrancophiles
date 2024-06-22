@@ -11,7 +11,7 @@ export default function Layout({ children }: Readonly<{
     <>
       <NavBar/>
       <MobileNavBar/>
-      <Stack sx={{ px: { xs: '5%', md: '92px' } }}>
+      <Stack px={{xs: '5%', md: '92px'}}>
         {children}
       </Stack>
     </>
