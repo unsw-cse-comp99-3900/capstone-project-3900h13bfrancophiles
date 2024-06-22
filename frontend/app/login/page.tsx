@@ -23,22 +23,22 @@ import { login } from '@/api';
 
 export default function Login() {
   const router = useRouter();
-  const [username, setUsername] = React.useState("");
-  const [password, setPassword] = React.useState("")
+  const [zid, setZid] = React.useState("");
+  const [zpass, setZpass] = React.useState("")
   const [error, setError] = React.useState<string>();
 
   const onSubmit = async () => {
-    if (!username) {
-      setError("Error: Username required");
+    if (!zid) {
+      setError("Error: zID required");
       return;
     }
-    if (!password) {
+    if (!zpass) {
       setError("Error: Password required");
       return;
     }
 
     try {
-      const { token } = await login(username, password);
+      const { token } = await login(zid, zpass);
       setCookie("token", token, { maxAge: 60 * 60 * 24 });
       router.push('/');
     } catch (e: any) {
@@ -55,12 +55,12 @@ export default function Login() {
 
   return (
     <Stack justifyContent="center" alignItems="center" height="100vh">
-      <AspectRatio ratio="10/3" sx={{ width: 380 }} >
+      <AspectRatio ratio="10/3" sx={{ width: { xs: 300, sm: 380 } }} >
         <Image src="/logoFull.svg" alt="roomalloc logo" fill />
       </AspectRatio>
       <Sheet
         sx={{
-          width: 380,
+          width: { xs: 300, sm: 380 },
           my: 4,
           py: 3,
           px: 3,
@@ -72,10 +72,7 @@ export default function Login() {
         }}
         variant='outlined'
       >
-        <Stack spacing={1}>
-          <Typography level="h1" textAlign="center">Sign In</Typography>
-          <Typography level="body-md">Sign in with your UNSW zID and zPass</Typography>
-        </Stack>
+        <Typography level="h1" textAlign="center">Sign In</Typography>
         {error && (
           <Alert
             size="md"
@@ -93,22 +90,22 @@ export default function Login() {
         )}
         <Stack spacing={1}>
           <FormControl>
-            <FormLabel sx={{ fontSize: 'md' }}>Username</FormLabel>
+            <FormLabel sx={{ fontSize: 'md' }}>zID</FormLabel>
             <Input
               size="lg"
               sx={{ fontSize: 'lg' }}
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              value={zid}
+              onChange={(e) => setZid(e.target.value)}
               onKeyDown={handleKeyDown}
             />
           </FormControl>
           <FormControl>
-            <FormLabel sx={{ fontSize: 'md' }}>Password</FormLabel>
+            <FormLabel sx={{ fontSize: 'md' }}>zPass</FormLabel>
             <Input
               size="lg"
               sx={{ fontSize: 'lg' }}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              value={zpass}
+              onChange={(e) => setZpass(e.target.value)}
               onKeyDown={handleKeyDown}
               type="password"
             />
