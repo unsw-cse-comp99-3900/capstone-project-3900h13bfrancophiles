@@ -94,8 +94,9 @@ const renderFilters = () => (
   <React.Fragment>
     <FilterControl
       label="Type"
-      placeholder="Filter by room type"
+      placeholder="All"
       options={[
+        { value: "all", label: "All"},
         { value: "meeting-room", label: "Meeting Room" },
         { value: "consult-room", label: "Consult Room" },
         { value: "conference-room", label: "Conference Room" },
@@ -255,7 +256,7 @@ export default function Rooms() {
               color="primary"
               onClick={() => setFiltersOpen(false)}
             >
-              {/* TODO: Make this actually apply the filter */}
+              {/* TODO: Make this actually apply the filter on submit */}
               Apply filters
             </Button>
           </Box>
