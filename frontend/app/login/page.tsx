@@ -54,66 +54,55 @@ export default function Login() {
   }
 
   return (
-    <Stack justifyContent="center" alignItems="center" height="100vh">
+    <Stack justifyContent="center" alignItems="center" height="100vh" spacing={4}>
       <AspectRatio ratio="10/3" sx={{ width: { xs: 300, sm: 380 } }} >
         <Image src="/logoFull.svg" alt="roomalloc logo" fill />
       </AspectRatio>
-      <Sheet
-        sx={{
-          width: { xs: 300, sm: 380 },
-          my: 4,
-          py: 3,
-          px: 3,
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 2,
-          borderRadius: 'md',
-          boxShadow: 'md',
-        }}
-        variant='outlined'
-      >
-        <Typography level="h1" textAlign="center">Sign In</Typography>
-        {error && (
-          <Alert
-            size="md"
-            color="danger"
-            variant="soft"
-            startDecorator={<WarningIcon />}
-            endDecorator={
-              <IconButton variant="soft" color="danger" onClick={() => setError(undefined)}>
-                <CloseRoundedIcon />
-              </IconButton>
-            }
-          >
-            <b>{error}</b>
-          </Alert>
-        )}
-        <Stack spacing={1}>
-          <FormControl>
-            <FormLabel sx={{ fontSize: 'md' }}>zID</FormLabel>
-            <Input
-              size="lg"
-              sx={{ fontSize: 'lg' }}
-              value={zid}
-              onChange={(e) => setZid(e.target.value)}
-              onKeyDown={handleKeyDown}
-            />
-          </FormControl>
-          <FormControl>
-            <FormLabel sx={{ fontSize: 'md' }}>zPass</FormLabel>
-            <Input
-              size="lg"
-              sx={{ fontSize: 'lg' }}
-              value={zpass}
-              onChange={(e) => setZpass(e.target.value)}
-              onKeyDown={handleKeyDown}
-              type="password"
-            />
-          </FormControl>
+      <Sheet variant='outlined' sx={{ borderRadius: "md", boxShadow: "md" }}>
+        <Stack spacing={2} p={3} width={{ xs: 300, sm: 380 }}>
+          <Typography level="h1" textAlign="center">Sign In</Typography>
+          {error && (
+            <Alert
+              size="md"
+              color="danger"
+              variant="soft"
+              startDecorator={<WarningIcon />}
+              endDecorator={
+                <IconButton variant="soft" color="danger" onClick={() => setError(undefined)}>
+                  <CloseRoundedIcon />
+                </IconButton>
+              }
+            >
+              <b>{error}</b>
+            </Alert>
+          )}
+          <Stack spacing={1}>
+            <FormControl>
+              <FormLabel sx={{ fontSize: 'md' }}>zID</FormLabel>
+              <Input
+                size="lg"
+                sx={{ fontSize: 'lg' }}
+                value={zid}
+                onChange={(e) => setZid(e.target.value)}
+                onKeyDown={handleKeyDown}
+              />
+            </FormControl>
+            <FormControl>
+              <FormLabel sx={{ fontSize: 'md' }}>zPass</FormLabel>
+              <Input
+                size="lg"
+                sx={{ fontSize: 'lg' }}
+                value={zpass}
+                onChange={(e) => setZpass(e.target.value)}
+                onKeyDown={handleKeyDown}
+                type="password"
+              />
+            </FormControl>
+          </Stack>
+          <Button size="lg" color="primary" onClick={onSubmit}>
+            Sign In
+          </Button>
         </Stack>
-        <Button size="lg" color="primary" onClick={onSubmit}>
-          Sign In
-        </Button>
       </Sheet>
     </Stack>
   )
