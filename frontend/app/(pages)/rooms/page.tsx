@@ -123,6 +123,15 @@ export default function Rooms() {
   const [date, setDate] = React.useState(
     new Date().toISOString().split("T")[0].toString()
   );
+  const [startTime, setStartTime] = React.useState(
+    new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+  );
+  const [endTime, setEndTime] = React.useState(
+    new Date(new Date().getTime() + 60 * 60 * 1000).toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
+    })
+  );
 
   const toggleFilters = () => {
     setFiltersOpen(!filtersOpen);
@@ -131,6 +140,8 @@ export default function Rooms() {
   const toggleSort = () => {
     setSort(!sort);
   };
+
+  const sortedRooms = [...rooms].sort((a, b) => a.name.localeCompare(b.name));
 
   return (
     <>
@@ -169,15 +180,27 @@ export default function Rooms() {
           <Box sx={{ display: "flex", gap: 2 }}>
             <Input
               type="time"
-              defaultValue=""
+              defaultValue={startTime}
               size="sm"
-              sx={{ width: "100%" }}
+              onChange={(event) => {
+                const d = new Date(event.target.value).toLocaleTimeString([], {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                });
+                setStartTime(d);
+              }}
             />
             <Input
               type="time"
-              defaultValue=""
+              defaultValue={endTime}
               size="sm"
-              sx={{ width: "100%" }}
+              onChange={(event) => {
+                const d = new Date(event.target.value).toLocaleTimeString([], {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                });
+                setEndTime(d);
+              }}
             />
           </Box>
         </FormControl>
@@ -191,7 +214,7 @@ export default function Rooms() {
         >
           Filter
         </Button>
-        {/* TODO: Make this actually apply sort */}
+        {/* TODO: Make this actually apply sort, it does rn something but like some affordance is probably good */}
         <Button
           startDecorator={<SwapVertIcon />}
           variant="soft"
@@ -246,13 +269,13 @@ export default function Rooms() {
           justifyContent: "left",
           paddingTop: "20px",
           alignItems: "center",
-          marginLeft: 'auto',
-          marginRight: 'auto',
+          marginLeft: "auto",
+          marginRight: "auto",
         }}
       >
-      {rooms.map((room) => (
-        <RoomCard key={room.id} room={room} />
-      ))}
+        {(sort ? sortedRooms : sortedRooms.reverse()).map((room) => (
+          <RoomCard key={room.id} room={room} />
+        ))}
       </Stack>
     </>
   );
