@@ -72,9 +72,13 @@ export default function Login() {
         }}
         variant='outlined'
       >
+        <Stack spacing={1}>
+          <Typography level="h1" textAlign="center">Sign In</Typography>
+          <Typography level="body-md">Sign in with your UNSW zID and zPass</Typography>
+        </Stack>
         {error && (
           <Alert
-            size="lg"
+            size="md"
             color="danger"
             variant="soft"
             startDecorator={<WarningIcon />}
@@ -87,10 +91,6 @@ export default function Login() {
             <b>{error}</b>
           </Alert>
         )}
-        <Stack spacing={1}>
-          <Typography level="h1" textAlign="center">Sign In</Typography>
-          <Typography level="body-md">Sign in with your UNSW zID and zPass</Typography>
-        </Stack>
         <Stack spacing={1}>
           <FormControl>
             <FormLabel sx={{ fontSize: 'md' }}>Username</FormLabel>
