@@ -1,6 +1,17 @@
 'use client';
 
-import {AspectRatio, Divider, Drawer, IconButton, Link, List, ListItemButton, Sheet, Stack,} from '@mui/joy';
+import {
+  AspectRatio,
+  Divider,
+  Drawer,
+  IconButton,
+  Link,
+  List,
+  ListItemButton,
+  Sheet,
+  Stack,
+  Typography,
+} from '@mui/joy';
 import Image from 'next/image';
 import NextLink from 'next/link';
 import React from 'react';
@@ -49,9 +60,11 @@ const MenuDrawer: React.FC<MenuDrawerProps> = ({open, setOpen}) => {
         }}
       >
         {navData.map(({ text, href }, idx) => (
-          <ListItemButton key={idx} onClick={() => setOpen(false)} >
+          <ListItemButton key={idx} onClick={() => setOpen(false)} sx={{"&:hover": {bgcolor: "#f0f4fc"}}}>
             <Link component={NextLink} href={href} key={idx} underline='none' sx={{ color: 'inherit', fontSize: 'inherit' }}>
-              {text}
+              <Typography level='body' fontSize={20}>
+                {text}
+              </Typography>
             </Link>
           </ListItemButton>
         ))}

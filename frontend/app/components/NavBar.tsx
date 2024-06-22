@@ -28,11 +28,11 @@ function NavItem({title, navigateTo}: NavProps) {
         height: "100%",
         textDecoration: "none",
         borderBottom: activePage === navigateTo ? '4px solid #787979' : 'none',
-        "&:hover": {bgcolor: "#D1E2F8", opacity: "40%", textDecoration: "none"}
+        "&:hover": {bgcolor: "#f0f4fc", textDecoration: "none"}
       }}
     >
       <Typography
-        level="h4"
+        level="h3"
         fontSize={14}
         margin="auto"
         px={5}
