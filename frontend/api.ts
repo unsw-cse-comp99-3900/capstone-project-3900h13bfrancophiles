@@ -34,7 +34,11 @@ const apiCall = <T>(
   return new Promise((resolve, reject) => {
     fetch(BACKEND_URL + route, options)
       .then(response => {
-        if (response.status === 401) deleteCookie("token");
+        if (response.status === 401) {
+          // Remove token and force reload, so you're redirected to login page
+          deleteCookie("token");
+          window.location.reload();
+        }
         return response.json();
       })
       .then(json => {
