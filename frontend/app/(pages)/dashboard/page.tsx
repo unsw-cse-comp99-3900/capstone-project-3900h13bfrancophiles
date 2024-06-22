@@ -6,7 +6,7 @@ export default function Dashboard() {
       <Typography level="h1">
         My Dashboard
       </Typography>
-      <Typography level="h2">
+      <Typography level="h2" mb={2}>
         Current Booking
       </Typography>
       <Card variant='outlined'>
@@ -16,7 +16,7 @@ export default function Dashboard() {
               <Typography level="h2" sx={{ textWrap: 'wrap' }}>
                 K17 G02 - Consultation Room
               </Typography>
-              <Typography level='body' pb={1} sx={{ textWrap: 'wrap' }}>
+              <Typography level='body-lg' pb={1} sx={{ textWrap: 'wrap' }}>
                 Booked until 7:30 PM
               </Typography>
             </Box>
@@ -28,10 +28,7 @@ export default function Dashboard() {
                 Contact Support
               </Button>
             </Stack>
-
           </Stack>
-
-
         </CardContent>
       </Card>
     </Stack>

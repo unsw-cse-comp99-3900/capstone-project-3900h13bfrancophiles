@@ -29,18 +29,26 @@ export default function ThemeRegistry({
         margin: '30px 0px'
       },
       h2: {
-
         color: '#33373D',
       },
       h3: {
-
         color: '#33373D',
 
       },
       body: {
-        fontSize: '13pt',
         color: '#33373D',
-
+      },
+      'title-lg': {
+        color: '#33373D',
+      },
+      'body-sm': {
+        color: '#33373D',
+      },
+      'body-md': {
+        color: '#33373D',
+      },
+      'body-lg': {
+        color: '#33373D',
       },
     },
   });
