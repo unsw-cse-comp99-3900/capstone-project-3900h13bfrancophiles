@@ -16,7 +16,7 @@ export interface TokenPayload {
 /**
  * String datetime range
  */
-export type DateTimeRange = { start: string, end?: string };
+export type DateTimeRange = { start: string, end: string };
 
 // Voodoo shit to allow adding tokens to Requests
 declare global {

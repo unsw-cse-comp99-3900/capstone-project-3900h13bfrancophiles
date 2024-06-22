@@ -18,21 +18,14 @@ export async function currentBookings(
     res: TypedResponse,
   ) {
     try {
-        // TODO: Get zid from active tokens
-        const zid = 1;
+        const zid = req.token.user;
         const currentTime = new Date().toISOString();
 
         const currentBookings = await db
-            .select({
-                id: booking.id,
-                starttime: booking.starttime,
-                endttime: booking.endtime,
-                spaceId: booking.spaceid,
-                currentStatus: booking.currentstatus
-            })
+            .select()
             .from(booking)
             .where(
-                sql`${booking.starttime} < ${currentTime} AND ${booking.endtime} > ${currentTime} AND ${booking.zid} == ${zid}`
+                sql`${booking.starttime} < ${currentTime} AND ${booking.endtime} > ${currentTime} AND ${booking.zid} = ${zid}`
             );
 
         res.json({ bookings: currentBookings });
@@ -46,8 +39,7 @@ export async function upcomingBookings(
     res: TypedResponse,
   ) {
     try {
-        // TODO: Get zid from active tokens
-        const zid = 1;
+        const zid = req.token.user;
         const currentTime = new Date().toISOString();
 
         const currentBookings = await db
@@ -60,7 +52,7 @@ export async function upcomingBookings(
             })
             .from(booking)
             .where(
-                sql`${booking.starttime} > ${currentTime} AND ${booking.zid} == ${zid}`
+                sql`${booking.starttime} > ${currentTime} AND ${booking.zid} = ${zid}`
             );
 
         res.json({ bookings: currentBookings });
@@ -78,13 +70,9 @@ export async function pastBookings(
             res.status(400).json({ error: "Invalid input" });
             return;
         }
-        // TODO: Get zid from active tokens
-        const zid = 1;
-        const start = req.params.start;
-        var end = new Date().toISOString();
-        if (req.params.end !== undefined && req.params.end !== null) {
-            end = req.params.end;
-        }
+        const zid = req.token.user;
+        const start = req.body.start;
+        const end = req.body.end;
 
         const currentBookings = await db
             .select({
@@ -96,7 +84,7 @@ export async function pastBookings(
             })
             .from(booking)
             .where(
-                sql`${booking.starttime} <= ${end} AND ${booking.endtime} >= ${start} AND ${booking.zid} == ${zid}`
+                sql`${booking.starttime} <= ${end} AND ${booking.endtime} >= ${start} AND ${booking.zid} = ${zid}`
             );
 
         res.json({ bookings: currentBookings });

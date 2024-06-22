@@ -17,9 +17,9 @@ app.use(bodyParser.json())
 app.post("/auth/login", login);
 app.post("/auth/logout", validateToken, logout);
 
-app.get("/bookings/current", currentBookings);
-app.get("/bookings/upcoming", upcomingBookings);
-app.post("/bookings/past", pastBookings);
+app.get("/bookings/current", validateToken, currentBookings);
+app.get("/bookings/upcoming", validateToken, upcomingBookings);
+app.post("/bookings/past", validateToken, pastBookings);
 
 app.listen(PORT, () => {
   console.log(`Server is running at http://localhost:${PORT}`);
