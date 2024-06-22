@@ -13,6 +13,11 @@ export interface TokenPayload {
   group: UserGroup,
 }
 
+/**
+ * String datetime range
+ */
+export type DateTimeRange = { start: string, end?: string };
+
 // Voodoo shit to allow adding tokens to Requests
 declare global {
   namespace Express {
