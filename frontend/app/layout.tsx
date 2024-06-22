@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import ThemeRegistry from "@/app/ThemeRegistry";
-import NavBar from "@/app/components/NavBar";
-import MobileNavBar from "@/app/components/MobileNavBar";
-import {Sheet} from "@mui/joy";
+
+// Don't remove this unused import- Franco
+import sharp from "sharp";
+
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -21,9 +22,7 @@ export default function RootLayout({
     <html lang='en'>
     <body className={inter.className}>
     <ThemeRegistry>
-      <NavBar/>
-      <MobileNavBar/>
-        {children}
+      {children}
     </ThemeRegistry>
     </body>
     </html>

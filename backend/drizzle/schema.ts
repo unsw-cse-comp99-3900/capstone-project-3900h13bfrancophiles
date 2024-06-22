@@ -1,9 +1,49 @@
-import { pgTable, serial, timestamp } from "drizzle-orm/pg-core"
+import { pgTable, integer, text, foreignKey, boolean, serial, timestamp } from "drizzle-orm/pg-core"
   import { sql } from "drizzle-orm"
 
 
 
-export const visits = pgTable("visits", {
+export const person = pgTable("person", {
+	zid: integer("zid").primaryKey().notNull(),
+	email: text("email").notNull(),
+	fullname: text("fullname").notNull(),
+	school: text("school").notNull(),
+	faculty: text("faculty").notNull(),
+});
+
+export const staff = pgTable("staff", {
+	zid: integer("zid").primaryKey().notNull().references(() => person.zid),
+	isadmin: boolean("isadmin"),
+});
+
+export const hdr = pgTable("hdr", {
+	zid: integer("zid").primaryKey().notNull().references(() => person.zid),
+	degree: text("degree"),
+});
+
+export const space = pgTable("space", {
 	id: serial("id").primaryKey().notNull(),
-	time: timestamp("time", { mode: 'string' }),
+});
+
+export const hotdesk = pgTable("hotdesk", {
+	id: serial("id").primaryKey().notNull().references(() => space.id, { onDelete: "cascade" } ),
+	floor: integer("floor").notNull(),
+	room: integer("room").notNull(),
+	desknumber: integer("desknumber").notNull(),
+});
+
+export const room = pgTable("room", {
+	id: serial("id").primaryKey().notNull().references(() => space.id, { onDelete: "cascade" } ),
+	capacity: integer("capacity").notNull(),
+	roomnumber: integer("roomnumber").notNull(),
+	usage: integer("usage").notNull(),
+});
+
+export const booking = pgTable("booking", {
+	id: serial("id").primaryKey().notNull(),
+	zid: integer("zid").notNull().references(() => person.zid),
+	starttime: timestamp("starttime", { mode: 'string' }).notNull(),
+	endtime: timestamp("endtime", { mode: 'string' }).notNull(),
+	spaceid: integer("spaceid").notNull().references(() => space.id),
+	currentstatus: text("currentstatus").notNull(),
 });
