@@ -21,14 +21,7 @@ export default function RootLayout({
     <html lang='en'>
     <body className={inter.className}>
     <ThemeRegistry>
-      <NavBar/>
-      <MobileNavBar/>
-      <Stack alignItems='center'>
-        <Box sx={{width:{xs: '85%'}}}>
-          {children}
-        </Box>
-      </Stack>
-
+      {children}
     </ThemeRegistry>
     </body>
     </html>

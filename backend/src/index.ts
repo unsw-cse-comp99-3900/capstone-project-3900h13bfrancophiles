@@ -1,35 +1,21 @@
+import bodyParser from "body-parser";
 import cors from "cors";
-import { drizzle } from "drizzle-orm/node-postgres";
-import express, { Request, Response } from "express";
-import { Pool } from 'pg';
+import express from "express";
+import morgan from "morgan";
 
-import { DATABASE_URL, PORT } from '../config';
-import { visits } from '../drizzle/schema';
-import { count } from 'drizzle-orm';
-
-const pool = new Pool({
-  connectionString: DATABASE_URL,
-});
-const db = drizzle(pool);
+import { PORT } from '../config';
+import { login, logout } from './auth/handlers';
+import { validateToken } from './auth/middleware';
 
 const app = express();
+app.use(morgan("dev"));
 app.use(cors());
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json())
 
-app.get("/", (req: Request, res: Response) => {
-  res.json("Hello world!");
-});
+app.post("/auth/login", login);
+app.post("/auth/logout", validateToken, logout);
 
-app.post("/visit", async (req: Request, res: Response) => {
-  await db
-    .insert(visits)
-    .values({ time: new Date().toISOString() });
-
-  const results = await db
-    .select({ count: count() })
-    .from(visits);
-  res.json(`${results[0].count}`);
-});
- 
 app.listen(PORT, () => {
   console.log(`Server is running at http://localhost:${PORT}`);
 });

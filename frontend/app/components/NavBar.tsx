@@ -8,6 +8,7 @@ import {usePathname} from "next/navigation";
 import React from "react";
 import NextLink from "next/link";
 import {navData} from "@/app/data";
+import LogoutButton from '@/app/components/LogoutButton';
 
 
 interface NavProps {
@@ -56,7 +57,7 @@ export default function NavBar() {
             <NavItem title={text} navigateTo={href} key={idx}/>
           ))}
         </Stack>
-        <LogoutIcon width={25} height={25} sx={{color: pink[500]}}/>
+        <LogoutButton />
       </Stack>
     </Stack>
   </Sheet>)
