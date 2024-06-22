@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import sharp from "sharp";
 import ThemeRegistry from "@/app/ThemeRegistry";
 
 const inter = Inter({ subsets: ["latin"] });
