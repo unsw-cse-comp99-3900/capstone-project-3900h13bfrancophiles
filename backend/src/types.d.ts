@@ -1,6 +1,7 @@
 // File for utility types
 import { Request, Response } from 'express';
-import { Send } from 'express-serve-static-core';
+import { ParamsDictionary, Send } from 'express-serve-static-core';
+import internal from 'stream';
 
 export type UserGroup = "admin" | "cse-staff" | "hdr" | "other";
 
@@ -58,3 +59,8 @@ export interface TypedGETRequest<Q = Empty, P = Empty> extends Request<P,any,any
 export interface TypedResponse<T = Empty> extends Response {
   json: Send<T | { error: string }, this>;
 }
+
+/**
+ * Booking typed response
+ */
+export type Booking = { id: number, zid: number, starttime: string , endtime: string, spaceid: int, currentstatus: string };

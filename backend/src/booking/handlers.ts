@@ -3,25 +3,19 @@
 import { db } from '../index'
 import { sql } from "drizzle-orm"
 import { booking } from '../../drizzle/schema';
-import { TypedRequest, TypedResponse, DateTimeRange } from '../types';
+import { TypedRequest, TypedResponse, DateTimeRange, Booking } from '../types';
 import typia from 'typia';
 
 export async function currentBookings(
   req: TypedRequest,
-  res: TypedResponse,
+  res: TypedResponse<{ bookings: Booking[] }>,
 ) {
   try {
     const zid = req.token.user;
     const currentTime = new Date().toISOString();
 
     const currentBookings = await db
-      .select({
-        id: booking.id,
-        starttime: booking.starttime,
-        endttime: booking.endtime,
-        spaceId: booking.spaceid,
-        currentStatus: booking.currentstatus
-      })
+      .select()
       .from(booking)
       .where(
         sql`${booking.starttime} < ${currentTime} AND ${booking.endtime} > ${currentTime} AND ${booking.zid} = ${zid}`
@@ -35,20 +29,14 @@ export async function currentBookings(
 
 export async function upcomingBookings(
   req: TypedRequest,
-  res: TypedResponse,
+  res: TypedResponse<{ bookings: Booking[] }>,
 ) {
   try {
     const zid = req.token.user;
     const currentTime = new Date().toISOString();
 
     const currentBookings = await db
-      .select({
-        id: booking.id,
-        starttime: booking.starttime,
-        endttime: booking.endtime,
-        spaceId: booking.spaceid,
-        currentStatus: booking.currentstatus
-      })
+      .select()
       .from(booking)
       .where(
         sql`${booking.starttime} > ${currentTime} AND ${booking.zid} = ${zid}`
@@ -62,7 +50,7 @@ export async function upcomingBookings(
 
 export async function pastBookings(
   req: TypedRequest<DateTimeRange>,
-  res: TypedResponse,
+  res: TypedResponse<{ bookings: Booking[] }>,
 ) {
   try {
     if (!typia.is<DateTimeRange>(req.body)) {
@@ -74,13 +62,7 @@ export async function pastBookings(
     const end = req.body.end;
 
     const currentBookings = await db
-      .select({
-        id: booking.id,
-        starttime: booking.starttime,
-        endttime: booking.endtime,
-        spaceId: booking.spaceid,
-        currentStatus: booking.currentstatus
-      })
+      .select()
       .from(booking)
       .where(
         sql`${booking.starttime} <= ${end} AND ${booking.endtime} >= ${start} AND ${booking.zid} = ${zid}`
