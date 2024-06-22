@@ -1,6 +1,6 @@
 'use client';
 
-import FloorPlan from "@/app/components/FloorPlan";
+import FloorPlanViewer from "@/app/components/FloorPlanViewer";
 import LevelSelectFooter from "@/app/components/LevelSelectFooter";
 import { Stack } from "@mui/joy";
 import * as React from 'react';
@@ -17,7 +17,7 @@ export default function desks() {
             direction: "column",
             justifyContent: "space-between",
         }}>
-            <FloorPlan />
+            <FloorPlanViewer activeLevel={activeLevel}/>
             <LevelSelectFooter levelData={levelData} activeLevel={activeLevel} setActiveLevel={setActiveLevel} />
         </Stack>
     )
