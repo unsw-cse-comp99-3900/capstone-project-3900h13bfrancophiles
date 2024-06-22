@@ -33,7 +33,7 @@ function NavItem({title, navigateTo}: NavProps) {
     >
       <Typography
         level="h3"
-        fontSize={14}
+        fontSize={16}
         margin="auto"
         px={5}
         sx={{textAlign: "center"}}>
