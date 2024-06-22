@@ -24,7 +24,7 @@ export default function CurrentBookingCard({room, time}: CurrentBookingProps) {
                     sx={{borderRadius: '20px', width: '130px', fontSize: {xs: '11pt', sm: '13pt'}}}>
               Check in
             </Button>
-            <Button size="md" color="neutral"
+            <Button size="md" color="primary"
                     sx={{borderRadius: '20px', width: '180px', fontSize: {xs: '11pt', sm: '13pt'}}}>
               Contact Support
             </Button>
