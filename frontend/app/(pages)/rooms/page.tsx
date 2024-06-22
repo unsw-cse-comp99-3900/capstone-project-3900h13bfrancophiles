@@ -3,7 +3,7 @@
 import RoomCard from "@/app/components/roomCard";
 import SearchIcon from "@mui/icons-material/Search";
 import FilterListIcon from "@mui/icons-material/FilterList";
-import SwapVertIcon from '@mui/icons-material/SwapVert';
+import SwapVertIcon from "@mui/icons-material/SwapVert";
 import * as React from "react";
 import {
   Box,
@@ -15,69 +15,109 @@ import {
   Option,
   Modal,
   ModalDialog,
-  TextField,
+  Stack,
 } from "@mui/joy";
+
+interface FilterOption {
+  value: string;
+  label: string;
+}
+
+const FilterControl = ({
+  label,
+  placeholder,
+  options,
+}: {
+  label: string;
+  placeholder: string;
+  options: FilterOption[];
+}) => (
+  <FormControl size="sm">
+    <FormLabel>{label}</FormLabel>
+    <Select size="sm" placeholder={placeholder}>
+      {options.map((option) => (
+        <Option key={option.value} value={option.value}>
+          {option.label}
+        </Option>
+      ))}
+    </Select>
+  </FormControl>
+);
+
+// TODO: replace with real data, this is just placeholder till an endpoint to pull data from is made
+const rooms = [
+  {
+    id: "1",
+    name: "K17 G02",
+    type: "Consultation Room",
+    capacity: 2,
+    available: true,
+  },
+  {
+    id: "2",
+    name: "K17 302",
+    type: "Meeting Room",
+    capacity: 10,
+    available: false,
+  },
+];
 
 const renderFilters = () => (
   <React.Fragment>
-    <FormControl size="sm">
-      <FormLabel>Type</FormLabel>
-      <Select
-        size="sm"
-        placeholder="Filter by room type"
-        slotProps={{ button: { sx: { whiteSpace: "nowrap" } } }}
-      >
-        <Option value="meeting-room">Meeting Room</Option>
-        <Option value="consult-room">Consult Room</Option>
-        <Option value="conference-room">Conference Room</Option>
-      </Select>
-    </FormControl>
-    <FormControl size="sm">
-      <FormLabel>Capacity</FormLabel>
-      <Select size="sm" placeholder="All">
-        <Option value="all">All</Option>
-        <Option value="refund">1+</Option>
-        <Option value="purchase">2+</Option>
-        <Option value="debit">3+</Option>
-        <Option value="debit">4+</Option>
-        <Option value="debit">5+</Option>
-        <Option value="debit">6+</Option>
-      </Select>
-    </FormControl>
+    <FilterControl
+      label="Type"
+      placeholder="Filter by room type"
+      options={[
+        { value: "meeting-room", label: "Meeting Room" },
+        { value: "consult-room", label: "Consult Room" },
+        { value: "conference-room", label: "Conference Room" },
+      ]}
+    />
+    <FilterControl
+      label="Capacity"
+      placeholder="All"
+      options={[
+        { value: "all", label: "All" },
+        { value: "1", label: "1+" },
+        { value: "2", label: "2+" },
+        { value: "3", label: "3+" },
+        { value: "4", label: "4+" },
+        { value: "5", label: "5+" },
+        { value: "6", label: "6+" },
+      ]}
+    />
   </React.Fragment>
 );
 
 export default function Rooms() {
   const [filtersOpen, setFiltersOpen] = React.useState(false);
-	const [sort, setSort] = React.useState(false);
-  const [date, setDate] = React.useState(new Date().toISOString().split('T')[0].toString());
+  const [sort, setSort] = React.useState(false);
+  const [date, setDate] = React.useState(
+    new Date().toISOString().split("T")[0].toString()
+  );
 
   const toggleFilters = () => {
     setFiltersOpen(!filtersOpen);
   };
 
-	const toggleSort = () => {
-		setSort(!sort);
-	}
+  const toggleSort = () => {
+    setSort(!sort);
+  };
 
   return (
     <>
-		<h1>Rooms</h1>
-      <Box
+      <h1>Rooms</h1>
+      <Stack
         className="SearchAndFilters"
         sx={{
           borderRadius: "sm",
-          py: 2,
-          display: { xs: "none", sm: "flex" },
-          flexWrap: "nowrap",
+          flexWrap: "wrap",
           gap: 1.5,
-          "& > *": {
-            minWidth: { xs: "120px", md: "160px" },
-          },
           alignItems: "center",
+          flexDirection: "row",
         }}
       >
-				{/* TODO: Make this actually search and apply the filter */}
+        {/* TODO: Make this actually search and apply the filter */}
         <FormControl sx={{ flex: 2 }} size="sm">
           <Input
             size="sm"
@@ -90,7 +130,9 @@ export default function Rooms() {
             type="date"
             defaultValue={date}
             onChange={(event) => {
-              const d = new Date(event.target.value).toISOString().split('T')[0];
+              const d = new Date(event.target.value)
+                .toISOString()
+                .split("T")[0];
               setDate(d);
             }}
           />
@@ -99,8 +141,7 @@ export default function Rooms() {
           <Box sx={{ display: "flex", gap: 2 }}>
             <Input
               type="time"
-							defaultValue=""
-
+              defaultValue=""
               size="sm"
               sx={{ width: "100%" }}
             />
@@ -122,8 +163,8 @@ export default function Rooms() {
         >
           Filter
         </Button>
-				{/* TODO: Make this actually apply sort */}
-				<Button
+        {/* TODO: Make this actually apply sort */}
+        <Button
           startDecorator={<SwapVertIcon />}
           variant="soft"
           color="neutral"
@@ -132,7 +173,7 @@ export default function Rooms() {
         >
           Sort
         </Button>
-      </Box>
+      </Stack>
 
       <Modal
         open={filtersOpen}
@@ -170,7 +211,9 @@ export default function Rooms() {
         </ModalDialog>
       </Modal>
 
-      <RoomCard />
+      {rooms.map((room) => (
+        <RoomCard key={room.id} room={room} />
+      ))}
     </>
   );
 }
