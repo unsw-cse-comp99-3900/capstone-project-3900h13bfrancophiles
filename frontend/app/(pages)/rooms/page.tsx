@@ -62,9 +62,9 @@ const rooms = [
   },
   {
     id: "3",
-    name: "K17 302",
+    name: "K17 301",
     type: "Meeting Room",
-    capacity: 10,
+    capacity: 15,
     available: false,
   },
   {
@@ -72,7 +72,7 @@ const rooms = [
     name: "K17 G02",
     type: "Consultation Room",
     capacity: 2,
-    available: true,
+    available: false,
   },
   {
     id: "5",
