@@ -16,8 +16,8 @@ type ThemeRegistryProps = {
 // This implementation is suggested by JoyUI for working with App router
 // https://mui.com/joy-ui/integrations/next-js-app-router/
 export default function ThemeRegistry({
-                                        children
-                                      }: ThemeRegistryProps) {
+  children
+}: ThemeRegistryProps) {
 
   const theme = extendTheme({})
 
