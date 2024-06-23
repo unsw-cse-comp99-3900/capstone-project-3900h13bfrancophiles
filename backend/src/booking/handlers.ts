@@ -1,9 +1,9 @@
 // Booking endpoint handlers
 
 import { db } from '../index'
-import { sql } from "drizzle-orm"
+import { sql, count } from "drizzle-orm"
 import { booking } from '../../drizzle/schema';
-import { TypedRequest, TypedResponse, DateTimeRange, Booking } from '../types';
+import { TypedRequest, TypedResponse, DateTimeRange, Pagination, Booking } from '../types';
 import typia from 'typia';
 
 export async function currentBookings(
@@ -48,7 +48,53 @@ export async function upcomingBookings(
   }
 }
 
+// Need tests for pagination
 export async function pastBookings(
+  req: TypedRequest<Pagination>,
+  res: TypedResponse<{ bookings: Booking[];  total: number}>,
+) {
+  try {
+    if (!typia.is<Pagination>(req.body)) {
+      res.status(400).json({ error: "Invalid input" });
+      return;
+    }
+
+    const zid = req.token.user;
+    const page = req.body.page;
+    const limit = req.body.limit;
+    const offset = (page - 1) * limit;
+
+    if (isNaN(page) || isNaN(limit) || page < 1 || limit < 1) {
+      res.status(400).json({ error: "Invalid pagination parameters" });
+      return;
+    }
+
+    const totalBookingsCount = await db
+      .select({ count: count() })
+      .from(booking)
+      .where(
+        sql`${booking.zid} = ${zid}`
+      );
+
+    const pastBookings = await db
+      .select()
+      .from(booking)
+      .where(
+        sql`${booking.zid} = ${zid}`
+      )
+      .orderBy(
+        sql`${booking.starttime} DESC`
+      )
+      .limit(limit)
+      .offset(offset);
+
+    res.json({ bookings: pastBookings, total: totalBookingsCount[0].count });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch past bookings' });
+  }
+}
+
+export async function rangeOfBookings(
   req: TypedRequest<DateTimeRange>,
   res: TypedResponse<{ bookings: Booking[] }>,
 ) {

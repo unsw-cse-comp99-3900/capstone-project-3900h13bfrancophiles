@@ -19,6 +19,11 @@ export interface TokenPayload {
  */
 export type DateTimeRange = { start: string, end: string };
 
+/**
+ * Pagination inputs
+ */
+export type Pagination = { page: number; limit: number };
+
 // Voodoo shit to allow adding tokens to Requests
 declare global {
   namespace Express {
