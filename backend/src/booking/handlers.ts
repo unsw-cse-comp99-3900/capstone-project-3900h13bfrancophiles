@@ -48,7 +48,6 @@ export async function upcomingBookings(
   }
 }
 
-// Need tests for pagination
 export async function pastBookings(
   req: TypedRequest<Pagination>,
   res: TypedResponse<{ bookings: Booking[];  total: number}>,
