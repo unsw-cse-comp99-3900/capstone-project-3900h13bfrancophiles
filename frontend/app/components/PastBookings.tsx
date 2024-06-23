@@ -11,7 +11,9 @@ import FormLabel from '@mui/joy/FormLabel';
 import IconButton from '@mui/joy/IconButton';
 import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
-import { CheckBox } from '@mui/icons-material';
+import MenuItem from '@mui/joy/MenuItem';
+import Checkbox from '@mui/joy/Checkbox';
+import Switch from '@mui/joy/Switch';
 
 
 
@@ -27,19 +29,21 @@ export default function PastBookings() {
   }
 
   const rows = [
-    createData(1, new Date(2024, 4, 4, 17, 23, 42, 11), "ainsworth", "thesis"),
-    createData(2, new Date(2024, 4, 4, 17, 23, 42, 11), "ainsworth", "hanging out"),
-    createData(3, new Date(2025, 4, 4, 17, 23, 42, 11), "ainsworth", "giving franco a massage"),
+    createData(1, new Date(2021, 4, 1, 17, 23, 42, 11), "ainsworth", "thesis"),
+    createData(2, new Date(2022, 4, 2, 17, 23, 42, 11), "ainsworth", "hanging out"),
+    createData(3, new Date(2023, 4, 3, 17, 23, 42, 11), "ainsworth", "giving franco a massage"),
     createData(4, new Date(2024, 4, 4, 17, 23, 42, 11), "farnsworth", "wesis"),
-    createData(5, new Date(2024, 4, 4, 17, 23, 42, 11), "ainsworth", "wanging out"),
-    createData(6, new Date(2025, 4, 4, 17, 23, 42, 11), "ainsworth", "wiving franco a massage"),
-    createData(7, new Date(2024, 4, 4, 17, 23, 42, 11), "ainsworth", "wss"),
+    createData(5, new Date(2025, 4, 5, 17, 23, 42, 11), "ainsworth", "wanging out"),
+    createData(6, new Date(2026, 4, 6, 17, 23, 42, 11), "ainsworth", "wiving franco a massage"),
+    createData(7, new Date(2027, 4, 7, 17, 23, 42, 11), "ainsworth", "wss"),
   ];
+  const places = rows.map((a) => a.space).sort().filter((item, pos, ary) => !pos || item != ary[pos - 1]);
 
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
-
-  const places = rows.map((a) => a.space).sort().filter((item, pos, ary) => !pos || item != ary[pos - 1]);
+  const [selectedPlaces, setSelectedPlaces] = React.useState(places);
+  const [filteredRows, setFilteredRows] = React.useState(rows.sort((a, b) => a.time < b.time ? 1 : -1));
+  const [sortNewest, setSortNewest] = React.useState(true);
 
   const handleChangePage = (newPage: number) => {
     setPage(newPage);
@@ -62,17 +66,62 @@ export default function PastBookings() {
     return `${from}–${to} of ${count !== -1 ? count : `more than ${to}`}`;
   }
 
+  const handleChangeFilter = (event: any) => {
+    const value = event.target.value;
+    setSelectedPlaces(selectedPlaces.includes(value) ? selectedPlaces.filter(i => i != value) : [...selectedPlaces, value])
+  }
+
+  const handleChangeSort = (event: React.SyntheticEvent | null, newValue: string | null,) => {
+    setSortNewest(newValue === "newest")
+  }
+
+  React.useEffect(() => {
+    setFilteredRows(rows.filter(r => selectedPlaces.includes(r.space)).sort((a, b) => a.time < b.time ? (sortNewest ? 1 : -1) : (sortNewest ? -1 : 1)))
+  }, [selectedPlaces, sortNewest])
+
   const getLabelDisplayedRowsTo = () => {
-    if (rows.length === -1) {
+    if (filteredRows.length === -1) {
       return (page + 1) * rowsPerPage;
     }
     return rowsPerPage === -1
-      ? rows.length
-      : Math.min(rows.length, (page + 1) * rowsPerPage);
+      ? filteredRows.length
+      : Math.min(filteredRows.length, (page + 1) * rowsPerPage);
   };
 
   return (
   <Sheet>
+    <Box sx={{ width: 400, margin: "10px 0", display: "flex", gap: "5px"}}>
+      <Box sx={{ flex: 1 }}>
+        Space
+        <Select
+          sx={{ flex: 1 }}
+          placeholder="Filter by place"
+          multiple
+        >
+          {places.map((place) => (
+            <MenuItem>
+              <Checkbox
+                checked={selectedPlaces.includes(place)}
+                onChange={(event) => handleChangeFilter(event)}
+                label={place}
+                value={place}
+              />
+            </MenuItem>
+          ))}
+        </Select>
+      </Box>
+      <Box sx={{ flex: 1 }}>
+        Time
+        <Select
+          defaultValue="newest"
+          onChange={handleChangeSort}
+          sx={{ flex: 1 }}
+        >
+          <Option value="newest">Newest</Option>
+          <Option value="oldest">Oldest</Option>
+        </Select>
+      </Box>
+    </Box>
     <Table
       aria-labelledby="tableTitle"
       stickyHeader
@@ -93,76 +142,78 @@ export default function PastBookings() {
         </tr>
       </thead>
       <tbody>
-        {rows.sort((a, b) => a.time < b.time ? 1 : -1).slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => (
-          <tr key={row.id}>
-            <td>
-              <Typography level="body-xs">{row.time.toLocaleString()}</Typography>
-            </td>
-            <td>
-              <Typography level="body-xs">{row.space}</Typography>
-            </td>
-            <td>
-              <Typography level="body-xs">{row.description}</Typography>
-            </td>
-          </tr>
+        {filteredRows
+          .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+          .map((row) => (
+            <tr key={row.id}>
+              <td>
+                <Typography level="body-xs">{row.time.toLocaleString()}</Typography>
+              </td>
+              <td>
+                <Typography level="body-xs">{row.space}</Typography>
+              </td>
+              <td>
+                <Typography level="body-xs">{row.description}</Typography>
+              </td>
+            </tr>
         ))}
       </tbody>
       <tfoot>
-            <tr>
-              <td colSpan={3}>
-                <Box
-                  sx={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 2,
-                    justifyContent: 'flex-end',
-                  }}
+        <tr>
+          <td colSpan={3}>
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 2,
+                justifyContent: 'flex-end',
+              }}
+            >
+              <FormControl orientation="horizontal" size="sm">
+                <FormLabel>Rows per page:</FormLabel>
+                <Select onChange={handleChangeRowsPerPage} value={rowsPerPage}>
+                  <Option value={5}>5</Option>
+                  <Option value={10}>10</Option>
+                  <Option value={25}>25</Option>
+                </Select>
+              </FormControl>
+              <Typography textAlign="center" sx={{ minWidth: 80 }}>
+                {labelDisplayedRows({
+                  from: filteredRows.length === 0 ? 0 : page * rowsPerPage + 1,
+                  to: getLabelDisplayedRowsTo(),
+                  count: filteredRows.length === -1 ? -1 : filteredRows.length,
+                })}
+              </Typography>
+              <Box sx={{ display: 'flex', gap: 1 }}>
+                <IconButton
+                  size="sm"
+                  color="neutral"
+                  variant="outlined"
+                  disabled={page === 0}
+                  onClick={() => handleChangePage(page - 1)}
+                  sx={{ bgcolor: 'background.surface' }}
                 >
-                  <FormControl orientation="horizontal" size="sm">
-                    <FormLabel>Rows per page:</FormLabel>
-                    <Select onChange={handleChangeRowsPerPage} value={rowsPerPage}>
-                      <Option value={5}>5</Option>
-                      <Option value={10}>10</Option>
-                      <Option value={25}>25</Option>
-                    </Select>
-                  </FormControl>
-                  <Typography textAlign="center" sx={{ minWidth: 80 }}>
-                    {labelDisplayedRows({
-                      from: rows.length === 0 ? 0 : page * rowsPerPage + 1,
-                      to: getLabelDisplayedRowsTo(),
-                      count: rows.length === -1 ? -1 : rows.length,
-                    })}
-                  </Typography>
-                  <Box sx={{ display: 'flex', gap: 1 }}>
-                    <IconButton
-                      size="sm"
-                      color="neutral"
-                      variant="outlined"
-                      disabled={page === 0}
-                      onClick={() => handleChangePage(page - 1)}
-                      sx={{ bgcolor: 'background.surface' }}
-                    >
-                      <KeyboardArrowLeftIcon />
-                    </IconButton>
-                    <IconButton
-                      size="sm"
-                      color="neutral"
-                      variant="outlined"
-                      disabled={
-                        rows.length !== -1
-                          ? page >= Math.ceil(rows.length / rowsPerPage) - 1
-                          : false
-                      }
-                      onClick={() => handleChangePage(page + 1)}
-                      sx={{ bgcolor: 'background.surface' }}
-                    >
-                      <KeyboardArrowRightIcon />
-                    </IconButton>
-                  </Box>
-                </Box>
-              </td>
-            </tr>
-          </tfoot>
+                  <KeyboardArrowLeftIcon />
+                </IconButton>
+                <IconButton
+                  size="sm"
+                  color="neutral"
+                  variant="outlined"
+                  disabled={
+                    filteredRows.length !== -1
+                      ? page >= Math.ceil(filteredRows.length / rowsPerPage) - 1
+                      : false
+                  }
+                  onClick={() => handleChangePage(page + 1)}
+                  sx={{ bgcolor: 'background.surface' }}
+                >
+                  <KeyboardArrowRightIcon />
+                </IconButton>
+              </Box>
+            </Box>
+          </td>
+        </tr>
+      </tfoot>
 
     </Table>
   </Sheet>
