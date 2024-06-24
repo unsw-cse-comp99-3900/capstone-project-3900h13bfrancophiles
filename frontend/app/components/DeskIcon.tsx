@@ -2,23 +2,34 @@
 
 import React from 'react';
 import Image from 'next/image';
+import { KeepScale } from 'react-zoom-pan-pinch';
 
 interface DeskIconProps {
-  id: number;
+  id: number,
+  x: number,
+  y: number
 }
 
-const DeskIcon = ({ id }: DeskIconProps) => {
+const DeskIcon = ({ id, x, y }: DeskIconProps) => {
   const deskIconStyle: React.CSSProperties = {
-    width: "40px",
-    height: "40px",
     borderRadius: "50%",
     cursor: "pointer",
+    zIndex: 2
   };
 
   return (
-    <div style={{...deskIconStyle}} onClick={() => alert(`Desk ${id} clicked!`)}>
-        <Image src="/deskicon.svg" fill alt="desk"></Image>
-    </div>
+    <KeepScale
+      onClick={() => alert(`Desk ${id} clicked!`)}
+      style= {{
+      margin: 0,
+      padding: 0,
+      position: "absolute",
+      transform: "translate(-50%, -50%)",
+      left: `${x}%`,
+      top: `${y}%`,
+    }}>
+      <Image style={deskIconStyle} src="/deskicon.svg" width={40} height={40} alt="desk" ></Image>
+    </KeepScale>
   );
 };
 
