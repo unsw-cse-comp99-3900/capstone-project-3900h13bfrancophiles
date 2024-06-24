@@ -8,7 +8,6 @@ interface DeskIconProps {
 }
 
 const DeskIcon = ({ id }: DeskIconProps) => {
-
   const deskIconStyle: React.CSSProperties = {
     width: "40px",
     height: "40px",

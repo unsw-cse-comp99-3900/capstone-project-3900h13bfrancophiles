@@ -19,7 +19,14 @@ export const deskData = [
       { id: 3, x: "30%", y: "34.8%" },
       { id: 4, x: "30%", y: "39.1%" },
       { id: 5, x: "30%", y: "43.4%" },
-      ]
-
+    ]
+  },
+  {
+    level: "K17L4",
+    desks: []
+  },
+  {
+    level: "K17L5",
+    desks: []
   }
 ];

@@ -55,8 +55,8 @@ export default function Login() {
 
   return (
     <Stack justifyContent="center" alignItems="center" height="100vh" spacing={4}>
-      <AspectRatio ratio="10/3" sx={{ width: { xs: 300, sm: 380 } }} >
-        <Image src="/logoFull.svg" alt="roomalloc logo" fill />
+      <AspectRatio variant="plain" ratio="10/3" sx={{ backgroundColor: 'transparent', width: { xs: 300, sm: 380 } }} >
+        <Image src="/roomallocfull.svg" alt="roomalloc logo" fill />
       </AspectRatio>
       <Sheet variant='outlined' sx={{ borderRadius: "md", boxShadow: "md" }}>
         <Stack spacing={2} p={3} width={{ xs: 300, sm: 380 }}>
