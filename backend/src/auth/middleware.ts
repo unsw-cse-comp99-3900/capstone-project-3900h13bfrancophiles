@@ -4,7 +4,7 @@ import * as jwt from 'jsonwebtoken';
 import typia from "typia";
 
 import { AUTH_SECRET } from '../../config';
-import { TokenPayload, TypedRequest } from '../types';
+import { TokenPayload } from '../types';
 import { tokenIsActive } from './auth';
 
 // Middleware implementation
