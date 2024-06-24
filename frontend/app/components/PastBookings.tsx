@@ -29,19 +29,19 @@ export default function PastBookings() {
   }
 
   const rows = [
-    createData(1, new Date(2021, 4, 1, 17, 23, 42, 11), "ainsworth", "thesis"),
-    createData(2, new Date(2022, 4, 2, 17, 23, 42, 11), "ainsworth", "hanging out"),
-    createData(3, new Date(2023, 4, 3, 17, 23, 42, 11), "ainsworth", "giving franco a massage"),
-    createData(4, new Date(2024, 4, 4, 17, 23, 42, 11), "farnsworth", "wesis"),
-    createData(5, new Date(2025, 4, 5, 17, 23, 42, 11), "ainsworth", "wanging out"),
-    createData(6, new Date(2026, 4, 6, 17, 23, 42, 11), "ainsworth", "wiving franco a massage"),
-    createData(7, new Date(2027, 4, 7, 17, 23, 42, 11), "ainsworth", "wss"),
+    createData(1, new Date(2021, 4, 1, 17, 23, 42, 11), "K17 G03", "Thesis"),
+    createData(2, new Date(2022, 4, 2, 17, 23, 42, 11), "K17 G03", "Gaming"),
+    createData(3, new Date(2023, 4, 3, 17, 23, 42, 11), "K17 G02", "Society event"),
+    createData(4, new Date(2024, 4, 4, 17, 23, 42, 11), "K17 G02", "Working"),
+    createData(5, new Date(2025, 4, 5, 17, 23, 42, 11), "K17 G03", "Assignment"),
+    createData(6, new Date(2026, 4, 6, 17, 23, 42, 11), "K17 G03", "Filming a video"),
+    createData(7, new Date(2027, 4, 7, 17, 23, 42, 11), "K17 G02", "Class"),
   ];
-  const places = rows.map((a) => a.space).sort().filter((item, pos, ary) => !pos || item != ary[pos - 1]);
+  const spaces = rows.map((a) => a.space).sort().filter((item, pos, ary) => !pos || item != ary[pos - 1]);
 
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
-  const [selectedPlaces, setSelectedPlaces] = React.useState(places);
+  const [selectedSpaces, setSelectedSpaces] = React.useState(spaces);
   const [filteredRows, setFilteredRows] = React.useState(rows.sort((a, b) => a.time < b.time ? 1 : -1));
   const [sortNewest, setSortNewest] = React.useState(true);
 
@@ -68,7 +68,7 @@ export default function PastBookings() {
 
   const handleChangeFilter = (event: any) => {
     const value = event.target.value;
-    setSelectedPlaces(selectedPlaces.includes(value) ? selectedPlaces.filter(i => i != value) : [...selectedPlaces, value])
+    setSelectedSpaces(selectedSpaces.includes(value) ? selectedSpaces.filter(i => i != value) : [...selectedSpaces, value])
   }
 
   const handleChangeSort = (event: React.SyntheticEvent | null, newValue: string | null,) => {
@@ -76,8 +76,8 @@ export default function PastBookings() {
   }
 
   React.useEffect(() => {
-    setFilteredRows(rows.filter(r => selectedPlaces.includes(r.space)).sort((a, b) => a.time < b.time ? (sortNewest ? 1 : -1) : (sortNewest ? -1 : 1)))
-  }, [selectedPlaces, sortNewest])
+    setFilteredRows(rows.filter(r => selectedSpaces.includes(r.space)).sort((a, b) => a.time < b.time ? (sortNewest ? 1 : -1) : (sortNewest ? -1 : 1)))
+  }, [selectedSpaces, sortNewest])
 
   const getLabelDisplayedRowsTo = () => {
     if (filteredRows.length === -1) {
@@ -95,16 +95,16 @@ export default function PastBookings() {
         Space
         <Select
           sx={{ flex: 1 }}
-          placeholder="Filter by place"
+          placeholder="Filter by space"
           multiple
         >
-          {places.map((place) => (
+          {spaces.map((space) => (
             <MenuItem>
               <Checkbox
-                checked={selectedPlaces.includes(place)}
+                checked={selectedSpaces.includes(space)}
                 onChange={(event) => handleChangeFilter(event)}
-                label={place}
-                value={place}
+                label={space}
+                value={space}
               />
             </MenuItem>
           ))}
@@ -146,8 +146,8 @@ export default function PastBookings() {
           .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
           .map((row) => (
             <tr key={row.id}>
-              <td>
-                <Typography level="body-xs">{row.time.toLocaleString()}</Typography>
+              <td >
+                <Typography level="body-xs" suppressHydrationWarning>{row.time.toLocaleString()}</Typography>
               </td>
               <td>
                 <Typography level="body-xs">{row.space}</Typography>
