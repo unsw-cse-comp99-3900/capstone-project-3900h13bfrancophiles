@@ -1,6 +1,6 @@
 // File for utility types
 import { Request, Response } from 'express';
-import { ParamsDictionary, Send } from 'express-serve-static-core';
+import { Send } from 'express-serve-static-core';
 import internal from 'stream';
 
 export type UserGroup = "admin" | "cse-staff" | "hdr" | "other";
@@ -13,16 +13,6 @@ export interface TokenPayload {
   user: number, // zid
   group: UserGroup,
 }
-
-/**
- * String datetime range
- */
-export type DateTimeRange = { start: string, end: string };
-
-/**
- * Pagination inputs
- */
-export type Pagination = { page: number; limit: number };
 
 // Voodoo shit to allow adding tokens to Requests
 declare global {

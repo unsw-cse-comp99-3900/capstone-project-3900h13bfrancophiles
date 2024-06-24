@@ -3,8 +3,8 @@
 import { db } from '../index'
 import { sql, count } from "drizzle-orm"
 import { booking } from '../../drizzle/schema';
-import { TypedRequest, TypedResponse, DateTimeRange, Pagination, Booking } from '../types';
-import typia from 'typia';
+import { TypedRequest, TypedResponse, Booking } from '../types';
+import typia, { tags } from "typia";
 
 export async function currentBookings(
   req: TypedRequest,
@@ -48,12 +48,18 @@ export async function upcomingBookings(
   }
 }
 
+
+interface IPagination {
+  page: number & tags.Minimum<1>;
+  limit: number & tags.Minimum<1>;
+}
+
 export async function pastBookings(
-  req: TypedRequest<Pagination>,
+  req: TypedRequest<IPagination>,
   res: TypedResponse<{ bookings: Booking[];  total: number}>,
 ) {
   try {
-    if (!typia.is<Pagination>(req.body)) {
+    if (!typia.is<IPagination>(req.body) ) {
       res.status(400).json({ error: "Invalid input" });
       return;
     }
@@ -62,11 +68,6 @@ export async function pastBookings(
     const page = req.body.page;
     const limit = req.body.limit;
     const offset = (page - 1) * limit;
-
-    if (isNaN(page) || isNaN(limit) || page < 1 || limit < 1) {
-      res.status(400).json({ error: "Invalid pagination parameters" });
-      return;
-    }
 
     const totalBookingsCount = await db
       .select({ count: count() })
@@ -94,23 +95,23 @@ export async function pastBookings(
 }
 
 export async function rangeOfBookings(
-  req: TypedRequest<DateTimeRange>,
+  req: TypedRequest<{ datetimeStart: string, datetimeEnd: string }>,
   res: TypedResponse<{ bookings: Booking[] }>,
 ) {
   try {
-    if (!typia.is<DateTimeRange>(req.body)) {
+    if (!typia.is<{ datetimeStart: string, datetimeEnd: string }>(req.body)) {
       res.status(400).json({ error: "Invalid input" });
       return;
     }
     const zid = req.token.user;
-    const start = req.body.start;
-    const end = req.body.end;
+    const datetimeStart = req.body.datetimeStart;
+    const datetimeEnd = req.body.datetimeEnd;
 
     const currentBookings = await db
       .select()
       .from(booking)
       .where(
-        sql`${booking.starttime} <= ${end} AND ${booking.endtime} >= ${start} AND ${booking.zid} = ${zid}`
+        sql`${booking.starttime} <= ${datetimeEnd} AND ${booking.endtime} >= ${datetimeStart} AND ${booking.zid} = ${zid}`
       );
 
     res.json({ bookings: currentBookings });
