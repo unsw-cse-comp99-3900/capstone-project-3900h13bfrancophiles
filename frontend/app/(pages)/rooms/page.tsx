@@ -259,15 +259,11 @@ export default function Rooms() {
       </Modal>
       <Stack
         direction="row"
-        sx={{
-          flexWrap: "wrap",
-          gap: 3,
-          justifyContent: "left",
-          paddingTop: "20px",
-          alignItems: "center",
-          marginLeft: "auto",
-          marginRight: "auto",
-        }}
+        justifyContent="left"
+        gap={3}
+        flexWrap="wrap"
+        alignItems="center"
+        paddingTop="20px"
       >
         {(sort ? sortedRooms : sortedRooms.reverse()).map((room) => (
           <RoomCard key={room.id} room={room} />
