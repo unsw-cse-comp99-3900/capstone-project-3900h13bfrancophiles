@@ -59,3 +59,8 @@ export interface TypedResponse<T = Empty> extends Response {
  * Booking typed response
  */
 export type Booking = { id: number, zid: number, starttime: string , endtime: string, spaceid: int, currentstatus: string };
+
+/**
+ * Room typed response
+ */
+export type RoomAvailability = { id: number, capacity: number, roomnumber: number, usage: number, bookingstatus: string };
