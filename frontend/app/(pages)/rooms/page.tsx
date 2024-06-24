@@ -96,7 +96,7 @@ const renderFilters = () => (
       label="Type"
       placeholder="All"
       options={[
-        { value: "all", label: "All"},
+        { value: "all", label: "All" },
         { value: "meeting-room", label: "Meeting Room" },
         { value: "consult-room", label: "Consult Room" },
         { value: "conference-room", label: "Conference Room" },
@@ -149,13 +149,11 @@ export default function Rooms() {
       <h1>Rooms</h1>
       <Stack
         className="SearchAndFilters"
-        sx={{
-          borderRadius: "sm",
-          flexWrap: "wrap",
-          gap: 1.5,
-          alignItems: "center",
-          flexDirection: "row",
-        }}
+        alignItems="center"
+        direction="row"
+        flexWrap="wrap"
+        gap={2}
+        borderRadius="sm"
       >
         {/* TODO: Make this actually search and apply the filter */}
         <FormControl sx={{ flex: 2 }} size="sm">
@@ -165,7 +163,7 @@ export default function Rooms() {
             startDecorator={<SearchIcon />}
           />
         </FormControl>
-        <FormControl size="sm">
+        <Stack direction="row" gap={2} flexWrap="wrap">
           <Input
             type="date"
             defaultValue={date}
@@ -176,9 +174,7 @@ export default function Rooms() {
               setDate(d);
             }}
           />
-        </FormControl>
-        <FormControl size="sm">
-          <Box sx={{ display: "flex", gap: 2 }}>
+          <Stack direction="row">
             <Input
               type="time"
               defaultValue={startTime}
@@ -203,28 +199,27 @@ export default function Rooms() {
                 setEndTime(d);
               }}
             />
-          </Box>
-        </FormControl>
-
-        <Button
-          startDecorator={<FilterListIcon />}
-          variant="soft"
-          color="neutral"
-          size="sm"
-          onClick={toggleFilters}
-        >
-          Filter
-        </Button>
-        {/* TODO: Make this actually apply sort, it does rn something but like some affordance is probably good */}
-        <Button
-          startDecorator={<SwapVertIcon />}
-          variant="soft"
-          color="neutral"
-          size="sm"
-          onClick={toggleSort}
-        >
-          Sort
-        </Button>
+          </Stack>
+          <Button
+            startDecorator={<FilterListIcon />}
+            variant="soft"
+            color="neutral"
+            size="sm"
+            onClick={toggleFilters}
+          >
+            Filter
+          </Button>
+          {/* TODO: Make this actually apply sort, it does rn something but like some affordance is probably good */}
+          <Button
+            startDecorator={<SwapVertIcon />}
+            variant="soft"
+            color="neutral"
+            size="sm"
+            onClick={toggleSort}
+          >
+            Sort
+          </Button>
+        </Stack>
       </Stack>
 
       <Modal
