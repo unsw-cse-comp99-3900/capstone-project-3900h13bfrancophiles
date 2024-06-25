@@ -45,6 +45,7 @@ export interface TypedRequest<B = Empty, P = Empty> extends Request<P> {
 export interface TypedGETRequest<Q = Empty, P = Empty> extends Request<P,any,any,Q> {
   query: Q,
   params: P,
+  token: TokenPayload
 }
 
 /*
