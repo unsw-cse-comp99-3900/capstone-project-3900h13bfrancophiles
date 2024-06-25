@@ -1,7 +1,7 @@
 // File for utility types
 import { Request, Response } from 'express';
 import { Send } from 'express-serve-static-core';
-import internal from 'stream';
+import { tags } from 'typia';
 
 export type UserGroup = "admin" | "cse-staff" | "hdr" | "other";
 
@@ -45,6 +45,7 @@ export interface TypedRequest<B = Empty, P = Empty> extends Request<P> {
 export interface TypedGETRequest<Q = Empty, P = Empty> extends Request<P,any,any,Q> {
   query: Q,
   params: P,
+  token: TokenPayload
 }
 
 /*
@@ -64,3 +65,8 @@ export type Booking = { id: number, zid: number, starttime: string , endtime: st
  * Room typed response
  */
 export type RoomDetails = { id: number, capacity: number, roomnumber: number, usage: number };
+
+export interface IDatetimeRange {
+  datetimeStart: string & tags.Format<'date-time'>
+  datetimeEnd: string & tags.Format<'date-time'>
+}

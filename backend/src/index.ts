@@ -10,6 +10,7 @@ import { login, logout } from './auth/handlers';
 import { validateToken } from './auth/middleware';
 import { currentBookings, upcomingBookings, pastBookings, rangeOfBookings } from './booking/handlers';
 import { roomDetails } from "./spaces/handlers";
+import { spaceStatus } from './status/handlers';
 
 const pool = new Pool({
   connectionString: DATABASE_URL,
@@ -31,6 +32,7 @@ app.get("/bookings/past", validateToken, pastBookings);
 app.get("/bookings/range", validateToken, rangeOfBookings);
 
 app.get("/rooms", validateToken, roomDetails);
+app.get("/status", validateToken, spaceStatus);
 
 app.listen(PORT, () => {
   console.log(`Server is running at http://localhost:${PORT}`);
