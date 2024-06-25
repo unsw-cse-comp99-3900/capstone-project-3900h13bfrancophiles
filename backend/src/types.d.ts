@@ -63,4 +63,4 @@ export type Booking = { id: number, zid: number, starttime: string , endtime: st
 /**
  * Room typed response
  */
-export type RoomAvailability = { id: number, capacity: number, roomnumber: number, usage: number, bookingstatus: string };
+export type RoomDetails = { id: number, capacity: number, roomnumber: number, usage: number };
