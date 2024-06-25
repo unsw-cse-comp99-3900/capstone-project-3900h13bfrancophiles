@@ -15,11 +15,11 @@ export default function desks() {
                         color="neutral"
                         value={level.level}
                         sx={{
-                            height: "100%",
+                            height: "calc(100vh - 105px)",
                             padding: 0
                         }}
                     >
-                        <FloorPlanViewer activeLevel={level.level}/>
+                        <FloorPlanViewer level={level.level}/>
                     </TabPanel>
                 ))}
             <TabList underlinePlacement="top" sx={{height: 45}}>
