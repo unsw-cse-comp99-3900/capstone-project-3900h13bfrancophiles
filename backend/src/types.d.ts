@@ -61,6 +61,11 @@ export interface TypedResponse<T = Empty> extends Response {
  */
 export type Booking = { id: number, zid: number, starttime: string , endtime: string, spaceid: int, currentstatus: string };
 
+/**
+ * Room typed response
+ */
+export type RoomDetails = { id: number, capacity: number, roomnumber: number, usage: number };
+
 export interface IDatetimeRange {
   datetimeStart: string & tags.Format<'date-time'>
   datetimeEnd: string & tags.Format<'date-time'>
