@@ -11,6 +11,11 @@ interface DeskIconProps {
 }
 
 const DeskIcon = ({ id, x, y }: DeskIconProps) => {
+  const deskIconPosStyle: React.CSSProperties = {
+    position: "absolute",
+    transform: "translate(-50%, -50%)",
+    zIndex: 2
+  };
   const deskIconStyle: React.CSSProperties = {
     borderRadius: "50%",
     cursor: "pointer",
@@ -18,18 +23,21 @@ const DeskIcon = ({ id, x, y }: DeskIconProps) => {
   };
 
   return (
-    <KeepScale
+    <div
+      key={id}
+      style={{
+        ...deskIconPosStyle,
+        left: `${x}%`,
+        top: `${y}%`
+      }}
       onClick={() => alert(`Desk ${id} clicked!`)}
-      style= {{
-      margin: 0,
-      padding: 0,
-      position: "absolute",
-      transform: "translate(-50%, -50%)",
-      left: `${x}%`,
-      top: `${y}%`,
-    }}>
-      <Image style={deskIconStyle} src="/deskicon.svg" width={40} height={40} alt="desk" ></Image>
-    </KeepScale>
+    >
+      <KeepScale>
+        <div style={deskIconStyle} >
+          <Image src="/deskicon.svg" width={40} height={40} alt="desk"></Image>
+        </div>
+      </KeepScale>
+    </div>
   );
 };
 
