@@ -1,13 +1,13 @@
 // Booking endpoint handlers
 
 import { db } from '../index'
-import { sql, count } from "drizzle-orm"
+import { count, sql } from "drizzle-orm"
 import { booking } from '../../drizzle/schema';
-import { TypedRequest, TypedResponse, Booking } from '../types';
+import { Booking, IDatetimeRange, TypedGETRequest, TypedResponse } from '../types';
 import typia, { tags } from "typia";
 
 export async function currentBookings(
-  req: TypedRequest,
+  req: TypedGETRequest,
   res: TypedResponse<{ bookings: Booking[] }>,
 ) {
   try {
@@ -19,7 +19,7 @@ export async function currentBookings(
       .from(booking)
       .where(
         sql`${booking.starttime} < ${currentTime} AND ${booking.endtime} > ${currentTime} AND ${booking.zid} = ${zid}`
-      );
+    );
 
     res.json({ bookings: currentBookings });
   } catch (error) {
@@ -28,7 +28,7 @@ export async function currentBookings(
 }
 
 export async function upcomingBookings(
-  req: TypedRequest,
+  req: TypedGETRequest,
   res: TypedResponse<{ bookings: Booking[] }>,
 ) {
   try {
@@ -44,10 +44,9 @@ export async function upcomingBookings(
 
     res.json({ bookings: currentBookings });
   } catch (error) {
-    res.status(500).json({ error: 'Failed to fetch current bookings' });
+    res.status(500).json({ error: 'Failed to fetch upcoming bookings' });
   }
 }
-
 
 interface IPagination {
   page: number & tags.Minimum<1>;
@@ -55,18 +54,18 @@ interface IPagination {
 }
 
 export async function pastBookings(
-  req: TypedRequest<IPagination>,
-  res: TypedResponse<{ bookings: Booking[];  total: number}>,
+  req: TypedGETRequest<{ page: string, limit: string }>,
+  res: TypedResponse<{ bookings: Booking[];  total: number }>,
 ) {
   try {
-    if (!typia.is<IPagination>(req.body) ) {
+    if (!typia.is<IPagination>({ page: parseInt(req.query.page), limit: parseInt(req.query.limit) }) ) {
       res.status(400).json({ error: "Invalid input" });
       return;
     }
 
     const zid = req.token.user;
-    const page = req.body.page;
-    const limit = req.body.limit;
+    const page = parseInt(req.query.page);
+    const limit = parseInt(req.query.limit);
     const offset = (page - 1) * limit;
 
     const totalBookingsCount = await db
@@ -95,17 +94,17 @@ export async function pastBookings(
 }
 
 export async function rangeOfBookings(
-  req: TypedRequest<{ datetimeStart: string, datetimeEnd: string }>,
+  req: TypedGETRequest<{ datetimeStart: string, datetimeEnd: string }>,
   res: TypedResponse<{ bookings: Booking[] }>,
 ) {
   try {
-    if (!typia.is<{ datetimeStart: string, datetimeEnd: string }>(req.body)) {
+    if (!typia.is<IDatetimeRange>(req.query)) {
       res.status(400).json({ error: "Invalid input" });
       return;
     }
     const zid = req.token.user;
-    const datetimeStart = req.body.datetimeStart;
-    const datetimeEnd = req.body.datetimeEnd;
+    const datetimeStart = req.query.datetimeStart;
+    const datetimeEnd = req.query.datetimeEnd;
 
     const currentBookings = await db
       .select()
@@ -116,6 +115,6 @@ export async function rangeOfBookings(
 
     res.json({ bookings: currentBookings });
   } catch (error) {
-    res.status(500).json({ error: 'Failed to fetch past bookings' });
+    res.status(500).json({ error: 'Failed to fetch bookings' });
   }
 }
