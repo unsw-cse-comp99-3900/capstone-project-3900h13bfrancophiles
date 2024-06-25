@@ -26,7 +26,7 @@ export default function desks() {
           <FloorPlanViewer level={level.level}/>
         </TabPanel>
       ))}
-      <TabList underlinePlacement="top">
+      <TabList underlinePlacement="top" sx={{height: 45}}>
         {deskData.map((level, index) => (
           <Tab
             key={index}
