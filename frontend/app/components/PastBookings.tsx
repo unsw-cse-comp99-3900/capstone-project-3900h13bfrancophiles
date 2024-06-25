@@ -13,9 +13,6 @@ import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import MenuItem from '@mui/joy/MenuItem';
 import Checkbox from '@mui/joy/Checkbox';
-import Switch from '@mui/joy/Switch';
-
-
 
 
 export default function PastBookings() {
@@ -23,25 +20,26 @@ export default function PastBookings() {
     id: number,
     time: Date,
     space: string,
+    isRoom: boolean,
     description: string,
   ) {
-    return { id, time, space, description };
+    // Somehow concatenate space data to form space string
+    return { id, time, space, isRoom, description };
   }
 
   const rows = [
-    createData(1, new Date(2021, 4, 1, 17, 23, 42, 11), "K17 G03", "Thesis"),
-    createData(2, new Date(2022, 4, 2, 17, 23, 42, 11), "K17 G03", "Gaming"),
-    createData(3, new Date(2023, 4, 3, 17, 23, 42, 11), "K17 G02", "Society event"),
-    createData(4, new Date(2024, 4, 4, 17, 23, 42, 11), "K17 G02", "Working"),
-    createData(5, new Date(2025, 4, 5, 17, 23, 42, 11), "K17 G03", "Assignment"),
-    createData(6, new Date(2026, 4, 6, 17, 23, 42, 11), "K17 G03", "Filming a video"),
-    createData(7, new Date(2027, 4, 7, 17, 23, 42, 11), "K17 G02", "Class"),
+    createData(1, new Date(2021, 4, 1, 17, 23, 42, 11), "K17 L2 Desk 13", false ,"Thesis"),
+    createData(2, new Date(2022, 4, 2, 17, 23, 42, 11), "K17 L2 Desk 13", false, "Gaming"),
+    createData(3, new Date(2023, 4, 3, 17, 23, 42, 11), "K17 Meeting Room G02", true, "Society event"),
+    createData(4, new Date(2024, 4, 4, 17, 23, 42, 11), "K17 L2 Desk 13", false, "Working"),
+    createData(5, new Date(2025, 4, 5, 17, 23, 42, 11), "K17 Meeting Room G02", true, "Assignment"),
+    createData(6, new Date(2026, 4, 6, 17, 23, 42, 11), "K17 Meeting Room G02", true, "Filming a video"),
+    createData(7, new Date(2027, 4, 7, 17, 23, 42, 11), "K17 Meeting Room G02", true, "Class"),
   ];
-  const spaces = rows.map((a) => a.space).sort().filter((item, pos, ary) => !pos || item != ary[pos - 1]);
 
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
-  const [selectedSpaces, setSelectedSpaces] = React.useState(spaces);
+  const [filter, setFilter] = React.useState("all");
   const [filteredRows, setFilteredRows] = React.useState(rows.sort((a, b) => a.time < b.time ? 1 : -1));
   const [sortNewest, setSortNewest] = React.useState(true);
 
@@ -68,7 +66,7 @@ export default function PastBookings() {
 
   const handleChangeFilter = (event: any) => {
     const value = event.target.value;
-    setSelectedSpaces(selectedSpaces.includes(value) ? selectedSpaces.filter(i => i != value) : [...selectedSpaces, value])
+    setFilter(value)
   }
 
   const handleChangeSort = (event: React.SyntheticEvent | null, newValue: string | null,) => {
@@ -76,8 +74,10 @@ export default function PastBookings() {
   }
 
   React.useEffect(() => {
-    setFilteredRows(rows.filter(r => selectedSpaces.includes(r.space)).sort((a, b) => a.time < b.time ? (sortNewest ? 1 : -1) : (sortNewest ? -1 : 1)))
-  }, [selectedSpaces, sortNewest])
+    setFilteredRows(rows
+      .filter(r => true) // no point in having filter
+      .sort((a, b) => a.time < b.time ? (sortNewest ? 1 : -1) : (sortNewest ? -1 : 1)))
+  }, [filter, sortNewest])
 
   const getLabelDisplayedRowsTo = () => {
     if (filteredRows.length === -1) {
@@ -94,20 +94,13 @@ export default function PastBookings() {
       <Box sx={{ flex: 1 }}>
         Space
         <Select
-          sx={{ flex: 1 }}
+          defaultValue="all"
           placeholder="Filter by space"
-          multiple
+          onChange={handleChangeFilter}
         >
-          {spaces.map((space) => (
-            <MenuItem>
-              <Checkbox
-                checked={selectedSpaces.includes(space)}
-                onChange={(event) => handleChangeFilter(event)}
-                label={space}
-                value={space}
-              />
-            </MenuItem>
-          ))}
+          <Option value="all">All</Option>
+          <Option value="rooms">Rooms</Option>
+          <Option value="desks">Desks</Option>
         </Select>
       </Box>
       <Box sx={{ flex: 1 }}>
@@ -115,7 +108,6 @@ export default function PastBookings() {
         <Select
           defaultValue="newest"
           onChange={handleChangeSort}
-          sx={{ flex: 1 }}
         >
           <Option value="newest">Newest</Option>
           <Option value="oldest">Oldest</Option>
