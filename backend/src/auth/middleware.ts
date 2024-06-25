@@ -1,14 +1,14 @@
 // Authentication and authorisation middleware
-import { Response, NextFunction } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import * as jwt from 'jsonwebtoken';
 import typia from "typia";
 
 import { AUTH_SECRET } from '../../config';
-import { TokenPayload, TypedRequest } from '../types';
+import { TokenPayload } from '../types';
 import { tokenIsActive } from './auth';
 
 // Middleware implementation
-export function validateToken(req: TypedRequest, res: Response, next: NextFunction) {
+export function validateToken(req: Request, res: Response, next: NextFunction) {
   if (!req.headers.authorization) {
     res.status(401).json({ error: "No token provided" });
     return;
