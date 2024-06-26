@@ -1,8 +1,10 @@
+import PastBookings from "@/app/components/PastBookings";
 import {Stack, Typography} from "@mui/joy";
 import CurrentBookingCard from "@/app/components/CurrentBookingCard";
 
 export default function Dashboard() {
-  return (<Stack>
+  return (
+    <Stack>
       <Typography level="h1">
         My Dashboard
       </Typography>
@@ -15,5 +17,10 @@ export default function Dashboard() {
         <CurrentBookingCard room='K17 G02 - Consultation Room' time='7:30 PM'/>
         <CurrentBookingCard room='K17 G02 - Consultation Room' time='7:30 PM'/>
       </Stack>
-    </Stack>)
+      <Typography level="h2" mt={2}>
+        Past Bookings
+      </Typography>
+      <PastBookings/>
+    </Stack>
+  )
 }
