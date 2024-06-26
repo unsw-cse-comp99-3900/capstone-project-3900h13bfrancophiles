@@ -1,9 +1,9 @@
-import { Chip } from "@mui/joy"
+import { Chip } from "@mui/joy";
 
 interface BookingStatusPillProps {
-  status: string
+  status: string;
 }
-export default function BookingStatusPill({status}: BookingStatusPillProps) {
+export default function BookingStatusPill({ status }: BookingStatusPillProps) {
   let color: "success" | "warning" | "danger" = "warning";
   if (status === "Accepted") {
     color = "success";
@@ -11,11 +11,8 @@ export default function BookingStatusPill({status}: BookingStatusPillProps) {
     color = "danger";
   }
   return (
-    <Chip
-      color={color}
-      variant="soft"
-    >
+    <Chip color={color} variant="soft">
       {status}
     </Chip>
-  )
+  );
 }
