@@ -17,14 +17,6 @@ export default function Dashboard() {
             room="K17 G02 - Consultation Room"
             time="7:30 PM"
           />
-          <CurrentBookingCard
-            room="K17 G02 - Consultation Room"
-            time="7:30 PM"
-          />
-          <CurrentBookingCard
-            room="K17 G02 - Consultation Room"
-            time="7:30 PM"
-          />
         </Stack>
       </Box>
       <Box>
