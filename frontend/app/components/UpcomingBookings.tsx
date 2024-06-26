@@ -150,7 +150,7 @@ export default function UpcomingBookings() {
     event: React.SyntheticEvent | null,
     newValue: string | null
   ) => {
-    setSortNewest(newValue === "newest");
+    setSortNewest(newValue === "soonest");
   };
 
   React.useEffect(() => {
