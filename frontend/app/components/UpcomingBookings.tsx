@@ -1,22 +1,20 @@
-'use client'
-import * as React from 'react';
-import Table from '@mui/joy/Table';
-import Typography from '@mui/joy/Typography';
-import Box from '@mui/joy/Box';
-import Select from '@mui/joy/Select';
-import Option from '@mui/joy/Option';
-import FormControl from '@mui/joy/FormControl';
-import FormLabel from '@mui/joy/FormLabel';
-import IconButton from '@mui/joy/IconButton';
-import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
-import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
-import DeleteIcon from '@mui/icons-material/Delete';
-import EditIcon from '@mui/icons-material/Edit';
+"use client";
+import * as React from "react";
+import Table from "@mui/joy/Table";
+import Typography from "@mui/joy/Typography";
+import Box from "@mui/joy/Box";
+import Select from "@mui/joy/Select";
+import Option from "@mui/joy/Option";
+import FormControl from "@mui/joy/FormControl";
+import FormLabel from "@mui/joy/FormLabel";
+import IconButton from "@mui/joy/IconButton";
+import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
+import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
+import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
 
-
-import {Sheet, Stack} from "@mui/joy";
+import { Sheet, Stack } from "@mui/joy";
 import BookingStatusPill from "@/app/components/BookingStatusPill";
-
 
 export default function UpcomingBookings() {
   function createData(
@@ -26,28 +24,85 @@ export default function UpcomingBookings() {
     endTime: Date,
     space: string,
     isRoom: boolean,
-    description: string,
+    description: string
   ) {
     // Somehow concatenate space data to form space string
     return { id, status, startTime, endTime, space, isRoom, description };
   }
 
   const rows = [
-    createData(1, "Pending", new Date(2021, 4, 1, 17, 23, 42, 11), new Date(2021, 4, 1, 18, 23, 42, 11),  "K17 L2 Desk 13", false ,"Thesis"),
-    createData(2, "Pending", new Date(2022, 4, 2, 17, 23, 42, 11), new Date(2021, 4, 1, 18, 23, 42, 11), "K17 L2 Desk 13", false, "Gaming"),
-    createData(3, "Declined", new Date(2023, 4, 3, 17, 23, 42, 11), new Date(2021, 4, 1, 18, 23, 42, 11), "K17 Meeting Room G02", true, "Society event"),
-    createData(4, "Accepted", new Date(2024, 4, 4, 17, 23, 42, 11), new Date(2021, 4, 1, 18, 23, 42, 11), "K17 L2 Desk 13", false, "Working"),
-    createData(5, "Pending", new Date(2025, 4, 5, 17, 23, 42, 11), new Date(2021, 4, 1, 18, 23, 42, 11), "K17 Meeting Room G02", true, "Assignment"),
-    createData(6, "Accepted", new Date(2026, 4, 6, 17, 23, 42, 11), new Date(2021, 4, 1, 18, 23, 42, 11), "K17 Meeting Room G02", true, "Filming a video"),
-    createData(7, "Accepted", new Date(2027, 4, 7, 17, 23, 42, 11), new Date(2021, 4, 1, 18, 23, 42, 11), "K17 Meeting Room G02", true, "Class"),
+    createData(
+      1,
+      "Pending",
+      new Date(2021, 4, 1, 17, 23, 42, 11),
+      new Date(2021, 4, 1, 18, 23, 42, 11),
+      "K17 L2 Desk 13",
+      false,
+      "Thesis"
+    ),
+    createData(
+      2,
+      "Pending",
+      new Date(2022, 4, 2, 17, 23, 42, 11),
+      new Date(2021, 4, 1, 18, 23, 42, 11),
+      "K17 L2 Desk 13",
+      false,
+      "Gaming"
+    ),
+    createData(
+      3,
+      "Declined",
+      new Date(2023, 4, 3, 17, 23, 42, 11),
+      new Date(2021, 4, 1, 18, 23, 42, 11),
+      "K17 Meeting Room G02",
+      true,
+      "Society event"
+    ),
+    createData(
+      4,
+      "Accepted",
+      new Date(2024, 4, 4, 17, 23, 42, 11),
+      new Date(2021, 4, 1, 18, 23, 42, 11),
+      "K17 L2 Desk 13",
+      false,
+      "Working"
+    ),
+    createData(
+      5,
+      "Pending",
+      new Date(2025, 4, 5, 17, 23, 42, 11),
+      new Date(2021, 4, 1, 18, 23, 42, 11),
+      "K17 Meeting Room G02",
+      true,
+      "Assignment"
+    ),
+    createData(
+      6,
+      "Accepted",
+      new Date(2026, 4, 6, 17, 23, 42, 11),
+      new Date(2021, 4, 1, 18, 23, 42, 11),
+      "K17 Meeting Room G02",
+      true,
+      "Filming a video"
+    ),
+    createData(
+      7,
+      "Accepted",
+      new Date(2027, 4, 7, 17, 23, 42, 11),
+      new Date(2021, 4, 1, 18, 23, 42, 11),
+      "K17 Meeting Room G02",
+      true,
+      "Class"
+    ),
   ];
 
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [filter, setFilter] = React.useState("all");
-  const [filteredRows, setFilteredRows] = React.useState(rows.sort((a, b) => a.startTime < b.startTime ? 1 : -1));
+  const [filteredRows, setFilteredRows] = React.useState(
+    rows.sort((a, b) => (a.startTime < b.startTime ? 1 : -1))
+  );
   const [sortNewest, setSortNewest] = React.useState(true);
-
 
   // // will eventually get data from backend
   // const getData = () => {
@@ -75,10 +130,10 @@ export default function UpcomingBookings() {
   };
 
   function labelDisplayedRows({
-                                from,
-                                to,
-                                count,
-                              }: {
+    from,
+    to,
+    count,
+  }: {
     from: number;
     to: number;
     count: number;
@@ -88,18 +143,31 @@ export default function UpcomingBookings() {
 
   const handleChangeFilter = (event: any) => {
     const value = event.target.value;
-    setFilter(value)
-  }
+    setFilter(value);
+  };
 
-  const handleChangeSort = (event: React.SyntheticEvent | null, newValue: string | null,) => {
-    setSortNewest(newValue === "newest")
-  }
+  const handleChangeSort = (
+    event: React.SyntheticEvent | null,
+    newValue: string | null
+  ) => {
+    setSortNewest(newValue === "newest");
+  };
 
   React.useEffect(() => {
-    setFilteredRows(rows
-      .filter(r => true) // now filtering in the backend
-      .sort((a, b) => a.startTime < b.startTime ? (sortNewest ? 1 : -1) : (sortNewest ? -1 : 1))) // this will also be backend
-  }, [filter, sortNewest])
+    setFilteredRows(
+      rows
+        .filter((r) => true) // now filtering in the backend
+        .sort((a, b) =>
+          a.startTime < b.startTime
+            ? sortNewest
+              ? 1
+              : -1
+            : sortNewest
+            ? -1
+            : 1
+        )
+    ); // this will also be backend
+  }, [filter, sortNewest]);
 
   const getLabelDisplayedRowsTo = () => {
     if (filteredRows.length === -1) {
@@ -112,8 +180,8 @@ export default function UpcomingBookings() {
 
   return (
     <Stack>
-      <Stack direction='row' width='100%' my={1} spacing={1}>
-        <Box width='200px'>
+      <Stack direction="row" width="100%" my={1} spacing={1}>
+        <Box width="200px">
           Space
           <Select
             defaultValue="all"
@@ -125,12 +193,9 @@ export default function UpcomingBookings() {
             <Option value="desks">Desks</Option>
           </Select>
         </Box>
-        <Box width='200px'>
+        <Box width="200px">
           Time
-          <Select
-            defaultValue="soonest"
-            onChange={handleChangeSort}
-          >
+          <Select defaultValue="soonest" onChange={handleChangeSort}>
             <Option value="soonest">Soonest</Option>
             <Option value="latest">Latest</Option>
           </Select>
@@ -139,122 +204,143 @@ export default function UpcomingBookings() {
       <Sheet
         variant="outlined"
         sx={{
-          display: { xs: 'initial' },
-          width: '100%',
-          borderRadius: 'sm',
+          display: { xs: "initial" },
+          width: "100%",
+          borderRadius: "sm",
           flexShrink: 1,
-          overflow: 'auto',
+          overflow: "auto",
           minHeight: 0,
-        }}>
+        }}
+      >
         <Table
           aria-labelledby="tableTitle"
           stickyHeader
           hoverRow
           sx={{
-            '--TableCell-headBackground': 'var(--joy-palette-background-level1)',
-            '--Table-headerUnderlineThickness': '1px',
-            '--TableRow-hoverBackground': 'var(--joy-palette-background-level1)',
-            '--TableCell-paddingY': '4px',
-            '--TableCell-paddingX': '8px',
+            "--TableCell-headBackground":
+              "var(--joy-palette-background-level1)",
+            "--Table-headerUnderlineThickness": "1px",
+            "--TableRow-hoverBackground":
+              "var(--joy-palette-background-level1)",
+            "--TableCell-paddingY": "4px",
+            "--TableCell-paddingX": "8px",
           }}
         >
           <thead>
-          <tr>
-            <th style={{width: 100, padding: '12px 6px'}}>Status</th>
-            <th style={{width: 140, padding: '12px 6px'}}>Time</th>
-            <th style={{width: 140, padding: '12px 6px'}}>Location</th>
-            <th style={{width: 150, padding: '12px 6px'}}>Description</th>
-            <th style={{width: 100, padding: '12px 6px'}}></th>
-          </tr>
+            <tr>
+              <th style={{ width: 100, padding: "12px 6px" }}>Status</th>
+              <th style={{ width: 140, padding: "12px 6px" }}>Time</th>
+              <th style={{ width: 140, padding: "12px 6px" }}>Location</th>
+              <th style={{ width: 150, padding: "12px 6px" }}>Description</th>
+              <th style={{ width: 100, padding: "12px 6px" }}></th>
+            </tr>
           </thead>
           <tbody>
-          {filteredRows
-            .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-            .map((row) => (
-              <tr key={row.id}>
-                <td>
-                  <BookingStatusPill status={row.status}/>
-                </td>
-                <td>
-                  <Typography level="body-sm"
-                              suppressHydrationWarning>{row.startTime.toLocaleDateString()} {row.startTime.getHours()}:{row.startTime.getMinutes()} - {row.endTime.getHours()}:{row.endTime.getMinutes()}</Typography>
-                </td>
-                <td>
-                  <Typography level="body-sm">{row.space}</Typography>
-                </td>
-                <td>
-                  <Typography level="body-sm">{row.description}</Typography>
-                </td>
-                <td>
-                  <Stack direction='row' justifyContent='flex-end' px={1}>
-                    <IconButton variant="plain" color="neutral" onClick={() => window.alert("edit doesn't work yet :D")}>
-                      <EditIcon/>
-                    </IconButton>
-                    <IconButton variant="plain" color="danger" onClick={() => window.alert("delete doesn't work yet :D")}>
-                      <DeleteIcon />
-                    </IconButton>
-                  </Stack>
-                </td>
-              </tr>
-            ))}
+            {filteredRows
+              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+              .map((row) => (
+                <tr key={row.id}>
+                  <td>
+                    <BookingStatusPill status={row.status} />
+                  </td>
+                  <td>
+                    <Typography level="body-sm" suppressHydrationWarning>
+                      {row.startTime.toLocaleDateString()}{" "}
+                      {row.startTime.getHours()}:{row.startTime.getMinutes()} -{" "}
+                      {row.endTime.getHours()}:{row.endTime.getMinutes()}
+                    </Typography>
+                  </td>
+                  <td>
+                    <Typography level="body-sm">{row.space}</Typography>
+                  </td>
+                  <td>
+                    <Typography level="body-sm">{row.description}</Typography>
+                  </td>
+                  <td>
+                    <Stack direction="row" justifyContent="flex-end" px={1}>
+                      <IconButton
+                        variant="plain"
+                        color="neutral"
+                        onClick={() => window.alert("edit doesn't work yet :D")}
+                      >
+                        <EditIcon />
+                      </IconButton>
+                      <IconButton
+                        variant="plain"
+                        color="danger"
+                        onClick={() =>
+                          window.alert("delete doesn't work yet :D")
+                        }
+                      >
+                        <DeleteIcon />
+                      </IconButton>
+                    </Stack>
+                  </td>
+                </tr>
+              ))}
           </tbody>
           <tfoot>
-          <tr>
-            <td colSpan={5}>
-            <Box
-                sx={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 2,
-                  justifyContent: 'flex-end',
-                }}
-              >
-                <FormControl orientation="horizontal" size="sm">
-                  <FormLabel>Rows per page:</FormLabel>
-                  <Select onChange={handleChangeRowsPerPage} value={rowsPerPage}>
-                    <Option value={5}>5</Option>
-                    <Option value={10}>10</Option>
-                    <Option value={25}>25</Option>
-                  </Select>
-                </FormControl>
-                <Typography textAlign="center" sx={{ minWidth: 80 }}>
-                  {labelDisplayedRows({
-                    from: filteredRows.length === 0 ? 0 : page * rowsPerPage + 1,
-                    to: getLabelDisplayedRowsTo(),
-                    count: filteredRows.length === -1 ? -1 : filteredRows.length,
-                  })}
-                </Typography>
-                <Box sx={{ display: 'flex', gap: 1 }}>
-                  <IconButton
-                    size="sm"
-                    color="neutral"
-                    variant="outlined"
-                    disabled={page === 0}
-                    onClick={() => handleChangePage(page - 1)}
-                    sx={{ bgcolor: 'background.surface' }}
-                  >
-                    <KeyboardArrowLeftIcon />
-                  </IconButton>
-                  <IconButton
-                    size="sm"
-                    color="neutral"
-                    variant="outlined"
-                    disabled={
-                      filteredRows.length !== -1
-                        ? page >= Math.ceil(filteredRows.length / rowsPerPage) - 1
-                        : false
-                    }
-                    onClick={() => handleChangePage(page + 1)}
-                    sx={{ bgcolor: 'background.surface' }}
-                  >
-                    <KeyboardArrowRightIcon />
-                  </IconButton>
+            <tr>
+              <td colSpan={5}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 2,
+                    justifyContent: "flex-end",
+                  }}
+                >
+                  <FormControl orientation="horizontal" size="sm">
+                    <FormLabel>Rows per page:</FormLabel>
+                    <Select
+                      onChange={handleChangeRowsPerPage}
+                      value={rowsPerPage}
+                    >
+                      <Option value={5}>5</Option>
+                      <Option value={10}>10</Option>
+                      <Option value={25}>25</Option>
+                    </Select>
+                  </FormControl>
+                  <Typography textAlign="center" sx={{ minWidth: 80 }}>
+                    {labelDisplayedRows({
+                      from:
+                        filteredRows.length === 0 ? 0 : page * rowsPerPage + 1,
+                      to: getLabelDisplayedRowsTo(),
+                      count:
+                        filteredRows.length === -1 ? -1 : filteredRows.length,
+                    })}
+                  </Typography>
+                  <Box sx={{ display: "flex", gap: 1 }}>
+                    <IconButton
+                      size="sm"
+                      color="neutral"
+                      variant="outlined"
+                      disabled={page === 0}
+                      onClick={() => handleChangePage(page - 1)}
+                      sx={{ bgcolor: "background.surface" }}
+                    >
+                      <KeyboardArrowLeftIcon />
+                    </IconButton>
+                    <IconButton
+                      size="sm"
+                      color="neutral"
+                      variant="outlined"
+                      disabled={
+                        filteredRows.length !== -1
+                          ? page >=
+                            Math.ceil(filteredRows.length / rowsPerPage) - 1
+                          : false
+                      }
+                      onClick={() => handleChangePage(page + 1)}
+                      sx={{ bgcolor: "background.surface" }}
+                    >
+                      <KeyboardArrowRightIcon />
+                    </IconButton>
+                  </Box>
                 </Box>
-              </Box>
-            </td>
-          </tr>
+              </td>
+            </tr>
           </tfoot>
-
         </Table>
       </Sheet>
     </Stack>
