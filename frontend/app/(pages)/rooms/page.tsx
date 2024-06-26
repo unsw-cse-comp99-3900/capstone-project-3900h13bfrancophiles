@@ -1,6 +1,6 @@
 "use client";
 
-import RoomCard from "@/app/components/roomCard";
+import RoomCard from "@/app/components/RoomCard";
 import SearchIcon from "@mui/icons-material/Search";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import SwapVertIcon from "@mui/icons-material/SwapVert";
@@ -16,33 +16,14 @@ import {
   Modal,
   ModalDialog,
   Stack,
+  Slider,
+  Typography,
 } from "@mui/joy";
 
 interface FilterOption {
   value: string;
   label: string;
 }
-
-const FilterControl = ({
-  label,
-  placeholder,
-  options,
-}: {
-  label: string;
-  placeholder: string;
-  options: FilterOption[];
-}) => (
-  <FormControl size="sm">
-    <FormLabel>{label}</FormLabel>
-    <Select size="sm" placeholder={placeholder}>
-      {options.map((option) => (
-        <Option key={option.value} value={option.value}>
-          {option.label}
-        </Option>
-      ))}
-    </Select>
-  </FormControl>
-);
 
 // TODO: replace with real data, this is just placeholder till an endpoint to pull data from is made
 const rooms = [
@@ -102,21 +83,47 @@ const renderFilters = () => (
         { value: "conference-room", label: "Conference Room" },
       ]}
     />
-    <FilterControl
-      label="Capacity"
-      placeholder="All"
-      options={[
-        { value: "all", label: "All" },
-        { value: "1", label: "1+" },
-        { value: "2", label: "2+" },
-        { value: "3", label: "3+" },
-        { value: "4", label: "4+" },
-        { value: "5", label: "5+" },
-        { value: "6", label: "6+" },
-      ]}
-    />
+    <CapacitySlider label="Capacity" min={1} max={25} />
   </React.Fragment>
 );
+
+const FilterControl = ({
+  label,
+  placeholder,
+  options,
+}: {
+  label: string;
+  placeholder: string;
+  options: FilterOption[];
+}) => (
+  <FormControl size="sm">
+    <FormLabel>{label}</FormLabel>
+    <Select size="sm" placeholder={placeholder}>
+      {options.map((option) => (
+        <Option key={option.value} value={option.value}>
+          {option.label}
+        </Option>
+      ))}
+    </Select>
+  </FormControl>
+);
+
+const CapacitySlider = ({ label, min, max }: { label: string; min: number; max: number }) => {
+  const [value, setValue] = React.useState<number>(min);
+
+  return (
+    <FormControl size="sm">
+      <FormLabel>{label}</FormLabel>
+      <Slider
+        min={min}
+        max={max}
+        value={value}
+        onChange={(event, newValue) => setValue(newValue as number)}
+        valueLabelDisplay="auto"
+      />
+    </FormControl>
+  );
+};
 
 export default function Rooms() {
   const [filtersOpen, setFiltersOpen] = React.useState(false);
@@ -202,7 +209,7 @@ export default function Rooms() {
           </Stack>
           <Button
             startDecorator={<FilterListIcon />}
-            variant="soft"
+            variant="outlined"
             color="neutral"
             size="sm"
             onClick={toggleFilters}
@@ -212,7 +219,7 @@ export default function Rooms() {
           {/* TODO: Make this actually apply sort, it does rn something but like some affordance is probably good */}
           <Button
             startDecorator={<SwapVertIcon />}
-            variant="soft"
+            variant="outlined"
             color="neutral"
             size="sm"
             onClick={toggleSort}
@@ -247,7 +254,7 @@ export default function Rooms() {
               Cancel
             </Button>
             <Button
-              variant="solid"
+              variant="outlined"
               color="primary"
               onClick={() => setFiltersOpen(false)}
             >
