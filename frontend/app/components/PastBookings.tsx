@@ -3,7 +3,6 @@ import * as React from 'react';
 import Table from '@mui/joy/Table';
 import Typography from '@mui/joy/Typography';
 import Box from '@mui/joy/Box';
-import Sheet from '@mui/joy/Sheet';
 import Select from '@mui/joy/Select';
 import Option from '@mui/joy/Option';
 import FormControl from '@mui/joy/FormControl';
@@ -12,36 +11,38 @@ import IconButton from '@mui/joy/IconButton';
 import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 
-import { authApiCall } from '@/api'
-import useSWR from 'swr'
+// import { authApiCall } from '@/api'
+// import useSWR from 'swr'
+import {Sheet, Stack} from "@mui/joy";
 
 
 export default function PastBookings() {
   function createData(
     id: number,
-    time: Date,
+    startTime: Date,
+    endTime: Date,
     space: string,
     isRoom: boolean,
     description: string,
   ) {
     // Somehow concatenate space data to form space string
-    return { id, time, space, isRoom, description };
+    return { id, startTime, endTime, space, isRoom, description };
   }
 
   const rows = [
-    createData(1, new Date(2021, 4, 1, 17, 23, 42, 11), "K17 L2 Desk 13", false ,"Thesis"),
-    createData(2, new Date(2022, 4, 2, 17, 23, 42, 11), "K17 L2 Desk 13", false, "Gaming"),
-    createData(3, new Date(2023, 4, 3, 17, 23, 42, 11), "K17 Meeting Room G02", true, "Society event"),
-    createData(4, new Date(2024, 4, 4, 17, 23, 42, 11), "K17 L2 Desk 13", false, "Working"),
-    createData(5, new Date(2025, 4, 5, 17, 23, 42, 11), "K17 Meeting Room G02", true, "Assignment"),
-    createData(6, new Date(2026, 4, 6, 17, 23, 42, 11), "K17 Meeting Room G02", true, "Filming a video"),
-    createData(7, new Date(2027, 4, 7, 17, 23, 42, 11), "K17 Meeting Room G02", true, "Class"),
+    createData(1, new Date(2021, 4, 1, 17, 23, 42, 11), new Date(2021, 4, 1, 18, 23, 42, 11),  "K17 L2 Desk 13", false ,"Thesis"),
+    createData(2, new Date(2022, 4, 2, 17, 23, 42, 11), new Date(2021, 4, 1, 18, 23, 42, 11), "K17 L2 Desk 13", false, "Gaming"),
+    createData(3, new Date(2023, 4, 3, 17, 23, 42, 11), new Date(2021, 4, 1, 18, 23, 42, 11), "K17 Meeting Room G02", true, "Society event"),
+    createData(4, new Date(2024, 4, 4, 17, 23, 42, 11), new Date(2021, 4, 1, 18, 23, 42, 11), "K17 L2 Desk 13", false, "Working"),
+    createData(5, new Date(2025, 4, 5, 17, 23, 42, 11), new Date(2021, 4, 1, 18, 23, 42, 11), "K17 Meeting Room G02", true, "Assignment"),
+    createData(6, new Date(2026, 4, 6, 17, 23, 42, 11), new Date(2021, 4, 1, 18, 23, 42, 11), "K17 Meeting Room G02", true, "Filming a video"),
+    createData(7, new Date(2027, 4, 7, 17, 23, 42, 11), new Date(2021, 4, 1, 18, 23, 42, 11), "K17 Meeting Room G02", true, "Class"),
   ];
 
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [filter, setFilter] = React.useState("all");
-  const [filteredRows, setFilteredRows] = React.useState(rows.sort((a, b) => a.time < b.time ? 1 : -1));
+  const [filteredRows, setFilteredRows] = React.useState(rows.sort((a, b) => a.startTime < b.startTime ? 1 : -1));
   const [sortNewest, setSortNewest] = React.useState(true);
 
 
@@ -94,7 +95,7 @@ export default function PastBookings() {
   React.useEffect(() => {
     setFilteredRows(rows
       .filter(r => true) // now filtering in the backend
-      .sort((a, b) => a.time < b.time ? (sortNewest ? 1 : -1) : (sortNewest ? -1 : 1))) // this will also be backend
+      .sort((a, b) => a.startTime < b.startTime ? (sortNewest ? 1 : -1) : (sortNewest ? -1 : 1))) // this will also be backend
   }, [filter, sortNewest])
 
   const getLabelDisplayedRowsTo = () => {
@@ -107,9 +108,9 @@ export default function PastBookings() {
   };
 
   return (
-  <Sheet>
-    <Box sx={{ width: 400, margin: "10px 0", display: "flex", gap: "5px"}}>
-      <Box sx={{ flex: 1 }}>
+  <Stack>
+    <Stack direction='row' width='100%' my={1} spacing={1}>
+      <Box width='200px'>
         Space
         <Select
           defaultValue="all"
@@ -121,7 +122,7 @@ export default function PastBookings() {
           <Option value="desks">Desks</Option>
         </Select>
       </Box>
-      <Box sx={{ flex: 1 }}>
+      <Box width='200px'>
         Time
         <Select
           defaultValue="newest"
@@ -131,8 +132,18 @@ export default function PastBookings() {
           <Option value="oldest">Oldest</Option>
         </Select>
       </Box>
-    </Box>
-    <Table
+    </Stack>
+    <Sheet
+      variant="outlined"
+      sx={{
+        display: { xs: 'initial' },
+        width: '100%',
+        borderRadius: 'sm',
+        flexShrink: 1,
+        overflow: 'auto',
+        minHeight: 0,
+      }}>
+      <Table
       aria-labelledby="tableTitle"
       stickyHeader
       hoverRow
@@ -157,13 +168,13 @@ export default function PastBookings() {
           .map((row) => (
             <tr key={row.id}>
               <td >
-                <Typography level="body-xs" suppressHydrationWarning>{row.time.toLocaleString()}</Typography>
+                <Typography level="body-sm" suppressHydrationWarning>{row.startTime.toLocaleDateString()} {row.startTime.getHours()}:{row.startTime.getMinutes()} - {row.endTime.getHours()}:{row.endTime.getMinutes()}</Typography>
               </td>
               <td>
-                <Typography level="body-xs">{row.space}</Typography>
+                <Typography level="body-sm">{row.space}</Typography>
               </td>
               <td>
-                <Typography level="body-xs">{row.description}</Typography>
+                <Typography level="body-sm">{row.description}</Typography>
               </td>
             </tr>
         ))}
@@ -226,6 +237,7 @@ export default function PastBookings() {
       </tfoot>
 
     </Table>
-  </Sheet>
+    </Sheet>
+  </Stack>
   );
 }
