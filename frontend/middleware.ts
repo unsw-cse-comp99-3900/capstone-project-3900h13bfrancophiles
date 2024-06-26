@@ -24,7 +24,7 @@ export const config = {
   matcher: [
     '/rooms/:path*',
     '/dashboard/:path*',
-    '/hotdesks/:path*',
+    '/desks/:path*',
     '/login/:path*'
   ],
 }

@@ -24,7 +24,7 @@ const NavBar = () => {
 
   return (
     <>
-      <Sheet sx={{ boxShadow: "md", height: 60, display: { sm: "none" } }}>
+      <Sheet sx={{ zIndex: 2, boxShadow: "md", height: 60, display: { sm: "none" } }}>
         <Stack
           direction="row"
           height="100%"
@@ -40,7 +40,7 @@ const NavBar = () => {
               objectFit="contain"
               sx={{ width: 60 }}
             >
-              <Image fill src="/logo.png" alt="logo" />
+              <Image fill src="/roomalloclogo.svg" alt="logo" />
             </AspectRatio>
           </Link>
           <IconButton
@@ -72,7 +72,7 @@ const MenuDrawer: React.FC<MenuDrawerProps> = ({ open, setOpen }) => {
           objectFit="contain"
           sx={{ width: 200 }}
         >
-          <Image fill src="/logo.png" alt="logo" />
+          <Image fill src="/roomalloclogo.svg" alt="logo" />
         </AspectRatio>
       </Link>
       <Divider />
