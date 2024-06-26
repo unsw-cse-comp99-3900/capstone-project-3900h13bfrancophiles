@@ -1,9 +1,9 @@
 // Booking endpoint handlers
 
 import { db } from '../index'
-import { sql, count } from "drizzle-orm"
+import { count, sql } from "drizzle-orm"
 import { booking } from '../../drizzle/schema';
-import { TypedGETRequest, TypedResponse, Booking } from '../types';
+import { Booking, IDatetimeRange, TypedGETRequest, TypedResponse } from '../types';
 import typia, { tags } from "typia";
 
 export async function currentBookings(
@@ -91,11 +91,6 @@ export async function pastBookings(
   } catch (error) {
     res.status(500).json({ error: 'Failed to fetch past bookings' });
   }
-}
-
-interface IDatetimeRange {
-  datetimeStart: string & tags.Format<'date-time'>
-  datetimeEnd: string & tags.Format<'date-time'>
 }
 
 export async function rangeOfBookings(
