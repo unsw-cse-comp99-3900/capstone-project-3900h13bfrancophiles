@@ -1,6 +1,6 @@
 'use client';
 
-import FloorPlanViewer from "@/app/components/FloorPlanViewer";
+import FloorPlanViewer from "@/components/FloorPlanViewer";
 import { Tab, TabList, TabPanel, Tabs } from "@mui/joy";
 import { deskData } from '@/app/data';
 import * as React from 'react';
