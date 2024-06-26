@@ -54,7 +54,7 @@ export default function NavBar() {
         alignItems="center"
         px={2}
       >
-        <Link component={NextLink} href="/frontend/public">
+        <Link component={NextLink} href="/">
           <AspectRatio
             variant="plain"
             ratio="15/12"
