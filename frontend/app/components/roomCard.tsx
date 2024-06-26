@@ -4,7 +4,9 @@ import * as React from "react";
 import {Card, CardContent, CardOverflow, Stack, Typography } from "@mui/joy";
 import PeopleIcon from "@mui/icons-material/People";
 import MeetingRoomOutlinedIcon from "@mui/icons-material/MeetingRoomOutlined";
-import EditCalendarOutlinedIcon from "@mui/icons-material/EditCalendarOutlined";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCalendarPlus } from '@fortawesome/free-regular-svg-icons'
+
 
 export type RoomData = {
   id: string;
@@ -38,7 +40,7 @@ export default function RoomCard({ room }: RoomCardProps) {
             <Typography level="title-lg" sx={{ mt: 1, fontWeight: "xl" }}>
               {room.name}
             </Typography>
-            <EditCalendarOutlinedIcon />
+            <FontAwesomeIcon fontSize="24px" icon={faCalendarPlus} />
           </Stack>
           <Typography
             level="body-sm"
