@@ -17,7 +17,7 @@ import NextLink from "next/link";
 import React from "react";
 import { Menu as MenuIcon } from "@mui/icons-material";
 import { navData } from "@/app/data";
-import LogoutButton from "@/app/components/LogoutButton";
+import LogoutButton from "@/components/LogoutButton";
 
 const NavBar = () => {
   const [open, setOpen] = React.useState(false);
@@ -33,7 +33,7 @@ const NavBar = () => {
           justifyContent="space-between"
           alignItems="center"
         >
-          <Link component={NextLink} href="/">
+          <Link component={NextLink} href="/frontend/public">
             <AspectRatio
               variant="plain"
               ratio="15/12"
@@ -65,7 +65,7 @@ interface MenuDrawerProps {
 const MenuDrawer: React.FC<MenuDrawerProps> = ({ open, setOpen }) => {
   return (
     <Drawer anchor="right" open={open} onClose={() => setOpen(false)}>
-      <Link component={NextLink} href="/" mx="auto" my={2}>
+      <Link component={NextLink} href="/frontend/public" mx="auto" my={2}>
         <AspectRatio
           variant="plain"
           ratio="15/4"

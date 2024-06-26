@@ -28,6 +28,8 @@ export default function Login() {
   const [error, setError] = React.useState<string>();
 
   const onSubmit = async () => {
+    setError(undefined);
+
     if (!zid) {
       setError("Error: zID required");
       return;

@@ -2,13 +2,11 @@
 
 import { AspectRatio, Link, Sheet, Stack, Typography } from "@mui/joy";
 import Image from "next/image";
-import LogoutIcon from "@mui/icons-material/Logout";
-import { pink } from "@mui/material/colors";
 import { usePathname } from "next/navigation";
 import React from "react";
 import NextLink from "next/link";
 import { navData } from "@/app/data";
-import LogoutButton from "@/app/components/LogoutButton";
+import LogoutButton from "@/components/LogoutButton";
 
 interface NavProps {
   title: string;
@@ -56,7 +54,7 @@ export default function NavBar() {
         alignItems="center"
         px={2}
       >
-        <Link component={NextLink} href="/">
+        <Link component={NextLink} href="/frontend/public">
           <AspectRatio
             variant="plain"
             ratio="15/12"
