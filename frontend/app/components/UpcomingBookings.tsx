@@ -163,7 +163,7 @@ export default function UpcomingBookings() {
             <th style={{width: 100, padding: '12px 6px'}}>Status</th>
             <th style={{width: 140, padding: '12px 6px'}}>Time</th>
             <th style={{width: 140, padding: '12px 6px'}}>Location</th>
-            <th style={{width: 240, padding: '12px 6px'}}>Description</th>
+            <th style={{width: 150, padding: '12px 6px'}}>Description</th>
             <th style={{width: 100, padding: '12px 6px'}}></th>
           </tr>
           </thead>
