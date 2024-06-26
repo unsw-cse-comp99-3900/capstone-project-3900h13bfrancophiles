@@ -11,8 +11,9 @@ import FormLabel from '@mui/joy/FormLabel';
 import IconButton from '@mui/joy/IconButton';
 import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
-import MenuItem from '@mui/joy/MenuItem';
-import Checkbox from '@mui/joy/Checkbox';
+
+import { authApiCall } from '@/api'
+import useSWR from 'swr'
 
 
 export default function PastBookings() {
@@ -42,6 +43,23 @@ export default function PastBookings() {
   const [filter, setFilter] = React.useState("all");
   const [filteredRows, setFilteredRows] = React.useState(rows.sort((a, b) => a.time < b.time ? 1 : -1));
   const [sortNewest, setSortNewest] = React.useState(true);
+
+
+  // // will eventually get data from backend
+  // const getData = () => {
+  //   authApiCall(
+  //     "/bookings/past",
+  //     'GET',
+  //     {
+  //       page: 0,
+  //       limit: 5,
+  //     }
+  //   ).then(e => console.log(e))
+  // }
+
+  // const getData2 = () => {
+  //   const { data, error, isLoading } = useSWR('/api/user', fetch)
+  // }
 
   const handleChangePage = (newPage: number) => {
     setPage(newPage);
@@ -75,8 +93,8 @@ export default function PastBookings() {
 
   React.useEffect(() => {
     setFilteredRows(rows
-      .filter(r => true) // no point in having filter
-      .sort((a, b) => a.time < b.time ? (sortNewest ? 1 : -1) : (sortNewest ? -1 : 1)))
+      .filter(r => true) // now filtering in the backend
+      .sort((a, b) => a.time < b.time ? (sortNewest ? 1 : -1) : (sortNewest ? -1 : 1))) // this will also be backend
   }, [filter, sortNewest])
 
   const getLabelDisplayedRowsTo = () => {
@@ -129,7 +147,7 @@ export default function PastBookings() {
       <thead>
         <tr>
           <th style={{ width: 140, padding: '12px 6px' }}>Time</th>
-          <th style={{ width: 140, padding: '12px 6px' }}>Space</th>
+          <th style={{ width: 140, padding: '12px 6px' }}>Location</th>
           <th style={{ width: 240, padding: '12px 6px' }}>Description</th>
         </tr>
       </thead>
