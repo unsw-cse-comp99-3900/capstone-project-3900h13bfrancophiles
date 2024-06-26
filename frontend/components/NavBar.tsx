@@ -45,7 +45,7 @@ function NavItem({ title, navigateTo }: NavProps) {
 export default function NavBar() {
   return (
     <Sheet
-      sx={{ boxShadow: "md", height: 60, display: { xs: "none", sm: "flex" } }}
+      sx={{ zIndex: 2, boxShadow: "md", height: 60, display: { xs: "none", sm: "flex" } }}
     >
       <Stack
         width="100%"
@@ -61,7 +61,7 @@ export default function NavBar() {
             objectFit="contain"
             sx={{ width: 60 }}
           >
-            <Image fill src="/logo.png" alt="logo" />
+            <Image fill src="/roomalloclogo.svg" alt="logo" />
           </AspectRatio>
         </Link>
         <Stack

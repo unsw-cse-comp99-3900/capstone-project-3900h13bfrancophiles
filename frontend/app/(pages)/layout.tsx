@@ -13,9 +13,7 @@ export default function Layout({ children }: Readonly<{
     <>
       <NavBar/>
       <MobileNavBar/>
-      <Stack px={{xs: '5%', md: '92px'}}>
-        {children}
-      </Stack>
+      {children}
     </>
   );
 }
