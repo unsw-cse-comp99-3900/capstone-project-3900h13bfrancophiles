@@ -22,6 +22,7 @@ const FloorPlanViewer = ({ level }: FloorPlanViewerProps) => {
         wheel={{ step: 0.015, smoothStep: 0.015 }}
         disablePadding
         centerOnInit
+        doubleClick={{ disabled: true }}
       >
         <TransformComponent
           wrapperStyle={{ width: "100%", height: "100%", position: "relative" }}
