@@ -33,7 +33,7 @@ const NavBar = () => {
           justifyContent="space-between"
           alignItems="center"
         >
-          <Link component={NextLink} href="/">
+          <Link component={NextLink} href="/frontend/public">
             <AspectRatio
               variant="plain"
               ratio="15/12"
