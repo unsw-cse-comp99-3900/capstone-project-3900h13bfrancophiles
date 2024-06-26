@@ -60,7 +60,7 @@ export default function UpcomingBookings() {
   //     }
   //   ).then(e => console.log(e))
   // }
-
+  //
   // const getData2 = () => {
   //   const { data, error, isLoading } = useSWR('/api/user', fetch)
   // }
@@ -139,7 +139,7 @@ export default function UpcomingBookings() {
       <Sheet
         variant="outlined"
         sx={{
-          display: { xs: 'none', sm: 'initial' },
+          display: { xs: 'initial' },
           width: '100%',
           borderRadius: 'sm',
           flexShrink: 1,
@@ -187,8 +187,12 @@ export default function UpcomingBookings() {
                 </td>
                 <td>
                   <Stack direction='row' justifyContent='flex-end' px={1}>
-                    <EditIcon/>
-                    <DeleteIcon color='danger'/>
+                    <IconButton variant="plain" color="neutral" onClick={() => window.alert("edit doesn't work yet :D")}>
+                      <EditIcon/>
+                    </IconButton>
+                    <IconButton variant="plain" color="danger" onClick={() => window.alert("delete doesn't work yet :D")}>
+                      <DeleteIcon />
+                    </IconButton>
                   </Stack>
                 </td>
               </tr>

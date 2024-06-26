@@ -136,7 +136,7 @@ export default function PastBookings() {
     <Sheet
       variant="outlined"
       sx={{
-        display: { xs: 'none', sm: 'initial' },
+        display: { xs: 'initial' },
         width: '100%',
         borderRadius: 'sm',
         flexShrink: 1,
