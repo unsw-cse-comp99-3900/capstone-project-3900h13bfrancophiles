@@ -47,7 +47,7 @@ function NavItem({ title, navigateTo }: NavProps) {
 export default function NavBar() {
   return (
     <Sheet
-      sx={{ boxShadow: "md", height: 60, display: { xs: "none", sm: "flex" } }}
+      sx={{ zIndex: 2, boxShadow: "md", height: 60, display: { xs: "none", sm: "flex" } }}
     >
       <Stack
         width="100%"

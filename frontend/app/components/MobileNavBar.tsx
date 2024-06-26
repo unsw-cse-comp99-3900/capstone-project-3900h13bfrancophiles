@@ -24,7 +24,7 @@ const NavBar = () => {
 
   return (
     <>
-      <Sheet sx={{ boxShadow: "md", height: 60, display: { sm: "none" } }}>
+      <Sheet sx={{ zIndex: 2, boxShadow: "md", height: 60, display: { sm: "none" } }}>
         <Stack
           direction="row"
           height="100%"
