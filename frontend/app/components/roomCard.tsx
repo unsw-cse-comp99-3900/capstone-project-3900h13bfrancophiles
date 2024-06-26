@@ -1,12 +1,11 @@
 "use client";
 
 import * as React from "react";
-import {Card, CardContent, CardOverflow, Stack, Typography } from "@mui/joy";
+import { Card, CardContent, CardOverflow, Stack, Typography } from "@mui/joy";
 import PeopleIcon from "@mui/icons-material/People";
 import MeetingRoomOutlinedIcon from "@mui/icons-material/MeetingRoomOutlined";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCalendarPlus } from '@fortawesome/free-regular-svg-icons'
-
+import { faCalendarPlus } from "@fortawesome/free-regular-svg-icons";
 
 export type RoomData = {
   id: string;
@@ -31,7 +30,7 @@ export default function RoomCard({ room }: RoomCardProps) {
       }}
     >
       <CardContent>
-        <Stack spacing={'10px'}>
+        <Stack spacing={"10px"}>
           <Stack
             justifyContent="space-between"
             alignItems="center"
@@ -63,4 +62,3 @@ export default function RoomCard({ room }: RoomCardProps) {
     </Card>
   );
 }
-

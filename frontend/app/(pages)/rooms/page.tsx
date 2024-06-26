@@ -17,7 +17,6 @@ import {
   ModalDialog,
   Stack,
   Slider,
-  Typography,
 } from "@mui/joy";
 
 interface FilterOption {
@@ -108,7 +107,15 @@ const FilterControl = ({
   </FormControl>
 );
 
-const CapacitySlider = ({ label, min, max }: { label: string; min: number; max: number }) => {
+const CapacitySlider = ({
+  label,
+  min,
+  max,
+}: {
+  label: string;
+  min: number;
+  max: number;
+}) => {
   const [value, setValue] = React.useState<number>(min);
 
   return (
