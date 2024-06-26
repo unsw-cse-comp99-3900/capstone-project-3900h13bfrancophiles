@@ -1,6 +1,6 @@
 "use client";
 
-import RoomCard from "@/app/components/RoomCard";
+import RoomCard from "@/components/RoomCard";
 import SearchIcon from "@mui/icons-material/Search";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import SwapVertIcon from "@mui/icons-material/SwapVert";

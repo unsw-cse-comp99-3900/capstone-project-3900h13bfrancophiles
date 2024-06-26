@@ -147,7 +147,7 @@ export default function PastBookings() {
   React.useEffect(() => {
     setFilteredRows(
       rows
-        .filter((r) => true) // now filtering in the backend
+        .filter(() => true) // now filtering in the backend
         .sort((a, b) =>
           a.startTime < b.startTime
             ? sortNewest

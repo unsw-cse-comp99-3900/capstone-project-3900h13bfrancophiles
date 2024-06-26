@@ -14,7 +14,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 
 import { Sheet, Stack } from "@mui/joy";
-import BookingStatusPill from "@/app/components/BookingStatusPill";
+import BookingStatusPill from "@/components/BookingStatusPill";
 
 export default function UpcomingBookings() {
   function createData(
@@ -156,7 +156,7 @@ export default function UpcomingBookings() {
   React.useEffect(() => {
     setFilteredRows(
       rows
-        .filter((r) => true) // now filtering in the backend
+        .filter(() => true) // now filtering in the backend
         .sort((a, b) =>
           a.startTime < b.startTime
             ? sortNewest
