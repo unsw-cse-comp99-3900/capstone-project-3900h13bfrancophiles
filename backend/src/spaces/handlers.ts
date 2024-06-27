@@ -2,7 +2,7 @@
 
 import { db } from '../index'
 import { sql, eq } from "drizzle-orm"
-import { booking, room } from '../../drizzle/schema';
+import { booking, room, space } from '../../drizzle/schema';
 import { TypedGETRequest, TypedResponse, RoomDetails } from '../types';
 
 export async function roomDetails(
@@ -11,7 +11,12 @@ export async function roomDetails(
 ) {
   try {
     const rooms = await db
-      .select({ id: room.id, capacity: room.capacity, roomnumber: room.roomnumber, usage: room.usage})
+      .select({
+        id: room.id,
+        capacity: room.capacity,
+        roomnumber: room.roomnumber,
+        usage: room.usage
+      })
       .from(room)
       .orderBy(room.id);
 

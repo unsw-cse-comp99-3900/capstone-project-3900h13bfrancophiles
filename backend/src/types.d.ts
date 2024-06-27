@@ -64,7 +64,7 @@ export type Booking = { id: number, zid: number, starttime: string , endtime: st
 /**
  * Room typed response
  */
-export type RoomDetails = { id: number, capacity: number, roomnumber: number, usage: number };
+export type RoomDetails = { id: string, capacity: number, roomnumber: number, usage: number };
 
 export interface IDatetimeRange {
   datetimeStart: string & tags.Format<'date-time'>
