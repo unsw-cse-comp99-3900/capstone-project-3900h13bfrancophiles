@@ -1,6 +1,6 @@
 import PastBookings from "@/components/PastBookings";
 import { Box, Stack, Typography } from "@mui/joy";
-import CurrentBookingCard from "@/components/CurrentBookingCard";
+import CurrentBookings from "@/components/CurrentBookings";
 import UpcomingBookings from "@/components/UpcomingBookings";
 
 export default function Dashboard() {
@@ -8,16 +8,7 @@ export default function Dashboard() {
     <Stack mb={5} spacing={5}>
       <Box>
         <Typography level="h1">My Dashboard</Typography>
-        <Typography level="h2" mb={2}>
-          Current Booking
-        </Typography>
-        <Stack spacing={2}>
-          {/*Change to map when there is data*/}
-          <CurrentBookingCard
-            room="K17 G02 - Consultation Room"
-            time="7:30 PM"
-          />
-        </Stack>
+        <CurrentBookings />
       </Box>
       <Box>
         <Typography level="h2">Upcoming Bookings</Typography>

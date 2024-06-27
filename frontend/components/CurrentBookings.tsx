@@ -1,14 +1,37 @@
-import { Box, Button, Card, CardContent, Stack, Typography } from "@mui/joy";
+'use client'
 
-interface CurrentBookingProps {
-  room: string;
-  time: string;
+import { Box, Button, Card, CardContent, Skeleton, Stack, Typography } from "@mui/joy";
+import { Booking } from '@/types';
+import useSpace from '@/hooks/useSpace';
+import useCurrentBookings from '@/hooks/useCurrentBookings';
+
+function CurrentBookings() {
+  const { currentBookings } = useCurrentBookings();
+
+  return currentBookings?.length && (
+    <>
+      <Typography level="h2" mb={2}>Current Booking{currentBookings.length > 1 && "s"}</Typography>
+      <Stack spacing={2}>
+        {currentBookings.map((booking) => (
+          <CurrentBookingCard
+            key={booking.id}
+            booking={booking}
+          />
+        ))}
+      </Stack>
+    </>
+  )
 }
 
-export default function CurrentBookingCard({
-  room,
-  time,
-}: CurrentBookingProps) {
+interface CurrentBookingCardProps {
+  booking: Booking;
+}
+
+function CurrentBookingCard({
+                              booking
+                            }: CurrentBookingCardProps) {
+  const { space, isLoading } = useSpace(booking.spaceid);
+
   return (
     <Card variant="outlined">
       <CardContent>
@@ -22,10 +45,12 @@ export default function CurrentBookingCard({
         >
           <Box>
             <Typography level="h3" sx={{ textWrap: "wrap" }}>
-              {room}
+              <Skeleton loading={isLoading}>{space?.name}</Skeleton>
             </Typography>
             <Typography level="body-lg" pb={1} sx={{ textWrap: "wrap" }}>
-              Booked until {time}
+              <Skeleton loading={isLoading}>
+                Booked until {new Date(booking.endtime).toLocaleTimeString()}
+              </Skeleton>
             </Typography>
           </Box>
           <Stack
@@ -56,3 +81,5 @@ export default function CurrentBookingCard({
     </Card>
   );
 }
+
+export default CurrentBookings;
