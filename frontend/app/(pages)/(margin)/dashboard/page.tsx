@@ -1,7 +1,7 @@
-import PastBookings from "@/app/components/PastBookings";
+import PastBookings from "@/components/PastBookings";
 import { Box, Stack, Typography } from "@mui/joy";
-import CurrentBookingCard from "@/app/components/CurrentBookingCard";
-import UpcomingBookings from "@/app/components/UpcomingBookings";
+import CurrentBookingCard from "@/components/CurrentBookingCard";
+import UpcomingBookings from "@/components/UpcomingBookings";
 
 export default function Dashboard() {
   return (
@@ -13,14 +13,6 @@ export default function Dashboard() {
         </Typography>
         <Stack spacing={2}>
           {/*Change to map when there is data*/}
-          <CurrentBookingCard
-            room="K17 G02 - Consultation Room"
-            time="7:30 PM"
-          />
-          <CurrentBookingCard
-            room="K17 G02 - Consultation Room"
-            time="7:30 PM"
-          />
           <CurrentBookingCard
             room="K17 G02 - Consultation Room"
             time="7:30 PM"

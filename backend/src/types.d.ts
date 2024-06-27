@@ -59,7 +59,7 @@ export interface TypedResponse<T = Empty> extends Response {
 /**
  * Booking typed response
  */
-export type Booking = { id: number, zid: number, starttime: string , endtime: string, spaceid: int, currentstatus: string };
+export type Booking = { id: number, zid: number, starttime: string , endtime: string, spaceid: int, currentstatus: string, description: string };
 
 /**
  * Room typed response
