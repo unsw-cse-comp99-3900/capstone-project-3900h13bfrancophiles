@@ -67,6 +67,13 @@ const authApiCall = <T>(
     });
 }
 
+/**
+ * For use with SWR - takes URL of a GET request
+ */
+export function swrFetcher<T>(url: string) {
+  return authApiCall<T>(url, "GET", {});
+}
+
 // Routes - see Backend API for description
 export const login = (
   zid: string,
