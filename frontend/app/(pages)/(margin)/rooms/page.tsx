@@ -122,7 +122,10 @@ interface FilterControlProps {
   label: string;
   options: FilterOption[];
   value: string;
-  onChange: (event: React.MouseEvent | React.KeyboardEvent | React.FocusEvent | null, value: string | null) => void;
+  onChange: (
+    event: React.MouseEvent | React.KeyboardEvent | React.FocusEvent | null,
+    value: string | null
+  ) => void;
 }
 
 const FilterControl: React.FC<FilterControlProps> = ({
@@ -285,7 +288,11 @@ export default function Rooms() {
           </Stack>
           <Button
             startDecorator={<FilterListIcon />}
-            variant={sortedRooms.length === displayedRooms.length ? "outlined" : "solid"}
+            variant={
+              sortedRooms.length === displayedRooms.length
+                ? "outlined"
+                : "solid"
+            }
             color="neutral"
             size="sm"
             onClick={toggleFilters}
