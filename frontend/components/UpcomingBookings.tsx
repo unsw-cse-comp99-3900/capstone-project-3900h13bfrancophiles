@@ -15,6 +15,7 @@ import EditIcon from "@mui/icons-material/Edit";
 
 import { Sheet, Stack } from "@mui/joy";
 import BookingStatusPill from "@/components/BookingStatusPill";
+import { format } from 'date-fns';
 
 export default function UpcomingBookings() {
   function createData(
@@ -244,10 +245,8 @@ export default function UpcomingBookings() {
                     <BookingStatusPill status={row.status} />
                   </td>
                   <td>
-                    <Typography level="body-sm" suppressHydrationWarning>
-                      {row.startTime.toLocaleDateString()}{" "}
-                      {row.startTime.getHours()}:{row.startTime.getMinutes()} -{" "}
-                      {row.endTime.getHours()}:{row.endTime.getMinutes()}
+                    <Typography level="body-sm">
+                      {format(row.startTime, "dd/MM/yy k:mm")} - {format(row.endTime, "k:mm")}
                     </Typography>
                   </td>
                   <td>
