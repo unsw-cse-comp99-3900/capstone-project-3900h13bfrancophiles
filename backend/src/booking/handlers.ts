@@ -1,9 +1,9 @@
 // Booking endpoint handlers
 
 import { db } from '../index'
-import { count, sql } from "drizzle-orm"
+import { count, sql, eq, and } from "drizzle-orm"
 import { booking } from '../../drizzle/schema';
-import { Booking, IDatetimeRange, TypedGETRequest, TypedResponse } from '../types';
+import { Booking, IDatetimeRange, TypedGETRequest, TypedRequest, TypedResponse } from '../types';
 import typia, { tags } from "typia";
 import { formatBookingDates } from '../utils';
 
@@ -120,5 +120,34 @@ export async function rangeOfBookings(
     res.json({ bookings: currentBookings.map(formatBookingDates) });
   } catch (error) {
     res.status(500).json({ error: 'Failed to fetch bookings' });
+  }
+}
+
+export async function deleteBooking(
+  req: TypedRequest<{ id: number }>,
+  res: TypedResponse<{}>,
+) {
+  try {
+    if (!typia.is<{ id: number }>(req.query)) {
+      res.status(400).json({ error: "Invalid input" });
+      return;
+    }
+
+    const deletedBooking = await db
+      .delete(booking)
+      .where(and(eq(booking.id, req.query.id), eq(booking.zid, req.token.user)))
+      .returning();
+
+    if (deletedBooking.length != 1) {
+      res.status(403).json({ error: "Booking id does not exist for this user" });
+      return;
+    }
+
+    // TODO: send an email to the user confirming deletion
+    // email.deletionConfirmation(req.token.user, deletedBooking[0])
+
+    res.json({});
+  } catch (error) {
+    res.status(204);
   }
 }
