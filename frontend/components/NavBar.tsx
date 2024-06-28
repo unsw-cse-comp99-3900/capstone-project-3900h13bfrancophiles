@@ -25,7 +25,9 @@ function NavItem({ title, navigateTo }: NavProps) {
         width: "100%",
         height: "100%",
         textDecoration: "none",
-        borderBottom: activePage === navigateTo ? "4px solid #787979" : "none",
+        borderBottom: activePage === navigateTo
+          ? `4px solid ${theme.vars.palette.neutral[500]}`
+          : "none",
         "&:hover": { bgcolor: `${theme.vars.palette.neutral.plainHoverBg}` },
       })}
     >
