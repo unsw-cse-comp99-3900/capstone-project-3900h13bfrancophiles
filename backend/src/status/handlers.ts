@@ -3,6 +3,7 @@ import typia from 'typia';
 import { db } from '../index';
 import { booking, space } from '../../drizzle/schema';
 import { and, gte, lte } from 'drizzle-orm';
+import { formatBookingDates } from '../utils';
 
 type Status = { status: "available" }
             | { status: "unavailable", booking: Booking };
@@ -40,7 +41,10 @@ export async function spaceStatus(
     const result: StatusResponse = {};
     for (const booking of overlappingBookings) {
       if (booking.spaceid in result) continue;
-      result[booking.spaceid] = { status: "unavailable", booking };
+      result[booking.spaceid] = {
+        status: "unavailable",
+        booking: formatBookingDates(booking)
+      };
     }
 
     // Mark the remaining as available

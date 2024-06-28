@@ -1,7 +1,17 @@
-import { pgTable, integer, text, foreignKey, boolean, serial, timestamp } from "drizzle-orm/pg-core"
+import { pgTable, foreignKey, serial, integer, timestamp, text, boolean } from "drizzle-orm/pg-core"
   import { sql } from "drizzle-orm"
 
 
+
+export const booking = pgTable("booking", {
+	id: serial("id").primaryKey().notNull(),
+	zid: integer("zid").notNull().references(() => person.zid),
+	starttime: timestamp("starttime", { mode: 'string' }).notNull(),
+	endtime: timestamp("endtime", { mode: 'string' }).notNull(),
+	spaceid: text("spaceid").notNull().references(() => space.id),
+	currentstatus: text("currentstatus").notNull(),
+	description: text("description").notNull(),
+});
 
 export const person = pgTable("person", {
 	zid: integer("zid").primaryKey().notNull(),
@@ -22,29 +32,20 @@ export const hdr = pgTable("hdr", {
 });
 
 export const space = pgTable("space", {
-	id: serial("id").primaryKey().notNull(),
+	id: text("id").primaryKey().notNull(),
+	name: text("name").notNull(),
 });
 
 export const hotdesk = pgTable("hotdesk", {
-	id: serial("id").primaryKey().notNull().references(() => space.id, { onDelete: "cascade" } ),
-	floor: integer("floor").notNull(),
-	room: integer("room").notNull(),
+	id: text("id").primaryKey().notNull().references(() => space.id, { onDelete: "cascade" } ),
+	floor: text("floor").notNull(),
+	room: text("room").notNull(),
 	desknumber: integer("desknumber").notNull(),
 });
 
 export const room = pgTable("room", {
-	id: serial("id").primaryKey().notNull().references(() => space.id, { onDelete: "cascade" } ),
+	id: text("id").primaryKey().notNull().references(() => space.id, { onDelete: "cascade" } ),
 	capacity: integer("capacity").notNull(),
-	roomnumber: integer("roomnumber").notNull(),
-	usage: integer("usage").notNull(),
-});
-
-export const booking = pgTable("booking", {
-	id: serial("id").primaryKey().notNull(),
-	zid: integer("zid").notNull().references(() => person.zid),
-	starttime: timestamp("starttime", { mode: 'string' }).notNull(),
-	endtime: timestamp("endtime", { mode: 'string' }).notNull(),
-	spaceid: integer("spaceid").notNull().references(() => space.id),
-	currentstatus: text("currentstatus").notNull(),
-	description: text("description").notNull(),
+	roomnumber: text("roomnumber").notNull(),
+	usage: text("usage").notNull(),
 });

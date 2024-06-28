@@ -19,15 +19,18 @@
     "@mui/joy": "^5.0.0-beta.36",
     "@mui/material": "^5.15.20",
     "cookies-next": "^4.2.1",
+    "date-fns": "^3.6.0",
     "dotenv": "^16.4.5",
     "next": "14.2.3",
     "react": "^18",
     "react-dom": "^18",
     "react-router-dom": "^6.23.1",
     "react-zoom-pan-pinch": "^3.4.4",
-    "sharp": "^0.33.4"
+    "sharp": "^0.33.4",
+    "swr": "^2.2.5"
   },
   "devDependencies": {
+    "@types/date-fns": "^2.6.0",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",

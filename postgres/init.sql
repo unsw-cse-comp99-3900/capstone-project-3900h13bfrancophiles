@@ -19,22 +19,23 @@ CREATE TABLE IF NOT EXISTS hdr (
 );
 
 CREATE TABLE IF NOT EXISTS space (
-    id            SERIAL PRIMARY KEY
+    id            TEXT PRIMARY KEY,
+    name          TEXT NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS hotdesk (
-    id            SERIAL PRIMARY KEY,
-    floor         INTEGER NOT NULL,
-    room          INTEGER NOT NULL,
+    id            TEXT PRIMARY KEY,
+    floor         TEXT NOT NULL,
+    room          TEXT NOT NULL,
     deskNumber    INTEGER NOT NULL,
     FOREIGN KEY(id) REFERENCES space(id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS room (
-    id            SERIAL PRIMARY KEY,
+    id            TEXT PRIMARY KEY,
     capacity      INTEGER NOT NULL,
-    roomNumber    INTEGER NOT NULL,
-    usage         INTEGER NOT NULL,
+    roomNumber    TEXT NOT NULL,
+    usage         TEXT NOT NULL,
     FOREIGN KEY(id) REFERENCES space(id) ON DELETE CASCADE
 );
 
@@ -43,7 +44,7 @@ CREATE TABLE IF NOT EXISTS booking (
     zId           INT NOT NULL,
     startTime     TIMESTAMP NOT NULL,
     endTime       TIMESTAMP NOT NULL,
-    spaceId       INTEGER NOT NULL,
+    spaceId       TEXT NOT NULL,
     currentStatus TEXT NOT NULL,
     description   TEXT NOT NULL,
     FOREIGN KEY(zId) REFERENCES person(zId),
