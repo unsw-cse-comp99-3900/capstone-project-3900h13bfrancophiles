@@ -8,10 +8,11 @@ import { deskData } from '@/app/data';
 import DeskIcon from './DeskIcon';
 
 interface FloorPlanViewerProps {
+  setSelectedDesk: React.Dispatch<React.SetStateAction<string>>;
   level: string;
 }
 
-const FloorPlanViewer = ({ level }: FloorPlanViewerProps) => {
+const FloorPlanViewer = ({ level, setSelectedDesk }: FloorPlanViewerProps) => {
   const desks = deskData.find(data => data.level === level)?.desks ?? [];
 
   return (
@@ -30,7 +31,7 @@ const FloorPlanViewer = ({ level }: FloorPlanViewerProps) => {
         >
           <Image src={`/${level}.svg`} fill alt={`${level} floorplan`} style={{ position: "absolute" }}/>
           {desks.map(desk => (
-            <DeskIcon {...desk} />
+            <DeskIcon {...{...desk, setSelectedDesk}} />
           ))}
         </TransformComponent>
       </TransformWrapper>
