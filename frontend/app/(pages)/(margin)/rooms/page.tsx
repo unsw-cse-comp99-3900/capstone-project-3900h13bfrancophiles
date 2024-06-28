@@ -92,14 +92,14 @@ const renderFilters = (
       options={[
         { value: "all", label: "All" },
         { value: "meeting-room", label: "Meeting Room" },
-        { value: "consult-room", label: "Consult Room" },
+        { value: "consultation-room", label: "Consultation Room" },
         { value: "conference-room", label: "Conference Room" },
       ]}
       value={tempFilters.type}
-      onChange={(event) =>
+      onChange={(event, value) =>
         setTempFilters((prevFilters) => ({
           ...prevFilters,
-          type: event.target.value,
+          type: value as string,
         }))
       }
     />
@@ -122,7 +122,7 @@ interface FilterControlProps {
   label: string;
   options: FilterOption[];
   value: string;
-  onChange: (event: React.ChangeEvent<HTMLSelectElement>) => void;
+  onChange: (event: React.MouseEvent | React.KeyboardEvent | React.FocusEvent | null, value: string | null) => void;
 }
 
 const FilterControl: React.FC<FilterControlProps> = ({
@@ -133,7 +133,7 @@ const FilterControl: React.FC<FilterControlProps> = ({
 }) => (
   <FormControl size="sm">
     <FormLabel>{label}</FormLabel>
-    <Select size="sm" value={value}>
+    <Select size="sm" value={value} onChange={onChange}>
       {options.map((option) => (
         <Option key={option.value} value={option.value}>
           {option.label}
@@ -213,7 +213,6 @@ export default function Rooms() {
       const matchesType =
         filters.type === "all" ||
         room.type.toLowerCase().replace(" ", "-") === filters.type;
-        console.log(room.capacity)
       const matchesCapacity = room.capacity >= filters.capacity;
       const matchesSearchQuery = room.name
         .toLowerCase()
@@ -286,7 +285,7 @@ export default function Rooms() {
           </Stack>
           <Button
             startDecorator={<FilterListIcon />}
-            variant="outlined"
+            variant={sortedRooms.length === displayedRooms.length ? "outlined" : "solid"}
             color="neutral"
             size="sm"
             onClick={toggleFilters}
@@ -295,7 +294,7 @@ export default function Rooms() {
           </Button>
           <Button
             startDecorator={<SwapVertIcon />}
-            variant="outlined"
+            variant={sort ? "solid" : "outlined"}
             color="neutral"
             size="sm"
             onClick={toggleSort}
