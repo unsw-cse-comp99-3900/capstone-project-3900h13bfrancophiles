@@ -234,8 +234,6 @@ export async function checkOutBooking(
       return;
     }
 
-  // If prior booking in this space didn't check out, update their checkout time now?
-
     res.json({});
   } catch (error) {
     res.status(204);
