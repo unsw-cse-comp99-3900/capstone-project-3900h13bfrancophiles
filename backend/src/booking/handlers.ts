@@ -1,11 +1,11 @@
 // Booking endpoint handlers
 
 import { db } from '../index'
-import { count, sql, and, eq, lt, gt, isNotNull } from "drizzle-orm"
+import { count, sql, and, eq, lt, gt } from "drizzle-orm"
 import { booking } from '../../drizzle/schema';
 import { Booking, IDatetimeRange, TypedGETRequest, TypedRequest, TypedResponse } from '../types';
 import typia, { tags } from "typia";
-import { formatBookingDates, withinDateRange } from '../utils';
+import { formatBookingDates, withinDateRange as dateInRange } from '../utils';
 
 export async function currentBookings(
   req: TypedGETRequest,
@@ -151,7 +151,7 @@ export async function checkInBooking(
     }
 
     // 5 minute buffer value too long?
-    if (!withinDateRange(currentTime, new Date(currentBooking[0].starttime), new Date(currentBooking[0].endtime), 1)) {
+    if (!dateInRange(currentTime, new Date(currentBooking[0].starttime), new Date(currentBooking[0].endtime), 5)) {
       res.status(403).json({ error: "Not currently within booking time window" });
       return;
     }
@@ -213,7 +213,7 @@ export async function checkOutBooking(
     }
 
     // 5 minute buffer value too long?
-    if (!withinDateRange(currentTime, new Date(currentBooking[0].starttime), new Date(currentBooking[0].endtime), 1)) {
+    if (!dateInRange(currentTime, new Date(currentBooking[0].starttime), new Date(currentBooking[0].endtime), 5)) {
       res.status(403).json({ error: "Not currently within booking time window" });
       return;
     }
