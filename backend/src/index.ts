@@ -30,6 +30,7 @@ app.get("/bookings/current", validateToken, currentBookings);
 app.get("/bookings/upcoming", validateToken, upcomingBookings);
 app.get("/bookings/past", validateToken, pastBookings);
 app.get("/bookings/range", validateToken, rangeOfBookings);
+
 app.post("/bookings/checkin", validateToken, checkInBooking);
 app.post("/bookings/checkout", validateToken, checkOutBooking);
 
