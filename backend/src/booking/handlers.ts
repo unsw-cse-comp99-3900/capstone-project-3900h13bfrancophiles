@@ -128,14 +128,19 @@ export async function deleteBooking(
   res: TypedResponse<{}>,
 ) {
   try {
-    if (!typia.is<{ id: number }>(req.query)) {
+    if (!typia.is<{ id: number }>(req.body)) {
       res.status(400).json({ error: "Invalid input" });
       return;
     }
 
     const deletedBooking = await db
       .delete(booking)
-      .where(and(eq(booking.id, req.query.id), eq(booking.zid, req.token.user)))
+      .where(
+        and(
+          eq(booking.id, req.body.id),
+          eq(booking.zid, req.token.user)
+        )
+      )
       .returning();
 
     if (deletedBooking.length != 1) {
