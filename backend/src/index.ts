@@ -8,7 +8,7 @@ import { Pool } from 'pg';
 import { drizzle } from "drizzle-orm/node-postgres";
 import { login, logout } from './auth/handlers';
 import { validateToken } from './auth/middleware';
-import { currentBookings, upcomingBookings, pastBookings, rangeOfBookings } from './booking/handlers';
+import { currentBookings, upcomingBookings, pastBookings, rangeOfBookings, checkIn } from './booking/handlers';
 import { roomDetails, singleSpaceDetails } from "./spaces/handlers";
 import { spaceStatus } from './status/handlers';
 
@@ -30,6 +30,7 @@ app.get("/bookings/current", validateToken, currentBookings);
 app.get("/bookings/upcoming", validateToken, upcomingBookings);
 app.get("/bookings/past", validateToken, pastBookings);
 app.get("/bookings/range", validateToken, rangeOfBookings);
+app.post("/bookings/checkin", validateToken, checkIn);
 
 app.get("/spaces/:spaceId", validateToken, singleSpaceDetails);
 app.get("/rooms", validateToken, roomDetails);

@@ -1,9 +1,9 @@
 // Booking endpoint handlers
 
 import { db } from '../index'
-import { count, sql } from "drizzle-orm"
+import { count, sql, and, eq, lt, gt } from "drizzle-orm"
 import { booking } from '../../drizzle/schema';
-import { Booking, IDatetimeRange, TypedGETRequest, TypedResponse } from '../types';
+import { Booking, IDatetimeRange, TypedGETRequest, TypedRequest, TypedResponse } from '../types';
 import typia, { tags } from "typia";
 import { formatBookingDates } from '../utils';
 
@@ -120,5 +120,62 @@ export async function rangeOfBookings(
     res.json({ bookings: currentBookings.map(formatBookingDates) });
   } catch (error) {
     res.status(500).json({ error: 'Failed to fetch bookings' });
+  }
+}
+
+export async function checkIn(
+  req: TypedRequest<{ id: number }>,
+  res: TypedResponse<{}>,
+) {
+  try {
+    if (!typia.is<{ id: number }>(req.body)) {
+      res.status(400).json({ error: "Invalid input" });
+      return;
+    }
+
+    const currentTime = new Date().toISOString();
+
+    const currentBooking = await db
+    .select()
+    .from(booking)
+    .where(
+      and(
+        eq(booking.zid, req.token.user),
+        eq(booking.id, req.body.id)
+      )
+    );
+
+    if (currentBooking.length != 1) {
+      res.status(403).json({ error: "Booking id does not exist for this user" });
+      return;
+    }
+
+    // Should there be a small buffer on each side of the booking when the user can still checkin/checkout?
+    if (currentTime < currentBooking[0].starttime || currentBooking[0].endtime < currentTime) {
+      res.status(403).json({ error: "Not currently within booking time window" });
+      return;
+    }
+
+    const updatedBooking = await db
+      .update(booking)
+      .set({ checkintime: currentTime })
+      .where(
+        and(
+          lt(booking.starttime, currentTime),
+          gt(booking.endtime, currentTime),
+          eq(booking.id, req.body.id),
+          eq(booking.zid, req.token.user)))
+      .returning();
+
+    if (updatedBooking.length != 1) {
+      res.status(403).json({ error: "Booking id does not exist for this user or is not active at present time" });
+      return;
+    }
+
+  // If prior booking in this space didn't check out, update their checkout time now?
+
+    res.json({});
+  } catch (error) {
+    res.status(204);
   }
 }
