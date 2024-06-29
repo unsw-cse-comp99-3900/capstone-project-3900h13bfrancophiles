@@ -158,7 +158,7 @@ export async function checkInBooking(
 
     const updatedBooking = await db
       .update(booking)
-      .set({ checkintime: currentTime.toISOString(), currentstatus: "inprogress" })
+      .set({ checkintime: currentTime.toISOString(), currentstatus: "checkedin" })
       .where(
         and(
           lt(booking.starttime, currentTime.toISOString()),

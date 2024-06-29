@@ -50,5 +50,6 @@ CREATE TABLE IF NOT EXISTS booking (
     checkInTime   TIMESTAMP,
     checkOutTime  TIMESTAMP,
     FOREIGN KEY(zId) REFERENCES person(zId),
-    FOREIGN KEY(spaceId) REFERENCES space(id)
+    FOREIGN KEY(spaceId) REFERENCES space(id),
+    CONSTRAINT chk_currentStatus CHECK (currentStatus IN ('pending', 'confirmed', 'checkedin', 'completed'))
 );
