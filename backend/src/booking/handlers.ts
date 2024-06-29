@@ -152,8 +152,20 @@ export async function checkInBooking(
 
     // 5 minute buffer value too long?
     if (!dateInRange(currentTime, new Date(currentBooking[0].starttime), new Date(currentBooking[0].endtime), 5)) {
-      res.status(403).json({ error: "Not currently within booking time window" });
+      res.status(403).json({ error: "Outside booking time window" });
       return;
+    }
+
+    switch (currentBooking[0].currentstatus) {
+      case 'pending':
+        res.status(403).json({ error: "Booking not yet confirmed" });
+        break;
+      case 'checkedin':
+        res.status(403).json({ error: "Already checked in" });
+        break;
+      case 'completed':
+        res.status(403).json({ error: "Already checked out" });
+        break;
     }
 
     const updatedBooking = await db
@@ -168,7 +180,7 @@ export async function checkInBooking(
       .returning();
 
     if (updatedBooking.length != 1) {
-      res.status(403).json({ error: "Booking id does not exist for this user or is not active at present time" });
+      res.status(500).json({ error: "Booking modified during operation" });
       return;
     }
 
@@ -199,6 +211,7 @@ export async function checkOutBooking(
       and(
         eq(booking.zid, req.token.user),
         eq(booking.id, req.body.id),
+        eq(booking.currentstatus, "confirmed")
       )
     );
 
@@ -207,15 +220,22 @@ export async function checkOutBooking(
       return;
     }
 
-    if (currentBooking[0].checkintime == null) {
-      res.status(403).json({ error: "Not currently checked in for this booking" });
+    // 5 minute buffer value too long?
+    if (!dateInRange(currentTime, new Date(currentBooking[0].starttime), new Date(currentBooking[0].endtime), 5)) {
+      res.status(403).json({ error: "Outside booking time window" });
       return;
     }
 
-    // 5 minute buffer value too long?
-    if (!dateInRange(currentTime, new Date(currentBooking[0].starttime), new Date(currentBooking[0].endtime), 5)) {
-      res.status(403).json({ error: "Not currently within booking time window" });
-      return;
+    switch (currentBooking[0].currentstatus) {
+      case 'pending':
+        res.status(403).json({ error: "Booking not yet confirmed" });
+        break;
+      case 'confirmed':
+        res.status(403).json({ error: "Not yet checked in" });
+        break;
+      case 'completed':
+        res.status(403).json({ error: "Already checked out" });
+        break;
     }
 
     const updatedBooking = await db
@@ -226,11 +246,13 @@ export async function checkOutBooking(
           lt(booking.starttime, currentTime.toISOString()),
           gt(booking.endtime, currentTime.toISOString()),
           eq(booking.id, req.body.id),
-          eq(booking.zid, req.token.user)))
+          eq(booking.zid, req.token.user),
+          eq(booking.currentstatus, "checkedin"))
+          )
       .returning();
 
     if (updatedBooking.length != 1) {
-      res.status(403).json({ error: "Booking id does not exist for this user or is not active at present time" });
+      res.status(500).json({ error: "Booking modified during operation" });
       return;
     }
 
