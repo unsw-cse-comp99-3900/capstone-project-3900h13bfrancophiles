@@ -11,6 +11,8 @@ export const booking = pgTable("booking", {
 	spaceid: text("spaceid").notNull().references(() => space.id),
 	currentstatus: text("currentstatus").notNull(),
 	description: text("description").notNull(),
+	checkintime: timestamp("checkintime", { mode: 'string' }),
+	checkouttime: timestamp("checkouttime", { mode: 'string' }),
 });
 
 export const person = pgTable("person", {

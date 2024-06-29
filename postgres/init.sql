@@ -47,6 +47,8 @@ CREATE TABLE IF NOT EXISTS booking (
     spaceId       TEXT NOT NULL,
     currentStatus TEXT NOT NULL,
     description   TEXT NOT NULL,
+    checkInTime   TIMESTAMP,
+    checkOutTime  TIMESTAMP,
     FOREIGN KEY(zId) REFERENCES person(zId),
     FOREIGN KEY(spaceId) REFERENCES space(id)
 );
