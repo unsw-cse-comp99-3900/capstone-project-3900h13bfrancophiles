@@ -2,10 +2,10 @@
 
 import { db } from '../index'
 import { count, sql, and, eq, lt, lte, gt, gte, desc } from "drizzle-orm"
-import { booking } from '../../drizzle/schema';
-import { Booking, IDatetimeRange, TypedGETRequest, TypedResponse } from '../types';
+import { booking, hotdesk } from '../../drizzle/schema';
+import { Booking, AnonymousBooking, IDatetimeRange, TypedGETRequest, TypedResponse } from '../types';
 import typia, { tags } from "typia";
-import { formatBookingDates } from '../utils';
+import { formatBookingDates, anonymiseBooking } from '../utils';
 
 export async function currentBookings(
   req: TypedGETRequest,
@@ -131,5 +131,43 @@ export async function rangeOfBookings(
     res.json({ bookings: currentBookings.map(formatBookingDates) });
   } catch (error) {
     res.status(500).json({ error: 'Failed to fetch bookings' });
+  }
+}
+
+export async function currentHotdeskBookings(
+  req: TypedGETRequest<{ floor: string }>,
+  res: TypedResponse<{ bookings: AnonymousBooking[] }>,
+) {
+  try {
+    if (!typia.is<{ floor: string }>(req.query) ) {
+      res.status(400).json({ error: "Invalid input" });
+      return;
+    }
+    const floor = req.query.floor;
+    const currentTime = new Date().toISOString();
+
+    const currentBookings = await db
+      .select({
+        id: booking.id,
+        zid: booking.zid,
+        starttime: booking.starttime,
+        endtime: booking.endtime,
+        spaceid: booking.spaceid,
+        currentstatus: booking.currentstatus,
+        description: booking.description
+      })
+      .from(booking)
+      .innerJoin(hotdesk, eq(booking.spaceid, hotdesk.id))
+      .where(
+        and(
+          lt(booking.starttime, currentTime),
+          gt(booking.endtime, currentTime),
+          eq(hotdesk.floor, floor)
+        )
+    );
+
+    res.json({ bookings: currentBookings.map(formatBookingDates).map(anonymiseBooking) });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch hot desk availability' });
   }
 }

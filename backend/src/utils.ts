@@ -1,4 +1,4 @@
-import { Booking } from './types';
+import { Booking, AnonymousBooking } from './types';
 
 /**
  * Format the booking dates by adding a Z to the end to signify UTC time. It
@@ -12,4 +12,14 @@ export function formatBookingDates(booking: Booking) {
   booking.starttime += 'Z';
   booking.endtime += 'Z';
   return booking;
+}
+
+export function anonymiseBooking(booking: Booking): AnonymousBooking {
+  return {
+    id: booking.id,
+    starttime: booking.starttime,
+    endtime: booking.endtime,
+    spaceid: booking.spaceid,
+    currentstatus: booking.currentstatus
+  };
 }
