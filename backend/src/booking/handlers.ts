@@ -1,7 +1,7 @@
 // Booking endpoint handlers
 
 import { db } from '../index'
-import { count, sql } from "drizzle-orm"
+import { count, sql, and, eq, lt, lte, gt, gte, desc } from "drizzle-orm"
 import { booking } from '../../drizzle/schema';
 import { Booking, IDatetimeRange, TypedGETRequest, TypedResponse } from '../types';
 import typia, { tags } from "typia";
@@ -19,7 +19,11 @@ export async function currentBookings(
       .select()
       .from(booking)
       .where(
-        sql`${booking.starttime} < ${currentTime} AND ${booking.endtime} > ${currentTime} AND ${booking.zid} = ${zid}`
+        and(
+          lt(booking.starttime, currentTime),
+          gt(booking.endtime, currentTime),
+          eq(booking.zid, zid)
+        )
     );
 
     res.json({ bookings: currentBookings.map(formatBookingDates) });
@@ -40,7 +44,10 @@ export async function upcomingBookings(
       .select()
       .from(booking)
       .where(
-        sql`${booking.starttime} > ${currentTime} AND ${booking.zid} = ${zid}`
+        and(
+          gt(booking.starttime, currentTime),
+          eq(booking.zid, zid)
+        )
       );
 
     res.json({ bookings: upcomingBookings.map(formatBookingDates) });
@@ -73,17 +80,17 @@ export async function pastBookings(
       .select({ count: count() })
       .from(booking)
       .where(
-        sql`${booking.zid} = ${zid}`
+        eq(booking.zid, zid)
       );
 
     const pastBookings = await db
       .select()
       .from(booking)
       .where(
-        sql`${booking.zid} = ${zid}`
+        eq(booking.zid, zid)
       )
       .orderBy(
-        sql`${booking.starttime} DESC`
+        desc(booking.starttime)
       )
       .limit(limit)
       .offset(offset);
@@ -114,7 +121,11 @@ export async function rangeOfBookings(
       .select()
       .from(booking)
       .where(
-        sql`${booking.starttime} <= ${datetimeEnd} AND ${booking.endtime} >= ${datetimeStart} AND ${booking.zid} = ${zid}`
+        and(
+          lte(booking.starttime, datetimeEnd),
+          gte(booking.endtime, datetimeStart),
+          eq(booking.zid, zid)
+        )
       );
 
     res.json({ bookings: currentBookings.map(formatBookingDates) });
