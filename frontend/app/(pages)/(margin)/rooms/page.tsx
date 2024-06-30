@@ -19,13 +19,25 @@ import {
   Slider,
 } from "@mui/joy";
 
+interface Room {
+  id: string;
+  name: string;
+  type: string;
+  capacity: number;
+  available: boolean;
+}
+
 interface FilterOption {
   value: string;
   label: string;
 }
 
-// TODO: replace with real data, this is just placeholder till an endpoint to pull data from is made
-const rooms = [
+interface Filters {
+  type: string;
+  capacity: number;
+}
+
+const rooms: Room[] = [
   {
     id: "1",
     name: "K17 G02",
@@ -70,34 +82,61 @@ const rooms = [
   },
 ];
 
-const renderFilters = () => (
+const renderFilters = (
+  tempFilters: Filters,
+  setTempFilters: React.Dispatch<React.SetStateAction<Filters>>
+) => (
   <React.Fragment>
     <FilterControl
       label="Type"
-      placeholder="All"
       options={[
         { value: "all", label: "All" },
         { value: "meeting-room", label: "Meeting Room" },
-        { value: "consult-room", label: "Consult Room" },
+        { value: "consultation-room", label: "Consultation Room" },
         { value: "conference-room", label: "Conference Room" },
       ]}
+      value={tempFilters.type}
+      onChange={(event, value) =>
+        setTempFilters((prevFilters) => ({
+          ...prevFilters,
+          type: value as string,
+        }))
+      }
     />
-    <CapacitySlider label="Capacity" min={1} max={25} />
+    <CapacitySlider
+      label="Capacity"
+      min={1}
+      max={25}
+      value={tempFilters.capacity}
+      onChange={(value) =>
+        setTempFilters((prevFilters) => ({
+          ...prevFilters,
+          capacity: value,
+        }))
+      }
+    />
   </React.Fragment>
 );
 
-const FilterControl = ({
-  label,
-  placeholder,
-  options,
-}: {
+interface FilterControlProps {
   label: string;
-  placeholder: string;
   options: FilterOption[];
+  value: string;
+  onChange: (
+    event: React.MouseEvent | React.KeyboardEvent | React.FocusEvent | null,
+    value: string | null
+  ) => void;
+}
+
+const FilterControl: React.FC<FilterControlProps> = ({
+  label,
+  options,
+  value,
+  onChange,
 }) => (
   <FormControl size="sm">
     <FormLabel>{label}</FormLabel>
-    <Select size="sm" placeholder={placeholder}>
+    <Select size="sm" value={value} onChange={onChange}>
       {options.map((option) => (
         <Option key={option.value} value={option.value}>
           {option.label}
@@ -107,41 +146,52 @@ const FilterControl = ({
   </FormControl>
 );
 
-const CapacitySlider = ({
-  label,
-  min,
-  max,
-}: {
+interface CapacitySliderProps {
   label: string;
   min: number;
   max: number;
-}) => {
-  const [value, setValue] = React.useState<number>(min);
+  value: number;
+  onChange: (value: number) => void;
+}
 
-  return (
-    <FormControl size="sm">
-      <FormLabel>{label}</FormLabel>
-      <Slider
-        min={min}
-        max={max}
-        value={value}
-        onChange={(event, newValue) => setValue(newValue as number)}
-        valueLabelDisplay="auto"
-      />
-    </FormControl>
-  );
-};
+const CapacitySlider: React.FC<CapacitySliderProps> = ({
+  label,
+  min,
+  max,
+  value,
+  onChange,
+}) => (
+  <FormControl size="sm">
+    <FormLabel>{label}</FormLabel>
+    <Slider
+      min={min}
+      max={max}
+      value={value}
+      onChange={(event, newValue) => onChange(newValue as number)}
+      valueLabelDisplay="auto"
+    />
+  </FormControl>
+);
 
 export default function Rooms() {
-  const [filtersOpen, setFiltersOpen] = React.useState(false);
-  const [sort, setSort] = React.useState(false);
-  const [date, setDate] = React.useState(
+  const [filtersOpen, setFiltersOpen] = React.useState<boolean>(false);
+  const [sort, setSort] = React.useState<boolean>(false);
+  const [searchQuery, setSearchQuery] = React.useState<string>("");
+  const [filters, setFilters] = React.useState<Filters>({
+    type: "all",
+    capacity: 1,
+  });
+  const [tempFilters, setTempFilters] = React.useState<Filters>({
+    type: "all",
+    capacity: 1,
+  });
+  const [date, setDate] = React.useState<string>(
     new Date().toISOString().split("T")[0].toString()
   );
-  const [startTime, setStartTime] = React.useState(
+  const [startTime, setStartTime] = React.useState<string>(
     new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
   );
-  const [endTime, setEndTime] = React.useState(
+  const [endTime, setEndTime] = React.useState<string>(
     new Date(new Date().getTime() + 60 * 60 * 1000).toLocaleTimeString([], {
       hour: "2-digit",
       minute: "2-digit",
@@ -156,7 +206,28 @@ export default function Rooms() {
     setSort(!sort);
   };
 
+  const applyFilters = () => {
+    setFilters(tempFilters);
+    setFiltersOpen(false);
+  };
+
+  const filterRooms = (rooms: Room[]) => {
+    return rooms.filter((room) => {
+      const matchesType =
+        filters.type === "all" ||
+        room.type.toLowerCase().replace(" ", "-") === filters.type;
+      const matchesCapacity = room.capacity >= filters.capacity;
+      const matchesSearchQuery = room.name
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase());
+      return matchesType && matchesCapacity && matchesSearchQuery;
+    });
+  };
+
   const sortedRooms = [...rooms].sort((a, b) => a.name.localeCompare(b.name));
+  const displayedRooms = filterRooms(
+    sort ? sortedRooms : sortedRooms.reverse()
+  );
 
   return (
     <>
@@ -169,12 +240,13 @@ export default function Rooms() {
         gap={2}
         borderRadius="sm"
       >
-        {/* TODO: Make this actually search and apply the filter */}
         <FormControl sx={{ flex: 2 }} size="sm">
           <Input
             size="sm"
             placeholder="Search"
             startDecorator={<SearchIcon />}
+            value={searchQuery}
+            onChange={(event) => setSearchQuery(event.target.value)}
           />
         </FormControl>
         <Stack direction="row" gap={2} flexWrap="wrap">
@@ -216,17 +288,20 @@ export default function Rooms() {
           </Stack>
           <Button
             startDecorator={<FilterListIcon />}
-            variant="outlined"
+            variant={
+              sortedRooms.length === displayedRooms.length
+                ? "outlined"
+                : "solid"
+            }
             color="neutral"
             size="sm"
             onClick={toggleFilters}
           >
             Filter
           </Button>
-          {/* TODO: Make this actually apply sort, it does rn something but like some affordance is probably good */}
           <Button
             startDecorator={<SwapVertIcon />}
-            variant="outlined"
+            variant={sort ? "solid" : "outlined"}
             color="neutral"
             size="sm"
             onClick={toggleSort}
@@ -251,7 +326,7 @@ export default function Rooms() {
           }}
         >
           <h2 id="modal-title">Filter Rooms</h2>
-          {renderFilters()}
+          {renderFilters(tempFilters, setTempFilters)}
           <Box sx={{ mt: 2, display: "flex", justifyContent: "space-between" }}>
             <Button
               variant="outlined"
@@ -260,12 +335,7 @@ export default function Rooms() {
             >
               Cancel
             </Button>
-            <Button
-              variant="outlined"
-              color="primary"
-              onClick={() => setFiltersOpen(false)}
-            >
-              {/* TODO: Make this actually apply the filter on submit */}
+            <Button variant="outlined" color="primary" onClick={applyFilters}>
               Apply filters
             </Button>
           </Box>
@@ -279,7 +349,7 @@ export default function Rooms() {
         alignItems="center"
         paddingTop="20px"
       >
-        {(sort ? sortedRooms : sortedRooms.reverse()).map((room) => (
+        {displayedRooms.map((room) => (
           <RoomCard key={room.id} room={room} />
         ))}
       </Stack>
