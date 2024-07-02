@@ -1,7 +1,7 @@
 'use client';
 
 import FloorPlanViewer from "@/components/FloorPlanViewer";
-import { Tab, TabList, TabPanel, Tabs, Stack, Input, Button, Box, Sheet, Avatar } from "@mui/joy";
+import { Tab, TabList, TabPanel, Tabs, Stack, Input, Button, Box, Sheet, Avatar, Modal, ModalClose, ModalDialog, DialogTitle, DialogContent, Typography } from "@mui/joy";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import { deskData } from '@/app/data';
 import Image from "next/image";
@@ -9,9 +9,9 @@ import * as React from 'react';
 import { Booking } from "@/types";
 
 type Status = { status: "available" }
-            | { status: "unavailable", booking: Booking };
+  | { status: "unavailable", booking: Booking };
 
-type UserData = { name: string, image: string}
+type UserData = { name: string, image: string }
 
 const exampleBooking: Booking = {
   id: 1,
@@ -36,9 +36,9 @@ const getUserData = (uesrId: number): UserData => {
 // will eventually get backend data
 const getStatus = (deskId: string): Status => {
   if (deskId === "3") {
-    return {status: "unavailable", booking: exampleBooking};
+    return { status: "unavailable", booking: exampleBooking };
   } else {
-    return {status: "available"};
+    return { status: "available" };
   }
 }
 
@@ -57,8 +57,9 @@ export default function desks() {
   );
 
   const [selectedDesk, setSelectedDesk] = React.useState("");
-  const [userData, setUserData] = React.useState({ name: "", image: ""});
+  const [userData, setUserData] = React.useState({ name: "", image: "" });
   const [available, setAvailable] = React.useState(false);
+  const [open, setOpen] = React.useState(false);
 
   React.useEffect(() => {
     setSelectedDesk("");
@@ -69,7 +70,7 @@ export default function desks() {
       const status = getStatus(selectedDesk);
       switch (status.status) {
         case "available":
-        setAvailable(true);
+          setAvailable(true);
           break;
         case "unavailable":
           setAvailable(false);
@@ -80,6 +81,31 @@ export default function desks() {
 
   return (
     <React.Fragment>
+      <Modal open={open} onClose={() => setOpen(false)}>
+        <ModalDialog>
+          <DialogTitle>Confirm booking</DialogTitle>
+          <ModalClose />
+          <DialogContent>
+            <Typography>
+              {date}
+            </Typography>
+            <Typography>
+              {startTime} - {endTime}
+            </Typography>
+
+          </DialogContent>
+          <form
+            onSubmit={(event: React.FormEvent<HTMLFormElement>) => {
+              event.preventDefault();
+              setOpen(false);
+            }}
+          >
+            <Stack spacing={2}>
+              <Button>Book</Button>
+            </Stack>
+          </form>
+        </ModalDialog>
+      </Modal>
       <Sheet variant="plain" sx={{ boxShadow: "md", borderRadius: 10, zIndex: 2, position: "absolute", top: 60, right: 0, padding: 1, margin: 2 }}>
         <Stack direction="column">
           <Stack direction="row" gap={2} flexWrap="wrap">
@@ -124,32 +150,31 @@ export default function desks() {
               variant="outlined"
               color="neutral"
               size="sm"
-              sx={{ backgroundColor: "#FBFCFE" }}
-              onClick={() => (alert("toggled filter!"))}
+              onClick={() => alert("toggled filters!")}
             >
               Filter
             </Button>
           </Stack>
-          <Box sx={{display: selectedDesk == "" ? "none" : "flex", flexDirection: "column", justifyContent: "space-between", alignItems: "center" }}>
-            <Button sx={{ display: available ? "block" : "none", marginTop: 1, width: "100%" }}>
+          <Box sx={{ display: selectedDesk == "" ? "none" : "flex", flexDirection: "column", justifyContent: "space-between", alignItems: "center" }}>
+            <Button sx={{ display: available ? "block" : "none", marginTop: 1, width: "100%" }} onClick={() => setOpen(true)}>
               Book desk {selectedDesk}
             </Button>
-            <Box sx={{ display: available ? "none" : "flex", flexDirection: "column", justifyContent: "space-between", alignItems: "center"}}>
-              <h2>
+            <Box sx={{ display: available ? "none" : "flex", flexDirection: "column", justifyContent: "space-between", alignItems: "center", padding: 2 }}>
+              <Typography component="h2">
                 Desk {selectedDesk}
-              </h2>
+              </Typography>
               <Avatar
                 variant="solid"
                 color="primary"
-                src={"sup"/*available ? "/DeskIcon1.svg" : `data:image/jpeg;base64,${userData.image}`*/}
+                src={available ? "/DeskIcon1.svg" : `data:image/jpeg;base64,${userData.image}`}
                 alt={userData.name.split(" ", 2).map((i) => i.charAt(0)).join("").toUpperCase()}
-                sx={{height: "100px", width: "100px"}}
+                sx={{ height: "100px", width: "100px", margin: 1 }}
               >
                 {userData.name.split(" ", 2).map((i) => i.charAt(0)).join("").toUpperCase()}
               </Avatar>
-              <h4>
+              <Typography>
                 Franco Reyes
-              </h4>
+              </Typography>
             </Box>
           </Box>
         </Stack>
