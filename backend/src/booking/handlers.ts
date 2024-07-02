@@ -144,6 +144,16 @@ export async function deleteBooking(
       return;
     }
 
+    const bookingExists = await db
+      .select()
+      .from(booking)
+      .where(eq(booking.id, req.body.id));
+
+    if (bookingExists.length != 1) {
+      res.status(404).json({ error: "Booking ID does not exist" });
+      return;
+    }
+
     const deletedBooking = await db
       .delete(booking)
       .where(
@@ -155,7 +165,7 @@ export async function deleteBooking(
       .returning();
 
     if (deletedBooking.length != 1) {
-      res.status(403).json({ error: "Booking id does not exist for this user" });
+      res.status(403).json({ error: "User does not own this booking ID" });
       return;
     }
 
