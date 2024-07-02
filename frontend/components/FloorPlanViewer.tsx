@@ -10,6 +10,7 @@ import DeskIcon from './DeskIcon';
 interface FloorPlanViewerProps {
   setSelectedDesk: React.Dispatch<React.SetStateAction<string>>;
   level: string;
+  // TODO: timestamp passed down
 }
 
 const FloorPlanViewer = ({ level, setSelectedDesk }: FloorPlanViewerProps) => {
@@ -30,8 +31,8 @@ const FloorPlanViewer = ({ level, setSelectedDesk }: FloorPlanViewerProps) => {
           contentStyle={{ width: "var(--size-var)", height: "var(--size-var)", position: "relative" }}
         >
           <Image src={`/${level}.svg`} fill alt={`${level} floorplan`} style={{ position: "absolute" }}/>
-          {desks.map(desk => (
-            <DeskIcon {...{...desk, setSelectedDesk}} />
+          {desks.map((desk, index) => (
+            <DeskIcon key={index} {...{...desk, setSelectedDesk}} />
           ))}
         </TransformComponent>
       </TransformWrapper>
