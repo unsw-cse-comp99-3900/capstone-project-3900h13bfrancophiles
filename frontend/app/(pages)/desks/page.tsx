@@ -141,11 +141,11 @@ export default function desks() {
               <Avatar
                 variant="solid"
                 color="primary"
-                src={available ? "/DeskIcon1.svg" : `data:image/jpeg;base64,${userData.image}`}
-                alt={userData.name}
+                src={"sup"/*available ? "/DeskIcon1.svg" : `data:image/jpeg;base64,${userData.image}`*/}
+                alt={userData.name.split(" ", 2).map((i) => i.charAt(0)).join("").toUpperCase()}
                 sx={{height: "100px", width: "100px"}}
               >
-                FR
+                {userData.name.split(" ", 2).map((i) => i.charAt(0)).join("").toUpperCase()}
               </Avatar>
               <h4>
                 Franco Reyes
