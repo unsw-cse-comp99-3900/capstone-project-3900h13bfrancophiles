@@ -62,10 +62,6 @@ export default function desks() {
   const [open, setOpen] = React.useState(false);
 
   React.useEffect(() => {
-    setSelectedDesk("");
-  }, [date, startTime, endTime]);
-
-  React.useEffect(() => {
     if (selectedDesk) {
       const status = getStatus(selectedDesk);
       switch (status.status) {
@@ -77,7 +73,7 @@ export default function desks() {
           setUserData(getUserData(status.booking.zid))
       }
     }
-  }, [selectedDesk]);
+  }, [selectedDesk, date, startTime, endTime]);
 
   return (
     <React.Fragment>
