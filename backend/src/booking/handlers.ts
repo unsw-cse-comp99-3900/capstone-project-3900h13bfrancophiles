@@ -272,3 +272,56 @@ export async function checkOutBooking(
     res.status(204);
   }
 }
+
+export async function editBooking(
+  req: TypedRequest<Booking>,
+  res: TypedResponse<{ booking: Booking }>,
+) {
+  try {
+    if (!typia.is<Booking>(req.body)) {
+      res.status(400).json({ error: "Invalid input" });
+      return;
+    }
+
+    const bookingExists = await db
+    .select()
+    .from(booking)
+    .where(eq(booking.id, req.body.id));
+
+    if (bookingExists.length != 1) {
+      res.status(404).json({ error: "Booking ID does not exist" });
+      return;
+    }
+
+    // check that the updated booking is valid
+
+    const updatedBooking = await db
+      .update(booking)
+      .set({
+        id: req.body.id,
+        starttime: req.body.starttime,
+        endtime: req.body.endtime,
+        spaceid: req.body.spaceid,
+        currentstatus: "pending",
+        description: req.body.description
+       })
+      .where(
+        and(
+          eq(booking.id, req.body.id),
+          eq(booking.zid, req.token.user)
+        )
+      )
+      .returning();
+
+    if (updatedBooking.length != 1) {
+      res.status(500).json({ error: "Booking modified during operation" });
+      return;
+    }
+
+    // Send confirmation email with new booking details
+
+    res.json({ booking: updatedBooking[0] });
+  } catch (error) {
+    res.status(204);
+  }
+}
