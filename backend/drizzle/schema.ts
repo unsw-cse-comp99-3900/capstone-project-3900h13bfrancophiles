@@ -1,17 +1,7 @@
-import { pgTable, foreignKey, serial, integer, timestamp, text, boolean } from "drizzle-orm/pg-core"
+import { pgTable, integer, text, foreignKey, boolean, serial, timestamp } from "drizzle-orm/pg-core"
   import { sql } from "drizzle-orm"
 
 
-
-export const booking = pgTable("booking", {
-	id: serial("id").primaryKey().notNull(),
-	zid: integer("zid").notNull().references(() => person.zid),
-	starttime: timestamp("starttime", { mode: 'string' }).notNull(),
-	endtime: timestamp("endtime", { mode: 'string' }).notNull(),
-	spaceid: text("spaceid").notNull().references(() => space.id),
-	currentstatus: text("currentstatus").notNull(),
-	description: text("description").notNull(),
-});
 
 export const person = pgTable("person", {
 	zid: integer("zid").primaryKey().notNull(),
@@ -24,6 +14,18 @@ export const person = pgTable("person", {
 export const staff = pgTable("staff", {
 	zid: integer("zid").primaryKey().notNull().references(() => person.zid),
 	isadmin: boolean("isadmin"),
+});
+
+export const booking = pgTable("booking", {
+	id: serial("id").primaryKey().notNull(),
+	zid: integer("zid").notNull().references(() => person.zid),
+	starttime: timestamp("starttime", { mode: 'string' }).notNull(),
+	endtime: timestamp("endtime", { mode: 'string' }).notNull(),
+	spaceid: text("spaceid").notNull().references(() => space.id),
+	currentstatus: text("currentstatus").notNull(),
+	description: text("description").notNull(),
+	checkintime: timestamp("checkintime", { mode: 'string' }),
+	checkouttime: timestamp("checkouttime", { mode: 'string' }),
 });
 
 export const hdr = pgTable("hdr", {

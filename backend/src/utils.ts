@@ -1,3 +1,4 @@
+import { buffer } from 'stream/consumers';
 import { Booking } from './types';
 
 /**
@@ -12,4 +13,17 @@ export function formatBookingDates(booking: Booking) {
   booking.starttime += 'Z';
   booking.endtime += 'Z';
   return booking;
+}
+
+/**
+ * Determine whether a Date is within specified range, with given buffer in minutes
+ */
+export function withinDateRange(current: Date, start: Date, end: Date, bufferMinutes: number = 0) {
+  start.setMinutes(start.getMinutes() - bufferMinutes);
+  end.setMinutes(end.getMinutes() + bufferMinutes);
+
+  if (start <= current && current <= end) {
+    return true;
+  }
+  return false;
 }
