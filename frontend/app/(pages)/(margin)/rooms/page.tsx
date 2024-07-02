@@ -18,8 +18,10 @@ import {
   Stack,
   Slider,
 } from "@mui/joy";
+import useRoomDetails from "@/hooks/useRoomDetails";
+import { Room } from "@/types";
 
-interface Room {
+interface RoomPlaceholder {
   id: string;
   name: string;
   type: string;
@@ -37,7 +39,7 @@ interface Filters {
   capacity: number;
 }
 
-const rooms: Room[] = [
+const rooms: RoomPlaceholder[] = [
   {
     id: "1",
     name: "K17 G02",
@@ -198,6 +200,10 @@ export default function Rooms() {
     })
   );
 
+  const { roomsData } = useRoomDetails();
+
+  console.log(roomsData);
+
   const toggleFilters = () => {
     setFiltersOpen(!filtersOpen);
   };
@@ -211,7 +217,7 @@ export default function Rooms() {
     setFiltersOpen(false);
   };
 
-  const filterRooms = (rooms: Room[]) => {
+  const filterRooms = (rooms: RoomPlaceholder[]) => {
     return rooms.filter((room) => {
       const matchesType =
         filters.type === "all" ||
