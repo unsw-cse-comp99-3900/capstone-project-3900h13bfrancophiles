@@ -1,6 +1,6 @@
 "use client";
 
-import { AspectRatio, Link, Sheet, Stack, Typography } from "@mui/joy";
+import { AspectRatio, Sheet, Stack, Typography } from "@mui/joy";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import React from "react";
@@ -18,16 +18,18 @@ function NavItem({ title, navigateTo }: NavProps) {
 
   return (
     <Stack
-      component={Link}
+      component={NextLink}
       href={navigateTo}
-      sx={{
+      sx={theme => ({
         alignContent: "center",
         width: "100%",
         height: "100%",
         textDecoration: "none",
-        borderBottom: activePage === navigateTo ? "4px solid #787979" : "none",
-        "&:hover": { bgcolor: "#f0f4fc", textDecoration: "none" },
-      }}
+        borderBottom: activePage === navigateTo
+          ? `4px solid ${theme.vars.palette.neutral[500]}`
+          : "none",
+        "&:hover": { bgcolor: `${theme.vars.palette.neutral.plainHoverBg}` },
+      })}
     >
       <Typography
         level="h3"
@@ -54,7 +56,7 @@ export default function NavBar() {
         alignItems="center"
         px={2}
       >
-        <Link component={NextLink} href="/">
+        <NextLink href="/">
           <AspectRatio
             variant="plain"
             ratio="15/12"
@@ -63,7 +65,7 @@ export default function NavBar() {
           >
             <Image fill src="/roomalloclogo.svg" alt="logo" />
           </AspectRatio>
-        </Link>
+        </NextLink>
         <Stack
           direction="row"
           alignItems="center"

@@ -33,7 +33,7 @@ const NavBar = () => {
           justifyContent="space-between"
           alignItems="center"
         >
-          <Link component={NextLink} href="/">
+          <NextLink href="/">
             <AspectRatio
               variant="plain"
               ratio="15/12"
@@ -42,7 +42,7 @@ const NavBar = () => {
             >
               <Image fill src="/roomalloclogo.svg" alt="logo" />
             </AspectRatio>
-          </Link>
+          </NextLink>
           <IconButton
             variant="plain"
             sx={{ color: "#fff" }}

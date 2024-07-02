@@ -16,35 +16,38 @@ export const staff = pgTable("staff", {
 	isadmin: boolean("isadmin"),
 });
 
+export const booking = pgTable("booking", {
+	id: serial("id").primaryKey().notNull(),
+	zid: integer("zid").notNull().references(() => person.zid),
+	starttime: timestamp("starttime", { mode: 'string' }).notNull(),
+	endtime: timestamp("endtime", { mode: 'string' }).notNull(),
+	spaceid: text("spaceid").notNull().references(() => space.id),
+	currentstatus: text("currentstatus").notNull(),
+	description: text("description").notNull(),
+	checkintime: timestamp("checkintime", { mode: 'string' }),
+	checkouttime: timestamp("checkouttime", { mode: 'string' }),
+});
+
 export const hdr = pgTable("hdr", {
 	zid: integer("zid").primaryKey().notNull().references(() => person.zid),
 	degree: text("degree"),
 });
 
 export const space = pgTable("space", {
-	id: serial("id").primaryKey().notNull(),
+	id: text("id").primaryKey().notNull(),
+	name: text("name").notNull(),
 });
 
 export const hotdesk = pgTable("hotdesk", {
-	id: serial("id").primaryKey().notNull().references(() => space.id, { onDelete: "cascade" } ),
-	floor: integer("floor").notNull(),
-	room: integer("room").notNull(),
+	id: text("id").primaryKey().notNull().references(() => space.id, { onDelete: "cascade" } ),
+	floor: text("floor").notNull(),
+	room: text("room").notNull(),
 	desknumber: integer("desknumber").notNull(),
 });
 
 export const room = pgTable("room", {
-	id: serial("id").primaryKey().notNull().references(() => space.id, { onDelete: "cascade" } ),
+	id: text("id").primaryKey().notNull().references(() => space.id, { onDelete: "cascade" } ),
 	capacity: integer("capacity").notNull(),
-	roomnumber: integer("roomnumber").notNull(),
-	usage: integer("usage").notNull(),
-});
-
-export const booking = pgTable("booking", {
-	id: serial("id").primaryKey().notNull(),
-	zid: integer("zid").notNull().references(() => person.zid),
-	starttime: timestamp("starttime", { mode: 'string' }).notNull(),
-	endtime: timestamp("endtime", { mode: 'string' }).notNull(),
-	spaceid: integer("spaceid").notNull().references(() => space.id),
-	currentstatus: text("currentstatus").notNull(),
-	description: text("description").notNull(),
+	roomnumber: text("roomnumber").notNull(),
+	usage: text("usage").notNull(),
 });

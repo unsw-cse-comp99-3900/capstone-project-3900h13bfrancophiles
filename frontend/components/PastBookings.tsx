@@ -14,6 +14,7 @@ import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 // import { authApiCall } from '@/api'
 // import useSWR from 'swr'
 import { Sheet, Stack } from "@mui/joy";
+import { format } from 'date-fns';
 
 export default function PastBookings() {
   function createData(
@@ -230,10 +231,8 @@ export default function PastBookings() {
               .map((row) => (
                 <tr key={row.id}>
                   <td>
-                    <Typography level="body-sm" suppressHydrationWarning>
-                      {row.startTime.toLocaleDateString()}{" "}
-                      {row.startTime.getHours()}:{row.startTime.getMinutes()} -{" "}
-                      {row.endTime.getHours()}:{row.endTime.getMinutes()}
+                    <Typography level="body-sm">
+                      {format(row.startTime, "dd/MM/yy k:mm")} - {format(row.endTime, "k:mm")}
                     </Typography>
                   </td>
                   <td>
