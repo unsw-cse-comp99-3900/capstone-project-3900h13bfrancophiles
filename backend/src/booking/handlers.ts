@@ -5,7 +5,7 @@ import { count, sql, and, eq, lt, lte, gt, gte, desc } from "drizzle-orm"
 import { booking } from '../../drizzle/schema';
 import { Booking, IDatetimeRange, TypedGETRequest, TypedRequest, TypedResponse } from '../types';
 import typia, { tags } from "typia";
-import { formatBookingDates } from '../utils';
+import { formatBookingDates, withinDateRange as dateInRange } from '../utils';
 
 export async function currentBookings(
   req: TypedGETRequest,
@@ -131,6 +131,145 @@ export async function rangeOfBookings(
     res.json({ bookings: currentBookings.map(formatBookingDates) });
   } catch (error) {
     res.status(500).json({ error: 'Failed to fetch bookings' });
+  }
+}
+
+export async function checkInBooking(
+  req: TypedRequest<{ id: number }>,
+  res: TypedResponse<{}>,
+) {
+  try {
+    if (!typia.is<{ id: number }>(req.body)) {
+      res.status(400).json({ error: "Invalid input" });
+      return;
+    }
+
+    const currentTime = new Date();
+
+    const currentBooking = await db
+    .select()
+    .from(booking)
+    .where(
+      and(
+        eq(booking.zid, req.token.user),
+        eq(booking.id, req.body.id)
+      )
+    );
+
+    if (currentBooking.length != 1) {
+      res.status(403).json({ error: "Booking id does not exist for this user" });
+      return;
+    }
+
+    // 5 minute buffer value too long?
+    if (!dateInRange(currentTime, new Date(currentBooking[0].starttime), new Date(currentBooking[0].endtime), 5)) {
+      res.status(403).json({ error: "Outside booking time window" });
+      return;
+    }
+
+    switch (currentBooking[0].currentstatus) {
+      case 'pending':
+        res.status(403).json({ error: "Booking not yet confirmed" });
+        break;
+      case 'checkedin':
+        res.status(403).json({ error: "Already checked in" });
+        break;
+      case 'completed':
+        res.status(403).json({ error: "Already checked out" });
+        break;
+    }
+
+    const updatedBooking = await db
+      .update(booking)
+      .set({ checkintime: currentTime.toISOString(), currentstatus: "checkedin" })
+      .where(
+        and(
+          lt(booking.starttime, currentTime.toISOString()),
+          gt(booking.endtime, currentTime.toISOString()),
+          eq(booking.id, req.body.id),
+          eq(booking.zid, req.token.user)))
+      .returning();
+
+    if (updatedBooking.length != 1) {
+      res.status(500).json({ error: "Booking modified during operation" });
+      return;
+    }
+
+  // If prior booking in this space didn't check out, update their checkout time now?
+
+    res.json({});
+  } catch (error) {
+    res.status(204);
+  }
+}
+
+export async function checkOutBooking(
+  req: TypedRequest<{ id: number }>,
+  res: TypedResponse<{}>,
+) {
+  try {
+    if (!typia.is<{ id: number }>(req.body)) {
+      res.status(400).json({ error: "Invalid input" });
+      return;
+    }
+
+    const currentTime = new Date();
+
+    const currentBooking = await db
+    .select()
+    .from(booking)
+    .where(
+      and(
+        eq(booking.zid, req.token.user),
+        eq(booking.id, req.body.id),
+        eq(booking.currentstatus, "confirmed")
+      )
+    );
+
+    if (currentBooking.length != 1) {
+      res.status(403).json({ error: "Booking id does not exist for this user" });
+      return;
+    }
+
+    // 5 minute buffer value too long?
+    if (!dateInRange(currentTime, new Date(currentBooking[0].starttime), new Date(currentBooking[0].endtime), 5)) {
+      res.status(403).json({ error: "Outside booking time window" });
+      return;
+    }
+
+    switch (currentBooking[0].currentstatus) {
+      case 'pending':
+        res.status(403).json({ error: "Booking not yet confirmed" });
+        break;
+      case 'confirmed':
+        res.status(403).json({ error: "Not yet checked in" });
+        break;
+      case 'completed':
+        res.status(403).json({ error: "Already checked out" });
+        break;
+    }
+
+    const updatedBooking = await db
+      .update(booking)
+      .set({ checkouttime: currentTime.toISOString(), currentstatus: "completed"})
+      .where(
+        and(
+          lt(booking.starttime, currentTime.toISOString()),
+          gt(booking.endtime, currentTime.toISOString()),
+          eq(booking.id, req.body.id),
+          eq(booking.zid, req.token.user),
+          eq(booking.currentstatus, "checkedin"))
+          )
+      .returning();
+
+    if (updatedBooking.length != 1) {
+      res.status(500).json({ error: "Booking modified during operation" });
+      return;
+    }
+
+    res.json({});
+  } catch (error) {
+    res.status(204);
   }
 }
 
