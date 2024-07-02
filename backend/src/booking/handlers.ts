@@ -3,7 +3,7 @@
 import { db } from '../index'
 import { count, sql, and, eq, lt, lte, gt, gte, desc } from "drizzle-orm"
 import { booking } from '../../drizzle/schema';
-import { Booking, IDatetimeRange, TypedGETRequest, TypedRequest, TypedResponse } from '../types';
+import { Booking, IDatetimeRange, TypedGETRequest, TypedRequest, TypedResponse, BookingEdit } from '../types';
 import typia, { tags } from "typia";
 import { formatBookingDates, withinDateRange as dateInRange } from '../utils';
 
@@ -274,36 +274,33 @@ export async function checkOutBooking(
 }
 
 export async function editBooking(
-  req: TypedRequest<Booking>,
+  req: TypedRequest<BookingEdit>,
   res: TypedResponse<{ booking: Booking }>,
 ) {
   try {
-    if (!typia.is<Booking>(req.body)) {
+    if (!typia.is<BookingEdit>(req.body)) {
       res.status(400).json({ error: "Invalid input" });
       return;
     }
 
-    const bookingExists = await db
+    const existingBooking = await db
     .select()
     .from(booking)
     .where(eq(booking.id, req.body.id));
 
-    if (bookingExists.length != 1) {
+    if (existingBooking.length != 1) {
       res.status(404).json({ error: "Booking ID does not exist" });
       return;
     }
 
-    // check that the updated booking is valid
-
     const updatedBooking = await db
       .update(booking)
       .set({
-        id: req.body.id,
-        starttime: req.body.starttime,
-        endtime: req.body.endtime,
-        spaceid: req.body.spaceid,
-        currentstatus: "pending",
-        description: req.body.description
+        starttime: req.body.starttime ?? existingBooking[0].starttime,
+        endtime: req.body.endtime ?? existingBooking[0].endtime,
+        spaceid: req.body.spaceid ?? existingBooking[0].spaceid,
+        currentstatus: "pending", // if edited by admin, should be confirmed
+        description: req.body.description ?? existingBooking[0].description
        })
       .where(
         and(
