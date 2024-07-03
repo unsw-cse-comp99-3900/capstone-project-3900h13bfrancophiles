@@ -150,6 +150,7 @@ export default function Rooms() {
   );
 
   const { roomsData = [], isLoading, error } = useRoomDetails();
+  const [isFiltered, setIsFiltered] = React.useState<boolean>(false);
 
   if (isLoading) return <CircularProgress />;
   if (error) return <Alert color="danger">Error loading rooms</Alert>;
@@ -164,6 +165,14 @@ export default function Rooms() {
 
   const applyFilters = () => {
     setFilters(tempFilters);
+    if (
+      tempFilters.type !== "all" ||
+      tempFilters.capacity !== 1
+    ) {
+      setIsFiltered(true);
+    } else {
+      setIsFiltered(false);
+    }
     setFiltersOpen(false);
   };
 
@@ -246,11 +255,7 @@ export default function Rooms() {
           </Stack>
           <Button
             startDecorator={<FilterListIcon />}
-            variant={
-              sortedRooms.length === displayedRooms.length
-                ? "outlined"
-                : "solid"
-            }
+            variant={isFiltered ? "solid" : "outlined"}
             color="neutral"
             size="sm"
             onClick={toggleFilters}
