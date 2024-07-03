@@ -23,6 +23,7 @@ import {
 import useRoomDetails from "@/hooks/useRoomDetails";
 import { Room } from "@/types";
 import Loading from "@/components/Loading";
+import Error from "@/components/Error";
 
 interface FilterOption {
   value: string;
@@ -154,7 +155,7 @@ export default function Rooms() {
   const [isFiltered, setIsFiltered] = React.useState<boolean>(false);
 
   if (isLoading) return <Loading page="Rooms" />;
-  if (error) return <Alert color="danger">Error loading rooms</Alert>;
+  if (error) return <Error page="Rooms" message="Error loading rooms"/>;
 
   const toggleFilters = () => {
     setFiltersOpen(!filtersOpen);
