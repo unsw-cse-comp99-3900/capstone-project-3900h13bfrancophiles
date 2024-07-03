@@ -330,12 +330,14 @@ export async function editBooking(
     const existingBooking = await db
     .select()
     .from(booking)
-    .where(eq(booking.id, req.body.id));
+      .where(eq(booking.id, req.body.id));
 
     if (existingBooking.length != 1) {
       res.status(404).json({ error: "Booking ID does not exist" });
       return;
     }
+
+    const newStatus = (req.token.group == "admin") ? "confirmed" : "pending";
 
     const updatedBooking = await db
       .update(booking)
@@ -343,7 +345,7 @@ export async function editBooking(
         starttime: req.body.starttime ?? existingBooking[0].starttime,
         endtime: req.body.endtime ?? existingBooking[0].endtime,
         spaceid: req.body.spaceid ?? existingBooking[0].spaceid,
-        currentstatus: "pending", // if edited by admin, should be confirmed
+        currentstatus: newStatus,
         description: req.body.description ?? existingBooking[0].description
        })
       .where(
@@ -359,7 +361,10 @@ export async function editBooking(
       return;
     }
 
-    // Send confirmation email with new booking details
+    // TODO: send an email to the user confirming new booking details
+    // email.editConfirmation(req.token.user, updatedBooking[0])
+
+    // TODO: trigger admin reapproval if newStatus is pending
 
     res.json({ booking: updatedBooking[0] });
   } catch (error) {
