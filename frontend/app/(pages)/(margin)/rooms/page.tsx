@@ -22,6 +22,7 @@ import {
 } from "@mui/joy";
 import useRoomDetails from "@/hooks/useRoomDetails";
 import { Room } from "@/types";
+import Loading from "@/components/Loading";
 
 interface FilterOption {
   value: string;
@@ -152,7 +153,7 @@ export default function Rooms() {
   const { roomsData = [], isLoading, error } = useRoomDetails();
   const [isFiltered, setIsFiltered] = React.useState<boolean>(false);
 
-  if (isLoading) return <CircularProgress />;
+  if (isLoading) return <Loading page="Rooms" />;
   if (error) return <Alert color="danger">Error loading rooms</Alert>;
 
   const toggleFilters = () => {
