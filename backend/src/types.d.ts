@@ -6,6 +6,8 @@ import { tags } from 'typia';
 
 export type UserGroup = "admin" | "cse-staff" | "hdr" | "other";
 
+export type Interval = 15 | 30 | 45 | 60;
+
 /**
  * Payload stored with JWT auth tokens
  */
@@ -60,16 +62,44 @@ export interface TypedResponse<T = Empty> extends Response {
 /**
  * Booking typed response
  */
-export type Booking = { id: number, zid: number, starttime: string, endtime: string, spaceid: string, currentstatus: string, description: string, checkintime: string | null, checkouttime: string | null };
+export type Booking = {
+  id: number,
+  zid: number,
+  starttime: string,
+  endtime: string,
+  spaceid: string,
+  currentstatus: string,
+  description: string,
+  checkintime: string | null,
+  checkouttime: string | null
+};
 
-export type BookingEdit = { id: number, starttime?: string, endtime?: string, spaceid?: string, description?: string }
+export type BookingEdit = {
+  id: number,
+  starttime?: string,
+  endtime?: string,
+  spaceid?: string,
+  description?: string
+}
 
 /**
  * Room typed response
  */
-export type Room = { id: string, name: string, capacity: number, roomnumber: string, usage: string };
+export type Room = {
+  id: string,
+  name: string,
+  capacity: number,
+  roomnumber: string,
+  usage: string
+};
 
-export type Desk = { id: string, name: string, floor: string, room: string, desknumber: number };
+export type Desk = {
+  id: string,
+  name: string,
+  floor: string,
+  room: string,
+  desknumber: number
+};
 
 export type Space = Room | Desk;
 

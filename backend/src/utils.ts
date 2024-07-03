@@ -1,5 +1,6 @@
 import { buffer } from 'stream/consumers';
-import { Booking } from './types';
+import { Booking, BookingEdit } from './types';
+import { MINIMUM_BOOKING_LENGTH_MINUTES, MINIMUM_BOOKING_EDIT_WINDOW_MINUTES } from '../config';
 
 /**
  * Format the booking dates by adding a Z to the end to signify UTC time. It
@@ -26,4 +27,24 @@ export function withinDateRange(current: Date, start: Date, end: Date, bufferMin
     return true;
   }
   return false;
+}
+
+export function applyBookingEdits(booking: Booking, edits: BookingEdit): Booking {
+  if (edits.starttime) {
+    booking.starttime = edits.starttime;
+  }
+
+  if (edits.endtime) {
+    booking.endtime = edits.endtime;
+  }
+
+  if (edits.spaceid) {
+    booking.spaceid = edits.spaceid;
+  }
+
+  if (edits.description) {
+    booking.description = edits.description;
+  }
+
+  return booking;
 }

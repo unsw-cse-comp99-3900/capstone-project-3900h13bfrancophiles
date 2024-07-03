@@ -5,7 +5,7 @@ import { count, sql, and, eq, lt, lte, gt, gte, desc } from "drizzle-orm"
 import { booking } from '../../drizzle/schema';
 import { Booking, IDatetimeRange, TypedGETRequest, TypedRequest, TypedResponse, BookingEdit } from '../types';
 import typia, { tags } from "typia";
-import { formatBookingDates, withinDateRange as dateInRange } from '../utils';
+import { formatBookingDates, withinDateRange as dateInRange, applyBookingEdits } from '../utils';
 
 export async function currentBookings(
   req: TypedGETRequest,
@@ -330,23 +330,38 @@ export async function editBooking(
     const existingBooking = await db
     .select()
     .from(booking)
-      .where(eq(booking.id, req.body.id));
+      .where(
+        and(
+          eq(booking.id, req.body.id),
+          eq(booking.zid, req.token.user)
+        )
+      );
 
     if (existingBooking.length != 1) {
-      res.status(404).json({ error: "Booking ID does not exist" });
+      res.status(404).json({ error: "Booking ID does not exist for this user" });
       return;
     }
 
-    const newStatus = (req.token.group == "admin") ? "confirmed" : "pending";
+    if (new Date() > new Date(existingBooking[0].starttime)) {
+      res.status(403).json({ error: "Booking has already begun" });
+      return;
+    }
 
+    const editedBooking = applyBookingEdits(existingBooking[0], req.body);
+
+    // Validate edited booking here. Use same validation as new booking
+
+    // also need to check, can't edit booking unless in future, and is there a minimum edit time?
+
+    const newStatus = (req.token.group == "admin") ? "confirmed" : "pending";
     const updatedBooking = await db
       .update(booking)
       .set({
-        starttime: req.body.starttime ?? existingBooking[0].starttime,
-        endtime: req.body.endtime ?? existingBooking[0].endtime,
-        spaceid: req.body.spaceid ?? existingBooking[0].spaceid,
+        starttime: editedBooking.starttime,
+        endtime: editedBooking.endtime,
+        spaceid: editedBooking.spaceid,
         currentstatus: newStatus,
-        description: req.body.description ?? existingBooking[0].description
+        description: editedBooking.description
        })
       .where(
         and(
@@ -357,7 +372,7 @@ export async function editBooking(
       .returning();
 
     if (updatedBooking.length != 1) {
-      res.status(500).json({ error: "Booking modified during operation" });
+      res.status(500).json({ error: "Booking modified during edit operation" });
       return;
     }
 
