@@ -12,10 +12,22 @@ import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
+import WarningRoundedIcon from "@mui/icons-material/WarningRounded";
 
-import { Sheet, Stack } from "@mui/joy";
+import {
+  Button,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Divider,
+  Modal,
+  ModalDialog,
+  Sheet,
+  Stack,
+} from "@mui/joy";
 import BookingStatusPill from "@/components/BookingStatusPill";
-import { format } from 'date-fns';
+import { format } from "date-fns";
+import { deleteBooking } from "@/api";
 
 export default function UpcomingBookings() {
   function createData(
@@ -104,6 +116,31 @@ export default function UpcomingBookings() {
     rows.sort((a, b) => (a.startTime < b.startTime ? 1 : -1))
   );
   const [sortNewest, setSortNewest] = React.useState(true);
+  const [modalOpen, setModalOpen] = React.useState(false);
+  const [bookingToDelete, setBookingToDelete] = React.useState<number | null>(
+    null
+  );
+
+  const handleDelete = async () => {
+    if (bookingToDelete !== null) {
+      try {
+        await deleteBooking(bookingToDelete);
+        handleCloseModal();
+      } catch (err) {
+        console.error(err);
+      }
+    }
+  };
+
+  const handleOpenModal = (id: number) => {
+    setBookingToDelete(id);
+    setModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setBookingToDelete(null);
+    setModalOpen(false);
+  };
 
   // // will eventually get data from backend
   // const getData = () => {
@@ -246,7 +283,8 @@ export default function UpcomingBookings() {
                   </td>
                   <td>
                     <Typography level="body-sm">
-                      {format(row.startTime, "dd/MM/yy k:mm")} - {format(row.endTime, "k:mm")}
+                      {format(row.startTime, "dd/MM/yy k:mm")} -{" "}
+                      {format(row.endTime, "k:mm")}
                     </Typography>
                   </td>
                   <td>
@@ -267,9 +305,7 @@ export default function UpcomingBookings() {
                       <IconButton
                         variant="plain"
                         color="danger"
-                        onClick={() =>
-                          window.alert("delete doesn't work yet :D")
-                        }
+                        onClick={() => handleOpenModal(row.id)}
                       >
                         <DeleteIcon />
                       </IconButton>
@@ -342,6 +378,26 @@ export default function UpcomingBookings() {
           </tfoot>
         </Table>
       </Sheet>
+      <Modal open={modalOpen} onClose={handleCloseModal}>
+        <ModalDialog variant="outlined" role="alertdialog">
+          <DialogTitle>
+            <WarningRoundedIcon />
+            Confirmation
+          </DialogTitle>
+          <Divider />
+          <DialogContent>
+            Are you sure you want to delete this booking?
+          </DialogContent>
+          <DialogActions>
+            <Button variant="solid" color="danger" onClick={handleDelete}>
+              Delete Booking
+            </Button>
+            <Button variant="plain" color="neutral" onClick={handleCloseModal}>
+              Cancel
+            </Button>
+          </DialogActions>
+        </ModalDialog>
+      </Modal>
     </Stack>
   );
 }
