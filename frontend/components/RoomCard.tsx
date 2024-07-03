@@ -12,7 +12,7 @@ export default function RoomCard({ room }: { room: Room }) {
   return (
     <Card
       sx={{
-        width: 230,
+        width: 350,
         maxWidth: "100%",
         boxShadow: "lg",
         background: "#F0F4F8",
