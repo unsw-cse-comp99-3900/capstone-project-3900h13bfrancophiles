@@ -7,6 +7,7 @@ import SwapVertIcon from "@mui/icons-material/SwapVert";
 import * as React from "react";
 import {
   Box,
+  CircularProgress,
   FormControl,
   FormLabel,
   Input,
@@ -17,17 +18,10 @@ import {
   ModalDialog,
   Stack,
   Slider,
+  Alert,
 } from "@mui/joy";
 import useRoomDetails from "@/hooks/useRoomDetails";
 import { Room } from "@/types";
-
-interface RoomPlaceholder {
-  id: string;
-  name: string;
-  type: string;
-  capacity: number;
-  available: boolean;
-}
 
 interface FilterOption {
   value: string;
@@ -39,50 +33,23 @@ interface Filters {
   capacity: number;
 }
 
-const rooms: RoomPlaceholder[] = [
-  {
-    id: "1",
-    name: "K17 G02",
-    type: "Consultation Room",
-    capacity: 2,
-    available: true,
-  },
-  {
-    id: "2",
-    name: "K17 302",
-    type: "Meeting Room",
-    capacity: 10,
-    available: false,
-  },
-  {
-    id: "3",
-    name: "J17 501",
-    type: "Meeting Room",
-    capacity: 15,
-    available: true,
-  },
-  {
-    id: "4",
-    name: "K17 G02",
-    type: "Consultation Room",
-    capacity: 2,
-    available: false,
-  },
-  {
-    id: "5",
-    name: "J17 402A",
-    type: "Consultation Room",
-    capacity: 4,
-    available: false,
-  },
-  {
-    id: "6",
-    name: "K17 601",
-    type: "Meeting Room",
-    capacity: 25,
-    available: true,
-  },
-];
+interface FilterControlProps {
+  label: string;
+  options: FilterOption[];
+  value: string;
+  onChange: (
+    event: React.MouseEvent | React.KeyboardEvent | React.FocusEvent | null,
+    value: string | null
+  ) => void;
+}
+
+interface CapacitySliderProps {
+  label: string;
+  min: number;
+  max: number;
+  value: number;
+  onChange: (value: number) => void;
+}
 
 const renderFilters = (
   tempFilters: Filters,
@@ -120,16 +87,6 @@ const renderFilters = (
   </React.Fragment>
 );
 
-interface FilterControlProps {
-  label: string;
-  options: FilterOption[];
-  value: string;
-  onChange: (
-    event: React.MouseEvent | React.KeyboardEvent | React.FocusEvent | null,
-    value: string | null
-  ) => void;
-}
-
 const FilterControl: React.FC<FilterControlProps> = ({
   label,
   options,
@@ -147,14 +104,6 @@ const FilterControl: React.FC<FilterControlProps> = ({
     </Select>
   </FormControl>
 );
-
-interface CapacitySliderProps {
-  label: string;
-  min: number;
-  max: number;
-  value: number;
-  onChange: (value: number) => void;
-}
 
 const CapacitySlider: React.FC<CapacitySliderProps> = ({
   label,
@@ -200,12 +149,10 @@ export default function Rooms() {
     })
   );
 
-  const { roomsData, isLoading, error } = useRoomDetails();
+  const { roomsData = [], isLoading, error } = useRoomDetails();
 
-  if (isLoading) return <div>Loading...</div>;
-  if (error) return <div>Error loading rooms</div>;
-  
-  console.log(roomsData);
+  if (isLoading) return <CircularProgress />;
+  if (error) return <Alert color="danger">Error loading rooms</Alert>;
 
   const toggleFilters = () => {
     setFiltersOpen(!filtersOpen);
@@ -220,8 +167,8 @@ export default function Rooms() {
     setFiltersOpen(false);
   };
 
-  const filterRooms = (rooms: RoomPlaceholder[]) => {
-    return rooms.filter((room) => {
+  const filterRooms = (roomsData: Room[]) => {
+    return roomsData.filter((room) => {
       const matchesType =
         filters.type === "all" ||
         room.type.toLowerCase().replace(" ", "-") === filters.type;
@@ -233,7 +180,9 @@ export default function Rooms() {
     });
   };
 
-  const sortedRooms = [...rooms].sort((a, b) => a.name.localeCompare(b.name));
+  const sortedRooms = [...roomsData].sort((a, b) =>
+    a.name.localeCompare(b.name)
+  );
   const displayedRooms = filterRooms(
     sort ? sortedRooms : sortedRooms.reverse()
   );

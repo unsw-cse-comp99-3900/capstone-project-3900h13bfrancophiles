@@ -6,20 +6,9 @@ import PeopleIcon from "@mui/icons-material/People";
 import MeetingRoomOutlinedIcon from "@mui/icons-material/MeetingRoomOutlined";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCalendarPlus } from "@fortawesome/free-regular-svg-icons";
+import { Room } from "@/types";
 
-export type RoomData = {
-  id: string;
-  name: string;
-  type: string;
-  capacity: number;
-  available: boolean;
-};
-
-interface RoomCardProps {
-  room: RoomData;
-}
-
-export default function RoomCard({ room }: RoomCardProps) {
+export default function RoomCard({ room }: { room: Room }) {
   return (
     <Card
       sx={{
@@ -54,10 +43,13 @@ export default function RoomCard({ room }: RoomCardProps) {
       </CardContent>
       <CardOverflow
         variant="solid"
-        color={room.available ? "success" : "danger"}
+        color={"success"}
+        // color={room.available ? "success" : "danger"}
         sx={{ padding: "8px", alignItems: "center", flexWrap: "wrap" }}
       >
-        <b>{room.available ? "Available" : "Unavailable"}</b>
+        {/* <b>{room.available ? "Available" : "Unavailable"}</b> */}
+        <b>Available</b>
+
       </CardOverflow>
     </Card>
   );
