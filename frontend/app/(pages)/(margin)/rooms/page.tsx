@@ -200,8 +200,11 @@ export default function Rooms() {
     })
   );
 
-  const { roomsData } = useRoomDetails();
+  const { roomsData, isLoading, error } = useRoomDetails();
 
+  if (isLoading) return <div>Loading...</div>;
+  if (error) return <div>Error loading rooms</div>;
+  
   console.log(roomsData);
 
   const toggleFilters = () => {

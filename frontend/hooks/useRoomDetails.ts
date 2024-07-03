@@ -6,7 +6,11 @@ import { Room } from '@/types';
  * Hook to fetch all room details
  */
 export default function useRoomDetails() {
-  const { data, isLoading, error } = useSWR<{ rooms: Room[] }>("/rooms", swrFetcher);
+  const { data, error } = useSWR<{ rooms: Room[] }>("/rooms", swrFetcher);
 
-  return { roomsData: data?.rooms, isLoading, error };
+  return {
+    roomsData: data?.rooms,
+    isLoading: !error && !data,
+    error,
+  };
 }
