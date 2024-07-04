@@ -1,7 +1,7 @@
 // Booking endpoint handlers
 
 import { db } from '../index'
-import { count, sql, and, eq, lt, lte, gt, gte, desc } from "drizzle-orm"
+import { count, and, eq, lt, lte, gt, gte, desc } from "drizzle-orm"
 import { booking } from '../../drizzle/schema';
 import { Booking, IDatetimeRange, TypedGETRequest, TypedRequest, TypedResponse } from '../types';
 import typia, { tags } from "typia";
@@ -271,6 +271,42 @@ export async function checkOutBooking(
   } catch (error) {
     res.status(204);
   }
+}
+
+interface CreateBookingRequest {
+  spaceid: string;
+  starttime: string;
+  endtime: string;
+  description: string;
+}
+
+export async function createBooking(
+  req: TypedRequest<CreateBookingRequest>,
+  res: TypedResponse<{ booking: Booking }>,
+) {
+  if (!typia.is<CreateBookingRequest>(req.body)) {
+    res.status(400).json({ error: "Invalid input" });
+  }
+
+  let createdBooking: Booking;
+  try {
+    const res = await db
+      .insert(booking)
+      .values({
+        zid: req.token.user,
+        // TODO: decide whether or not this should be PENDING once we have permissions
+        currentstatus: "confirmed",
+        ...req.body
+      })
+      .returning();
+
+    createdBooking = formatBookingDates(res[0]);
+  } catch (e: any) {
+    res.status(400).json({ error: `${e}` });
+    return;
+  }
+
+  res.json({ booking: createdBooking });
 }
 
 export async function deleteBooking(
