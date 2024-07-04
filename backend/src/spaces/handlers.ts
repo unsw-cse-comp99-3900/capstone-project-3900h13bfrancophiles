@@ -15,6 +15,7 @@ export async function roomDetails(
       .select({
         id: room.id,
         name: space.name,
+        type: space.type,
         capacity: room.capacity,
         roomnumber: room.roomnumber,
         usage: room.usage
@@ -47,6 +48,7 @@ export async function singleSpaceDetails(
       .select({
         id: room.id,
         name: space.name,
+        type: space.type,
         capacity: room.capacity,
         roomnumber: room.roomnumber,
         usage: room.usage
