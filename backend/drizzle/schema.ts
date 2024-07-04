@@ -1,4 +1,4 @@
-import { pgTable, pgEnum, integer, text, foreignKey, boolean, serial, timestamp } from "drizzle-orm/pg-core"
+import { pgTable, pgEnum, integer, text, foreignKey, boolean, serial, timestamp, varchar } from "drizzle-orm/pg-core"
   import { sql } from "drizzle-orm"
 
 export const bookingstatusenum = pgEnum("bookingstatusenum", ['pending', 'confirmed', 'checkedin', 'completed'])
@@ -24,7 +24,7 @@ export const booking = pgTable("booking", {
 	endtime: timestamp("endtime", { mode: 'string' }).notNull(),
 	spaceid: text("spaceid").notNull().references(() => space.id),
 	currentstatus: bookingstatusenum("currentstatus").notNull(),
-	description: text("description").notNull(),
+	description: varchar("description", { length: 255 }).notNull(),
 	checkintime: timestamp("checkintime", { mode: 'string' }),
 	checkouttime: timestamp("checkouttime", { mode: 'string' }),
 });

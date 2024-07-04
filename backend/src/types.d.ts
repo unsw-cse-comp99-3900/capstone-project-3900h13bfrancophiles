@@ -74,3 +74,10 @@ export interface IDatetimeRange {
   datetimeStart: string & tags.Format<'date-time'>
   datetimeEnd: string & tags.Format<'date-time'>
 }
+
+export interface BookingDetailsRequest {
+  spaceid: string;
+  starttime: string;
+  endtime: string;
+  description: string;
+}

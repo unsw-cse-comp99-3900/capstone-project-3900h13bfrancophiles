@@ -50,10 +50,29 @@ CREATE TABLE IF NOT EXISTS booking (
     endTime       TIMESTAMP NOT NULL,
     spaceId       TEXT NOT NULL,
     currentStatus BookingStatusEnum NOT NULL,
-    description   TEXT NOT NULL,
+    description   VARCHAR(255) NOT NULL,
     checkInTime   TIMESTAMP,
     checkOutTime  TIMESTAMP,
     FOREIGN KEY(zId) REFERENCES person(zId),
     FOREIGN KEY(spaceId) REFERENCES space(id),
     CONSTRAINT chk_start_lt_end CHECK (startTime < endTime)
 );
+
+create function chk_overlap() returns trigger as $$
+begin
+    if exists (
+        select *
+        from booking b
+        where b.spaceId = new.spaceId
+              and b.starttime < new.endtime
+              and b.endtime > new.starttime
+    ) then
+      raise exception 'Overlapping booking found';
+    end if;
+
+    return new;
+end;
+$$ language plpgsql;
+
+create trigger chk_overlap before insert or update
+on booking for each row execute procedure chk_overlap();
