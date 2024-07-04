@@ -39,17 +39,21 @@ CREATE TABLE IF NOT EXISTS room (
     FOREIGN KEY(id) REFERENCES space(id) ON DELETE CASCADE
 );
 
+CREATE TYPE BookingStatusEnum AS ENUM (
+    'pending', 'confirmed', 'checkedin', 'completed'
+);
+
 CREATE TABLE IF NOT EXISTS booking (
     id            SERIAL PRIMARY KEY,
     zId           INT NOT NULL,
     startTime     TIMESTAMP NOT NULL,
     endTime       TIMESTAMP NOT NULL,
     spaceId       TEXT NOT NULL,
-    currentStatus TEXT NOT NULL,
+    currentStatus BookingStatusEnum NOT NULL,
     description   TEXT NOT NULL,
     checkInTime   TIMESTAMP,
     checkOutTime  TIMESTAMP,
     FOREIGN KEY(zId) REFERENCES person(zId),
     FOREIGN KEY(spaceId) REFERENCES space(id),
-    CONSTRAINT chk_currentStatus CHECK (currentStatus IN ('pending', 'confirmed', 'checkedin', 'completed'))
+    CONSTRAINT chk_start_lt_end CHECK (startTime < endTime)
 );
