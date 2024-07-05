@@ -55,35 +55,29 @@ CREATE TABLE IF NOT EXISTS booking (
     CONSTRAINT chk_currentStatus CHECK (currentStatus IN ('pending', 'confirmed', 'checkedin', 'completed'))
 );
 
--- Insert the room data into the space table and the room table
-INSERT INTO space (id, name, type) VALUES
-    (1, 'K17 CSE Basement', 'Seminar Room'),
-    (2, 'K17 CSE Basement Board Room', 'Meeting Room'),
-    (3, 'K17 G01', 'Consultation Room'),
-    (4, 'K17 G02', 'Consultation Room'),
-    (5, 'K17 103', 'Meeting Room'),
-    (6, 'K17 113', 'Seminar Room'),
-    (7, 'K17 201-B', 'Meeting Room'),
-    (8, 'K17 302', 'Meeting Room'),
-    (9, 'K17 401 K', 'Meeting Room'),
-    (10, 'K17 402', 'Conference Room'),
-    (11, 'K17 403', 'Conference Room'),
-    (12, 'K17 501M', 'Meeting Room'),
-    (13, 'K17 508', 'Conference Room'),
-    (14, 'J17 Design Next Studio', 'Seminar Room');
+INSERT INTO person
+VALUES (1234567, 'email', 'name', 'school', 'faculty');
 
-INSERT INTO room (id, capacity, roomNumber, usage) VALUES
-    (1, 100, 'CSE Basement', 'CSE staff'),
-    (2, 12, 'CSE Basement Board Room', 'CSE staff'),
-    (3, 3, 'G01', 'HDR students and CSE staff'),
-    (4, 3, 'G02', 'HDR students and CSE staff'),
-    (5, 8, '103', 'CSE staff'),
-    (6, 90, '113', 'CSE staff'),
-    (7, 14, '201-B', 'CSE staff'),
-    (8, 15, '302', 'CSE staff'),
-    (9, 15, '401 K', 'CSE staff'),
-    (10, 5, '402', 'HDR students and CSE staff'),
-    (11, 5, '403', 'HDR students and CSE staff'),
-    (12, 15, '501M', 'CSE staff'),
-    (13, 6, '508', 'CSE staff'),
-    (14, 110, 'Design Next Studio', 'CSE staff');
+-- space 1 will have a booking at that time
+INSERT INTO space (id, name, type)
+VALUES (1, 'k17', 'room');
+
+INSERT INTO booking (zid, starttime, endtime, spaceid, currentstatus, description)
+VALUES (1234567, '2025-06-25T12:00:00Z', '2025-06-25T13:00:00Z', 1, 'confirmed', 'description');
+
+-- space 2 will have a booking half intersecting
+INSERT INTO space (id, name, type)
+VALUES (2, 'j17', 'room');
+
+INSERT INTO booking (zid, starttime, endtime, spaceid, currentstatus, description)
+VALUES (1234567, '2025-06-25T12:30:00Z', '2025-06-25T13:30:00Z', 2, 'confirmed', 'description');
+
+-- space 3 will have a booking encompassing
+INSERT INTO space (id, name, type)
+VALUES (3, 'l17', 'room');
+
+INSERT INTO booking (zid, starttime, endtime, spaceid, currentstatus, description)
+VALUES (1234567, '2025-06-25T11:30:00Z', '2025-06-25T13:30:00Z', 3, 'confirmed', 'description');
+
+
+

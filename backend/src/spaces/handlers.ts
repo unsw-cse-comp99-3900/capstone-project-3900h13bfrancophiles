@@ -1,9 +1,9 @@
 // Spaces endpoint handlers
 
 import { db } from '../index'
-import { eq } from "drizzle-orm"
-import { hotdesk, room, space } from '../../drizzle/schema';
-import { TypedGETRequest, TypedResponse, Room, Space } from '../types';
+import { eq, and, asc, gt } from "drizzle-orm"
+import { hotdesk, room, space, booking } from '../../drizzle/schema';
+import { TypedGETRequest, TypedResponse, Room, Space, Booking } from '../types';
 import typia from 'typia';
 
 export async function roomDetails(
@@ -81,6 +81,39 @@ export async function singleSpaceDetails(
     }
 
     res.status(404).json({ error: `No space found with id "${req.params.spaceId}"` });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch rooms' });
+  }
+}
+
+export async function spaceAvailabilities(
+  req: TypedGETRequest<{}, SingleSpaceRequest>,
+  res: TypedResponse<{ bookings: Booking[] }>,
+) {
+  try {
+    if (!typia.is<SingleSpaceRequest>(req.params)) {
+      res.status(400).json({ error: "Invalid input" });
+      return;
+    }
+
+    const currentTime = new Date().toISOString();
+
+    const existingBookings = await db
+      .select()
+      .from(booking)
+      .where(
+        and(
+          eq(booking.spaceid, req.params.spaceId),
+          gt(booking.starttime, currentTime)
+        )
+      )
+      .orderBy(
+        asc(booking.starttime)
+      )
+
+      res.json({ bookings: existingBookings });
+
+    // res.status(404).json({ error: `No space found with id "${req.params.spaceId}"` });
   } catch (error) {
     res.status(500).json({ error: 'Failed to fetch rooms' });
   }
