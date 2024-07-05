@@ -116,15 +116,15 @@ export async function spaceAvailabilities(
       .where(
         and(
           eq(booking.spaceid, req.params.spaceId),
-          gt(booking.starttime, currentTime)
+          gt(booking.endtime, currentTime)
         )
       )
       .orderBy(
         asc(booking.starttime)
       )
 
-      res.json({ bookings: existingBookings });
-      return
+    res.json({ bookings: existingBookings });
+    return
 
   } catch (error) {
     res.status(500).json({ error: 'Failed to fetch rooms' });

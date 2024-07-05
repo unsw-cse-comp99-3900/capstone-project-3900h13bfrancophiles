@@ -55,29 +55,3 @@ CREATE TABLE IF NOT EXISTS booking (
     CONSTRAINT chk_currentStatus CHECK (currentStatus IN ('pending', 'confirmed', 'checkedin', 'completed'))
 );
 
-INSERT INTO person
-VALUES (1234567, 'email', 'name', 'school', 'faculty');
-
--- space 1 will have a booking at that time
-INSERT INTO space (id, name, type)
-VALUES (1, 'k17', 'room');
-
-INSERT INTO booking (zid, starttime, endtime, spaceid, currentstatus, description)
-VALUES (1234567, '2025-06-25T12:00:00Z', '2025-06-25T13:00:00Z', 1, 'confirmed', 'description');
-
--- space 2 will have a booking half intersecting
-INSERT INTO space (id, name, type)
-VALUES (2, 'j17', 'room');
-
-INSERT INTO booking (zid, starttime, endtime, spaceid, currentstatus, description)
-VALUES (1234567, '2025-06-25T12:30:00Z', '2025-06-25T13:30:00Z', 2, 'confirmed', 'description');
-
--- space 3 will have a booking encompassing
-INSERT INTO space (id, name, type)
-VALUES (3, 'l17', 'room');
-
-INSERT INTO booking (zid, starttime, endtime, spaceid, currentstatus, description)
-VALUES (1234567, '2025-06-25T11:30:00Z', '2025-06-25T13:30:00Z', 3, 'confirmed', 'description');
-
-
-
