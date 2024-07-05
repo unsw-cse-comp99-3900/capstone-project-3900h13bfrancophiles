@@ -2,6 +2,7 @@
 import { Request, Response } from 'express';
 import { Send } from 'express-serve-static-core';
 import { tags } from 'typia';
+import { bookingstatusenum } from '../drizzle/schema';
 
 // Order matters - lowest to highest
 export const USER_GROUPS = ["other", "hdr", "csestaff", "admin"] as const;
@@ -83,3 +84,5 @@ export interface BookingDetailsRequest {
   endtime: string & tags.Format<'date-time'>;
   description: string;
 }
+
+export type BookingStatus = typeof bookingstatusenum.enumValues[number];
