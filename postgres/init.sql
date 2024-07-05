@@ -55,7 +55,14 @@ CREATE TABLE IF NOT EXISTS booking (
     checkOutTime  TIMESTAMP,
     FOREIGN KEY(zId) REFERENCES person(zId),
     FOREIGN KEY(spaceId) REFERENCES space(id),
-    CONSTRAINT chk_start_lt_end CHECK (startTime < endTime)
+    CONSTRAINT chk_start_lt_end CHECK (startTime < endTime),
+    CONSTRAINT chk_interval_length CHECK (EXTRACT(epoch FROM (endTime - startTime)) % 900 = 0),
+    CONSTRAINT chk_interval_bounds CHECK (EXTRACT(minute FROM startTime) % 15 = 0),
+    CONSTRAINT chk_same_day CHECK (
+        date_trunc('day', startTime AT TIME ZONE 'UTC' AT TIME ZONE 'Australia/Sydney') =
+        -- Minus 1 second so ending on midnight is okay
+        date_trunc('day', (endTime - interval '1 second') AT TIME ZONE 'UTC' AT TIME ZONE 'Australia/Sydney')
+    )
 );
 
 create function chk_overlap() returns trigger as $$
@@ -67,7 +74,7 @@ begin
               and b.starttime < new.endtime
               and b.endtime > new.starttime
     ) then
-      raise exception 'Overlapping booking found';
+        raise exception 'Overlapping booking found';
     end if;
 
     return new;
