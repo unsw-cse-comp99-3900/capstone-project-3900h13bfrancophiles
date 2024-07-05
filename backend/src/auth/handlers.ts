@@ -8,7 +8,7 @@ const ZID_REGEX = /z(\d{7})/
 
 type LoginRequest = { zid: string, zpass: string };
 
-export function login(
+export async function login(
   req: TypedRequest<LoginRequest>,
   res: TypedResponse<{ token: string }>,
 ) {
@@ -29,7 +29,7 @@ export function login(
     return;
   }
 
-  const group = getUserGroup(zid);
+  const group = await getUserGroup(zid);
   const token = createToken(zid, group);
   res.json({ token });
 }

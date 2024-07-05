@@ -3,7 +3,9 @@ import { Request, Response } from 'express';
 import { Send } from 'express-serve-static-core';
 import { tags } from 'typia';
 
-export type UserGroup = "admin" | "cse-staff" | "hdr" | "other";
+// Order matters - lowest to highest
+export const USER_GROUPS = ["other", "hdr", "csestaff", "admin"] as const;
+export type UserGroup =  typeof USER_GROUPS[number];
 
 /**
  * Payload stored with JWT auth tokens
