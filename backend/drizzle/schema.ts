@@ -36,7 +36,6 @@ export const hdr = pgTable("hdr", {
 
 export const space = pgTable("space", {
 	id: text("id").primaryKey().notNull(),
-	type: text("type").notNull(),
 	name: text("name").notNull(),
 });
 
@@ -51,5 +50,5 @@ export const room = pgTable("room", {
 	id: text("id").primaryKey().notNull().references(() => space.id, { onDelete: "cascade" } ),
 	capacity: integer("capacity").notNull(),
 	roomnumber: text("roomnumber").notNull(),
-	usage: text("usage").notNull(),
+	type: text("type").notNull(),
 });

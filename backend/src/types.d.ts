@@ -64,7 +64,7 @@ export type Booking = { id: number, zid: number, starttime: string, endtime: str
 /**
  * Room typed response
  */
-export type Room = { id: string, name: string, type: string, capacity: number, roomnumber: string, usage: string };
+export type Room = { id: string, name: string, type: string, capacity: number, roomnumber: string };
 
 export type Desk = { id: string, name: string, floor: string, room: string, desknumber: number };
 
