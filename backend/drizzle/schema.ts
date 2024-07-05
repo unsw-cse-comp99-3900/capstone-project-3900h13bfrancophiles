@@ -36,6 +36,7 @@ export const hdr = pgTable("hdr", {
 
 export const space = pgTable("space", {
 	id: text("id").primaryKey().notNull(),
+	type: text("type").notNull(),
 	name: text("name").notNull(),
 });
 
