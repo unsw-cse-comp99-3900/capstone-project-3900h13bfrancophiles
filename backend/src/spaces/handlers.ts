@@ -98,6 +98,18 @@ export async function spaceAvailabilities(
 
     const currentTime = new Date().toISOString();
 
+    const spaceExists = await db
+      .select()
+      .from(space)
+      .where(
+        eq(space.id, req.params.spaceId),
+      )
+
+    if (spaceExists.length == 0) {
+      res.status(404).json({ error: "Space ID does not exist" });
+      return;
+    }
+
     const existingBookings = await db
       .select()
       .from(booking)
@@ -112,8 +124,8 @@ export async function spaceAvailabilities(
       )
 
       res.json({ bookings: existingBookings });
+      return
 
-    // res.status(404).json({ error: `No space found with id "${req.params.spaceId}"` });
   } catch (error) {
     res.status(500).json({ error: 'Failed to fetch rooms' });
   }
