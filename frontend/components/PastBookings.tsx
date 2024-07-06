@@ -55,8 +55,6 @@ export default function PastBookings() {
     }
   }, [page, rowsPerPage, pastBookings, isLoading]);
 
-  console.log(rows);
-
   function createData(
     id: number,
     startTime: Date,
