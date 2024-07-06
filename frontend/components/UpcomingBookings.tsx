@@ -87,17 +87,6 @@ export default function UpcomingBookings() {
     }
   }, [upcomingBookings, isLoading]);
 
-  function createData(
-    id: number,
-    status: string,
-    startTime: Date,
-    endTime: Date,
-    space: string,
-    description: string
-  ) {
-    return { id, status, startTime, endTime, space, description };
-  }
-
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [filter, setFilter] = React.useState("all");
