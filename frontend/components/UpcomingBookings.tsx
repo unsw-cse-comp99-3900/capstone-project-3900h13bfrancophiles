@@ -29,7 +29,6 @@ interface UpcomingBookingRow {
   startTime: Date,
   endTime: Date,
   space: string,
-  isRoom: boolean,
   description: string
 }
 
@@ -75,7 +74,7 @@ function UpcomingBookingRow({row}: UpcomingBookingRowProps) {
 
 export default function UpcomingBookings() {
   const { upcomingBookings, isLoading } = useUpcomingBookings();
-  const [rows, setRows] = React<UpcomingBookingRow[]>.useState([]);
+  const [rows, setRows] = React.useState<UpcomingBookingRow[]>([]);
 
   React.useEffect(() => {
     if (!isLoading && upcomingBookings) {

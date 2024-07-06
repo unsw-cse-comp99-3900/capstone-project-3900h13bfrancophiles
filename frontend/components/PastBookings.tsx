@@ -24,7 +24,6 @@ interface PastBookingRow {
   startTime: Date,
   endTime: Date,
   space: string,
-  isRoom: boolean,
   description: string
 }
 function PastBookingsRow({row}: PastBookingRowProps) {
