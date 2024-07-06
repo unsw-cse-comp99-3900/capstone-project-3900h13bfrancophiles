@@ -44,15 +44,13 @@ export default function PastBookings() {
 
   React.useEffect(() => {
     if (!isLoading && pastBookings) {
-      const rowsData = pastBookings.map((booking) =>
-        createData(
-          booking.id,
-          new Date(booking.starttime),
-          new Date(booking.endtime),
-          booking.spaceid,
-          booking.description
-        )
-      );
+      const rowsData = pastBookings.map((booking) => ({
+        id: booking.id,
+        startTime: new Date(booking.starttime),
+        endTime: new Date(booking.endtime),
+        space: booking.spaceid,
+        description: booking.description,
+      }));
       setRows(rowsData);
     }
   }, [page, rowsPerPage, pastBookings, isLoading]);

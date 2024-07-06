@@ -73,6 +73,8 @@ begin
         where b.spaceId = new.spaceId
               and b.starttime < new.endtime
               and b.endtime > new.starttime
+              and b.currentStatus <> 'pending'
+              and b.currentStatus <> 'declined'
     ) then
         raise exception 'Overlapping booking found';
     end if;

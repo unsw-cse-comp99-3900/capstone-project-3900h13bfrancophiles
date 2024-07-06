@@ -75,16 +75,14 @@ export default function UpcomingBookings() {
 
   React.useEffect(() => {
     if (!isLoading && upcomingBookings) {
-      const rowsData = upcomingBookings.map((booking) =>
-        createData(
-          booking.id,
-          booking.currentstatus,
-          new Date(booking.starttime),
-          new Date(booking.endtime),
-          booking.spaceid,
-          booking.description
-        )
-      );
+      const rowsData = upcomingBookings.map((booking) => ({
+        id: booking.id,
+        status: booking.status,
+        startTime: new Date(booking.starttime),
+        endTime: new Date(booking.endtime),
+        space: booking.spaceid,
+        description: booking.description,
+      }));
       setRows(rowsData);
     }
   }, [upcomingBookings, isLoading]);
