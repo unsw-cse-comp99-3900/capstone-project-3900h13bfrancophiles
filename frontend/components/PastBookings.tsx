@@ -13,10 +13,21 @@ import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import {Sheet, Skeleton, Stack} from "@mui/joy";
 import { format } from 'date-fns';
 import useSpace from "@/hooks/useSpace";
-import {UpcomingBookingRowProps} from "@/components/UpcomingBookings";
 import usePastBookings from "@/hooks/usePastBookings";
 
-function PastBookingsRow({row}: UpcomingBookingRowProps) {
+export interface PastBookingRowProps {
+  row: PastBookingRow
+}
+
+interface PastBookingRow {
+  id: number,
+  startTime: Date,
+  endTime: Date,
+  space: string,
+  isRoom: boolean,
+  description: string
+}
+function PastBookingsRow({row}: PastBookingRowProps) {
   const { space, isLoading } = useSpace(row.space);
 
   return <tr>
@@ -39,7 +50,7 @@ function PastBookingsRow({row}: UpcomingBookingRowProps) {
 export default function PastBookings() {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
-  const [rows, setRows] = React.useState([]);
+  const [rows, setRows] = React.useState<PastBookingRow[]>([]);
   const { pastBookings, total, isLoading } = usePastBookings(page + 1, rowsPerPage);
 
   React.useEffect(() => {
@@ -111,11 +122,11 @@ export default function PastBookings() {
   }, [rows, filter, sortNewest]);
 
   const getLabelDisplayedRowsTo = () => {
-    if (filteredRows.length === -1) {
+    if (total === undefined) {
       return (page + 1) * rowsPerPage;
     }
     return rowsPerPage === -1
-      ? filteredRows.length
+      ? total
       : Math.min(total, (page + 1) * rowsPerPage);
   };
 
@@ -208,7 +219,7 @@ export default function PastBookings() {
                         filteredRows.length === 0 ? 0 : page * rowsPerPage + 1,
                       to: getLabelDisplayedRowsTo(),
                       count:
-                        total === -1 ? -1 : total,
+                        total === undefined ? -1 : total,
                     })}
                   </Typography>
                   <Box sx={{ display: "flex", gap: 1 }}>
@@ -229,7 +240,7 @@ export default function PastBookings() {
                       disabled={
                         filteredRows.length !== -1
                           ? page >=
-                            Math.ceil(total / rowsPerPage) - 1
+                            Math.ceil(total === undefined ? -1 : total / rowsPerPage) - 1
                           : false
                       }
                       onClick={() => handleChangePage(page + 1)}

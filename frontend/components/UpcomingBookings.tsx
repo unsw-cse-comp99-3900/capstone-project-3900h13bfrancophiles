@@ -20,16 +20,20 @@ import useUpcomingBookings from "@/hooks/useUpcomingBookings";
 import useSpace from "@/hooks/useSpace";
 
 export interface UpcomingBookingRowProps {
-  row: {
-    id: number,
-    status: string,
-    startTime: Date,
-    endTime: Date,
-    space: string,
-    isRoom: boolean,
-    description: string
-  }
+  row: UpcomingBookingRow
 }
+
+interface UpcomingBookingRow {
+  id: number,
+  status: string,
+  startTime: Date,
+  endTime: Date,
+  space: string,
+  isRoom: boolean,
+  description: string
+}
+
+
 function UpcomingBookingRow({row}: UpcomingBookingRowProps) {
   const { space, isLoading } = useSpace(row.space);
 
@@ -71,7 +75,7 @@ function UpcomingBookingRow({row}: UpcomingBookingRowProps) {
 
 export default function UpcomingBookings() {
   const { upcomingBookings, isLoading } = useUpcomingBookings();
-  const [rows, setRows] = React.useState([]);
+  const [rows, setRows] = React<UpcomingBookingRow[]>.useState([]);
 
   React.useEffect(() => {
     if (!isLoading && upcomingBookings) {
