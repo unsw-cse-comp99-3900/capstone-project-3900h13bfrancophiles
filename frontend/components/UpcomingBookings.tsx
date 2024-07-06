@@ -91,8 +91,6 @@ export default function UpcomingBookings() {
     }
   }, [upcomingBookings, isLoading]);
 
-  console.log(rows);
-
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [filter, setFilter] = React.useState("all");
