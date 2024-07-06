@@ -55,16 +55,6 @@ export default function PastBookings() {
     }
   }, [page, rowsPerPage, pastBookings, isLoading]);
 
-  function createData(
-    id: number,
-    startTime: Date,
-    endTime: Date,
-    space: string,
-    description: string
-  ) {
-    return { id, startTime, endTime, space, description };
-  }
-
   const [filter, setFilter] = React.useState("all");
   const [filteredRows, setFilteredRows] = React.useState(
     rows.sort((a, b) => (a.startTime < b.startTime ? 1 : -1))
