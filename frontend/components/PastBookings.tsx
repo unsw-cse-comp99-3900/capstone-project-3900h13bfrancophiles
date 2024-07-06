@@ -16,10 +16,10 @@ import useSpace from "@/hooks/useSpace";
 import usePastBookings from "@/hooks/usePastBookings";
 
 export interface PastBookingRowProps {
-  row: PastBookingRow
+  row: Row
 }
 
-interface PastBookingRow {
+interface Row {
   id: number,
   startTime: Date,
   endTime: Date,

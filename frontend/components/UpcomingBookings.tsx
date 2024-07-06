@@ -20,10 +20,10 @@ import useUpcomingBookings from "@/hooks/useUpcomingBookings";
 import useSpace from "@/hooks/useSpace";
 
 export interface UpcomingBookingRowProps {
-  row: UpcomingBookingRow
+  row: Row
 }
 
-interface UpcomingBookingRow {
+interface Row {
   id: number,
   status: string,
   startTime: Date,
