@@ -37,7 +37,7 @@ CREATE TABLE IF NOT EXISTS room (
 );
 
 CREATE TYPE BookingStatusEnum AS ENUM (
-    'pending', 'confirmed', 'checkedin', 'completed'
+    'pending', 'confirmed', 'declined', 'checkedin', 'completed'
 );
 
 CREATE TABLE IF NOT EXISTS booking (
@@ -71,6 +71,7 @@ begin
               and b.starttime < new.endtime
               and b.endtime > new.starttime
               and b.currentStatus <> 'pending'
+              and b.currentStatus <> 'declined'
     ) then
         raise exception 'Overlapping booking found';
     end if;
@@ -126,3 +127,26 @@ INSERT INTO person VALUES (
     'Academic',
     'admin'
 );
+
+INSERT INTO booking (id, zId, startTime, endTime, spaceId, currentStatus, description) VALUES
+-- past bookings
+    (1, 1234567, '2022-01-01T10:30', '2022-01-01T11:30', 'K-K17-B01', 'confirmed', 'studying'),
+    (2, 1234567, '2022-01-02T11:30', '2022-01-02T12:30', 'K-K17-B01', 'confirmed', 'studying1'),
+    (3, 1234567, '2022-01-04T13:30', '2022-01-04T14:30', 'K-K17-B01', 'declined', 'studying2'),
+    (4, 1234567, '2022-01-06T13:30', '2022-01-06T14:30', 'K-K17-B01', 'declined', 'meeting'),
+    (5, 1234567, '2022-01-08T13:30', '2022-01-08T14:30', 'K-K17-B01', 'confirmed', 'studying'),
+    (6, 1234567, '2022-01-09T13:30', '2022-01-09T14:30', 'K-K17-B01', 'confirmed', 'class'),
+    (7, 1234567, '2022-01-10T13:30', '2022-01-010T14:30', 'K-K17-B01', 'confirmed', 'studying'),
+    (8, 1234567, '2022-01-11T13:30', '2022-01-011T14:30', 'K-K17-B01', 'confirmed', 'event'),
+    (9, 1234567, '2022-01-12T13:30', '2022-01-012T14:30', 'K-K17-B01', 'confirmed', 'studying'),
+    (10, 1234567, '2022-01-13T13:30', '2022-01-013T14:30', 'K-K17-B01', 'confirmed', 'workshop'),
+    (11, 1234567, '2022-01-14T13:30', '2022-01-014T14:30', 'K-K17-B01', 'confirmed', 'sth'),
+
+-- upcoming bookings
+    (20, 1234567, '2025-01-01T10:30', '2025-01-01T11:30', 'K-K17-B01', 'confirmed', 'class'),
+    (21, 1234567, '2025-01-02T11:30', '2025-01-02T12:30', 'K-K17-402', 'confirmed', 'studying'),
+    (22, 1234567, '2025-01-04T13:30', '2025-01-04T14:30', 'K-K17-402', 'pending', 'meeting'),
+    (23, 1234567, '2025-01-05T13:30', '2025-01-05T14:30', 'K-K17-402', 'pending', 'event'),
+    (24, 1234567, '2025-01-06T13:30', '2025-01-06T14:30', 'K-K17-402', 'pending', 'studying'),
+    (25, 1234567, '2025-01-07T13:30', '2025-01-07T14:30', 'K-K17-402', 'declined', 'workshop');
+
