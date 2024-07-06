@@ -6,7 +6,7 @@ import { Booking } from '@/types';
  * Hook to fetch upcoming bookings
  */
 export default function useUpcomingBookings() {
-  const { data, isLoading, error } = useSWR<{ bookings: Booking[] }>("/bookings/upcoming", swrFetcher);
+  const { data, isLoading, error } = useSWR<{ bookings: Booking[] }>("/bookings/upcoming/", swrFetcher);
 
   return { upcomingBookings: data?.bookings, isLoading, error };
 }

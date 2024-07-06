@@ -5,14 +5,17 @@ interface BookingStatusPillProps {
 }
 export default function BookingStatusPill({ status }: BookingStatusPillProps) {
   let color: "success" | "warning" | "danger" = "warning";
-  if (status === "Accepted") {
+  let text: "Accepted" | "Declined" | "Pending" = "Pending";
+  if (status === "confirmed") {
     color = "success";
-  } else if (status === "Declined") {
+    text = "Accepted";
+  } else if (status === "declined") {
     color = "danger";
+    text = "Declined"
   }
   return (
     <Chip color={color} variant="soft">
-      {status}
+      {text}
     </Chip>
   );
 }

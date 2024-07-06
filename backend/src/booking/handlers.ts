@@ -75,20 +75,23 @@ export async function pastBookings(
     const page = parseInt(req.query.page);
     const limit = parseInt(req.query.limit);
     const offset = (page - 1) * limit;
+    const currentTime = new Date().toISOString();
 
     const totalBookingsCount = await db
       .select({ count: count() })
       .from(booking)
-      .where(
-        eq(booking.zid, zid)
-      );
+      .where(and(
+        eq(booking.zid, zid),
+        lt(booking.endtime, currentTime)
+      ));
 
     const pastBookings = await db
       .select()
       .from(booking)
-      .where(
-        eq(booking.zid, zid)
-      )
+      .where(and(
+        eq(booking.zid, zid),
+        lt(booking.endtime, currentTime)
+      ))
       .orderBy(
         desc(booking.starttime)
       )

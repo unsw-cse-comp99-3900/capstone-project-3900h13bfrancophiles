@@ -19,7 +19,7 @@ import { format } from 'date-fns';
 import useUpcomingBookings from "@/hooks/useUpcomingBookings";
 import useSpace from "@/hooks/useSpace";
 
-interface UpcomingBookingRowProps {
+export interface UpcomingBookingRowProps {
   row: {
     id: number,
     status: string,
@@ -32,7 +32,6 @@ interface UpcomingBookingRowProps {
 }
 function UpcomingBookingRow({row}: UpcomingBookingRowProps) {
   const { space, isLoading } = useSpace(row.space);
-  console.log(row);
 
   return <tr>
     <td>
@@ -71,7 +70,7 @@ function UpcomingBookingRow({row}: UpcomingBookingRowProps) {
 }
 
 export default function UpcomingBookings() {
-  const { upcomingBookings, isLoading, error } = useUpcomingBookings();
+  const { upcomingBookings, isLoading } = useUpcomingBookings();
   const [rows, setRows] = React.useState([]);
 
   React.useEffect(() => {
@@ -89,8 +88,6 @@ export default function UpcomingBookings() {
       setRows(rowsData);
     }
   }, [upcomingBookings, isLoading]);
-
-  console.log(rows)
 
   function createData(
     id: number,
