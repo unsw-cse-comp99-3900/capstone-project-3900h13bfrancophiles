@@ -1,5 +1,5 @@
 
-export type Booking = { id: number, zid: number, starttime: string , endtime: string, spaceid: int, currentstatus: string, description: string };
+export type Booking = { id: number, zid: number, starttime: string , endtime: string, spaceid: string, currentstatus: string, description: string };
 
 export type Room = { id: string, name: string, type: string, capacity: number, roomnumber: string };
 
