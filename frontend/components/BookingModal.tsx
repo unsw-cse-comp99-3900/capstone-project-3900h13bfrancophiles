@@ -12,7 +12,7 @@ import Stack from '@mui/joy/Stack';
 import Add from '@mui/icons-material/Add';
 import {
   Autocomplete,
-  AutocompleteOption, Divider,
+  AutocompleteOption, Divider, FormHelperText,
   ListItemContent,
   ListItemDecorator,
   Sheet,
@@ -29,8 +29,9 @@ import {
   startOfToday,
   parse,
   min,
-  startOfTomorrow,
+  startOfTomorrow, max, addMinutes,
 } from 'date-fns';
+import DebounceInput from '@/components/DebounceInput';
 
 type SpaceOption = { name: string; id: string; isRoom: boolean };
 // TODO: Fetch data
@@ -100,6 +101,7 @@ export default function BookingModal() {
                     required
                     value={format(date, 'yyyy-MM-dd')}
                     onChange={(e) => {
+                      if (!e.target.value.match(/\d{4}-\d{2}-\d{2}/)) return;
                       setDate(new Date(e.target.value));
                       setStart(undefined);
                       setEnd(undefined);
@@ -114,14 +116,17 @@ export default function BookingModal() {
                 </FormControl>
                 <FormControl>
                   <FormLabel>Time</FormLabel>
-                  <Input
+                  <DebounceInput
                     type="time"
                     required
-                    value={start && format(start, 'HH:mm')}
-                    onChange={(e) => {
-                      setStart(parse(e.target.value, 'HH:mm', date));
+                    value={start ? format(start, 'HH:mm') : '--:--'}
+                    handleChange={(value) => {
+                      if (!value.match(/\d{2}:\d{2}/)) return;
                       setEnd(undefined);
+                      setStart(parse(value, 'HH:mm', date));
                     }}
+                    debounceTimeout={500}
+                    handleDebounce={() => setEnd(prevStart => prevStart && roundToNearestMinutes(prevStart, { nearestTo: 15 }))}
                     slotProps={{
                       input: {
                         step: 15 * 60,
@@ -132,11 +137,20 @@ export default function BookingModal() {
                 <FormControl>
                   <Divider sx={{ mb: 1 }}>to</Divider>
                   <FormLabel sx={{ display: 'none' }}>End Time</FormLabel>
-                  <Input
+                  <DebounceInput
                     type="time"
                     required
-                    value={end && format(end, 'HH:mm')}
-                    onChange={(e) => setEnd(parse(e.target.value, 'HH:mm', date))}
+                    value={end ? format(end, 'HH:mm') : '--:--'}
+                    handleChange={(value) => {
+                      if (!value.match(/\d{2}:\d{2}/)) return;
+                      if (start) {
+                        setEnd(max([addMinutes(start, 15), parse(value, 'HH:mm', date)]));
+                      } else {
+                        setEnd(parse(value, 'HH:mm', date));
+                      }
+                    }}
+                    debounceTimeout={500}
+                    handleDebounce={() => setEnd(prevEnd => prevEnd && roundToNearestMinutes(prevEnd, { nearestTo: 15 }))}
                     slotProps={{
                       input: {
                         min: start && format(start, 'HH:mm'),
@@ -144,6 +158,7 @@ export default function BookingModal() {
                       }
                     }}
                   />
+                  <FormHelperText>Minutes must be a multiple of 15</FormHelperText>
                 </FormControl>
                 <FormControl>
                   <FormLabel>Description</FormLabel>
