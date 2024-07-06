@@ -64,7 +64,7 @@ export type Booking = { id: number, zid: number, starttime: string, endtime: str
 /**
  * Room typed response
  */
-export type Room = { id: string, name: string, capacity: number, roomnumber: string, usage: string };
+export type Room = { id: string, name: string, type: string, capacity: number, roomnumber: string };
 
 export type Desk = { id: string, name: string, floor: string, room: string, desknumber: number };
 
@@ -73,4 +73,11 @@ export type Space = Room | Desk;
 export interface IDatetimeRange {
   datetimeStart: string & tags.Format<'date-time'>
   datetimeEnd: string & tags.Format<'date-time'>
+}
+
+export interface BookingDetailsRequest {
+  spaceid: string;
+  starttime: string & tags.Format<'date-time'>;
+  endtime: string & tags.Format<'date-time'>;
+  description: string;
 }

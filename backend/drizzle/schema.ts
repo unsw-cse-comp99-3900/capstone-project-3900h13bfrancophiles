@@ -1,6 +1,7 @@
-import { pgTable, integer, text, foreignKey, boolean, serial, timestamp } from "drizzle-orm/pg-core"
+import { pgTable, pgEnum, integer, text, foreignKey, boolean, serial, timestamp, varchar } from "drizzle-orm/pg-core"
   import { sql } from "drizzle-orm"
 
+export const bookingstatusenum = pgEnum("bookingstatusenum", ['pending', 'confirmed', 'checkedin', 'completed'])
 
 
 export const person = pgTable("person", {
@@ -22,8 +23,8 @@ export const booking = pgTable("booking", {
 	starttime: timestamp("starttime", { mode: 'string' }).notNull(),
 	endtime: timestamp("endtime", { mode: 'string' }).notNull(),
 	spaceid: text("spaceid").notNull().references(() => space.id),
-	currentstatus: text("currentstatus").notNull(),
-	description: text("description").notNull(),
+	currentstatus: bookingstatusenum("currentstatus").notNull(),
+	description: varchar("description", { length: 255 }).notNull(),
 	checkintime: timestamp("checkintime", { mode: 'string' }),
 	checkouttime: timestamp("checkouttime", { mode: 'string' }),
 });
@@ -49,5 +50,5 @@ export const room = pgTable("room", {
 	id: text("id").primaryKey().notNull().references(() => space.id, { onDelete: "cascade" } ),
 	capacity: integer("capacity").notNull(),
 	roomnumber: text("roomnumber").notNull(),
-	usage: text("usage").notNull(),
+	type: text("type").notNull(),
 });

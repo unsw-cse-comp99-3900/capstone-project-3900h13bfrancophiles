@@ -15,9 +15,9 @@ export async function roomDetails(
       .select({
         id: room.id,
         name: space.name,
+        type: room.type,
         capacity: room.capacity,
         roomnumber: room.roomnumber,
-        usage: room.usage
       })
       .from(room)
       .innerJoin(space, eq(space.id, room.id))
@@ -47,9 +47,9 @@ export async function singleSpaceDetails(
       .select({
         id: room.id,
         name: space.name,
+        type: room.type,
         capacity: room.capacity,
         roomnumber: room.roomnumber,
-        usage: room.usage
       })
       .from(room)
       .innerJoin(space, eq(space.id, room.id))
