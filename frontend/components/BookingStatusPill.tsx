@@ -16,8 +16,6 @@ export default function BookingStatusPill({ status }: BookingStatusPillProps) {
       color = "danger";
       text = "Declined";
       break;
-    default:
-      break;
   }
 
   return (
