@@ -1,17 +1,24 @@
 import { relations } from "drizzle-orm/relations";
-import { person, staff, booking, space, hdr, hotdesk, room } from "./schema";
+import { space, hotdesk, room, person, booking } from "./schema";
 
-export const staffRelations = relations(staff, ({one}) => ({
-	person: one(person, {
-		fields: [staff.zid],
-		references: [person.zid]
+export const hotdeskRelations = relations(hotdesk, ({one}) => ({
+	space: one(space, {
+		fields: [hotdesk.id],
+		references: [space.id]
 	}),
 }));
 
-export const personRelations = relations(person, ({many}) => ({
-	staff: many(staff),
+export const spaceRelations = relations(space, ({many}) => ({
+	hotdesks: many(hotdesk),
+	rooms: many(room),
 	bookings: many(booking),
-	hdrs: many(hdr),
+}));
+
+export const roomRelations = relations(room, ({one}) => ({
+	space: one(space, {
+		fields: [room.id],
+		references: [space.id]
+	}),
 }));
 
 export const bookingRelations = relations(booking, ({one}) => ({
@@ -25,29 +32,6 @@ export const bookingRelations = relations(booking, ({one}) => ({
 	}),
 }));
 
-export const spaceRelations = relations(space, ({many}) => ({
+export const personRelations = relations(person, ({many}) => ({
 	bookings: many(booking),
-	hotdesks: many(hotdesk),
-	rooms: many(room),
-}));
-
-export const hdrRelations = relations(hdr, ({one}) => ({
-	person: one(person, {
-		fields: [hdr.zid],
-		references: [person.zid]
-	}),
-}));
-
-export const hotdeskRelations = relations(hotdesk, ({one}) => ({
-	space: one(space, {
-		fields: [hotdesk.id],
-		references: [space.id]
-	}),
-}));
-
-export const roomRelations = relations(room, ({one}) => ({
-	space: one(space, {
-		fields: [room.id],
-		references: [space.id]
-	}),
 }));

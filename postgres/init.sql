@@ -1,26 +1,23 @@
+CREATE TYPE UserGroupEnum AS ENUM (
+    'other', 'hdr', 'csestaff', 'admin'
+);
+
 CREATE TABLE IF NOT EXISTS person (
     zId           INT PRIMARY KEY,
     email         TEXT NOT NULL,
     fullname      TEXT NOT NULL,
+    title         TEXT,
     school        TEXT NOT NULL,
-    faculty       TEXT NOT NULL
-);
-
-CREATE TABLE IF NOT EXISTS staff (
-    zId           INT PRIMARY KEY,
-    isAdmin       BOOLEAN,
-    FOREIGN KEY(zId) REFERENCES person(zId)
-);
-
-CREATE TABLE IF NOT EXISTS hdr (
-    zId           INT PRIMARY KEY,
-    degree        TEXT,
-    FOREIGN KEY(zId) REFERENCES person(zId)
+    faculty       TEXT NOT NULL,
+    role          TEXT, -- eg Academic, Professional, PhD, MRes
+    userGrp       UserGroupEnum NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS space (
     id            TEXT PRIMARY KEY,
-    name          TEXT NOT NULL
+    name          TEXT NOT NULL,
+    minReqGrp     UserGroupEnum NOT NULL, -- lowest group that can request
+    minBookGrp    UserGroupEnum NOT NULL  -- lowest group that can book
 );
 
 CREATE TABLE IF NOT EXISTS hotdesk (
@@ -73,6 +70,7 @@ begin
         where b.spaceId = new.spaceId
               and b.starttime < new.endtime
               and b.endtime > new.starttime
+              and b.currentStatus <> 'pending'
     ) then
         raise exception 'Overlapping booking found';
     end if;
@@ -85,21 +83,21 @@ create trigger chk_overlap before insert or update
 on booking for each row execute procedure chk_overlap();
 
 -- Insert the room data into the space table and the room table
-INSERT INTO space (id, name) VALUES
-    ('K-K17-B01', 'K17 CSE Basement'),
-    ('K-K17-B02', 'K17 CSE Basement Board Room'),
-    ('K-K17-G01', 'K17 G01'),
-    ('K-K17-G02', 'K17 G02'),
-    ('K-K17-103', 'K17 103'),
-    ('K-K17-113', 'K17 113'),
-    ('K-K17-201B', 'K17 201-B'),
-    ('K-K17-302', 'K17 302'),
-    ('K-K17-401K', 'K17 401 K'),
-    ('K-K17-402', 'K17 402'),
-    ('K-K17-403', 'K17 403'),
-    ('K-K17-501M', 'K17 501M'),
-    ('K-K17-508', 'K17 508'),
-    ('K-J17-504', 'J17 Design Next Studio');
+INSERT INTO space (id, name, minReqGrp, minBookGrp) VALUES
+    ('K-K17-B01', 'K17 CSE Basement', 'csestaff', 'admin'),
+    ('K-K17-B02', 'K17 CSE Basement Board Room', 'csestaff', 'admin'),
+    ('K-K17-G01', 'K17 G01', 'hdr', 'admin'),
+    ('K-K17-G02', 'K17 G02', 'hdr', 'admin'),
+    ('K-K17-103', 'K17 103', 'csestaff', 'admin'),
+    ('K-K17-113', 'K17 113', 'csestaff', 'admin'),
+    ('K-K17-201B', 'K17 201-B', 'csestaff', 'admin'),
+    ('K-K17-302', 'K17 302', 'csestaff', 'admin'),
+    ('K-K17-401K', 'K17 401 K', 'csestaff', 'admin'),
+    ('K-K17-402', 'K17 402', 'hdr', 'admin'),
+    ('K-K17-403', 'K17 403', 'hdr', 'admin'),
+    ('K-K17-501M', 'K17 501M', 'csestaff', 'admin'),
+    ('K-K17-508', 'K17 508', 'csestaff', 'admin'),
+    ('K-J17-504', 'J17 Design Next Studio', 'csestaff', 'admin');
 
 INSERT INTO room (id, capacity, roomNumber, type) VALUES
     ('K-K17-B01', 100, 'B01', 'Seminar Room'),
@@ -118,4 +116,13 @@ INSERT INTO room (id, capacity, roomNumber, type) VALUES
     ('K-J17-504', 110, '504', 'Seminar Room');
 
 -- temporary person
-INSERT INTO person VALUES (1234567, 'email', 'name', 'school', 'faculty');
+INSERT INTO person VALUES (
+    1234567,
+    'z1234567@ad.unsw.edu.au',
+    'Umar Farooq',
+    'Mr',
+    'CSE',
+    'ENG',
+    'Academic',
+    'admin'
+);

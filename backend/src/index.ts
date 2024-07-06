@@ -7,7 +7,7 @@ import { DATABASE_URL, PORT } from '../config';
 import { Pool } from 'pg';
 import { drizzle } from "drizzle-orm/node-postgres";
 import { login, logout } from './auth/handlers';
-import { validateToken } from './auth/middleware';
+import { authoriseAtLeast, validateToken } from './auth/middleware';
 import {
   currentBookings,
   upcomingBookings,
@@ -40,8 +40,8 @@ app.get("/bookings/upcoming", validateToken, upcomingBookings);
 app.get("/bookings/past", validateToken, pastBookings);
 app.get("/bookings/range", validateToken, rangeOfBookings);
 
-app.delete("/bookings/delete", validateToken, deleteBooking);
-app.post("/bookings/create", validateToken, createBooking);
+app.delete("/bookings/delete", validateToken, authoriseAtLeast("hdr"), deleteBooking);
+app.post("/bookings/create", validateToken, authoriseAtLeast("hdr"), createBooking);
 
 app.post("/bookings/checkin", validateToken, checkInBooking);
 app.post("/bookings/checkout", validateToken, checkOutBooking);
