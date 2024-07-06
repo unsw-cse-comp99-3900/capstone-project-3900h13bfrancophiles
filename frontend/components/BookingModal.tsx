@@ -12,7 +12,8 @@ import Stack from '@mui/joy/Stack';
 import Add from '@mui/icons-material/Add';
 import {
   Autocomplete,
-  AutocompleteOption, Divider, FormHelperText,
+  AutocompleteOption,
+  Divider,
   ListItemContent,
   ListItemDecorator,
   Sheet,
@@ -23,15 +24,16 @@ import TableRestaurantTwoToneIcon from '@mui/icons-material/TableRestaurantTwoTo
 import MeetingRoomTwoToneIcon from '@mui/icons-material/MeetingRoomTwoTone';
 import {
   addHours,
+  addMinutes,
   addWeeks,
   format,
+  max,
+  min,
+  parse,
   roundToNearestMinutes,
   startOfToday,
-  parse,
-  min,
-  startOfTomorrow, max, addMinutes,
+  startOfTomorrow,
 } from 'date-fns';
-import DebounceInput from '@/components/DebounceInput';
 
 type SpaceOption = { name: string; id: string; isRoom: boolean };
 // TODO: Fetch data
@@ -50,7 +52,7 @@ export default function BookingModal() {
   const weekFromToday = addWeeks(today, 1);
   const [date, setDate] = React.useState(today);
 
-  const now = roundToNearestMinutes(new Date(), { nearestTo: 15, roundingMethod: 'ceil' });
+  const now = roundToInterval(new Date()) as Date;
   const [start, setStart] = React.useState<Date | undefined>(now);
   const [end, setEnd] = React.useState<Date | undefined>(min([addHours(now, 1), startOfTomorrow()]));
 
@@ -116,17 +118,16 @@ export default function BookingModal() {
                 </FormControl>
                 <FormControl>
                   <FormLabel>Time</FormLabel>
-                  <DebounceInput
+                  <Input
                     type="time"
                     required
                     value={start ? format(start, 'HH:mm') : '--:--'}
-                    handleChange={(value) => {
-                      if (!value.match(/\d{2}:\d{2}/)) return;
+                    onChange={(e) => {
+                      if (!e.target.value.match(/\d{2}:\d{2}/)) return;
                       setEnd(undefined);
-                      setStart(parse(value, 'HH:mm', date));
+                      setStart(parse(e.target.value, 'HH:mm', date));
                     }}
-                    debounceTimeout={500}
-                    handleDebounce={() => setEnd(prevStart => prevStart && roundToNearestMinutes(prevStart, { nearestTo: 15 }))}
+                    onBlur={() => setStart(roundToInterval)}
                     slotProps={{
                       input: {
                         step: 15 * 60,
@@ -137,20 +138,19 @@ export default function BookingModal() {
                 <FormControl>
                   <Divider sx={{ mb: 1 }}>to</Divider>
                   <FormLabel sx={{ display: 'none' }}>End Time</FormLabel>
-                  <DebounceInput
+                  <Input
                     type="time"
                     required
                     value={end ? format(end, 'HH:mm') : '--:--'}
-                    handleChange={(value) => {
-                      if (!value.match(/\d{2}:\d{2}/)) return;
+                    onChange={(e) => {
+                      if (!e.target.value.match(/\d{2}:\d{2}/)) return;
                       if (start) {
-                        setEnd(max([addMinutes(start, 15), parse(value, 'HH:mm', date)]));
+                        setEnd(max([addMinutes(start, 15), parse(e.target.value, 'HH:mm', date)]));
                       } else {
-                        setEnd(parse(value, 'HH:mm', date));
+                        setEnd(parse(e.target.value, 'HH:mm', date));
                       }
                     }}
-                    debounceTimeout={500}
-                    handleDebounce={() => setEnd(prevEnd => prevEnd && roundToNearestMinutes(prevEnd, { nearestTo: 15 }))}
+                    onBlur={() => setEnd(roundToInterval)}
                     slotProps={{
                       input: {
                         min: start && format(start, 'HH:mm'),
@@ -158,7 +158,6 @@ export default function BookingModal() {
                       }
                     }}
                   />
-                  <FormHelperText>Minutes must be a multiple of 15</FormHelperText>
                 </FormControl>
                 <FormControl>
                   <FormLabel>Description</FormLabel>
@@ -195,4 +194,8 @@ function SpaceAutocompleteOption({ option }: { option: SpaceOption }) {
       </Typography>
     </ListItemContent>
   </>;
+}
+
+function roundToInterval(date: Date | undefined): Date | undefined {
+  return date && roundToNearestMinutes(date, { nearestTo: 15 })
 }
