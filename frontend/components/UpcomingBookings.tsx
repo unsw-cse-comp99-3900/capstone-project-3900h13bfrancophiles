@@ -77,7 +77,7 @@ export default function UpcomingBookings() {
     if (!isLoading && upcomingBookings) {
       const rowsData = upcomingBookings.map((booking) => ({
         id: booking.id,
-        status: booking.status,
+        status: booking.currentstatus,
         startTime: new Date(booking.starttime),
         endTime: new Date(booking.endtime),
         space: booking.spaceid,
@@ -86,6 +86,8 @@ export default function UpcomingBookings() {
       setRows(rowsData);
     }
   }, [upcomingBookings, isLoading]);
+
+  console.log(rows);
 
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
