@@ -3,7 +3,8 @@
 import { db } from '../index'
 import { eq, and, asc, gt } from "drizzle-orm"
 import { hotdesk, room, space, booking } from '../../drizzle/schema';
-import { TypedGETRequest, TypedResponse, Room, Space, Booking } from '../types';
+import { TypedGETRequest, TypedResponse, Room, Space, Booking, AnonymousBooking } from '../types';
+import { anonymiseBooking, formatBookingDates } from '../utils';
 import typia from 'typia';
 
 export async function roomDetails(
@@ -86,7 +87,7 @@ export async function singleSpaceDetails(
 
 export async function spaceAvailabilities(
   req: TypedGETRequest<{}, SingleSpaceRequest>,
-  res: TypedResponse<{ bookings: Booking[] }>,
+  res: TypedResponse<{ bookings: AnonymousBooking[] }>,
 ) {
   try {
     if (!typia.is<SingleSpaceRequest>(req.params)) {
@@ -121,7 +122,7 @@ export async function spaceAvailabilities(
         asc(booking.starttime)
       )
 
-    res.json({ bookings: existingBookings });
+    res.json({ bookings: existingBookings.map(formatBookingDates).map(anonymiseBooking) });
     return
 
   } catch (error) {
