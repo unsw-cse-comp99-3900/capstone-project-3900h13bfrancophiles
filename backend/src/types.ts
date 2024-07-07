@@ -2,8 +2,11 @@
 import { Request, Response } from 'express';
 import { Send } from 'express-serve-static-core';
 import { tags } from 'typia';
+import { bookingstatusenum } from '../drizzle/schema';
 
-export type UserGroup = "admin" | "cse-staff" | "hdr" | "other";
+// Order matters - lowest to highest
+export const USER_GROUPS = ["other", "hdr", "csestaff", "admin"] as const;
+export type UserGroup =  typeof USER_GROUPS[number];
 
 /**
  * Payload stored with JWT auth tokens
@@ -59,12 +62,12 @@ export interface TypedResponse<T = Empty> extends Response {
 /**
  * Booking typed response
  */
-export type Booking = { id: number, zid: number, starttime: string, endtime: string, spaceid: int, currentstatus: string, description: string, checkintime: string | null, checkouttime: string | null };
+export type Booking = { id: number, zid: number, starttime: string, endtime: string, spaceid: string, currentstatus: string, description: string, checkintime: string | null, checkouttime: string | null };
 
 /**
  * Room typed response
  */
-export type Room = { id: string, name: string, type: string, capacity: number, roomnumber: string, usage: string };
+export type Room = { id: string, name: string, type: string, capacity: number, roomnumber: string };
 
 export type Desk = { id: string, name: string, floor: string, room: string, desknumber: number };
 
@@ -74,3 +77,12 @@ export interface IDatetimeRange {
   datetimeStart: string & tags.Format<'date-time'>
   datetimeEnd: string & tags.Format<'date-time'>
 }
+
+export interface BookingDetailsRequest {
+  spaceid: string;
+  starttime: string & tags.Format<'date-time'>;
+  endtime: string & tags.Format<'date-time'>;
+  description: string;
+}
+
+export type BookingStatus = typeof bookingstatusenum.enumValues[number];

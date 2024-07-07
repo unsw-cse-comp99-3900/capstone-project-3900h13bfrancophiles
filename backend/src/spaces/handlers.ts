@@ -15,10 +15,9 @@ export async function roomDetails(
       .select({
         id: room.id,
         name: space.name,
-        type: space.type,
+        type: room.type,
         capacity: room.capacity,
         roomnumber: room.roomnumber,
-        usage: room.usage
       })
       .from(room)
       .innerJoin(space, eq(space.id, room.id))
@@ -34,7 +33,7 @@ type SingleSpaceRequest = { spaceId: string };
 
 export async function singleSpaceDetails(
   req: TypedGETRequest<{}, SingleSpaceRequest>,
-  res: TypedResponse<{ space: Space }>,
+  res: TypedResponse<{ space: Space, isRoom: Boolean }>,
 ) {
   try {
     if (!typia.is<SingleSpaceRequest>(req.params)) {
@@ -48,17 +47,16 @@ export async function singleSpaceDetails(
       .select({
         id: room.id,
         name: space.name,
-        type: space.type,
+        type: room.type,
         capacity: room.capacity,
         roomnumber: room.roomnumber,
-        usage: room.usage
       })
       .from(room)
       .innerJoin(space, eq(space.id, room.id))
       .where(eq(room.id, req.params.spaceId));
 
     if (roomRes.length) {
-      res.json({ space: roomRes[0] });
+      res.json({ space: roomRes[0], isRoom: true });
       return;
     }
 
@@ -76,7 +74,7 @@ export async function singleSpaceDetails(
       .where(eq(hotdesk.id, req.params.spaceId));
 
     if (deskRes.length) {
-      res.json({ space: deskRes[0] });
+      res.json({ space: deskRes[0], isRoom: false });
       return;
     }
 

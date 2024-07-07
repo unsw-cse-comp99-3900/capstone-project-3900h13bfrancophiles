@@ -1,11 +1,11 @@
 // Booking endpoint handlers
 
 import { db } from '../index'
-import { count, sql, and, eq, lt, lte, gt, gte, desc } from "drizzle-orm"
+import { and, count, desc, eq, gt, gte, lt, lte } from "drizzle-orm"
 import { booking } from '../../drizzle/schema';
-import { Booking, IDatetimeRange, TypedGETRequest, TypedRequest, TypedResponse } from '../types';
+import { Booking, BookingDetailsRequest, IDatetimeRange, TypedGETRequest, TypedRequest, TypedResponse } from '../types';
 import typia, { tags } from "typia";
-import { formatBookingDates, withinDateRange as dateInRange } from '../utils';
+import { formatBookingDates, initialBookingStatus, withinDateRange as dateInRange } from '../utils';
 
 export async function currentBookings(
   req: TypedGETRequest,
@@ -75,20 +75,23 @@ export async function pastBookings(
     const page = parseInt(req.query.page);
     const limit = parseInt(req.query.limit);
     const offset = (page - 1) * limit;
+    const currentTime = new Date().toISOString();
 
     const totalBookingsCount = await db
       .select({ count: count() })
       .from(booking)
-      .where(
-        eq(booking.zid, zid)
-      );
+      .where(and(
+        eq(booking.zid, zid),
+        lt(booking.endtime, currentTime)
+      ));
 
     const pastBookings = await db
       .select()
       .from(booking)
-      .where(
-        eq(booking.zid, zid)
-      )
+      .where(and(
+        eq(booking.zid, zid),
+        lt(booking.endtime, currentTime)
+      ))
       .orderBy(
         desc(booking.starttime)
       )
@@ -271,6 +274,44 @@ export async function checkOutBooking(
   } catch (error) {
     res.status(204);
   }
+}
+
+export async function createBooking(
+  req: TypedRequest<BookingDetailsRequest>,
+  res: TypedResponse<{ booking: Booking }>,
+) {
+  if (!typia.is<BookingDetailsRequest>(req.body)) {
+    res.status(400).json({ error: "Invalid input" });
+  }
+
+  const status = await initialBookingStatus(req.token.group, req.body.spaceid);
+  if (status === undefined) {
+    res.status(404).json({ error: `Space ${req.body.spaceid} not found` });
+    return;
+  }
+  if (status === null) {
+    res.status(403).json({ error: "You do not have permission to book this space" });
+    return;
+  }
+
+  let createdBooking: Booking;
+  try {
+    const res = await db
+      .insert(booking)
+      .values({
+        zid: req.token.user,
+        currentstatus: status,
+        ...req.body
+      })
+      .returning();
+
+    createdBooking = formatBookingDates(res[0]);
+  } catch (e: any) {
+    res.status(400).json({ error: `${e}` });
+    return;
+  }
+
+  res.json({ booking: createdBooking });
 }
 
 export async function deleteBooking(
