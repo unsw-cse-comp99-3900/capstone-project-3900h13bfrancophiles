@@ -5,7 +5,7 @@ import { and, count, desc, eq, gt, gte, lt, lte } from "drizzle-orm"
 import { booking } from '../../drizzle/schema';
 import { Booking, BookingDetailsRequest, IDatetimeRange, TypedGETRequest, TypedRequest, TypedResponse } from '../types';
 import typia, { tags } from "typia";
-import { formatBookingDates, withinDateRange as dateInRange } from '../utils';
+import { formatBookingDates, initialBookingStatus, withinDateRange as dateInRange } from '../utils';
 
 export async function currentBookings(
   req: TypedGETRequest,
@@ -75,20 +75,23 @@ export async function pastBookings(
     const page = parseInt(req.query.page);
     const limit = parseInt(req.query.limit);
     const offset = (page - 1) * limit;
+    const currentTime = new Date().toISOString();
 
     const totalBookingsCount = await db
       .select({ count: count() })
       .from(booking)
-      .where(
-        eq(booking.zid, zid)
-      );
+      .where(and(
+        eq(booking.zid, zid),
+        lt(booking.endtime, currentTime)
+      ));
 
     const pastBookings = await db
       .select()
       .from(booking)
-      .where(
-        eq(booking.zid, zid)
-      )
+      .where(and(
+        eq(booking.zid, zid),
+        lt(booking.endtime, currentTime)
+      ))
       .orderBy(
         desc(booking.starttime)
       )
@@ -281,14 +284,23 @@ export async function createBooking(
     res.status(400).json({ error: "Invalid input" });
   }
 
+  const status = await initialBookingStatus(req.token.group, req.body.spaceid);
+  if (status === undefined) {
+    res.status(404).json({ error: `Space ${req.body.spaceid} not found` });
+    return;
+  }
+  if (status === null) {
+    res.status(403).json({ error: "You do not have permission to book this space" });
+    return;
+  }
+
   let createdBooking: Booking;
   try {
     const res = await db
       .insert(booking)
       .values({
         zid: req.token.user,
-        // TODO: decide whether or not this should be PENDING once we have permissions
-        currentstatus: "confirmed",
+        currentstatus: status,
         ...req.body
       })
       .returning();

@@ -3,6 +3,9 @@ import * as crypto from 'node:crypto';
 
 import { TokenPayload, UserGroup } from '../types';
 import { AUTH_SECRET } from '../../config';
+import { db } from '../index';
+import { person } from '../../drizzle/schema';
+import { eq } from 'drizzle-orm';
 
 // Helpers for validating user and password
 export function validateLogin(zid: number, zpass: string): boolean {
@@ -11,9 +14,14 @@ export function validateLogin(zid: number, zpass: string): boolean {
 }
 
 // Helpers for managing permissions
-export function getUserGroup(zid: number): UserGroup {
-  // TODO: store and fetch user groups
-  return "admin";
+export async function getUserGroup(zid: number): Promise<UserGroup> {
+  // TODO: Integrate with UNSW db
+  const res = await db
+    .select({ group: person.usergrp })
+    .from(person)
+    .where(eq(person.zid, zid));
+
+  return res?.[0].group ?? "other";
 }
 
 // Helpers for managing tokens

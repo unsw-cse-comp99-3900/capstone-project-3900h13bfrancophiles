@@ -10,107 +10,66 @@ import FormLabel from "@mui/joy/FormLabel";
 import IconButton from "@mui/joy/IconButton";
 import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
-
-// import { authApiCall } from '@/api'
-// import useSWR from 'swr'
-import { Sheet, Stack } from "@mui/joy";
+import {Sheet, Skeleton, Stack} from "@mui/joy";
 import { format } from 'date-fns';
+import useSpace from "@/hooks/useSpace";
+import usePastBookings from "@/hooks/usePastBookings";
+
+export interface PastBookingRowProps {
+  row: Row
+}
+
+interface Row {
+  id: number,
+  startTime: Date,
+  endTime: Date,
+  space: string,
+  description: string
+}
+function PastBookingsRow({row}: PastBookingRowProps) {
+  const { space, isLoading } = useSpace(row.space);
+
+  return <tr>
+    <td>
+      <Typography level="body-sm">
+        {format(row.startTime, "dd/MM/yy k:mm")} - {format(row.endTime, "k:mm")}
+      </Typography>
+    </td>
+    <td>
+      <Skeleton loading={isLoading}>
+        <Typography level="body-sm">{space?.name}</Typography>
+      </Skeleton>
+    </td>
+    <td>
+      <Typography level="body-sm">{row.description}</Typography>
+    </td>
+  </tr>;
+}
 
 export default function PastBookings() {
-  function createData(
-    id: number,
-    startTime: Date,
-    endTime: Date,
-    space: string,
-    isRoom: boolean,
-    description: string
-  ) {
-    // Somehow concatenate space data to form space string
-    return { id, startTime, endTime, space, isRoom, description };
-  }
-
-  const rows = [
-    createData(
-      1,
-      new Date(2021, 4, 1, 17, 23, 42, 11),
-      new Date(2021, 4, 1, 18, 23, 42, 11),
-      "K17 L2 Desk 13",
-      false,
-      "Thesis"
-    ),
-    createData(
-      2,
-      new Date(2022, 4, 2, 17, 23, 42, 11),
-      new Date(2021, 4, 1, 18, 23, 42, 11),
-      "K17 L2 Desk 13",
-      false,
-      "Gaming"
-    ),
-    createData(
-      3,
-      new Date(2023, 4, 3, 17, 23, 42, 11),
-      new Date(2021, 4, 1, 18, 23, 42, 11),
-      "K17 Meeting Room G02",
-      true,
-      "Society event"
-    ),
-    createData(
-      4,
-      new Date(2024, 4, 4, 17, 23, 42, 11),
-      new Date(2021, 4, 1, 18, 23, 42, 11),
-      "K17 L2 Desk 13",
-      false,
-      "Working"
-    ),
-    createData(
-      5,
-      new Date(2025, 4, 5, 17, 23, 42, 11),
-      new Date(2021, 4, 1, 18, 23, 42, 11),
-      "K17 Meeting Room G02",
-      true,
-      "Assignment"
-    ),
-    createData(
-      6,
-      new Date(2026, 4, 6, 17, 23, 42, 11),
-      new Date(2021, 4, 1, 18, 23, 42, 11),
-      "K17 Meeting Room G02",
-      true,
-      "Filming a video"
-    ),
-    createData(
-      7,
-      new Date(2027, 4, 7, 17, 23, 42, 11),
-      new Date(2021, 4, 1, 18, 23, 42, 11),
-      "K17 Meeting Room G02",
-      true,
-      "Class"
-    ),
-  ];
-
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
+  const [rows, setRows] = React.useState<PastBookingRow[]>([]);
+  const { pastBookings, total, isLoading } = usePastBookings(page + 1, rowsPerPage);
+
+  React.useEffect(() => {
+    if (!isLoading && pastBookings) {
+      const rowsData = pastBookings.map((booking) => ({
+        id: booking.id,
+        startTime: new Date(booking.starttime),
+        endTime: new Date(booking.endtime),
+        space: booking.spaceid,
+        description: booking.description,
+      }));
+      setRows(rowsData);
+    }
+  }, [page, rowsPerPage, pastBookings, isLoading]);
+
   const [filter, setFilter] = React.useState("all");
   const [filteredRows, setFilteredRows] = React.useState(
     rows.sort((a, b) => (a.startTime < b.startTime ? 1 : -1))
   );
   const [sortNewest, setSortNewest] = React.useState(true);
-
-  // // will eventually get data from backend
-  // const getData = () => {
-  //   authApiCall(
-  //     "/bookings/past",
-  //     'GET',
-  //     {
-  //       page: 0,
-  //       limit: 5,
-  //     }
-  //   ).then(e => console.log(e))
-  // }
-
-  // const getData2 = () => {
-  //   const { data, error, isLoading } = useSWR('/api/user', fetch)
-  // }
 
   const handleChangePage = (newPage: number) => {
     setPage(newPage);
@@ -159,15 +118,15 @@ export default function PastBookings() {
             : 1
         )
     ); // this will also be backend
-  }, [filter, sortNewest]);
+  }, [rows, filter, sortNewest]);
 
   const getLabelDisplayedRowsTo = () => {
-    if (filteredRows.length === -1) {
+    if (total === undefined) {
       return (page + 1) * rowsPerPage;
     }
     return rowsPerPage === -1
-      ? filteredRows.length
-      : Math.min(filteredRows.length, (page + 1) * rowsPerPage);
+      ? total
+      : Math.min(total, (page + 1) * rowsPerPage);
   };
 
   return (
@@ -227,21 +186,8 @@ export default function PastBookings() {
           </thead>
           <tbody>
             {filteredRows
-              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               .map((row) => (
-                <tr key={row.id}>
-                  <td>
-                    <Typography level="body-sm">
-                      {format(row.startTime, "dd/MM/yy k:mm")} - {format(row.endTime, "k:mm")}
-                    </Typography>
-                  </td>
-                  <td>
-                    <Typography level="body-sm">{row.space}</Typography>
-                  </td>
-                  <td>
-                    <Typography level="body-sm">{row.description}</Typography>
-                  </td>
-                </tr>
+                <PastBookingsRow key={row.id} row={row}/>
               ))}
           </tbody>
           <tfoot>
@@ -272,7 +218,7 @@ export default function PastBookings() {
                         filteredRows.length === 0 ? 0 : page * rowsPerPage + 1,
                       to: getLabelDisplayedRowsTo(),
                       count:
-                        filteredRows.length === -1 ? -1 : filteredRows.length,
+                        total === undefined ? -1 : total,
                     })}
                   </Typography>
                   <Box sx={{ display: "flex", gap: 1 }}>
@@ -293,7 +239,7 @@ export default function PastBookings() {
                       disabled={
                         filteredRows.length !== -1
                           ? page >=
-                            Math.ceil(filteredRows.length / rowsPerPage) - 1
+                            Math.ceil(total === undefined ? -1 : total / rowsPerPage) - 1
                           : false
                       }
                       onClick={() => handleChangePage(page + 1)}
