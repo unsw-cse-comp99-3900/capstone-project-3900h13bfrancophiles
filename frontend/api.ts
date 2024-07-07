@@ -85,3 +85,7 @@ export const login = (
 export const logout = (): Promise<{}> => {
   return authApiCall('/auth/logout', 'POST', {});
 }
+
+export const deleteBooking = (id: number): Promise<{}> => {
+  return authApiCall('/bookings/delete', 'DELETE', { id });
+}
