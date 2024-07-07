@@ -91,5 +91,5 @@ export const checkIn = (id: number): Promise<{}> => {
 }
 
 export const checkOut = (id: number): Promise<{}> => {
-  return authApiCall('/bookings/checkin', 'POST', { id });
+  return authApiCall('/bookings/checkout', 'POST', { id });
 }
