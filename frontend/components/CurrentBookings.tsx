@@ -39,13 +39,13 @@ interface CurrentBookingCardProps {
 
 function CurrentBookingCard({ booking }: CurrentBookingCardProps) {
   const { space, isLoading } = useSpace(booking.spaceid);
+  const { mutate } = useCurrentBookings(); // Get mutate function from useCurrentBookings
 
   const [isCheckingInOrOut, setIsCheckingInOrOut] = useState(false);
   const [checkInOrOutError, setCheckInOrOutError] = useState<string | null>(
     null
   );
   const [checkedIn, setCheckedIn] = useState(false);
-  const [checkedOut, setCheckedOut] = useState(false);
 
   const handleCheckInOut = async () => {
     if (checkedIn) {
@@ -54,7 +54,7 @@ function CurrentBookingCard({ booking }: CurrentBookingCardProps) {
       setCheckInOrOutError(null);
       try {
         await checkOut(booking.id);
-        setCheckedOut(true);
+        mutate();
       } catch (error) {
         if (error instanceof Error) {
           setCheckInOrOutError(error.message);
@@ -73,6 +73,7 @@ function CurrentBookingCard({ booking }: CurrentBookingCardProps) {
       try {
         await checkIn(booking.id);
         setCheckedIn(true);
+        mutate();
       } catch (error) {
         if (error instanceof Error) {
           setCheckInOrOutError(error.message);
@@ -86,60 +87,54 @@ function CurrentBookingCard({ booking }: CurrentBookingCardProps) {
   };
 
   return (
-    <>
-      {!checkedOut && (
-        <Card variant="outlined">
-          <CardContent>
-            <Stack
-              direction={{ xs: "column", lg: "row" }}
-              px={2}
-              py={1}
-              width="100%"
-              justifyContent="space-between"
-              alignItems={{ xs: "flex-start", lg: "center" }}
+    <Card variant="outlined">
+      <CardContent>
+        <Stack
+          direction={{ xs: "column", lg: "row" }}
+          px={2}
+          py={1}
+          width="100%"
+          justifyContent="space-between"
+          alignItems={{ xs: "flex-start", lg: "center" }}
+        >
+          <Box>
+            <Typography level="h3" sx={{ textWrap: "wrap" }}>
+              <Skeleton loading={isLoading}>{space?.name}</Skeleton>
+            </Typography>
+            <Typography level="body-lg" pb={1} sx={{ textWrap: "wrap" }}>
+              <Skeleton loading={isLoading}>
+                Booked {format(new Date(booking.starttime), "p")} -{" "}
+                {format(new Date(booking.endtime), "p")}
+              </Skeleton>
+            </Typography>
+          </Box>
+          <Stack
+            direction="row"
+            spacing={{ xs: 1, sm: 4 }}
+            height={60}
+            width={{ xs: "100%", lg: "50%" }}
+            py="10px"
+            justifyContent="flex-end"
+          >
+            <Button
+              size="sm"
+              color="success"
+              onClick={handleCheckInOut}
+              sx={{ borderRadius: "20px", width: "100px" }}
+              loading={isCheckingInOrOut}
             >
-              <Box>
-                <Typography level="h3" sx={{ textWrap: "wrap" }}>
-                  <Skeleton loading={isLoading}>{space?.name}</Skeleton>
-                </Typography>
-                <Typography level="body-lg" pb={1} sx={{ textWrap: "wrap" }}>
-                  <Skeleton loading={isLoading}>
-                    Booked {format(new Date(booking.starttime), "p")} -{" "}
-                    {format(new Date(booking.endtime), "p")}
-                  </Skeleton>
-                </Typography>
-              </Box>
-              <Stack
-                direction="row"
-                spacing={{ xs: 1, sm: 4 }}
-                height={60}
-                width={{ xs: "100%", lg: "50%" }}
-                py="10px"
-                justifyContent="flex-end"
-              >
-                <Button
-                  size="sm"
-                  color="success"
-                  onClick={handleCheckInOut}
-                  sx={{ borderRadius: "20px", width: "100px" }}
-                  loading={isCheckingInOrOut}
-                >
-                  {checkedIn ? "Check Out" : "Check In"}
-                </Button>
-                <Button
-                  size="sm"
-                  color="primary"
-                  sx={{ borderRadius: "20px", width: "150px" }}
-                >
-                  Contact Support
-                </Button>
-              </Stack>
-            </Stack>
-          </CardContent>
-        </Card>
-      )}
-    </>
+              {checkedIn ? "Check Out" : "Check In"}
+            </Button>
+            <Button
+              size="sm"
+              color="primary"
+              sx={{ borderRadius: "20px", width: "150px" }}
+            >
+              Contact Support
+            </Button>
+          </Stack>
+        </Stack>
+      </CardContent>
+    </Card>
   );
 }
-
-export default CurrentBookings;
