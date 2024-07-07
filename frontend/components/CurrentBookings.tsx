@@ -45,7 +45,9 @@ function CurrentBookingCard({ booking }: CurrentBookingCardProps) {
   const [checkInOrOutError, setCheckInOrOutError] = useState<string | null>(
     null
   );
-  const [checkedIn, setCheckedIn] = useState(false);
+  const [checkedIn, setCheckedIn] = useState<Boolean>(
+    booking.currentstatus === "checkedin" ? true : false
+  );
 
   const handleCheckInOut = async () => {
     if (checkedIn) {
