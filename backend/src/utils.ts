@@ -1,6 +1,8 @@
-import { buffer } from 'stream/consumers';
-import { Booking, BookingEdit } from './types';
 import { MINIMUM_BOOKING_LENGTH_MINUTES, MINIMUM_BOOKING_EDIT_WINDOW_MINUTES } from '../config';
+import { Booking, BookingStatus, BookingEdit, USER_GROUPS, UserGroup } from './types';
+import { space } from '../drizzle/schema';
+import { eq } from 'drizzle-orm';
+import { db } from './index';
 
 /**
  * Format the booking dates by adding a Z to the end to signify UTC time. It
@@ -23,10 +25,34 @@ export function withinDateRange(current: Date, start: Date, end: Date, bufferMin
   start.setMinutes(start.getMinutes() - bufferMinutes);
   end.setMinutes(end.getMinutes() + bufferMinutes);
 
-  if (start <= current && current <= end) {
-    return true;
+  return start <= current && current <= end;
+}
+
+/**
+ * Return whether the initial status of a booking should be pending or confirmed.
+ * Returns undefined if the space does not exist, returns null if the user
+ * does not have permission to book the space.
+ */
+export async function initialBookingStatus(
+  userGroup: UserGroup,
+  spaceId: string
+): Promise<BookingStatus | null | undefined> {
+  const res = await db
+    .select({ minReqGrp: space.minreqgrp, minBookGrp: space.minbookgrp })
+    .from(space)
+    .where(eq(space.id, spaceId));
+  if (res.length === 0) return undefined;
+
+  const userGrpIdx = USER_GROUPS.indexOf(userGroup);
+  const minReqIdx = USER_GROUPS.indexOf(res[0].minReqGrp);
+  const minBookIdx = USER_GROUPS.indexOf(res[0].minBookGrp);
+  if (userGrpIdx < minReqIdx) {
+    return null;
+  } else if (userGrpIdx < minBookIdx) {
+    return "pending";
+  } else {
+    return "confirmed";
   }
-  return false;
 }
 
 export function applyBookingEdits(booking: Booking, edits: BookingEdit): Booking {

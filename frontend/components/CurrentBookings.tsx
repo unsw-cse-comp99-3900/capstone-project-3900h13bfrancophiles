@@ -5,6 +5,8 @@ import { Booking } from '@/types';
 import useSpace from '@/hooks/useSpace';
 import useCurrentBookings from '@/hooks/useCurrentBookings';
 import { format } from 'date-fns';
+import useCheckInBooking from "@/hooks/useCheckInBooking";
+import { useState } from "react";
 
 function CurrentBookings() {
   const { currentBookings } = useCurrentBookings();
@@ -34,6 +36,35 @@ function CurrentBookingCard({
   booking
 }: CurrentBookingCardProps) {
   const { space, isLoading } = useSpace(booking.spaceid);
+  const { checkIn } = useCheckInBooking();
+  const [isCheckingInOrOut, setIsCheckingInOrOut] = useState(false);
+  const [checkInOrOutError, setCheckInOrOutError] = useState<string | null>(null);
+  const [checkedIn, setCheckedIn] = useState(false);
+
+  const handleCheckInOut = async () => {
+    if (checkedIn) {
+      // check out
+      return;
+    } else {
+      // handle check in
+      setIsCheckingInOrOut(true);
+      setCheckInOrOutError(null);
+  
+      try {
+        await checkIn(booking.id);
+        setCheckedIn(true);
+      } catch (error) {
+        if (error instanceof Error) {
+          setCheckInOrOutError(error.message);
+        } else {
+          setCheckInOrOutError('An unexpected error occurred');
+        }
+      } finally {
+        setIsCheckingInOrOut(false);
+      }    
+    }
+
+  };
 
   return (
     <Card variant="outlined">
@@ -67,9 +98,11 @@ function CurrentBookingCard({
             <Button
               size="sm"
               color="success"
+              onClick={handleCheckInOut}
               sx={{ borderRadius: "20px", width: "100px" }}
+              loading={isCheckingInOrOut}
             >
-              Check in
+              {checkedIn ? "Check Out" : "Check In"}
             </Button>
             <Button
               size="sm"

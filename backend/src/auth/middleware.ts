@@ -4,7 +4,7 @@ import * as jwt from 'jsonwebtoken';
 import typia from "typia";
 
 import { AUTH_SECRET } from '../../config';
-import { TokenPayload } from '../types';
+import { TokenPayload, USER_GROUPS, UserGroup } from '../types';
 import { tokenIsActive } from './auth';
 
 // Middleware implementation
@@ -43,6 +43,31 @@ export function validateToken(req: Request, res: Response, next: NextFunction) {
       res.status(401).json({ error: "Token expired" });
     } else {
       res.status(401).json({ error: "Invalid token" });
+    }
+  }
+}
+
+// Authorises a user if they are in the specified user group
+export function authorise(group: UserGroup) {
+  return (req: Request, res: Response, next: NextFunction) => {
+    const userGroup = req.token.group;
+    if (userGroup !== group) {
+      res.status(403).json({ error: "You do not have permission to access this route" });
+    } else {
+      next();
+    }
+  }
+}
+
+// Authorises a user if they are in the specified user group or higher
+export function authoriseAtLeast(group: UserGroup) {
+  return (req: Request, res: Response, next: NextFunction) => {
+    const userGroupIdx = USER_GROUPS.indexOf(req.token.group);
+    const groupIdx = USER_GROUPS.indexOf(group);
+    if (userGroupIdx < groupIdx) {
+      res.status(403).json({ error: "You do not have permission to access this route" });
+    } else {
+      next();
     }
   }
 }
