@@ -53,28 +53,3 @@ export async function initialBookingStatus(
     return "confirmed";
   }
 }
-
-export function applyBookingEdits(booking: Booking, edits: BookingEdit, newStatus: BookingStatus | null | undefined): Booking {
-
-  if (newStatus) {
-    booking.currentstatus = newStatus;
-  }
-
-  if (edits.starttime) {
-    booking.starttime = edits.starttime;
-  }
-
-  if (edits.endtime) {
-    booking.endtime = edits.endtime;
-  }
-
-  if (edits.spaceid) {
-    booking.spaceid = edits.spaceid;
-  }
-
-  if (edits.description) {
-    booking.description = edits.description;
-  }
-
-  return booking;
-}

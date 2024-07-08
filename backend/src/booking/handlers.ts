@@ -5,7 +5,7 @@ import { and, count, desc, eq, gt, gte, lt, lte } from "drizzle-orm"
 import { booking } from '../../drizzle/schema';
 import { Booking, BookingDetailsRequest, BookingEdit, IDatetimeRange, TypedGETRequest, TypedRequest, TypedResponse } from '../types';
 import typia, { tags } from "typia";
-import { formatBookingDates, initialBookingStatus, withinDateRange as dateInRange, applyBookingEdits } from '../utils';
+import { formatBookingDates, initialBookingStatus, withinDateRange as dateInRange } from '../utils';
 
 export async function currentBookings(
   req: TypedGETRequest,
@@ -388,20 +388,24 @@ export async function editBooking(
       return;
     }
 
-    let editedBookingStatus = null;
     if (req.body.spaceid) {
-      editedBookingStatus = await initialBookingStatus(req.token.group, req.body.spaceid);
-      if (editedBookingStatus === undefined) {
+      const newBookingStatus = await initialBookingStatus(req.token.group, req.body.spaceid);
+      if (newBookingStatus === undefined) {
         res.status(404).json({ error: `Space ${req.body.spaceid} not found` });
         return;
       }
-      if (editedBookingStatus === null) {
+      if (newBookingStatus === null) {
         res.status(403).json({ error: "You do not have permission to book this space" });
         return;
       }
+      existingBooking[0].currentstatus = newBookingStatus;
     }
 
-    const editedBooking = applyBookingEdits(existingBooking[0], req.body, editedBookingStatus);
+    const editedBooking = { ...existingBooking[0], ...req.body };
+
+    if (editedBooking === existingBooking[0]) {
+      res.status(403).json({ error: "Edits do not modify booking" });
+    }
 
     let formattedBooking: Booking;
     try {
