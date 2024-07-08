@@ -388,20 +388,20 @@ export async function editBooking(
       return;
     }
 
-    if (req.body.spaceid) {
-      const newBookingStatus = await initialBookingStatus(req.token.group, req.body.spaceid);
-      if (newBookingStatus === undefined) {
-        res.status(404).json({ error: `Space ${req.body.spaceid} not found` });
-        return;
-      }
-      if (newBookingStatus === null) {
-        res.status(403).json({ error: "You do not have permission to book this space" });
-        return;
-      }
-      existingBooking[0].currentstatus = newBookingStatus;
+    const editedBooking = { ...existingBooking[0], ...req.body };
+
+    const newBookingStatus = await initialBookingStatus(req.token.group, editedBooking.spaceid);
+    if (newBookingStatus === undefined) {
+      res.status(404).json({ error: `Space ${existingBooking[0].spaceid} not found` });
+      return;
+    }
+    if (newBookingStatus === null) {
+      res.status(403).json({ error: "You do not have permission to book this space" });
+      return;
     }
 
-    const editedBooking = { ...existingBooking[0], ...req.body };
+    editedBooking.currentstatus = newBookingStatus;
+    existingBooking[0].currentstatus = newBookingStatus;
 
     if (editedBooking === existingBooking[0]) {
       res.status(403).json({ error: "Edits do not modify booking" });
