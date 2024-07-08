@@ -3,7 +3,7 @@
 import { db } from '../index'
 import { and, count, desc, eq, gt, gte, lt, lte } from "drizzle-orm"
 import { booking } from '../../drizzle/schema';
-import { Booking, BookingDetailsRequest, IDatetimeRange, TypedGETRequest, TypedRequest, TypedResponse, BookingEdit } from '../types';
+import { Booking, BookingDetailsRequest, BookingEdit, IDatetimeRange, TypedGETRequest, TypedRequest, TypedResponse } from '../types';
 import typia, { tags } from "typia";
 import { formatBookingDates, initialBookingStatus, withinDateRange as dateInRange, applyBookingEdits } from '../utils';
 

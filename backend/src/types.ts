@@ -1,15 +1,12 @@
 // File for utility types
 import { Request, Response } from 'express';
 import { Send } from 'express-serve-static-core';
-import internal from 'node:stream';
 import { tags } from 'typia';
 import { bookingstatusenum } from '../drizzle/schema';
 
 // Order matters - lowest to highest
 export const USER_GROUPS = ["other", "hdr", "csestaff", "admin"] as const;
 export type UserGroup =  typeof USER_GROUPS[number];
-
-export type Interval = 15 | 30 | 45 | 60;
 
 /**
  * Payload stored with JWT auth tokens

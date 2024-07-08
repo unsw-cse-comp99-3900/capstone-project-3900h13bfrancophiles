@@ -1,9 +1,7 @@
-import { MINIMUM_BOOKING_LENGTH_MINUTES, MINIMUM_BOOKING_EDIT_WINDOW_MINUTES } from '../config';
 import { Booking, BookingStatus, BookingEdit, USER_GROUPS, UserGroup } from './types';
 import { space } from '../drizzle/schema';
 import { eq } from 'drizzle-orm';
 import { db } from './index';
-import { bookingRelations } from '../drizzle/relations';
 
 /**
  * Format the booking dates by adding a Z to the end to signify UTC time. It
