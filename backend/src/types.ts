@@ -91,9 +91,9 @@ export type BookingEdit = {
 export type Room = {
   id: string,
   name: string,
+  type: string,
   capacity: number,
-  roomnumber: string,
-  usage: string
+  roomnumber: string
 };
 
 export type Desk = {
