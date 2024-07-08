@@ -74,7 +74,7 @@ function UpcomingBookingRow({row}: UpcomingBookingRowProps) {
 
 export default function UpcomingBookings() {
   const { upcomingBookings, isLoading } = useUpcomingBookings();
-  const [rows, setRows] = React.useState<UpcomingBookingRow[]>([]);
+  const [rows, setRows] = React.useState<Row[]>([]);
 
   React.useEffect(() => {
     if (!isLoading && upcomingBookings) {
