@@ -1,79 +1,140 @@
 "use client";
 import * as React from "react";
-import Table from "@mui/joy/Table";
-import Typography from "@mui/joy/Typography";
-import Box from "@mui/joy/Box";
-import Select from "@mui/joy/Select";
-import Option from "@mui/joy/Option";
-import FormControl from "@mui/joy/FormControl";
-import FormLabel from "@mui/joy/FormLabel";
-import IconButton from "@mui/joy/IconButton";
+import {
+  Box,
+  Button,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Divider,
+  FormControl,
+  FormLabel,
+  IconButton,
+  Modal,
+  ModalDialog,
+  Option,
+  Select,
+  Sheet,
+  Skeleton,
+  Stack,
+  Table,
+  Typography,
+} from "@mui/joy";
 import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
+import WarningRoundedIcon from "@mui/icons-material/WarningRounded";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
-
-import {Sheet, Skeleton, Stack} from "@mui/joy";
+import { format } from "date-fns";
 import BookingStatusPill from "@/components/BookingStatusPill";
-import { format } from 'date-fns';
 import useUpcomingBookings from "@/hooks/useUpcomingBookings";
 import useSpace from "@/hooks/useSpace";
+import { deleteBooking } from "@/api";
 
 export interface UpcomingBookingRowProps {
-  row: Row
+  row: Row;
+  mutate: () => void; // Pass mutate function as prop
 }
 
 interface Row {
-  id: number,
-  status: string,
-  startTime: Date,
-  endTime: Date,
-  space: string,
-  description: string
+  id: number;
+  status: string;
+  startTime: Date;
+  endTime: Date;
+  space: string;
+  description: string;
 }
 
-
-function UpcomingBookingRow({row}: UpcomingBookingRowProps) {
+function UpcomingBookingRow({ row, mutate }: UpcomingBookingRowProps) {
   const { space, isLoading } = useSpace(row.space);
+  const [bookingToDelete, setBookingToDelete] = React.useState<number | null>(
+    null
+  );
+  const [modalOpen, setModalOpen] = React.useState(false);
 
-  return <tr>
-    <td>
-      <BookingStatusPill status={row.status}/>
-    </td>
-    <td>
-      <Typography level="body-sm">
-        {format(row.startTime, "dd/MM/yy k:mm")} - {format(row.endTime, "k:mm")}
-      </Typography>
-    </td>
-    <td>
-      <Skeleton loading={isLoading}>
-        <Typography level="body-sm">{space?.name}</Typography>
-      </Skeleton>
-    </td>
-    <td>
-      <Typography level="body-sm">{row.description}</Typography>
-    </td>
-    <td>
-      <Stack direction="row" justifyContent="flex-end" px={1}>
-        <IconButton
-          variant="plain"
-          color="neutral"
-        >
-          <EditIcon/>
-        </IconButton>
-        <IconButton
-          variant="plain"
-          color="danger"
-        >
-          <DeleteIcon/>
-        </IconButton>
-      </Stack>
-    </td>
-  </tr>;
+  const handleDelete = async () => {
+    if (bookingToDelete !== null) {
+      try {
+        await deleteBooking(bookingToDelete);
+        mutate(); // Refresh bookings after deletion
+        handleCloseModal();
+      } catch (err) {
+        console.error(err);
+      }
+    }
+  };
+
+  const handleOpenModal = (id: number) => {
+    setBookingToDelete(id);
+    setModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setBookingToDelete(null);
+    setModalOpen(false);
+  };
+
+  return (
+    <>
+      <tr>
+        <td>
+          <BookingStatusPill status={row.status} />
+        </td>
+        <td>
+          <Typography level="body-sm">
+            {format(row.startTime, "dd/MM/yy k:mm")} -{" "}
+            {format(row.endTime, "k:mm")}
+          </Typography>
+        </td>
+        <td>
+          <Skeleton loading={isLoading}>
+            <Typography level="body-sm">{space?.name}</Typography>
+          </Skeleton>
+        </td>
+        <td>
+          <Typography level="body-sm">{row.description}</Typography>
+        </td>
+        <td>
+          <Stack direction="row" justifyContent="flex-end" px={1}>
+            <IconButton variant="plain" color="neutral">
+              <EditIcon />
+            </IconButton>
+            <IconButton
+              variant="plain"
+              color="danger"
+              onClick={() => handleOpenModal(row.id)}
+            >
+              <DeleteIcon />
+            </IconButton>
+          </Stack>
+        </td>
+      </tr>
+      <Modal open={modalOpen} onClose={handleCloseModal}>
+        <ModalDialog variant="outlined" role="alertdialog">
+          <DialogTitle>
+            <WarningRoundedIcon />
+            Confirmation
+          </DialogTitle>
+          <Divider />
+          <DialogContent>
+            Are you sure you want to delete this booking?
+          </DialogContent>
+          <DialogActions>
+            <Button variant="solid" color="danger" onClick={handleDelete}>
+              Delete Booking
+            </Button>
+            <Button variant="plain" color="neutral" onClick={handleCloseModal}>
+              Cancel
+            </Button>
+          </DialogActions>
+        </ModalDialog>
+      </Modal>
+    </>
+  );
 }
 
 export default function UpcomingBookings() {
-  const { upcomingBookings, isLoading } = useUpcomingBookings();
+  const { upcomingBookings, isLoading, mutate } = useUpcomingBookings(); // Get mutate function from hook
   const [rows, setRows] = React.useState<Row[]>([]);
 
   React.useEffect(() => {
@@ -217,7 +278,7 @@ export default function UpcomingBookings() {
             {filteredRows
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               .map((row) => (
-                <UpcomingBookingRow key={row.id} row={row}/>
+                <UpcomingBookingRow key={row.id} row={row} mutate={mutate} />
               ))}
           </tbody>
           <tfoot>
