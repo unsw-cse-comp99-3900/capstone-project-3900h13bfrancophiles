@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Card, CardContent, CardOverflow, Stack, Typography } from "@mui/joy";
+import { Card, CardContent, CardOverflow, Link, Stack, Typography } from "@mui/joy";
 import PeopleIcon from "@mui/icons-material/People";
 import MeetingRoomOutlinedIcon from "@mui/icons-material/MeetingRoomOutlined";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -25,9 +25,15 @@ export default function RoomCard({ room }: { room: Room }) {
             alignItems="center"
             sx={{ flexDirection: "row" }}
           >
-            <Typography level="title-lg" sx={{ mt: 1, fontWeight: "xl" }}>
-              {room.name}
-            </Typography>
+            <Link
+              overlay
+              href={`/space/${room.id}`}
+              underline="none"
+            >
+              <Typography level="title-lg" sx={{ mt: 1, fontWeight: "xl" }}>
+                {room.name}
+              </Typography>
+            </Link>
             <FontAwesomeIcon fontSize="24px" icon={faCalendarPlus} />
           </Stack>
           <Typography

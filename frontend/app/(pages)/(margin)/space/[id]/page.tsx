@@ -38,6 +38,7 @@ export default function SpacePage({ params }: { params: { id: string } }) {
           flexWrap="wrap"
           gap={5}
           borderRadius="sm"
+          mb={3}
         >
           <Box>
             <Typography level="h4" sx={{ color: "gray" }}>
