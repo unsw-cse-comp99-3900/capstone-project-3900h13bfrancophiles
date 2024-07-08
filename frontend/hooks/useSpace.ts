@@ -3,7 +3,7 @@ import { swrFetcher } from '@/api';
 import { Space } from '@/types';
 
 /**
- * Hook to fetch current bookings
+ * Hook to fetch space details
  */
 export default function useSpace(spaceId: string) {
   const { data, isLoading, error } = useSWR<{ space: Space }>(`/spaces/${spaceId}`, swrFetcher);

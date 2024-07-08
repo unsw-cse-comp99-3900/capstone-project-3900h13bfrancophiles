@@ -2,6 +2,7 @@
 
 import { Box, Stack, Typography, Button } from "@mui/joy";
 import useSpace from '@/hooks/useSpace';
+import useAvailabilities from "@/hooks/useAvailabilities";
 import { Space, Room, Desk } from "@/types";
 import Loading from "@/components/Loading";
 import AvailabilityCalendar from "@/components/AvailabilityCalendar";
@@ -9,6 +10,7 @@ import AvailabilityCalendar from "@/components/AvailabilityCalendar";
 
 export default function SpacePage({ params }: { params: { id: string } }) {
   const { space, isLoading } = useSpace(params.id);
+  const { bookings } = useAvailabilities(params.id)
   const isRoom : boolean = space?.capacity && !isLoading ? true : false;
   const room = space as Room
   const desk = space as Desk
@@ -68,7 +70,7 @@ export default function SpacePage({ params }: { params: { id: string } }) {
         : null
       }
       <AvailabilityCalendar
-        bookings={{}}
+        bookings={bookings ?? []}
       />
     </Stack>
   );
