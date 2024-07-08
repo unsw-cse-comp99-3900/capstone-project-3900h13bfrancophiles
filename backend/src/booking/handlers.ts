@@ -383,11 +383,6 @@ export async function editBooking(
       return;
     }
 
-    if (new Date() > new Date(existingBooking[0].starttime)) {
-      res.status(403).json({ error: "Booking has already begun" });
-      return;
-    }
-
     const editedBooking = { ...existingBooking[0], ...req.body };
 
     const newBookingStatus = await initialBookingStatus(req.token.group, editedBooking.spaceid);
