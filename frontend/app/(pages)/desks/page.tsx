@@ -20,9 +20,11 @@ const exampleStatuses: { [spaceId: string]: Status } = {
       zid: 1234567,
       starttime: "3",
       endtime: "4",
-      spaceid: 3,
+      spaceid: "2",
       currentstatus: "checked in",
       description: "Franco is at this table!",
+      checkintime: null,
+      checkouttime: null
     }
   },
   "3": { status: "available" },
