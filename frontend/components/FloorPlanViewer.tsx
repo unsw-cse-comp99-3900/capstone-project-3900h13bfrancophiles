@@ -6,14 +6,19 @@ import { Box } from '@mui/joy';
 import Image from 'next/image';
 import { deskData } from '@/app/data';
 import DeskIcon from './DeskIcon';
+import { Booking } from '@/types';
 
 interface FloorPlanViewerProps {
+  selectedDesk: string;
   setSelectedDesk: React.Dispatch<React.SetStateAction<string>>;
   level: string;
-  // TODO: timestamp passed down
+  statuses: { [spaceId: string]: Status };
 }
 
-const FloorPlanViewer = ({ level, setSelectedDesk }: FloorPlanViewerProps) => {
+type Status = { status: "available" }
+  | { status: "unavailable", booking: Booking };
+
+const FloorPlanViewer = ({ level, selectedDesk, setSelectedDesk, statuses}: FloorPlanViewerProps) => {
   const desks = deskData.find(data => data.level === level)?.desks ?? [];
 
   return (
@@ -32,7 +37,15 @@ const FloorPlanViewer = ({ level, setSelectedDesk }: FloorPlanViewerProps) => {
         >
           <Image src={`/${level}.svg`} fill alt={`${level} floorplan`} style={{ position: "absolute" }}/>
           {desks.map((desk, index) => (
-            <DeskIcon key={index} {...{...desk, setSelectedDesk}} />
+            <DeskIcon
+            key={index}
+            id={desk.id}
+            x={desk.x}
+            y={desk.y}
+            selectedDesk={selectedDesk}
+            setSelectedDesk={setSelectedDesk}
+            status={statuses[desk.id]}
+            />
           ))}
         </TransformComponent>
       </TransformWrapper>
