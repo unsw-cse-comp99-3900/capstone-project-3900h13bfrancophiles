@@ -1,4 +1,4 @@
-import { Booking, BookingStatus, USER_GROUPS, UserGroup } from './types';
+import { Booking, AnonymousBooking, BookingStatus, USER_GROUPS, UserGroup } from './types';
 import { space } from '../drizzle/schema';
 import { eq } from 'drizzle-orm';
 import { db } from './index';
@@ -52,4 +52,16 @@ export async function initialBookingStatus(
   } else {
     return "confirmed";
   }
+}
+
+export function anonymiseBooking(booking: Booking): AnonymousBooking {
+  return {
+    id: booking.id,
+    starttime: booking.starttime,
+    endtime: booking.endtime,
+    spaceid: booking.spaceid,
+    currentstatus: booking.currentstatus,
+    checkintime: booking.checkintime,
+    checkouttime: booking.checkouttime
+  };
 }
