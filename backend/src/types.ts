@@ -71,7 +71,7 @@ export type Booking = {
   starttime: string,
   endtime: string,
   spaceid: string,
-  currentstatus: string,
+  currentstatus: BookingStatus,
   description: string,
   checkintime: string | null,
   checkouttime: string | null

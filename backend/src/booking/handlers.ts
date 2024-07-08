@@ -379,7 +379,7 @@ export async function editBooking(
       );
 
     if (existingBooking.length != 1) {
-      res.status(404).json({ error: "Booking ID does not exist for this user" });
+      res.status(404).json({ error: "User does not have a booking with this id" });
       return;
     }
 
@@ -388,32 +388,43 @@ export async function editBooking(
       return;
     }
 
-    const editedBooking = applyBookingEdits(existingBooking[0], req.body);
+    let editedBookingStatus = null;
+    if (req.body.spaceid) {
+      editedBookingStatus = await initialBookingStatus(req.token.group, req.body.spaceid);
+      if (editedBookingStatus === undefined) {
+        res.status(404).json({ error: `Space ${req.body.spaceid} not found` });
+        return;
+      }
+      if (editedBookingStatus === null) {
+        res.status(403).json({ error: "You do not have permission to book this space" });
+        return;
+      }
+    }
 
-    // Validate edited booking here. Use same validation as new booking
+    const editedBooking = applyBookingEdits(existingBooking[0], req.body, editedBookingStatus);
 
-    // also need to check, can't edit booking unless in future, and is there a minimum edit time?
-
-    const newStatus = (req.token.group == "admin") ? "confirmed" : "pending";
-    const updatedBooking = await db
-      .update(booking)
-      .set({
-        starttime: editedBooking.starttime,
-        endtime: editedBooking.endtime,
-        spaceid: editedBooking.spaceid,
-        currentstatus: newStatus,
-        description: editedBooking.description
-       })
-      .where(
-        and(
-          eq(booking.id, req.body.id),
-          eq(booking.zid, req.token.user)
+    let formattedBooking: Booking;
+    try {
+      const res = await db
+        .update(booking)
+        .set({
+          starttime: editedBooking.starttime,
+          endtime: editedBooking.endtime,
+          spaceid: editedBooking.spaceid,
+          currentstatus: editedBooking.currentstatus,
+          description: editedBooking.description
+        })
+        .where(
+          and(
+            eq(booking.id, req.body.id),
+            eq(booking.zid, req.token.user)
+          )
         )
-      )
-      .returning();
+        .returning();
 
-    if (updatedBooking.length != 1) {
-      res.status(500).json({ error: "Booking modified during edit operation" });
+        formattedBooking = formatBookingDates(res[0]);
+    } catch (e: any) {
+      res.status(400).json({ error: `${e}` });
       return;
     }
 
@@ -422,7 +433,8 @@ export async function editBooking(
 
     // TODO: trigger admin reapproval if newStatus is pending
 
-    res.json({ booking: updatedBooking[0] });
+    res.json({ booking: formattedBooking });
+
   } catch (error) {
     res.status(204);
   }
