@@ -1,7 +1,7 @@
 // Spaces endpoint handlers
 
 import { db } from '../index'
-import { eq } from "drizzle-orm"
+import { eq, sql } from "drizzle-orm"
 import { hotdesk, room, space } from '../../drizzle/schema';
 import { TypedGETRequest, TypedResponse, Room, Space } from '../types';
 import typia from 'typia';
@@ -82,4 +82,20 @@ export async function singleSpaceDetails(
   } catch (error) {
     res.status(500).json({ error: 'Failed to fetch rooms' });
   }
+}
+
+export async function allSpaces(
+  req: TypedGETRequest,
+  res: TypedResponse<{ spaces: { id: string, name: string, isRoom: boolean }[] }>,
+) {
+  const subquery = db.select({ data: room.id }).from(room);
+  const spaces = await db
+    .select({
+      id: space.id,
+      name: space.name,
+      isRoom: sql<boolean>`${space.id} in (${subquery})`,
+    })
+    .from(space);
+
+  res.json({ spaces });
 }
