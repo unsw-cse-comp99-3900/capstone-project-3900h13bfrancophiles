@@ -17,7 +17,8 @@ CREATE TABLE IF NOT EXISTS space (
     id            TEXT PRIMARY KEY,
     name          TEXT NOT NULL,
     minReqGrp     UserGroupEnum NOT NULL, -- lowest group that can request
-    minBookGrp    UserGroupEnum NOT NULL  -- lowest group that can book
+    minBookGrp    UserGroupEnum NOT NULL, -- lowest group that can book
+    CONSTRAINT chk_id_fmt CHECK (id ~ '^[A-Z]+-[A-Z]+[0-9]+-[A-Za-z0-9]+(-\d+)?$')
 );
 
 CREATE TABLE IF NOT EXISTS hotdesk (
