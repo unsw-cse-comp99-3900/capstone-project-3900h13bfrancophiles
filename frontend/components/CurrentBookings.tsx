@@ -138,3 +138,5 @@ function CurrentBookingCard({ booking }: CurrentBookingCardProps) {
     </Card>
   );
 }
+
+export default CurrentBookings;
