@@ -34,15 +34,9 @@ import {
   startOfToday,
   startOfTomorrow,
 } from 'date-fns';
+import useSpaces from '@/hooks/useSpaces';
 
 type SpaceOption = { name: string; id: string; isRoom: boolean };
-// TODO: Fetch data
-const options: SpaceOption[] = [
-  { name: 'Meeting Room 302', id: 'K-K17-302', isRoom: true },
-  { name: 'Consultation Room G02', id: 'K-K17-G02', isRoom: true },
-  { name: 'K17 501 Desk 15', id: 'K-K17-501-15', isRoom: false },
-  { name: 'K17 301K Desk 50', id: 'K-K17-301K-50', isRoom: false },
-];
 
 export default function BookingModal() {
   const [open, setOpen] = React.useState<boolean>(false);
@@ -55,8 +49,6 @@ export default function BookingModal() {
   const now = roundToInterval(new Date()) as Date;
   const [start, setStart] = React.useState<Date | undefined>(now);
   const [end, setEnd] = React.useState<Date | undefined>(min([addHours(now, 1), startOfTomorrow()]));
-
-  console.log({ space, date, start, end });
 
   return (
     <React.Fragment>
@@ -81,20 +73,7 @@ export default function BookingModal() {
               <Stack spacing={1} width={250}>
                 <FormControl>
                   <FormLabel>Space</FormLabel>
-                  <Autocomplete
-                    required
-                    value={space}
-                    onChange={(_, value) => setSpace(value)}
-                    options={options}
-                    getOptionLabel={(option) => option.name}
-                    getOptionKey={(option) => option.id}
-                    isOptionEqualToValue={(option, value) => option.id === value.id}
-                    renderOption={(props, option) => (
-                      <AutocompleteOption {...props} key={option.id}>
-                        <SpaceAutocompleteOption option={option}/>
-                      </AutocompleteOption>
-                    )}
-                  />
+                  <SpaceInput space={space} setSpace={setSpace} />
                 </FormControl>
                 <FormControl>
                   <FormLabel>Date</FormLabel>
@@ -170,13 +149,41 @@ export default function BookingModal() {
               <Typography level="body-md" textAlign="center" fontWeight={500}>
                 {format(date, 'EEEE, MMMM d')}
               </Typography>
-              <Sheet variant="outlined" sx={{ height: "100%", borderRadius: 10 }}></Sheet>
+              <Sheet variant="outlined" sx={{ height: "100%", borderRadius: 10 }}>
+              {/* TODO: put a calendar here */}
+              </Sheet>
             </Stack>
           </Stack>
         </ModalDialog>
       </Modal>
     </React.Fragment>
   );
+}
+
+interface SpaceInputProps {
+  space: SpaceOption | null;
+  setSpace: React.Dispatch<React.SetStateAction<SpaceOption | null>>;
+}
+
+function SpaceInput({ space, setSpace }: SpaceInputProps) {
+  const { spaces: options } = useSpaces();
+
+  return (
+    <Autocomplete
+      required
+      value={space}
+      onChange={(_, value) => setSpace(value)}
+      options={options ?? []}
+      getOptionLabel={(option) => option.name}
+      getOptionKey={(option) => option.id}
+      isOptionEqualToValue={(option, value) => option.id === value.id}
+      renderOption={(props, option) => (
+        <AutocompleteOption {...props} key={option.id}>
+          <SpaceAutocompleteOption option={option}/>
+        </AutocompleteOption>
+      )}
+    />
+  )
 }
 
 function SpaceAutocompleteOption({ option }: { option: SpaceOption }) {
