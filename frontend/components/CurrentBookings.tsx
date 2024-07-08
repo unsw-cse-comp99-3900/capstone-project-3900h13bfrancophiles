@@ -45,7 +45,7 @@ function CurrentBookingCard({ booking }: CurrentBookingCardProps) {
   const [checkInOrOutError, setCheckInOrOutError] = useState<string | null>(
     null
   );
-  const [checkedIn, setCheckedIn] = useState<Boolean>(
+  const [checkedIn, setCheckedIn] = useState<boolean>(
     booking.currentstatus === "checkedin" ? true : false
   );
 
@@ -105,8 +105,7 @@ function CurrentBookingCard({ booking }: CurrentBookingCardProps) {
             </Typography>
             <Typography level="body-lg" pb={1} sx={{ textWrap: "wrap" }}>
               <Skeleton loading={isLoading}>
-                Booked {format(new Date(booking.starttime), "p")} -{" "}
-                {format(new Date(booking.endtime), "p")}
+                Booked {format(new Date(booking.starttime), "p")} - {format(new Date(booking.endtime), "p")}
               </Skeleton>
             </Typography>
           </Box>
