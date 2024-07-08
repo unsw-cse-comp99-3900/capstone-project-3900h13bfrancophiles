@@ -7,6 +7,7 @@ import SwapVertIcon from "@mui/icons-material/SwapVert";
 import * as React from "react";
 import {
   Box,
+  CircularProgress,
   FormControl,
   FormLabel,
   Input,
@@ -17,15 +18,12 @@ import {
   ModalDialog,
   Stack,
   Slider,
+  Alert,
 } from "@mui/joy";
-
-interface Room {
-  id: string;
-  name: string;
-  type: string;
-  capacity: number;
-  available: boolean;
-}
+import useRoomDetails from "@/hooks/useRoomDetails";
+import { Room } from "@/types";
+import Loading from "@/components/Loading";
+import Error from "@/components/Error";
 
 interface FilterOption {
   value: string;
@@ -37,50 +35,23 @@ interface Filters {
   capacity: number;
 }
 
-const rooms: Room[] = [
-  {
-    id: "1",
-    name: "K17 G02",
-    type: "Consultation Room",
-    capacity: 2,
-    available: true,
-  },
-  {
-    id: "2",
-    name: "K17 302",
-    type: "Meeting Room",
-    capacity: 10,
-    available: false,
-  },
-  {
-    id: "3",
-    name: "J17 501",
-    type: "Meeting Room",
-    capacity: 15,
-    available: true,
-  },
-  {
-    id: "4",
-    name: "K17 G02",
-    type: "Consultation Room",
-    capacity: 2,
-    available: false,
-  },
-  {
-    id: "5",
-    name: "J17 402A",
-    type: "Consultation Room",
-    capacity: 4,
-    available: false,
-  },
-  {
-    id: "6",
-    name: "K17 601",
-    type: "Meeting Room",
-    capacity: 25,
-    available: true,
-  },
-];
+interface FilterControlProps {
+  label: string;
+  options: FilterOption[];
+  value: string;
+  onChange: (
+    event: React.MouseEvent | React.KeyboardEvent | React.FocusEvent | null,
+    value: string | null
+  ) => void;
+}
+
+interface CapacitySliderProps {
+  label: string;
+  min: number;
+  max: number;
+  value: number;
+  onChange: (value: number) => void;
+}
 
 const renderFilters = (
   tempFilters: Filters,
@@ -118,16 +89,6 @@ const renderFilters = (
   </React.Fragment>
 );
 
-interface FilterControlProps {
-  label: string;
-  options: FilterOption[];
-  value: string;
-  onChange: (
-    event: React.MouseEvent | React.KeyboardEvent | React.FocusEvent | null,
-    value: string | null
-  ) => void;
-}
-
 const FilterControl: React.FC<FilterControlProps> = ({
   label,
   options,
@@ -145,14 +106,6 @@ const FilterControl: React.FC<FilterControlProps> = ({
     </Select>
   </FormControl>
 );
-
-interface CapacitySliderProps {
-  label: string;
-  min: number;
-  max: number;
-  value: number;
-  onChange: (value: number) => void;
-}
 
 const CapacitySlider: React.FC<CapacitySliderProps> = ({
   label,
@@ -198,6 +151,12 @@ export default function Rooms() {
     })
   );
 
+  const { roomsData = [], isLoading, error } = useRoomDetails();
+  const [isFiltered, setIsFiltered] = React.useState<boolean>(false);
+
+  if (isLoading) return <Loading page="Rooms" />;
+  if (error) return <Error page="Rooms" message="Error loading rooms"/>;
+
   const toggleFilters = () => {
     setFiltersOpen(!filtersOpen);
   };
@@ -208,11 +167,19 @@ export default function Rooms() {
 
   const applyFilters = () => {
     setFilters(tempFilters);
+    if (
+      tempFilters.type !== "all" ||
+      tempFilters.capacity !== 1
+    ) {
+      setIsFiltered(true);
+    } else {
+      setIsFiltered(false);
+    }
     setFiltersOpen(false);
   };
 
-  const filterRooms = (rooms: Room[]) => {
-    return rooms.filter((room) => {
+  const filterRooms = (roomsData: Room[]) => {
+    return roomsData.filter((room) => {
       const matchesType =
         filters.type === "all" ||
         room.type.toLowerCase().replace(" ", "-") === filters.type;
@@ -224,7 +191,9 @@ export default function Rooms() {
     });
   };
 
-  const sortedRooms = [...rooms].sort((a, b) => a.name.localeCompare(b.name));
+  const sortedRooms = [...roomsData].sort((a, b) =>
+    a.name.localeCompare(b.name)
+  );
   const displayedRooms = filterRooms(
     sort ? sortedRooms : sortedRooms.reverse()
   );
@@ -288,11 +257,7 @@ export default function Rooms() {
           </Stack>
           <Button
             startDecorator={<FilterListIcon />}
-            variant={
-              sortedRooms.length === displayedRooms.length
-                ? "outlined"
-                : "solid"
-            }
+            variant={isFiltered ? "solid" : "outlined"}
             color="neutral"
             size="sm"
             onClick={toggleFilters}

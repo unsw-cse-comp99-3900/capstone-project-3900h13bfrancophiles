@@ -13,89 +13,82 @@ import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 
-import { Sheet, Stack } from "@mui/joy";
+import {Sheet, Skeleton, Stack} from "@mui/joy";
 import BookingStatusPill from "@/components/BookingStatusPill";
 import { format } from 'date-fns';
+import useUpcomingBookings from "@/hooks/useUpcomingBookings";
+import useSpace from "@/hooks/useSpace";
+
+export interface UpcomingBookingRowProps {
+  row: Row
+}
+
+interface Row {
+  id: number,
+  status: string,
+  startTime: Date,
+  endTime: Date,
+  space: string,
+  description: string
+}
+
+
+function UpcomingBookingRow({row}: UpcomingBookingRowProps) {
+  const { space, isLoading } = useSpace(row.space);
+
+  return <tr>
+    <td>
+      <BookingStatusPill status={row.status}/>
+    </td>
+    <td>
+      <Typography level="body-sm">
+        {format(row.startTime, "dd/MM/yy k:mm")} - {format(row.endTime, "k:mm")}
+      </Typography>
+    </td>
+    <td>
+      <Skeleton loading={isLoading}>
+        <Typography level="body-sm">{space?.name}</Typography>
+      </Skeleton>
+    </td>
+    <td>
+      <Typography level="body-sm">{row.description}</Typography>
+    </td>
+    <td>
+      <Stack direction="row" justifyContent="flex-end" px={1}>
+        <IconButton
+          variant="plain"
+          color="neutral"
+        >
+          <EditIcon/>
+        </IconButton>
+        <IconButton
+          variant="plain"
+          color="danger"
+        >
+          <DeleteIcon/>
+        </IconButton>
+      </Stack>
+    </td>
+  </tr>;
+}
 
 export default function UpcomingBookings() {
-  function createData(
-    id: number,
-    status: string,
-    startTime: Date,
-    endTime: Date,
-    space: string,
-    isRoom: boolean,
-    description: string
-  ) {
-    // Somehow concatenate space data to form space string
-    return { id, status, startTime, endTime, space, isRoom, description };
-  }
+  const { upcomingBookings, isLoading } = useUpcomingBookings();
+  const [rows, setRows] = React.useState<Row[]>([]);
 
-  const rows = [
-    createData(
-      1,
-      "Pending",
-      new Date(2021, 4, 1, 17, 23, 42, 11),
-      new Date(2021, 4, 1, 18, 23, 42, 11),
-      "K17 L2 Desk 13",
-      false,
-      "Thesis"
-    ),
-    createData(
-      2,
-      "Pending",
-      new Date(2022, 4, 2, 17, 23, 42, 11),
-      new Date(2021, 4, 1, 18, 23, 42, 11),
-      "K17 L2 Desk 13",
-      false,
-      "Gaming"
-    ),
-    createData(
-      3,
-      "Declined",
-      new Date(2023, 4, 3, 17, 23, 42, 11),
-      new Date(2021, 4, 1, 18, 23, 42, 11),
-      "K17 Meeting Room G02",
-      true,
-      "Society event"
-    ),
-    createData(
-      4,
-      "Accepted",
-      new Date(2024, 4, 4, 17, 23, 42, 11),
-      new Date(2021, 4, 1, 18, 23, 42, 11),
-      "K17 L2 Desk 13",
-      false,
-      "Working"
-    ),
-    createData(
-      5,
-      "Pending",
-      new Date(2025, 4, 5, 17, 23, 42, 11),
-      new Date(2021, 4, 1, 18, 23, 42, 11),
-      "K17 Meeting Room G02",
-      true,
-      "Assignment"
-    ),
-    createData(
-      6,
-      "Accepted",
-      new Date(2026, 4, 6, 17, 23, 42, 11),
-      new Date(2021, 4, 1, 18, 23, 42, 11),
-      "K17 Meeting Room G02",
-      true,
-      "Filming a video"
-    ),
-    createData(
-      7,
-      "Accepted",
-      new Date(2027, 4, 7, 17, 23, 42, 11),
-      new Date(2021, 4, 1, 18, 23, 42, 11),
-      "K17 Meeting Room G02",
-      true,
-      "Class"
-    ),
-  ];
+  React.useEffect(() => {
+    if (!isLoading && upcomingBookings) {
+      const rowsData = upcomingBookings.map((booking) => ({
+        id: booking.id,
+        status: booking.currentstatus,
+        startTime: new Date(booking.starttime),
+        endTime: new Date(booking.endtime),
+        space: booking.spaceid,
+        description: booking.description,
+      }));
+      setRows(rowsData);
+    }
+  }, [upcomingBookings, isLoading]);
 
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
@@ -104,22 +97,6 @@ export default function UpcomingBookings() {
     rows.sort((a, b) => (a.startTime < b.startTime ? 1 : -1))
   );
   const [sortNewest, setSortNewest] = React.useState(true);
-
-  // // will eventually get data from backend
-  // const getData = () => {
-  //   authApiCall(
-  //     "/bookings/past",
-  //     'GET',
-  //     {
-  //       page: 0,
-  //       limit: 5,
-  //     }
-  //   ).then(e => console.log(e))
-  // }
-  //
-  // const getData2 = () => {
-  //   const { data, error, isLoading } = useSWR('/api/user', fetch)
-  // }
 
   const handleChangePage = (newPage: number) => {
     setPage(newPage);
@@ -168,7 +145,7 @@ export default function UpcomingBookings() {
             : 1
         )
     ); // this will also be backend
-  }, [filter, sortNewest]);
+  }, [rows, filter, sortNewest]);
 
   const getLabelDisplayedRowsTo = () => {
     if (filteredRows.length === -1) {
@@ -240,42 +217,7 @@ export default function UpcomingBookings() {
             {filteredRows
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               .map((row) => (
-                <tr key={row.id}>
-                  <td>
-                    <BookingStatusPill status={row.status} />
-                  </td>
-                  <td>
-                    <Typography level="body-sm">
-                      {format(row.startTime, "dd/MM/yy k:mm")} - {format(row.endTime, "k:mm")}
-                    </Typography>
-                  </td>
-                  <td>
-                    <Typography level="body-sm">{row.space}</Typography>
-                  </td>
-                  <td>
-                    <Typography level="body-sm">{row.description}</Typography>
-                  </td>
-                  <td>
-                    <Stack direction="row" justifyContent="flex-end" px={1}>
-                      <IconButton
-                        variant="plain"
-                        color="neutral"
-                        onClick={() => window.alert("edit doesn't work yet :D")}
-                      >
-                        <EditIcon />
-                      </IconButton>
-                      <IconButton
-                        variant="plain"
-                        color="danger"
-                        onClick={() =>
-                          window.alert("delete doesn't work yet :D")
-                        }
-                      >
-                        <DeleteIcon />
-                      </IconButton>
-                    </Stack>
-                  </td>
-                </tr>
+                <UpcomingBookingRow key={row.id} row={row}/>
               ))}
           </tbody>
           <tfoot>
