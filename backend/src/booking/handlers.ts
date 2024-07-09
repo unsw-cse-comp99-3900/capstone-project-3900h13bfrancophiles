@@ -7,6 +7,7 @@ import { Booking, BookingDetailsRequest, BookingEdit, IDatetimeRange, TypedGETRe
 import typia, { tags } from "typia";
 import isEqual from 'lodash/isEqual';
 import { formatBookingDates, initialBookingStatus, withinDateRange as dateInRange } from '../utils';
+import { sendBookingConfirmation } from '../email/service';
 
 export async function currentBookings(
   req: TypedGETRequest,
@@ -308,6 +309,9 @@ export async function createBooking(
       .returning();
 
     createdBooking = formatBookingDates(res[0]);
+
+    // TODO: Booking confirmation email
+    sendBookingConfirmation();
   } catch (e: any) {
     res.status(400).json({ error: `${e}` });
     return;

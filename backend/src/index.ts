@@ -21,11 +21,21 @@ import {
 } from './booking/handlers';
 import { roomDetails, singleSpaceDetails, spaceAvailabilities } from "./spaces/handlers";
 import { spaceStatus } from './status/handlers';
+import nodemailer from 'nodemailer';
 
 const pool = new Pool({
   connectionString: DATABASE_URL,
   });
 export const db = drizzle(pool);
+
+export const emailTransporter = nodemailer.createTransport({
+  host: "smtp.ethereal.email",
+  port: 587,
+  auth: {
+    user: 'wilma44@ethereal.email',
+    pass: 'GWCxu8xEeJAwGAMGzF'
+  }
+});
 
 const app = express();
 app.use(morgan("dev"));
