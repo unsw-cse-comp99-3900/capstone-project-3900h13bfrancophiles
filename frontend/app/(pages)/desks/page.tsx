@@ -33,10 +33,7 @@ const exampleStatuses: { [spaceId: string]: Status } = {
   "6": { status: "available" },
   "7": { status: "available" },
   "8": { status: "available" },
-  "9": { status: "available" },
-  "10": { status: "available" },
-  "11": { status: "available" },
-  "12": { status: "available" },
+
 };
 
 const exampleUser: User = {

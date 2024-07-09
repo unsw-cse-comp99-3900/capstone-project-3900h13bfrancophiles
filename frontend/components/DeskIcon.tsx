@@ -56,12 +56,13 @@ const buttonStyle = {
 };
 
 const DeskIcon = ({ id, x, y, selectedDesk, setSelectedDesk, status }: DeskIconProps) => {
-  const user = status.status === "available" ? null : getUser(status.booking.zid)
+  const user = status ? (status.status === "available" ? null : getUser(status.booking.zid)) : null;
 
   return (
     <Box
       key={id}
       sx={{
+        display: status ? "block" : "none",
         "--size-var": { xs: "33px", sm: "45px", md: "50px" },
         position: "absolute",
         transform: "translate(-50%, -50%)",
@@ -73,7 +74,7 @@ const DeskIcon = ({ id, x, y, selectedDesk, setSelectedDesk, status }: DeskIconP
       <KeepScale style={{ height: "var(--size-var)", width: "var(--size-var)" }}>
         <Avatar
           variant="solid"
-          color="primary"
+          color="success"
           src={user ? `data:image/jpeg;base64,${user.image}` : "/DeskIcon1.svg"}
           sx={{ ...buttonStyle, "--IconButton-size": "var(--size-var)", ...(selectedDesk === id ? activeStyle : inactiveStyle)}}
           onClick={() => setSelectedDesk(id)}
