@@ -3,7 +3,7 @@
 import { db } from '../index'
 import { and, count, desc, eq, gt, gte, lt, lte } from "drizzle-orm"
 import { booking } from '../../drizzle/schema';
-import { Booking, BookingDetailsRequest, BookingEdit, IDatetimeRange, TypedGETRequest, TypedRequest, TypedResponse } from '../types';
+import { Booking, BookingDetailsRequest, BookingEditRequest, IDatetimeRange, TypedGETRequest, TypedRequest, TypedResponse } from '../types';
 import typia, { tags } from "typia";
 import isEqual from 'lodash/isEqual';
 import { formatBookingDates, initialBookingStatus, withinDateRange as dateInRange } from '../utils';
@@ -361,11 +361,11 @@ export async function deleteBooking(
 }
 
 export async function editBooking(
-  req: TypedRequest<BookingEdit>,
+  req: TypedRequest<BookingEditRequest>,
   res: TypedResponse<{ booking: Booking }>,
 ) {
   try {
-    if (!typia.is<BookingEdit>(req.body)) {
+    if (!typia.is<BookingEditRequest>(req.body)) {
       res.status(400).json({ error: "Invalid input" });
       return;
     }

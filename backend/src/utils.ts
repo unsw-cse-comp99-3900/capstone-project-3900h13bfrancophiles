@@ -1,4 +1,4 @@
-import { Booking, AnonymousBooking, BookingStatus, BookingEdit, USER_GROUPS, UserGroup } from './types';
+import { Booking, AnonymousBooking, BookingStatus, USER_GROUPS, UserGroup } from './types';
 import { space } from '../drizzle/schema';
 import { eq } from 'drizzle-orm';
 import { db } from './index';
