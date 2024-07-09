@@ -187,8 +187,9 @@ export default function UpcomingBookings() {
 
   React.useEffect(() => {
     setFilteredRows(rows
+      .filter(() => true)
       .sort((a, b) => a.startTime > b.startTime ? sortNewest ? 1 : -1 : sortNewest ? -1 : 1)); // this will also be backend
-  }, [rows, filter, sortNewest]);
+  }, [rows, sortNewest]);
 
   const getLabelDisplayedRowsTo = () => {
     if (filteredRows.length === -1) {
