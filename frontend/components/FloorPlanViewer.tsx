@@ -6,7 +6,7 @@ import { Box } from '@mui/joy';
 import Image from 'next/image';
 import { deskData } from '@/app/data';
 import DeskIcon from './DeskIcon';
-import { Booking } from '@/types';
+import { Status } from '@/types';
 
 interface FloorPlanViewerProps {
   selectedDesk: string;
@@ -14,9 +14,6 @@ interface FloorPlanViewerProps {
   level: string;
   statuses: { [spaceId: string]: Status };
 }
-
-type Status = { status: "available" }
-  | { status: "unavailable", booking: Booking };
 
 const FloorPlanViewer = ({ level, selectedDesk, setSelectedDesk, statuses}: FloorPlanViewerProps) => {
   const desks = deskData.find(data => data.level === level)?.desks ?? [];

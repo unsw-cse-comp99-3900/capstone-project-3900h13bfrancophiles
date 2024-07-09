@@ -3,12 +3,7 @@
 import React from 'react';
 import { KeepScale } from 'react-zoom-pan-pinch';
 import { Box, Avatar } from '@mui/joy';
-import { Booking } from '@/types';
-
-type Status = { status: "available" }
-  | { status: "unavailable", booking: Booking };
-
-type User = null | { name: string, image: string }
+import { Status, User } from '@/types';
 
 interface DeskIconProps {
   id: string,

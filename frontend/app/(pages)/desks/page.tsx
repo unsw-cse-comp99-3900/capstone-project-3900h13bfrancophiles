@@ -4,12 +4,7 @@ import FloorPlanViewer from "@/components/FloorPlanViewer";
 import { Tab, TabList, TabPanel, Tabs, Stack, Input, Button, Box, Sheet, Avatar, Modal, ModalClose, ModalDialog, DialogTitle, DialogContent, Typography } from "@mui/joy";
 import { deskData } from '@/app/data';
 import * as React from 'react';
-import { Booking } from "@/types";
-
-type Status = { status: "available" }
-  | { status: "unavailable", booking: Booking };
-
-type User = { name: string, image: string }
+import { Status, User } from "@/types";
 
 const exampleStatuses: { [spaceId: string]: Status } = {
   "1": { status: "available" },
@@ -33,7 +28,6 @@ const exampleStatuses: { [spaceId: string]: Status } = {
   "6": { status: "available" },
   "7": { status: "available" },
   "8": { status: "available" },
-
 };
 
 const exampleUser: User = {
@@ -67,7 +61,7 @@ export default function desks() {
 
   const statuses = exampleStatuses;
 
-  React.useEffect(() => {
+  React.useEffect(() => { // get status & user of currently selected desk for display
     const status = statuses[selectedDesk];
     if (status) {
       if (status.status === "available") {
@@ -124,11 +118,7 @@ export default function desks() {
                 defaultValue={startTime}
                 size="sm"
                 onChange={(event) => {
-                  const d = new Date(event.target.value).toLocaleTimeString([], {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  });
-                  setStartTime(d);
+                  setStartTime(event.target.value);
                 }}
               />
               <Input
@@ -136,11 +126,7 @@ export default function desks() {
                 defaultValue={endTime}
                 size="sm"
                 onChange={(event) => {
-                  const d = new Date(event.target.value).toLocaleTimeString([], {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  });
-                  setEndTime(d);
+                  setEndTime(event.target.value);
                 }}
               />
             </Stack>

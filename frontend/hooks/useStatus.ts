@@ -1,9 +1,6 @@
 import useSWR from 'swr';
 import { swrFetcher } from '@/api';
-import { Booking } from '@/types';
-
-type Status = { status: "available" }
-            | { status: "unavailable", booking: Booking };
+import { Booking, Status } from '@/types';
 
 /**
  * Hook to fetch statuses // currently not working?
