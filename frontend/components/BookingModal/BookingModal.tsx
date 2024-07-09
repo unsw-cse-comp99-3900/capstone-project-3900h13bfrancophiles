@@ -45,8 +45,9 @@ export default function BookingModal() {
   const onSubmit = async () => {
     setError(undefined);
     try {
-      if (!space || !start || !end) {
-        setError("Required fields not filled");
+      if (!space) {
+        setError("Please select a space");
+        setState('form');
         return
       }
       const res = await createBooking(space.id, start.toISOString(), end.toISOString(), desc);
@@ -102,7 +103,7 @@ export default function BookingModal() {
           </Stack>
         </Stack>
       </>
-      case 'confirm': return space && start && end && (
+      case 'confirm': return space && (
         <BookingConfirmation
           spaceName={space.name}
           spaceId={space.id}
@@ -116,7 +117,7 @@ export default function BookingModal() {
           handleClose={onModalClose}
         />
       )
-      case 'submitted': return space && start && end && booking && (
+      case 'submitted': return space && booking && (
         <BookingConfirmation
           spaceName={space.name}
           spaceId={space.id}

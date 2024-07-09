@@ -12,6 +12,7 @@ import {
   format,
   getHours,
   getMinutes,
+  isEqual,
   max,
   min,
   parse,
@@ -112,7 +113,7 @@ const BookingForm: React.FC<BookingFormProps> = ({
           <Input
             type="time"
             required
-            value={start ? format(start, 'HH:mm') : '--:--'}
+            value={format(start, 'HH:mm')}
             onChange={(e) => {
               if (!e.target.value.match(/\d{2}:\d{2}/)) return;
               handleStartChange(parse(e.target.value, 'HH:mm', date), date);
@@ -120,7 +121,8 @@ const BookingForm: React.FC<BookingFormProps> = ({
             onBlur={() => handleStartChange(roundToInterval(start), date)}
             slotProps={{
               input: {
-                min: format(now, 'HH:mm'),
+                min: isEqual(startOfDay(now), date) ? format(now, 'HH:mm') : '00:00',
+                max: '23:45',
                 step: 15 * 60,
               }
             }}
@@ -132,7 +134,7 @@ const BookingForm: React.FC<BookingFormProps> = ({
           <Input
             type="time"
             required
-            value={end ? format(end, 'HH:mm') : '--:--'}
+            value={format(end, 'HH:mm')}
             onChange={(e) => {
               if (!e.target.value.match(/\d{2}:\d{2}/)) return;
               handleEndChange(parse(e.target.value, 'HH:mm', date), date, start);
@@ -140,7 +142,7 @@ const BookingForm: React.FC<BookingFormProps> = ({
             onBlur={() => handleEndChange(roundToInterval(end), date, start)}
             slotProps={{
               input: {
-                min: (start && end && format(end, 'HH:mm') !== '00:00')
+                min: (format(end, 'HH:mm') !== '00:00')
                   ? format(start, 'HH:mm')
                   : undefined,
                 step: 15 * 60,
