@@ -100,8 +100,7 @@ export default function PastBookings() {
   };
 
   React.useEffect(() => {
-    setFilteredRows(rows
-      .filter(() => true)
+    setFilteredRows([...rows]
       .sort((a, b) => a.startTime < b.startTime ? sortNewest ? 1 : -1 : sortNewest ? -1 : 1));
   }, [rows, sortNewest]);
 
