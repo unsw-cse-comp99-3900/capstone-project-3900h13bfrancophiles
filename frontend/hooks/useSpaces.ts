@@ -1,15 +1,12 @@
 import useSWR from 'swr';
 import { swrFetcher } from '@/api';
-
-type SpacesRes = {
-  spaces: { id: string; name: string; isRoom: boolean }[]
-};
+import { SpaceOption } from '@/types';
 
 /**
  * Hook to fetch all spaces
  */
 export default function useSpaces() {
-  const { data, isLoading, error } = useSWR<SpacesRes>(`/spaces`, swrFetcher);
+  const { data, isLoading, error } = useSWR<{ spaces: SpaceOption[] }>(`/spaces`, swrFetcher);
 
   return { spaces: data?.spaces, isLoading, error };
 }
