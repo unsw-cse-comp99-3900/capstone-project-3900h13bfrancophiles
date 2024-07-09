@@ -7,7 +7,6 @@ import SwapVertIcon from "@mui/icons-material/SwapVert";
 import * as React from "react";
 import {
   Box,
-  CircularProgress,
   FormControl,
   FormLabel,
   Input,
@@ -18,12 +17,12 @@ import {
   ModalDialog,
   Stack,
   Slider,
-  Alert,
 } from "@mui/joy";
 import useRoomDetails from "@/hooks/useRoomDetails";
 import { Room } from "@/types";
 import Loading from "@/components/Loading";
 import Error from "@/components/Error";
+import useTimeRange from '@/hooks/useTimeRange';
 
 interface FilterOption {
   value: string;
@@ -130,6 +129,7 @@ export default function Rooms() {
   const [filtersOpen, setFiltersOpen] = React.useState<boolean>(false);
   const [sort, setSort] = React.useState<boolean>(false);
   const [searchQuery, setSearchQuery] = React.useState<string>("");
+
   const [filters, setFilters] = React.useState<Filters>({
     type: "all",
     capacity: 1,
@@ -138,18 +138,10 @@ export default function Rooms() {
     type: "all",
     capacity: 1,
   });
-  const [date, setDate] = React.useState<string>(
-    new Date().toISOString().split("T")[0].toString()
-  );
-  const [startTime, setStartTime] = React.useState<string>(
-    new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
-  );
-  const [endTime, setEndTime] = React.useState<string>(
-    new Date(new Date().getTime() + 60 * 60 * 1000).toLocaleTimeString([], {
-      hour: "2-digit",
-      minute: "2-digit",
-    })
-  );
+  const {
+    date, start, end,
+    dateInputProps, startInputProps, endInputProps
+  } = useTimeRange();
 
   const { roomsData = [], isLoading, error } = useRoomDetails();
   const [isFiltered, setIsFiltered] = React.useState<boolean>(false);
@@ -219,41 +211,10 @@ export default function Rooms() {
           />
         </FormControl>
         <Stack direction="row" gap={2} flexWrap="wrap">
-          <Input
-            type="date"
-            defaultValue={date}
-            onChange={(event) => {
-              const d = new Date(event.target.value)
-                .toISOString()
-                .split("T")[0];
-              setDate(d);
-            }}
-          />
+          <Input {...dateInputProps} />
           <Stack direction="row">
-            <Input
-              type="time"
-              defaultValue={startTime}
-              size="sm"
-              onChange={(event) => {
-                const d = new Date(event.target.value).toLocaleTimeString([], {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                });
-                setStartTime(d);
-              }}
-            />
-            <Input
-              type="time"
-              defaultValue={endTime}
-              size="sm"
-              onChange={(event) => {
-                const d = new Date(event.target.value).toLocaleTimeString([], {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                });
-                setEndTime(d);
-              }}
-            />
+            <Input size="sm" {...startInputProps} />
+            <Input size="sm" {...endInputProps} />
           </Stack>
           <Button
             startDecorator={<FilterListIcon />}

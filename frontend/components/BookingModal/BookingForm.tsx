@@ -3,24 +3,7 @@ import { SpaceOption } from '@/types';
 import Stack from '@mui/joy/Stack';
 import FormControl from '@mui/joy/FormControl';
 import FormLabel from '@mui/joy/FormLabel';
-import Input from '@mui/joy/Input';
-import {
-  addDays,
-  addMinutes,
-  addWeeks,
-  differenceInMinutes,
-  format,
-  getHours,
-  getMinutes,
-  isEqual,
-  max,
-  min,
-  parse,
-  roundToNearestMinutes,
-  setHours,
-  setMinutes,
-  startOfDay,
-} from 'date-fns';
+import Input, { InputProps } from '@mui/joy/Input';
 import {
   Autocomplete,
   AutocompleteOption,
@@ -38,12 +21,9 @@ import TableRestaurantTwoToneIcon from '@mui/icons-material/TableRestaurantTwoTo
 interface BookingFormProps {
   space: SpaceOption | null;
   setSpace: React.Dispatch<React.SetStateAction<SpaceOption | null>>;
-  date: Date;
-  setDate: React.Dispatch<React.SetStateAction<Date>>;
-  start: Date;
-  setStart: React.Dispatch<React.SetStateAction<Date>>;
-  end: Date;
-  setEnd: React.Dispatch<React.SetStateAction<Date>>;
+  dateInputProps: InputProps,
+  startInputProps: InputProps,
+  endInputProps: InputProps,
   desc: string;
   setDesc: React.Dispatch<React.SetStateAction<string>>;
   onSubmit: () => void;
@@ -51,38 +31,12 @@ interface BookingFormProps {
 
 const BookingForm: React.FC<BookingFormProps> = ({
   space, setSpace,
-  date, setDate,
-  start, setStart,
-  end, setEnd,
+  dateInputProps,
+  startInputProps,
+  endInputProps,
   desc, setDesc,
   onSubmit
 }) => {
-  const now = roundToNearestMinutes(new Date(), { nearestTo: 15, roundingMethod: "ceil" });
-  const today = startOfDay(now);
-  const weekFromToday = addWeeks(today, 1);
-
-  const handleDateChange = (newDate: Date) => {
-    const startOfDate = startOfDay(newDate);
-    setDate(startOfDate);
-    const newStart = setHours(setMinutes(newDate, getMinutes(start)), getHours(start));
-    handleStartChange(newStart, startOfDate);
-  }
-
-  const handleStartChange = (newStart: Date, date: Date) => {
-    const startTime = max([newStart, now, date]);
-    const limitedStart = min([startTime, setHours(setMinutes(date, 45), 23)]);
-    const changeInTime = differenceInMinutes(limitedStart, start);
-
-    setStart(limitedStart);
-    handleEndChange(addMinutes(end, changeInTime), date, limitedStart);
-  }
-
-  const handleEndChange = (newEnd: Date, date: Date, start: Date) => {
-    const limitedEnd = min([newEnd, addDays(date, 1)]);
-    const minEnd = addMinutes(start, 15);
-    setEnd(max([minEnd, limitedEnd]));
-  }
-
   return (
     <form onSubmit={onSubmit}>
       <Stack spacing={1} width={250}>
@@ -92,63 +46,16 @@ const BookingForm: React.FC<BookingFormProps> = ({
         </FormControl>
         <FormControl>
           <FormLabel>Date</FormLabel>
-          <Input
-            type="date"
-            required
-            value={format(date, 'yyyy-MM-dd')}
-            onChange={(e) => {
-              if (!e.target.value.match(/\d{4}-\d{2}-\d{2}/)) return;
-              handleDateChange(new Date(e.target.value));
-            }}
-            slotProps={{
-              input: {
-                min: format(today, 'yyyy-MM-dd'),
-                max: format(weekFromToday, 'yyyy-MM-dd'),
-              }
-            }}
-          />
+          <Input required {...dateInputProps} />
         </FormControl>
         <FormControl>
           <FormLabel>Time</FormLabel>
-          <Input
-            type="time"
-            required
-            value={format(start, 'HH:mm')}
-            onChange={(e) => {
-              if (!e.target.value.match(/\d{2}:\d{2}/)) return;
-              handleStartChange(parse(e.target.value, 'HH:mm', date), date);
-            }}
-            onBlur={() => handleStartChange(roundToInterval(start), date)}
-            slotProps={{
-              input: {
-                min: isEqual(startOfDay(now), date) ? format(now, 'HH:mm') : '00:00',
-                max: '23:45',
-                step: 15 * 60,
-              }
-            }}
-          />
+          <Input required {...startInputProps} />
         </FormControl>
         <FormControl>
           <Divider sx={{ mb: 1 }}>to</Divider>
           <FormLabel sx={{ display: 'none' }}>End Time</FormLabel>
-          <Input
-            type="time"
-            required
-            value={format(end, 'HH:mm')}
-            onChange={(e) => {
-              if (!e.target.value.match(/\d{2}:\d{2}/)) return;
-              handleEndChange(parse(e.target.value, 'HH:mm', date), date, start);
-            }}
-            onBlur={() => handleEndChange(roundToInterval(end), date, start)}
-            slotProps={{
-              input: {
-                min: (format(end, 'HH:mm') !== '00:00')
-                  ? format(start, 'HH:mm')
-                  : undefined,
-                step: 15 * 60,
-              }
-            }}
-          />
+          <Input required {...endInputProps} />
         </FormControl>
         <FormControl>
           <FormLabel>Description</FormLabel>
@@ -208,10 +115,6 @@ function SpaceAutocompleteOption({ option }: { option: SpaceOption }) {
       </Typography>
     </ListItemContent>
   </>;
-}
-
-function roundToInterval(date: Date): Date {
-  return date && roundToNearestMinutes(date, { nearestTo: 15 })
 }
 
 export default BookingForm;

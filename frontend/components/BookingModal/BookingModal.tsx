@@ -8,7 +8,7 @@ import DialogTitle from '@mui/joy/DialogTitle';
 import Stack from '@mui/joy/Stack';
 import Add from '@mui/icons-material/Add';
 import { Alert, IconButton, Sheet, Typography } from '@mui/joy';
-import { addHours, format, min, roundToNearestMinutes, startOfDay, startOfTomorrow, } from 'date-fns';
+import { format } from 'date-fns';
 import { Booking, SpaceOption } from '@/types';
 import BookingForm from '@/components/BookingModal/BookingForm';
 import BookingConfirmation from '@/components/BookingModal/BookingConfirmation';
@@ -16,6 +16,7 @@ import WarningIcon from '@mui/icons-material/Warning';
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import { createBooking } from '@/api';
 import useUpcomingBookings from '@/hooks/useUpcomingBookings';
+import useTimeRange from '@/hooks/useTimeRange';
 
 type ModalState = 'form' | 'confirm' | 'submitted';
 
@@ -29,10 +30,10 @@ export default function BookingModal() {
 
   // Form state
   const [space, setSpace] = React.useState<SpaceOption | null>(null);
-  const now = roundToNearestMinutes(new Date(), { nearestTo: 15, roundingMethod: "ceil" });
-  const [date, setDate] = React.useState(startOfDay(now));
-  const [start, setStart] = React.useState<Date>(now);
-  const [end, setEnd] = React.useState<Date>(min([addHours(now, 1), startOfTomorrow()]));
+  const {
+    date, start, end,
+    dateInputProps, startInputProps, endInputProps
+  } = useTimeRange();
   const [desc, setDesc] = React.useState<string>("");
 
   const onModalClose = () => {
@@ -83,12 +84,9 @@ export default function BookingModal() {
           <BookingForm
             space={space}
             setSpace={setSpace}
-            date={date}
-            setDate={setDate}
-            start={start}
-            setStart={setStart}
-            end={end}
-            setEnd={setEnd}
+            dateInputProps={dateInputProps}
+            startInputProps={startInputProps}
+            endInputProps={endInputProps}
             desc={desc}
             setDesc={setDesc}
             onSubmit={() => setState('confirm')}
