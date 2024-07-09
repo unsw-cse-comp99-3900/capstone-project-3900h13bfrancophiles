@@ -23,6 +23,7 @@ import { Room } from "@/types";
 import Loading from "@/components/Loading";
 import Error from "@/components/Error";
 import useTimeRange from '@/hooks/useTimeRange';
+import BookingModal from '@/components/BookingModal/BookingModal';
 
 interface FilterOption {
   value: string;
@@ -142,6 +143,7 @@ export default function Rooms() {
     date, start, end,
     dateInputProps, startInputProps, endInputProps
   } = useTimeRange();
+  const [selectedRoom, setSelectedRoom] = React.useState<Room>();
 
   const { roomsData = [], isLoading, error } = useRoomDetails();
   const [isFiltered, setIsFiltered] = React.useState<boolean>(false);
@@ -192,6 +194,14 @@ export default function Rooms() {
 
   return (
     <>
+      {!!selectedRoom && <BookingModal
+        open={!!selectedRoom}
+        onClose={() => setSelectedRoom(undefined)}
+        space={selectedRoom ? { id: selectedRoom.id, name: selectedRoom.name, isRoom: true } : undefined}
+        date={date}
+        start={start}
+        end={end}
+      />}
       <h1>Rooms</h1>
       <Stack
         className="SearchAndFilters"
@@ -276,7 +286,7 @@ export default function Rooms() {
         paddingTop="20px"
       >
         {displayedRooms.map((room) => (
-          <RoomCard key={room.id} room={room} />
+          <RoomCard key={room.id} room={room} handleBook={setSelectedRoom} />
         ))}
       </Stack>
     </>

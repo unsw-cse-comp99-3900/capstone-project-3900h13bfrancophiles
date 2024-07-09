@@ -1,12 +1,10 @@
 "use client"
 
 import React from 'react';
-import Button from '@mui/joy/Button';
 import Modal from '@mui/joy/Modal';
 import ModalDialog from '@mui/joy/ModalDialog';
 import DialogTitle from '@mui/joy/DialogTitle';
 import Stack from '@mui/joy/Stack';
-import Add from '@mui/icons-material/Add';
 import { Alert, IconButton, Sheet, Typography } from '@mui/joy';
 import { format } from 'date-fns';
 import { Booking, SpaceOption } from '@/types';
@@ -20,24 +18,39 @@ import useTimeRange from '@/hooks/useTimeRange';
 
 type ModalState = 'form' | 'confirm' | 'submitted';
 
-export default function BookingModal() {
+interface BookingModalProps {
+  open: boolean;
+  onClose: () => void;
+  space?: SpaceOption;
+  date?: Date;
+  start?: Date;
+  end?: Date;
+}
+
+const BookingModal: React.FC<BookingModalProps> = ({
+  open,
+  onClose,
+  space: initialSpace,
+  date: initialDate,
+  start: initialStart,
+  end: initialEnd,
+}) => {
   // Modal control state
-  const [open, setOpen] = React.useState<boolean>(false);
   const [state, setState] = React.useState<ModalState>('form');
   const [error, setError] = React.useState<string>();
   const [booking, setBooking] = React.useState<Booking>();
   const { mutate: mutateUpcomingBookings } = useUpcomingBookings();
 
   // Form state
-  const [space, setSpace] = React.useState<SpaceOption | null>(null);
+  const [space, setSpace] = React.useState<SpaceOption | null>(initialSpace ?? null);
   const {
     date, start, end,
     dateInputProps, startInputProps, endInputProps
-  } = useTimeRange();
+  } = useTimeRange({ date: initialDate, start: initialStart, end: initialEnd });
   const [desc, setDesc] = React.useState<string>("");
 
   const onModalClose = () => {
-    setOpen(false);
+    onClose();
     setState('form');
     setError(undefined);
     setBooking(undefined);
@@ -135,21 +148,12 @@ export default function BookingModal() {
   }
 
   return (
-    <React.Fragment>
-      <Button
-        variant="outlined"
-        color="neutral"
-        startDecorator={<Add/>}
-        onClick={() => setOpen(true)}
-      >
-        Open Modal
-      </Button>
-      <Modal open={open} onClose={onModalClose}>
-        <ModalDialog>
-          {renderModalContent()}
-        </ModalDialog>
-      </Modal>
-    </React.Fragment>
+    <Modal open={open} onClose={onModalClose}>
+      <ModalDialog>
+        {renderModalContent()}
+      </ModalDialog>
+    </Modal>
   );
 }
 
+export default BookingModal;
