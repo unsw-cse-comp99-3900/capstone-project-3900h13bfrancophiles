@@ -46,7 +46,7 @@ app.post("/bookings/create", validateToken, authoriseAtLeast("hdr"), createBooki
 
 app.post("/bookings/checkin", validateToken, checkInBooking);
 app.post("/bookings/checkout", validateToken, checkOutBooking);
-app.post("/bookings/edit", validateToken, editBooking);
+app.put("/bookings/edit", validateToken, editBooking);
 
 app.get("/spaces/:spaceId", validateToken, singleSpaceDetails);
 app.get("/rooms", validateToken, roomDetails);

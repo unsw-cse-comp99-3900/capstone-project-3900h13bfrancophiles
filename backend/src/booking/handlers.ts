@@ -5,6 +5,7 @@ import { and, count, desc, eq, gt, gte, lt, lte } from "drizzle-orm"
 import { booking } from '../../drizzle/schema';
 import { Booking, BookingDetailsRequest, BookingEdit, IDatetimeRange, TypedGETRequest, TypedRequest, TypedResponse } from '../types';
 import typia, { tags } from "typia";
+import isEqual from 'lodash/isEqual';
 import { formatBookingDates, initialBookingStatus, withinDateRange as dateInRange } from '../utils';
 
 export async function currentBookings(
@@ -282,6 +283,7 @@ export async function createBooking(
 ) {
   if (!typia.is<BookingDetailsRequest>(req.body)) {
     res.status(400).json({ error: "Invalid input" });
+    return;
   }
 
   const status = await initialBookingStatus(req.token.group, req.body.spaceid);
@@ -385,6 +387,11 @@ export async function editBooking(
 
     const editedBooking = { ...existingBooking[0], ...req.body };
 
+    if (isEqual(editedBooking, existingBooking[0])) {
+      res.json({ booking: formatBookingDates(editedBooking) });
+      return;
+    }
+
     const newBookingStatus = await initialBookingStatus(req.token.group, editedBooking.spaceid);
     if (newBookingStatus === undefined) {
       res.status(404).json({ error: `Space ${existingBooking[0].spaceid} not found` });
@@ -395,13 +402,6 @@ export async function editBooking(
       return;
     }
 
-    editedBooking.currentstatus = newBookingStatus;
-    existingBooking[0].currentstatus = newBookingStatus;
-
-    if (editedBooking === existingBooking[0]) {
-      res.status(403).json({ error: "Edits do not modify booking" });
-    }
-
     let formattedBooking: Booking;
     try {
       const res = await db
@@ -410,7 +410,7 @@ export async function editBooking(
           starttime: editedBooking.starttime,
           endtime: editedBooking.endtime,
           spaceid: editedBooking.spaceid,
-          currentstatus: editedBooking.currentstatus,
+          currentstatus: newBookingStatus,
           description: editedBooking.description
         })
         .where(

@@ -162,27 +162,27 @@ INSERT INTO person VALUES (
 ALTER TABLE booking DISABLE TRIGGER trg_chk_start_future;
 ALTER TABLE booking DISABLE TRIGGER trg_chk_start_future_limit;
 
-INSERT INTO booking (id, zId, startTime, endTime, spaceId, currentStatus, description) VALUES
+INSERT INTO booking (zId, startTime, endTime, spaceId, currentStatus, description) VALUES
 -- past bookings
-    (1, 1234567, '2022-01-01T10:30', '2022-01-01T11:30', 'K-K17-B01', 'confirmed', 'studying'),
-    (2, 1234567, '2022-01-02T11:30', '2022-01-02T12:30', 'K-K17-B01', 'confirmed', 'studying1'),
-    (3, 1234567, '2022-01-04T13:30', '2022-01-04T14:30', 'K-K17-B01', 'declined', 'studying2'),
-    (4, 1234567, '2022-01-06T13:30', '2022-01-06T14:30', 'K-K17-B01', 'declined', 'meeting'),
-    (5, 1234567, '2022-01-08T13:30', '2022-01-08T14:30', 'K-K17-B01', 'confirmed', 'studying'),
-    (6, 1234567, '2022-01-09T13:30', '2022-01-09T14:30', 'K-K17-B01', 'confirmed', 'class'),
-    (7, 1234567, '2022-01-10T13:30', '2022-01-010T14:30', 'K-K17-B01', 'confirmed', 'studying'),
-    (8, 1234567, '2022-01-11T13:30', '2022-01-011T14:30', 'K-K17-B01', 'confirmed', 'event'),
-    (9, 1234567, '2022-01-12T13:30', '2022-01-012T14:30', 'K-K17-B01', 'confirmed', 'studying'),
-    (10, 1234567, '2022-01-13T13:30', '2022-01-013T14:30', 'K-K17-B01', 'confirmed', 'workshop'),
-    (11, 1234567, '2022-01-14T13:30', '2022-01-014T14:30', 'K-K17-B01', 'confirmed', 'sth'),
+    (1234567, '2022-01-01T10:30', '2022-01-01T11:30', 'K-K17-B01', 'confirmed', 'studying'),
+    (1234567, '2022-01-02T11:30', '2022-01-02T12:30', 'K-K17-B01', 'confirmed', 'studying1'),
+    (1234567, '2022-01-04T13:30', '2022-01-04T14:30', 'K-K17-B01', 'declined', 'studying2'),
+    (1234567, '2022-01-06T13:30', '2022-01-06T14:30', 'K-K17-B01', 'declined', 'meeting'),
+    (1234567, '2022-01-08T13:30', '2022-01-08T14:30', 'K-K17-B01', 'confirmed', 'studying'),
+    (1234567, '2022-01-09T13:30', '2022-01-09T14:30', 'K-K17-B01', 'confirmed', 'class'),
+    (1234567, '2022-01-10T13:30', '2022-01-010T14:30', 'K-K17-B01', 'confirmed', 'studying'),
+    (1234567, '2022-01-11T13:30', '2022-01-011T14:30', 'K-K17-B01', 'confirmed', 'event'),
+    (1234567, '2022-01-12T13:30', '2022-01-012T14:30', 'K-K17-B01', 'confirmed', 'studying'),
+    (1234567, '2022-01-13T13:30', '2022-01-013T14:30', 'K-K17-B01', 'confirmed', 'workshop'),
+    (1234567, '2022-01-14T13:30', '2022-01-014T14:30', 'K-K17-B01', 'confirmed', 'sth'),
 
 -- upcoming bookings
-    (20, 1234567, '2024-10-01T10:30', '2024-10-01T11:30', 'K-K17-B01', 'confirmed', 'class'),
-    (21, 1234567, '2024-10-02T11:30', '2024-10-02T12:30', 'K-K17-402', 'confirmed', 'studying'),
-    (22, 1234567, '2024-10-04T16:30', '2024-10-04T17:30', 'K-K17-402', 'pending', 'meeting'),
-    (23, 1234567, '2024-10-05T16:30', '2024-10-05T17:30', 'K-K17-402', 'pending', 'event'),
-    (24, 1234567, '2024-10-06T16:30', '2024-10-06T17:30', 'K-K17-402', 'pending', 'studying'),
-    (25, 1234567, '2024-10-07T16:30', '2024-10-07T17:30', 'K-K17-402', 'declined', 'workshop');
+    (1234567, '2024-10-01T10:30', '2024-10-01T11:30', 'K-K17-B01', 'confirmed', 'class'),
+    (1234567, '2024-10-02T11:30', '2024-10-02T12:30', 'K-K17-402', 'confirmed', 'studying'),
+    (1234567, '2024-10-04T16:30', '2024-10-04T17:30', 'K-K17-402', 'pending', 'meeting'),
+    (1234567, '2024-10-05T16:30', '2024-10-05T17:30', 'K-K17-402', 'pending', 'event'),
+    (1234567, '2024-10-06T16:30', '2024-10-06T17:30', 'K-K17-402', 'pending', 'studying'),
+    (1234567, '2024-10-07T16:30', '2024-10-07T17:30', 'K-K17-402', 'declined', 'workshop');
 
 -- Reenable triggers for prod
 ALTER TABLE booking ENABLE TRIGGER trg_chk_start_future;
