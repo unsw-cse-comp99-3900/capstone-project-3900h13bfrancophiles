@@ -1,8 +1,16 @@
 import {
   addDays,
-  addHours, addMinutes, addWeeks, differenceInMinutes, format, getHours,
-  getMinutes, isEqual, max,
-  min, parse,
+  addHours,
+  addMinutes,
+  addWeeks,
+  differenceInMinutes,
+  format,
+  getHours,
+  getMinutes,
+  isEqual,
+  max,
+  min,
+  parse,
   roundToNearestMinutes,
   setHours,
   setMinutes,
@@ -79,7 +87,7 @@ export default function useTimeRange(initialValues: InitialValues = {}) {
     slotProps: {
       input: {
         min: format(today, 'yyyy-MM-dd'),
-          max: format(weekFromToday, 'yyyy-MM-dd'),
+        max: format(weekFromToday, 'yyyy-MM-dd'),
       }
     }
   }
@@ -95,8 +103,8 @@ export default function useTimeRange(initialValues: InitialValues = {}) {
     slotProps: {
       input: {
         min: isEqual(startOfDay(now), date) ? format(now, 'HH:mm') : '00:00',
-          max: '23:45',
-          step: 15 * 60,
+        max: '23:45',
+        step: 15 * 60,
       }
     }
   }
@@ -114,7 +122,7 @@ export default function useTimeRange(initialValues: InitialValues = {}) {
         min: (format(end, 'HH:mm') !== '00:00')
           ? format(start, 'HH:mm')
           : undefined,
-          step: 15 * 60,
+        step: 15 * 60,
       }
     }
   }

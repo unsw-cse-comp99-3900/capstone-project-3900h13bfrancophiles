@@ -73,74 +73,77 @@ const BookingModal: React.FC<BookingModalProps> = ({
 
   const renderModalContent = () => {
     switch (state) {
-      case 'form': return <>
-        <DialogTitle>Create a new booking</DialogTitle>
-        {error && (
-          <Alert
-            size="md"
-            color="danger"
-            variant="soft"
-            startDecorator={<WarningIcon />}
-            endDecorator={
-              <IconButton variant="soft" color="danger" onClick={() => setError(undefined)}>
-                <CloseRoundedIcon />
-              </IconButton>
-            }
-          >
-            <b>{error}</b>
-          </Alert>
-        )}
-        <Stack direction="row" justifyContent="space-between" spacing={6}>
-          <BookingForm
-            space={space}
-            setSpace={setSpace}
-            dateInputProps={dateInputProps}
-            startInputProps={startInputProps}
-            endInputProps={endInputProps}
-            desc={desc}
-            setDesc={setDesc}
-            onSubmit={() => setState('confirm')}
-          />
-          <Stack direction="column" width={300} spacing={1}>
-            <Typography level="body-md" textAlign="center" fontWeight={500}>
-              {format(date, 'EEEE, MMMM d')}
-            </Typography>
-            <Sheet variant="outlined" sx={{ height: "100%", borderRadius: 10 }}>
-              {/* TODO: put a calendar here */}
-            </Sheet>
+      case 'form':
+        return <>
+          <DialogTitle>Create a new booking</DialogTitle>
+          {error && (
+            <Alert
+              size="md"
+              color="danger"
+              variant="soft"
+              startDecorator={<WarningIcon/>}
+              endDecorator={
+                <IconButton variant="soft" color="danger" onClick={() => setError(undefined)}>
+                  <CloseRoundedIcon/>
+                </IconButton>
+              }
+            >
+              <b>{error}</b>
+            </Alert>
+          )}
+          <Stack direction="row" justifyContent="space-between" spacing={6}>
+            <BookingForm
+              space={space}
+              setSpace={setSpace}
+              dateInputProps={dateInputProps}
+              startInputProps={startInputProps}
+              endInputProps={endInputProps}
+              desc={desc}
+              setDesc={setDesc}
+              onSubmit={() => setState('confirm')}
+            />
+            <Stack direction="column" width={300} spacing={1}>
+              <Typography level="body-md" textAlign="center" fontWeight={500}>
+                {format(date, 'EEEE, MMMM d')}
+              </Typography>
+              <Sheet variant="outlined" sx={{ height: "100%", borderRadius: 10 }}>
+                {/* TODO: put a calendar here */}
+              </Sheet>
+            </Stack>
           </Stack>
-        </Stack>
-      </>
-      case 'confirm': return space && (
-        <BookingConfirmation
-          spaceName={space.name}
-          spaceId={space.id}
-          date={date}
-          start={start}
-          end={end}
-          desc={desc}
-          isSubmitted={false}
-          handleSubmit={onSubmit}
-          handleBack={() => setState('form')}
-          handleClose={onModalClose}
-        />
-      )
-      case 'submitted': return space && booking && (
-        <BookingConfirmation
-          spaceName={space.name}
-          spaceId={space.id}
-          date={date}
-          start={start}
-          end={end}
-          desc={desc}
-          isSubmitted={true}
-          bookingRef={booking.id}
-          isPending={booking.currentstatus === 'pending'}
-          handleSubmit={onSubmit}
-          handleBack={() => setState('form')}
-          handleClose={onModalClose}
-        />
-      )
+        </>
+      case 'confirm':
+        return space && (
+          <BookingConfirmation
+            spaceName={space.name}
+            spaceId={space.id}
+            date={date}
+            start={start}
+            end={end}
+            desc={desc}
+            isSubmitted={false}
+            handleSubmit={onSubmit}
+            handleBack={() => setState('form')}
+            handleClose={onModalClose}
+          />
+        )
+      case 'submitted':
+        return space && booking && (
+          <BookingConfirmation
+            spaceName={space.name}
+            spaceId={space.id}
+            date={date}
+            start={start}
+            end={end}
+            desc={desc}
+            isSubmitted={true}
+            bookingRef={booking.id}
+            isPending={booking.currentstatus === 'pending'}
+            handleSubmit={onSubmit}
+            handleBack={() => setState('form')}
+            handleClose={onModalClose}
+          />
+        )
     }
   }
 
