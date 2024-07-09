@@ -3,8 +3,17 @@
 import { db } from '../index'
 import {and, count, desc, eq, gt, gte, inArray, lt, lte} from "drizzle-orm"
 import {booking, hotdesk, room} from '../../drizzle/schema';
-import { Booking, BookingDetailsRequest, IDatetimeRange, TypedGETRequest, TypedRequest, TypedResponse } from '../types';
+import {
+  Booking,
+  BookingDetailsRequest,
+  BookingEdit,
+  IDatetimeRange,
+  TypedGETRequest,
+  TypedRequest,
+  TypedResponse
+} from '../types';
 import typia, { tags } from "typia";
+import isEqual from 'lodash/isEqual';
 import { formatBookingDates, initialBookingStatus, withinDateRange as dateInRange } from '../utils';
 
 export async function currentBookings(
@@ -397,6 +406,86 @@ export async function deleteBooking(
     // email.deletionConfirmation(req.token.user, deletedBooking[0])
 
     res.json({});
+  } catch (error) {
+    res.status(204);
+  }
+}
+
+
+export async function editBooking(
+  req: TypedRequest<BookingEdit>,
+  res: TypedResponse<{ booking: Booking }>,
+) {
+  try {
+    if (!typia.is<BookingEdit>(req.body)) {
+      res.status(400).json({ error: "Invalid input" });
+      return;
+    }
+
+    const existingBooking = await db
+      .select()
+      .from(booking)
+      .where(
+        and(
+          eq(booking.id, req.body.id),
+          eq(booking.zid, req.token.user)
+        )
+      );
+
+    if (existingBooking.length != 1) {
+      res.status(404).json({ error: "User does not have a booking with this id" });
+      return;
+    }
+
+    const editedBooking = { ...existingBooking[0], ...req.body };
+
+    if (isEqual(editedBooking, existingBooking[0])) {
+      res.json({ booking: formatBookingDates(editedBooking) });
+      return;
+    }
+
+    const newBookingStatus = await initialBookingStatus(req.token.group, editedBooking.spaceid);
+    if (newBookingStatus === undefined) {
+      res.status(404).json({ error: `Space ${existingBooking[0].spaceid} not found` });
+      return;
+    }
+    if (newBookingStatus === null) {
+      res.status(403).json({ error: "You do not have permission to book this space" });
+      return;
+    }
+
+    let formattedBooking: Booking;
+    try {
+      const res = await db
+        .update(booking)
+        .set({
+          starttime: editedBooking.starttime,
+          endtime: editedBooking.endtime,
+          spaceid: editedBooking.spaceid,
+          currentstatus: newBookingStatus,
+          description: editedBooking.description
+        })
+        .where(
+          and(
+            eq(booking.id, req.body.id),
+            eq(booking.zid, req.token.user)
+          )
+        )
+        .returning();
+
+      formattedBooking = formatBookingDates(res[0]);
+    } catch (e: any) {
+      res.status(400).json({ error: `${e}` });
+      return;
+    }
+
+    // TODO: send an email to the user confirming new booking details
+    // email.editConfirmation(req.token.user, updatedBooking[0])
+
+    // TODO: trigger admin reapproval if newStatus is pending
+
+    res.json({ booking: formattedBooking });
+
   } catch (error) {
     res.status(204);
   }
