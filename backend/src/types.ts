@@ -64,6 +64,9 @@ export interface TypedResponse<T = Empty> extends Response {
  */
 export type Booking = { id: number, zid: number, starttime: string, endtime: string, spaceid: string, currentstatus: string, description: string, checkintime: string | null, checkouttime: string | null };
 
+export type AnonymousBooking = Omit<Booking, 'zid' | 'description'>;
+
+
 /**
  * Room typed response
  */

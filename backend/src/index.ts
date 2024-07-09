@@ -18,7 +18,7 @@ import {
   deleteBooking,
   createBooking
 } from './booking/handlers';
-import { allSpaces, roomDetails, singleSpaceDetails } from "./spaces/handlers";
+import { allSpaces, roomDetails, singleSpaceDetails, spaceAvailabilities } from "./spaces/handlers";
 import { spaceStatus } from './status/handlers';
 
 const pool = new Pool({
@@ -50,6 +50,7 @@ app.get("/spaces", validateToken, allSpaces);
 app.get("/spaces/:spaceId", validateToken, singleSpaceDetails);
 app.get("/rooms", validateToken, roomDetails);
 app.get("/status", validateToken, spaceStatus);
+app.get("/availabilities/:spaceId", validateToken, spaceAvailabilities);
 
 app.listen(PORT, () => {
   console.log(`Server is running at http://localhost:${PORT}`);
