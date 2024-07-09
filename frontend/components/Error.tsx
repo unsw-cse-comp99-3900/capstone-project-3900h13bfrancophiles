@@ -8,7 +8,7 @@ interface ErrorProps {
   message: string;
 }
 
-export default function Loading(props: ErrorProps) {
+export default function Error(props: ErrorProps) {
   return (
     <>
       <Stack spacing={2} marginTop="21.4px">
