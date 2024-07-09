@@ -310,12 +310,13 @@ export async function createBooking(
 
     createdBooking = formatBookingDates(res[0]);
 
-    // TODO: Booking confirmation email
-    sendBookingConfirmation();
   } catch (e: any) {
     res.status(400).json({ error: `${e}` });
     return;
   }
+
+  // TODO: Booking confirmation email
+  sendBookingConfirmation(req.token.user, createdBooking);
 
   res.json({ booking: createdBooking });
 }
