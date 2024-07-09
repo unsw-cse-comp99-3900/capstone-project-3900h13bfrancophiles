@@ -63,7 +63,7 @@ CREATE TABLE IF NOT EXISTS booking (
     )
 );
 
-create function chk_overlap() returns trigger as $$
+create function trg_chk_overlap() returns trigger as $$
 begin
     if exists (
         select *
@@ -73,6 +73,7 @@ begin
               and b.endtime > new.starttime
               and b.currentStatus <> 'pending'
               and b.currentStatus <> 'declined'
+              and b.id != new.id
     ) then
         raise exception 'Overlapping booking found';
     end if;
@@ -81,8 +82,38 @@ begin
 end;
 $$ language plpgsql;
 
-create trigger chk_overlap before insert or update
-on booking for each row execute procedure chk_overlap();
+create trigger trg_chk_overlap before insert or update
+on booking for each row execute procedure trg_chk_overlap();
+
+create function trg_chk_start_future() returns trigger as $$
+begin
+    if new.starttime <= CURRENT_TIMESTAMP then
+        raise exception 'Booking start time must be in the future';
+    end if;
+
+    if old.starttime <= CURRENT_TIMESTAMP then
+        raise exception 'Cannot edit a booking that has already started';
+    end if;
+
+    return new;
+END;
+$$ LANGUAGE plpgsql;
+
+create trigger trg_chk_start_future before insert or update
+on booking for each row execute procedure trg_chk_start_future();
+
+create function trg_chk_start_future_limit() returns trigger as $$
+begin
+    if new.starttime > current_timestamp + interval '14 days' then
+        raise exception 'Booking start time cannot be more than 14 days in the future';
+    end if;
+
+    return new;
+end;
+$$ language plpgsql;
+
+create trigger trg_chk_start_future_limit before insert or update
+on booking for each row execute procedure trg_chk_start_future_limit();
 
 -- Insert the room data into the space table and the room table
 INSERT INTO space (id, name, minReqGrp, minBookGrp) VALUES
@@ -129,6 +160,10 @@ INSERT INTO person VALUES (
     'admin'
 );
 
+-- Disable triggers to permit past bookings for testing
+ALTER TABLE booking DISABLE TRIGGER trg_chk_start_future;
+ALTER TABLE booking DISABLE TRIGGER trg_chk_start_future_limit;
+
 INSERT INTO booking (zId, startTime, endTime, spaceId, currentStatus, description) VALUES
 -- past bookings
     (1234567, '2022-01-01T10:30', '2022-01-01T11:30', 'K-K17-B01', 'confirmed', 'studying'),
@@ -144,10 +179,13 @@ INSERT INTO booking (zId, startTime, endTime, spaceId, currentStatus, descriptio
     (1234567, '2022-01-14T13:30', '2022-01-014T14:30', 'K-K17-B01', 'confirmed', 'sth'),
 
 -- upcoming bookings
-    (1234567, '2025-01-01T10:30', '2025-01-01T11:30', 'K-K17-B01', 'confirmed', 'class'),
-    (1234567, '2025-01-02T11:30', '2025-01-02T12:30', 'K-K17-402', 'confirmed', 'studying'),
-    (1234567, '2025-01-04T13:30', '2025-01-04T14:30', 'K-K17-402', 'pending', 'meeting'),
-    (1234567, '2025-01-05T13:30', '2025-01-05T14:30', 'K-K17-402', 'pending', 'event'),
-    (1234567, '2025-01-06T13:30', '2025-01-06T14:30', 'K-K17-402', 'pending', 'studying'),
-    (1234567, '2025-01-07T13:30', '2025-01-07T14:30', 'K-K17-402', 'declined', 'workshop');
+    (1234567, '2024-10-01T10:30', '2024-10-01T11:30', 'K-K17-B01', 'confirmed', 'class'),
+    (1234567, '2024-10-02T11:30', '2024-10-02T12:30', 'K-K17-402', 'confirmed', 'studying'),
+    (1234567, '2024-10-04T16:30', '2024-10-04T17:30', 'K-K17-402', 'pending', 'meeting'),
+    (1234567, '2024-10-05T16:30', '2024-10-05T17:30', 'K-K17-402', 'pending', 'event'),
+    (1234567, '2024-10-06T16:30', '2024-10-06T17:30', 'K-K17-402', 'pending', 'studying'),
+    (1234567, '2024-10-07T16:30', '2024-10-07T17:30', 'K-K17-402', 'declined', 'workshop');
 
+-- Reenable triggers for prod
+ALTER TABLE booking ENABLE TRIGGER trg_chk_start_future;
+ALTER TABLE booking ENABLE TRIGGER trg_chk_start_future_limit;

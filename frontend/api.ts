@@ -24,9 +24,12 @@ const apiCall = <T>(
     },
   };
 
-  if (method === 'GET') {
+  if (method === 'GET' ) {
     // If GET, params go in URL
-    route += '?' + new URLSearchParams(params as Record<string, string>);
+    if (Object.keys(params).length !== 0) {
+      route += '?' + new URLSearchParams(params as Record<string, string>);
+    }
+
   } else {
     // Otherwise go in body
     options.body = JSON.stringify(params);
