@@ -1,21 +1,26 @@
 "use client";
 
 import * as React from "react";
-import { Card, CardContent, CardOverflow, Stack, Typography } from "@mui/joy";
+import { Card, CardContent, CardOverflow, IconButton, Stack, Typography } from "@mui/joy";
 import PeopleIcon from "@mui/icons-material/People";
 import MeetingRoomOutlinedIcon from "@mui/icons-material/MeetingRoomOutlined";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCalendarPlus } from "@fortawesome/free-regular-svg-icons";
 import { Room } from "@/types";
 
-export default function RoomCard({ room }: { room: Room }) {
+interface RoomCardProps {
+  room: Room;
+  handleBook: (room: Room) => void;
+}
+
+const RoomCard: React.FC<RoomCardProps> = ({ room, handleBook }) => {
   return (
     <Card
       sx={{
-        width: 350,
+        width: "100%",
+        marginX: "auto",
         maxWidth: "100%",
         boxShadow: "lg",
-        background: "#F0F4F8",
       }}
     >
       <CardContent>
@@ -28,7 +33,9 @@ export default function RoomCard({ room }: { room: Room }) {
             <Typography level="title-lg" sx={{ mt: 1, fontWeight: "xl" }}>
               {room.name}
             </Typography>
-            <FontAwesomeIcon fontSize="24px" icon={faCalendarPlus} />
+            <IconButton onClick={() => handleBook(room)}>
+              <FontAwesomeIcon fontSize="24px" icon={faCalendarPlus} />
+            </IconButton>
           </Stack>
           <Typography
             level="body-sm"
@@ -54,3 +61,5 @@ export default function RoomCard({ room }: { room: Room }) {
     </Card>
   );
 }
+
+export default RoomCard;
