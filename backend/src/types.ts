@@ -82,6 +82,9 @@ export type BookingEdit = {
   description?: string
 }
 
+export type AnonymousBooking = Omit<Booking, 'zid' | 'description'>;
+
+
 /**
  * Room typed response
  */
