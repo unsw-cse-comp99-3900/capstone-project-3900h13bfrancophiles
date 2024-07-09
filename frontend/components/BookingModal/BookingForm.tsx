@@ -4,7 +4,22 @@ import Stack from '@mui/joy/Stack';
 import FormControl from '@mui/joy/FormControl';
 import FormLabel from '@mui/joy/FormLabel';
 import Input from '@mui/joy/Input';
-import { addMinutes, addWeeks, format, max, parse, roundToNearestMinutes, startOfDay } from 'date-fns';
+import {
+  addDays,
+  addMinutes,
+  addWeeks,
+  differenceInMinutes,
+  format,
+  getHours,
+  getMinutes,
+  max,
+  min,
+  parse,
+  roundToNearestMinutes,
+  setHours,
+  setMinutes,
+  startOfDay,
+} from 'date-fns';
 import {
   Autocomplete,
   AutocompleteOption,
@@ -24,10 +39,10 @@ interface BookingFormProps {
   setSpace: React.Dispatch<React.SetStateAction<SpaceOption | null>>;
   date: Date;
   setDate: React.Dispatch<React.SetStateAction<Date>>;
-  start: Date | undefined;
-  setStart: React.Dispatch<React.SetStateAction<Date | undefined>>;
-  end: Date | undefined;
-  setEnd: React.Dispatch<React.SetStateAction<Date | undefined>>;
+  start: Date;
+  setStart: React.Dispatch<React.SetStateAction<Date>>;
+  end: Date;
+  setEnd: React.Dispatch<React.SetStateAction<Date>>;
   desc: string;
   setDesc: React.Dispatch<React.SetStateAction<string>>;
   onSubmit: () => void;
@@ -45,6 +60,28 @@ const BookingForm: React.FC<BookingFormProps> = ({
   const today = startOfDay(now);
   const weekFromToday = addWeeks(today, 1);
 
+  const handleDateChange = (newDate: Date) => {
+    const startOfDate = startOfDay(newDate);
+    setDate(startOfDate);
+    const newStart = setHours(setMinutes(newDate, getMinutes(start)), getHours(start));
+    handleStartChange(newStart, startOfDate);
+  }
+
+  const handleStartChange = (newStart: Date, date: Date) => {
+    const startTime = max([newStart, now, date]);
+    const limitedStart = min([startTime, setHours(setMinutes(date, 45), 23)]);
+    const changeInTime = differenceInMinutes(limitedStart, start);
+
+    setStart(limitedStart);
+    handleEndChange(addMinutes(end, changeInTime), date, limitedStart);
+  }
+
+  const handleEndChange = (newEnd: Date, date: Date, start: Date) => {
+    const limitedEnd = min([newEnd, addDays(date, 1)]);
+    const minEnd = addMinutes(start, 15);
+    setEnd(max([minEnd, limitedEnd]));
+  }
+
   return (
     <form onSubmit={onSubmit}>
       <Stack spacing={1} width={250}>
@@ -60,9 +97,7 @@ const BookingForm: React.FC<BookingFormProps> = ({
             value={format(date, 'yyyy-MM-dd')}
             onChange={(e) => {
               if (!e.target.value.match(/\d{4}-\d{2}-\d{2}/)) return;
-              setDate(new Date(e.target.value));
-              setStart(undefined);
-              setEnd(undefined);
+              handleDateChange(new Date(e.target.value));
             }}
             slotProps={{
               input: {
@@ -80,13 +115,9 @@ const BookingForm: React.FC<BookingFormProps> = ({
             value={start ? format(start, 'HH:mm') : '--:--'}
             onChange={(e) => {
               if (!e.target.value.match(/\d{2}:\d{2}/)) return;
-              const newStart = parse(e.target.value, 'HH:mm', date);
-              if (end && end.getTime() - newStart.getTime() < 15 * 60 * 1000) {
-                setEnd(undefined);
-              }
-              setStart(newStart);
+              handleStartChange(parse(e.target.value, 'HH:mm', date), date);
             }}
-            onBlur={() => setStart(roundToInterval)}
+            onBlur={() => handleStartChange(roundToInterval(start), date)}
             slotProps={{
               input: {
                 min: format(now, 'HH:mm'),
@@ -104,13 +135,9 @@ const BookingForm: React.FC<BookingFormProps> = ({
             value={end ? format(end, 'HH:mm') : '--:--'}
             onChange={(e) => {
               if (!e.target.value.match(/\d{2}:\d{2}/)) return;
-              if (start) {
-                setEnd(max([addMinutes(start, 15), parse(e.target.value, 'HH:mm', date)]));
-              } else {
-                setEnd(parse(e.target.value, 'HH:mm', date));
-              }
+              handleEndChange(parse(e.target.value, 'HH:mm', date), date, start);
             }}
-            onBlur={() => setEnd(roundToInterval)}
+            onBlur={() => handleEndChange(roundToInterval(end), date, start)}
             slotProps={{
               input: {
                 min: (start && end && format(end, 'HH:mm') !== '00:00')
@@ -181,7 +208,7 @@ function SpaceAutocompleteOption({ option }: { option: SpaceOption }) {
   </>;
 }
 
-function roundToInterval(date: Date | undefined): Date | undefined {
+function roundToInterval(date: Date): Date {
   return date && roundToNearestMinutes(date, { nearestTo: 15 })
 }
 

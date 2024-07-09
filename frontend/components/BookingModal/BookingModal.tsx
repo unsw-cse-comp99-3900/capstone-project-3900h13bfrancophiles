@@ -31,8 +31,8 @@ export default function BookingModal() {
   const [space, setSpace] = React.useState<SpaceOption | null>(null);
   const now = roundToNearestMinutes(new Date(), { nearestTo: 15, roundingMethod: "ceil" });
   const [date, setDate] = React.useState(startOfDay(now));
-  const [start, setStart] = React.useState<Date | undefined>(now);
-  const [end, setEnd] = React.useState<Date | undefined>(min([addHours(now, 1), startOfTomorrow()]));
+  const [start, setStart] = React.useState<Date>(now);
+  const [end, setEnd] = React.useState<Date>(min([addHours(now, 1), startOfTomorrow()]));
   const [desc, setDesc] = React.useState<string>("");
 
   const onModalClose = () => {
