@@ -60,7 +60,7 @@ const BookingConfirmation: React.FC<BookingConfirmationProps> = ({
     </DialogContent>
     <DialogActions>
       {isSubmitted
-        ? <Button variant="plain" color="neutral" onClick={handleClose}>
+        ? <Button variant="soft" color="neutral" onClick={handleClose}>
           Close
         </Button>
         : <>

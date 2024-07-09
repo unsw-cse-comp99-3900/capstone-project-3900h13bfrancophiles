@@ -13,7 +13,6 @@ import BookingConfirmation from '@/components/BookingModal/BookingConfirmation';
 import WarningIcon from '@mui/icons-material/Warning';
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import { createBooking } from '@/api';
-import useUpcomingBookings from '@/hooks/useUpcomingBookings';
 import useTimeRange from '@/hooks/useTimeRange';
 
 type ModalState = 'form' | 'confirm' | 'submitted';
@@ -39,7 +38,6 @@ const BookingModal: React.FC<BookingModalProps> = ({
   const [state, setState] = React.useState<ModalState>('form');
   const [error, setError] = React.useState<string>();
   const [booking, setBooking] = React.useState<Booking>();
-  const { mutate: mutateUpcomingBookings } = useUpcomingBookings();
 
   // Form state
   const [space, setSpace] = React.useState<SpaceOption | null>(initialSpace ?? null);
@@ -67,7 +65,6 @@ const BookingModal: React.FC<BookingModalProps> = ({
       const res = await createBooking(space.id, start.toISOString(), end.toISOString(), desc);
       setBooking(res.booking);
       setState('submitted');
-      await mutateUpcomingBookings();
     } catch (e: any) {
       setError(`${e}`);
       setState('form');

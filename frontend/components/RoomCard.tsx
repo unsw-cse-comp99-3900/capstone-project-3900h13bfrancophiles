@@ -17,10 +17,10 @@ const RoomCard: React.FC<RoomCardProps> = ({ room, handleBook }) => {
   return (
     <Card
       sx={{
-        width: 350,
+        width: "100%",
+        marginX: "auto",
         maxWidth: "100%",
         boxShadow: "lg",
-        background: "#F0F4F8",
       }}
     >
       <CardContent>

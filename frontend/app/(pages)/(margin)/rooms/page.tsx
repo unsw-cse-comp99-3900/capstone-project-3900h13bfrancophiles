@@ -17,6 +17,7 @@ import {
   ModalDialog,
   Stack,
   Slider,
+  Typography,
 } from "@mui/joy";
 import useRoomDetails from "@/hooks/useRoomDetails";
 import { Room } from "@/types";
@@ -202,10 +203,10 @@ export default function Rooms() {
         start={start}
         end={end}
       />}
-      <h1>Rooms</h1>
+      <Typography level="h1" mb={0}>Rooms</Typography>
       <Stack
         className="SearchAndFilters"
-        alignItems="center"
+        alignItems="flex-end"
         direction="row"
         flexWrap="wrap"
         gap={2}
@@ -220,30 +221,51 @@ export default function Rooms() {
             onChange={(event) => setSearchQuery(event.target.value)}
           />
         </FormControl>
-        <Stack direction="row" gap={2} flexWrap="wrap">
-          <Input {...dateInputProps} />
+        <Stack direction="row" gap={2} flexWrap="wrap" alignItems="flex-end" >
+          <FormControl>
+            <FormLabel>Date</FormLabel>
+            <Input size="sm" {...dateInputProps} />
+          </FormControl>
           <Stack direction="row">
-            <Input size="sm" {...startInputProps} />
-            <Input size="sm" {...endInputProps} />
+            <FormControl>
+              <FormLabel>Start</FormLabel>
+              <Input
+                size="sm"
+                sx={{ borderBottomRightRadius: 0, borderTopRightRadius: 0, width: 115 }}
+                {...startInputProps}
+              />
+            </FormControl>
+            <FormControl>
+              <FormLabel>End</FormLabel>
+              <Input
+                size="sm"
+                sx={{ borderBottomLeftRadius: 0, borderTopLeftRadius: 0, borderLeft: 'none', width: 115 }}
+                {...endInputProps}
+              />
+            </FormControl>
           </Stack>
-          <Button
-            startDecorator={<FilterListIcon />}
-            variant={isFiltered ? "solid" : "outlined"}
-            color="neutral"
-            size="sm"
-            onClick={toggleFilters}
-          >
-            Filter
-          </Button>
-          <Button
-            startDecorator={<SwapVertIcon />}
-            variant={sort ? "solid" : "outlined"}
-            color="neutral"
-            size="sm"
-            onClick={toggleSort}
-          >
-            Sort
-          </Button>
+          <FormControl>
+            <Button
+              startDecorator={<FilterListIcon />}
+              variant={isFiltered ? "solid" : "outlined"}
+              color="neutral"
+              size="sm"
+              onClick={toggleFilters}
+            >
+              Filter
+            </Button>
+          </FormControl>
+          <FormControl>
+            <Button
+              startDecorator={<SwapVertIcon />}
+              variant={sort ? "solid" : "outlined"}
+              color="neutral"
+              size="sm"
+              onClick={toggleSort}
+            >
+              Sort
+            </Button>
+          </FormControl>
         </Stack>
       </Stack>
 
@@ -277,18 +299,18 @@ export default function Rooms() {
           </Box>
         </ModalDialog>
       </Modal>
-      <Stack
-        direction="row"
-        justifyContent="left"
-        gap={3}
-        flexWrap="wrap"
-        alignItems="center"
-        paddingTop="20px"
+      <Box
+        width="100%"
+        display="grid"
+        gridTemplateColumns="repeat(auto-fill, minmax(350px, 1fr))"
+        mt={4}
+        mb={5}
+        sx={{ gridGap: 30 }}
       >
         {displayedRooms.map((room) => (
           <RoomCard key={room.id} room={room} handleBook={setSelectedRoom} />
         ))}
-      </Stack>
+      </Box>
     </>
   );
 }
