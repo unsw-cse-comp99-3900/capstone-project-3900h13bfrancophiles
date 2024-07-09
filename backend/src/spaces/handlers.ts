@@ -33,7 +33,7 @@ type SingleSpaceRequest = { spaceId: string };
 
 export async function singleSpaceDetails(
   req: TypedGETRequest<{}, SingleSpaceRequest>,
-  res: TypedResponse<{ space: Space, isRoom: Boolean }>,
+  res: TypedResponse<{ space: Space }>,
 ) {
   try {
     if (!typia.is<SingleSpaceRequest>(req.params)) {
@@ -56,7 +56,7 @@ export async function singleSpaceDetails(
       .where(eq(room.id, req.params.spaceId));
 
     if (roomRes.length) {
-      res.json({ space: roomRes[0], isRoom: true });
+      res.json({ space: roomRes[0] });
       return;
     }
 
@@ -74,7 +74,7 @@ export async function singleSpaceDetails(
       .where(eq(hotdesk.id, req.params.spaceId));
 
     if (deskRes.length) {
-      res.json({ space: deskRes[0], isRoom: false });
+      res.json({ space: deskRes[0] });
       return;
     }
 

@@ -98,7 +98,8 @@ INSERT INTO space (id, name, minReqGrp, minBookGrp) VALUES
     ('K-K17-403', 'K17 403', 'hdr', 'admin'),
     ('K-K17-501M', 'K17 501M', 'csestaff', 'admin'),
     ('K-K17-508', 'K17 508', 'csestaff', 'admin'),
-    ('K-J17-504', 'J17 Design Next Studio', 'csestaff', 'admin');
+    ('K-J17-504', 'J17 Design Next Studio', 'csestaff', 'admin'),
+    ('K-J17-504-1', 'Hotdesk 1', 'hdr', 'admin');
 
 INSERT INTO room (id, capacity, roomNumber, type) VALUES
     ('K-K17-B01', 100, 'B01', 'Seminar Room'),
@@ -115,6 +116,10 @@ INSERT INTO room (id, capacity, roomNumber, type) VALUES
     ('K-K17-501M', 15, '501M', 'Meeting Room'),
     ('K-K17-508', 6, '508', 'Conference Room'),
     ('K-J17-504', 110, '504', 'Seminar Room');
+
+
+INSERT INTO hotdesk (id, floor, room, deskNumber) VALUES
+    ('K-J17-504-1', '5', '504', '1');
 
 -- temporary person
 INSERT INTO person VALUES (
@@ -141,6 +146,7 @@ INSERT INTO booking (id, zId, startTime, endTime, spaceId, currentStatus, descri
     (9, 1234567, '2022-01-12T13:30', '2022-01-012T14:30', 'K-K17-B01', 'confirmed', 'studying'),
     (10, 1234567, '2022-01-13T13:30', '2022-01-013T14:30', 'K-K17-B01', 'confirmed', 'workshop'),
     (11, 1234567, '2022-01-14T13:30', '2022-01-014T14:30', 'K-K17-B01', 'confirmed', 'sth'),
+    (12, 1234567, '2022-01-15T13:30', '2022-01-015T14:30', 'K-J17-504-1', 'confirmed', 'Hotdesk'),
 
 -- upcoming bookings
     (20, 1234567, '2025-01-01T10:30', '2025-01-01T11:30', 'K-K17-B01', 'confirmed', 'class'),
