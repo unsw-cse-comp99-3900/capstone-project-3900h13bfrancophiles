@@ -57,17 +57,17 @@ export async function upcomingBookings(
     const zid = req.token.user;
     const currentTime = new Date().toISOString();
 
-    let bookingQuery;
+    let subQuery;
 
     switch (req.query.type) {
       case 'desks':
-        bookingQuery = db.select({id: hotdesk.id}).from(hotdesk)
+        subQuery = db.select({id: hotdesk.id}).from(hotdesk)
         break;
       case 'rooms':
-        bookingQuery = db.select({id: room.id}).from(room)
+        subQuery = db.select({id: room.id}).from(room)
         break;
       default:
-        bookingQuery = db.select({id: booking.spaceid}).from(booking)
+        subQuery = db.select({id: booking.spaceid}).from(booking)
     }
 
 
@@ -76,7 +76,7 @@ export async function upcomingBookings(
       .from(booking)
       .where(
         and(
-          inArray(booking.spaceid, bookingQuery),
+          inArray(booking.spaceid, subQuery),
           gt(booking.starttime, currentTime),
           eq(booking.zid, zid)
         )
@@ -117,24 +117,24 @@ export async function pastBookings(
     const offset = (page - 1) * limit;
     const currentTime = new Date().toISOString();
 
-    let bookingQuery;
+    let subQuery;
 
     switch (req.query.type) {
       case 'desks':
-        bookingQuery = db.select({id: hotdesk.id}).from(hotdesk)
+        subQuery = db.select({id: hotdesk.id}).from(hotdesk)
         break;
       case 'rooms':
-        bookingQuery = db.select({id: room.id}).from(room)
+        subQuery = db.select({id: room.id}).from(room)
         break;
       default:
-        bookingQuery = db.select({id: booking.spaceid}).from(booking)
+        subQuery = db.select({id: booking.spaceid}).from(booking)
     }
 
     const totalBookings = await db
       .select({ count: count() })
       .from(booking)
       .where(and(
-        inArray(booking.spaceid, bookingQuery),
+        inArray(booking.spaceid, subQuery),
         eq(booking.zid, zid),
         lt(booking.endtime, currentTime)
       ));
@@ -143,7 +143,7 @@ export async function pastBookings(
       .select()
       .from(booking)
       .where(and(
-        inArray(booking.spaceid, bookingQuery),
+        inArray(booking.spaceid, subQuery),
         eq(booking.zid, zid),
         lt(booking.endtime, currentTime)
       ))
@@ -335,6 +335,7 @@ export async function createBooking(
 ) {
   if (!typia.is<BookingDetailsRequest>(req.body)) {
     res.status(400).json({ error: "Invalid input" });
+    return;
   }
 
   const status = await initialBookingStatus(req.token.group, req.body.spaceid);
