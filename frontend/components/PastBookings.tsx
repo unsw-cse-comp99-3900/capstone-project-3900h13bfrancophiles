@@ -96,12 +96,10 @@ export default function PastBookings() {
   };
 
   const handleChangeSort = (event: any, newValue: string | null) => {
-    console.log("handling change sort" + newValue);
     setSortNewest(newValue === "newest");
   };
 
   React.useEffect(() => {
-    console.log("sorting")
     setFilteredRows(rows
       .filter(() => true)
       .sort((a, b) => a.startTime < b.startTime ? sortNewest ? 1 : -1 : sortNewest ? -1 : 1));

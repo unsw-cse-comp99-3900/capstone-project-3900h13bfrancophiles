@@ -104,7 +104,6 @@ export async function pastBookings(
   req: TypedGETRequest<PastBookingsRequest>,
   res: TypedResponse<{ bookings: Booking[];  total: number }>,
 ) {
-  console.log(req.query);
   try {
     if (!typia.is<IPagination>({ page: parseInt(req.query.page), limit: parseInt(req.query.limit), type: req.query.type })) {
       res.status(400).json({ error: "Invalid input" });
