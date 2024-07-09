@@ -10,6 +10,7 @@ import FormLabel from "@mui/joy/FormLabel";
 import IconButton from "@mui/joy/IconButton";
 import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
+import Link from "@mui/joy/Link"
 import {Sheet, Skeleton, Stack} from "@mui/joy";
 import { format } from 'date-fns';
 import useSpace from "@/hooks/useSpace";
@@ -36,9 +37,14 @@ function PastBookingsRow({row}: PastBookingRowProps) {
       </Typography>
     </td>
     <td>
-      <Skeleton loading={isLoading}>
-        <Typography level="body-sm">{space?.name}</Typography>
-      </Skeleton>
+      <Link
+        href={`/space/${row.space}`}
+        level="body-sm"
+      >
+        <Skeleton loading={isLoading}>
+          {space?.name}
+        </Skeleton>
+      </Link>
     </td>
     <td>
       <Typography level="body-sm">{row.description}</Typography>

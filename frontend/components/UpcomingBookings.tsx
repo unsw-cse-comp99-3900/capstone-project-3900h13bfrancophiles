@@ -19,6 +19,7 @@ import {
   Stack,
   Table,
   Typography,
+  Link,
 } from "@mui/joy";
 import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
@@ -87,9 +88,14 @@ function UpcomingBookingRow({ row, mutate }: UpcomingBookingRowProps) {
           </Typography>
         </td>
         <td>
-          <Skeleton loading={isLoading}>
-            <Typography level="body-sm">{space?.name}</Typography>
-          </Skeleton>
+          <Link
+            href={`/space/${row.space}`}
+            level="body-sm"
+          >
+            <Skeleton loading={isLoading}>
+              {space?.name}
+            </Skeleton>
+          </Link>
         </td>
         <td>
           <Typography level="body-sm">{row.description}</Typography>
