@@ -1,7 +1,7 @@
 // Booking endpoint handlers
 
 import { db } from '../index'
-import {and, count, desc, eq, gt, gte, inArray, lt, lte} from "drizzle-orm"
+import {and, asc, count, desc, eq, gt, gte, inArray, lt, lte} from "drizzle-orm"
 import {booking, hotdesk, room} from '../../drizzle/schema';
 import {
   Booking,
@@ -91,13 +91,15 @@ export async function upcomingBookings(
 interface IPagination {
   page: number & tags.Minimum<1>;
   limit: number & tags.Minimum<1>;
-  type: 'desks' | 'rooms' | 'all'
+  type: 'desks' | 'rooms' | 'all';
+  sort: 'newest' | 'oldest';
 }
 
 type PastBookingsRequest = {
   page: string;
   limit: string;
   type: string;
+  sort: string;
 }
 
 export async function pastBookings(
@@ -105,7 +107,7 @@ export async function pastBookings(
   res: TypedResponse<{ bookings: Booking[];  total: number }>,
 ) {
   try {
-    if (!typia.is<IPagination>({ page: parseInt(req.query.page), limit: parseInt(req.query.limit), type: req.query.type })) {
+    if (!typia.is<IPagination>({ page: parseInt(req.query.page), limit: parseInt(req.query.limit), type: req.query.type, sort: req.query.sort })) {
       res.status(400).json({ error: "Invalid input" });
       return;
     }
@@ -138,17 +140,34 @@ export async function pastBookings(
         lt(booking.endtime, currentTime)
       ));
 
-    const pastBookings = await db
-      .select()
-      .from(booking)
-      .where(and(
-        inArray(booking.spaceid, subQuery),
-        eq(booking.zid, zid),
-        lt(booking.endtime, currentTime)
-      ))
-      .orderBy(desc(booking.starttime))
-      .limit(limit)
-      .offset(offset);
+    let pastBookings;
+
+    if (req.query.sort == 'newest') {
+      pastBookings = await db
+        .select()
+        .from(booking)
+        .where(and(
+          inArray(booking.spaceid, subQuery),
+          eq(booking.zid, zid),
+          lt(booking.endtime, currentTime)
+        ))
+        .orderBy(desc(booking.starttime))
+        .limit(limit)
+        .offset(offset);
+    } else {
+        pastBookings = await db
+          .select()
+          .from(booking)
+          .where(and(
+            inArray(booking.spaceid, subQuery),
+            eq(booking.zid, zid),
+            lt(booking.endtime, currentTime)
+          ))
+          .orderBy(asc(booking.starttime))
+          .limit(limit)
+          .offset(offset);
+    }
+
 
     res.json({
       bookings: pastBookings.map(formatBookingDates),
