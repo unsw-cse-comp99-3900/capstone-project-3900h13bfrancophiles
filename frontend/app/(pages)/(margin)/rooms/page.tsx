@@ -7,7 +7,6 @@ import SwapVertIcon from "@mui/icons-material/SwapVert";
 import * as React from "react";
 import {
   Box,
-  CircularProgress,
   FormControl,
   FormLabel,
   Input,
@@ -18,12 +17,14 @@ import {
   ModalDialog,
   Stack,
   Slider,
-  Alert,
+  Typography,
 } from "@mui/joy";
 import useRoomDetails from "@/hooks/useRoomDetails";
 import { Room } from "@/types";
 import Loading from "@/components/Loading";
 import Error from "@/components/Error";
+import useTimeRange from '@/hooks/useTimeRange';
+import BookingModal from '@/components/BookingModal/BookingModal';
 
 interface FilterOption {
   value: string;
@@ -130,6 +131,7 @@ export default function Rooms() {
   const [filtersOpen, setFiltersOpen] = React.useState<boolean>(false);
   const [sort, setSort] = React.useState<boolean>(false);
   const [searchQuery, setSearchQuery] = React.useState<string>("");
+
   const [filters, setFilters] = React.useState<Filters>({
     type: "all",
     capacity: 1,
@@ -138,18 +140,11 @@ export default function Rooms() {
     type: "all",
     capacity: 1,
   });
-  const [date, setDate] = React.useState<string>(
-    new Date().toISOString().split("T")[0].toString()
-  );
-  const [startTime, setStartTime] = React.useState<string>(
-    new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
-  );
-  const [endTime, setEndTime] = React.useState<string>(
-    new Date(new Date().getTime() + 60 * 60 * 1000).toLocaleTimeString([], {
-      hour: "2-digit",
-      minute: "2-digit",
-    })
-  );
+  const {
+    date, start, end,
+    dateInputProps, startInputProps, endInputProps
+  } = useTimeRange();
+  const [selectedRoom, setSelectedRoom] = React.useState<Room>();
 
   const { roomsData = [], isLoading, error } = useRoomDetails();
   const [isFiltered, setIsFiltered] = React.useState<boolean>(false);
@@ -200,10 +195,18 @@ export default function Rooms() {
 
   return (
     <>
-      <h1>Rooms</h1>
+      {!!selectedRoom && <BookingModal
+        open={!!selectedRoom}
+        onClose={() => setSelectedRoom(undefined)}
+        space={selectedRoom ? { id: selectedRoom.id, name: selectedRoom.name, isRoom: true } : undefined}
+        date={date}
+        start={start}
+        end={end}
+      />}
+      <Typography level="h1" mb={0}>Rooms</Typography>
       <Stack
         className="SearchAndFilters"
-        alignItems="center"
+        alignItems="flex-end"
         direction="row"
         flexWrap="wrap"
         gap={2}
@@ -218,61 +221,51 @@ export default function Rooms() {
             onChange={(event) => setSearchQuery(event.target.value)}
           />
         </FormControl>
-        <Stack direction="row" gap={2} flexWrap="wrap">
-          <Input
-            type="date"
-            defaultValue={date}
-            onChange={(event) => {
-              const d = new Date(event.target.value)
-                .toISOString()
-                .split("T")[0];
-              setDate(d);
-            }}
-          />
+        <Stack direction="row" gap={2} flexWrap="wrap" alignItems="flex-end" >
+          <FormControl>
+            <FormLabel>Date</FormLabel>
+            <Input size="sm" {...dateInputProps} />
+          </FormControl>
           <Stack direction="row">
-            <Input
-              type="time"
-              defaultValue={startTime}
-              size="sm"
-              onChange={(event) => {
-                const d = new Date(event.target.value).toLocaleTimeString([], {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                });
-                setStartTime(d);
-              }}
-            />
-            <Input
-              type="time"
-              defaultValue={endTime}
-              size="sm"
-              onChange={(event) => {
-                const d = new Date(event.target.value).toLocaleTimeString([], {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                });
-                setEndTime(d);
-              }}
-            />
+            <FormControl>
+              <FormLabel>Start</FormLabel>
+              <Input
+                size="sm"
+                sx={{ borderBottomRightRadius: 0, borderTopRightRadius: 0, width: 115 }}
+                {...startInputProps}
+              />
+            </FormControl>
+            <FormControl>
+              <FormLabel>End</FormLabel>
+              <Input
+                size="sm"
+                sx={{ borderBottomLeftRadius: 0, borderTopLeftRadius: 0, borderLeft: 'none', width: 115 }}
+                {...endInputProps}
+              />
+            </FormControl>
           </Stack>
-          <Button
-            startDecorator={<FilterListIcon />}
-            variant={isFiltered ? "solid" : "outlined"}
-            color="neutral"
-            size="sm"
-            onClick={toggleFilters}
-          >
-            Filter
-          </Button>
-          <Button
-            startDecorator={<SwapVertIcon />}
-            variant={sort ? "solid" : "outlined"}
-            color="neutral"
-            size="sm"
-            onClick={toggleSort}
-          >
-            Sort
-          </Button>
+          <FormControl>
+            <Button
+              startDecorator={<FilterListIcon />}
+              variant={isFiltered ? "solid" : "outlined"}
+              color="neutral"
+              size="sm"
+              onClick={toggleFilters}
+            >
+              Filter
+            </Button>
+          </FormControl>
+          <FormControl>
+            <Button
+              startDecorator={<SwapVertIcon />}
+              variant={sort ? "solid" : "outlined"}
+              color="neutral"
+              size="sm"
+              onClick={toggleSort}
+            >
+              Sort
+            </Button>
+          </FormControl>
         </Stack>
       </Stack>
 
@@ -306,18 +299,18 @@ export default function Rooms() {
           </Box>
         </ModalDialog>
       </Modal>
-      <Stack
-        direction="row"
-        justifyContent="left"
-        gap={3}
-        flexWrap="wrap"
-        alignItems="center"
-        paddingTop="20px"
+      <Box
+        width="100%"
+        display="grid"
+        gridTemplateColumns="repeat(auto-fill, minmax(350px, 1fr))"
+        mt={4}
+        mb={5}
+        sx={{ gridGap: 30 }}
       >
         {displayedRooms.map((room) => (
-          <RoomCard key={room.id} room={room} />
+          <RoomCard key={room.id} room={room} handleBook={setSelectedRoom} />
         ))}
-      </Stack>
+      </Box>
     </>
   );
 }

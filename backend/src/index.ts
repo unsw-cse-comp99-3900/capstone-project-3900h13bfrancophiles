@@ -19,7 +19,7 @@ import {
   createBooking,
   editBooking
 } from './booking/handlers';
-import { roomDetails, singleSpaceDetails, spaceAvailabilities } from "./spaces/handlers";
+import { allSpaces, roomDetails, singleSpaceDetails, spaceAvailabilities } from "./spaces/handlers";
 import { spaceStatus } from './status/handlers';
 import nodemailer from 'nodemailer';
 
@@ -58,6 +58,7 @@ app.post("/bookings/checkin", validateToken, checkInBooking);
 app.post("/bookings/checkout", validateToken, checkOutBooking);
 app.put("/bookings/edit", validateToken, editBooking);
 
+app.get("/spaces", validateToken, allSpaces);
 app.get("/spaces/:spaceId", validateToken, singleSpaceDetails);
 app.get("/rooms", validateToken, roomDetails);
 app.get("/status", validateToken, spaceStatus);
