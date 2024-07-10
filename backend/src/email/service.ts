@@ -29,7 +29,7 @@ export async function sendBookingConfirmation(zid: number, booking: Booking) {
 
     const emailRecipient = await getEmailRecipient(zid);
 
-    const emailContent = { name: emailRecipient.name, bookingId: String(booking.id) };
+    const emailContent = { name: emailRecipient.name, bookingid: String(booking.id) };
     const email = fillEmailTemplate(BOOKING_REQUEST, emailContent);
 
     const emailInfo = await emailTransporter.sendMail({
