@@ -7,6 +7,7 @@ import { enAU } from 'date-fns/locale'
 import 'react-big-calendar/lib/css/react-big-calendar.css'
 import Box, { BoxProps } from "@mui/material/Box";
 import { styled, useTheme } from "@mui/material/styles";
+import useMediaQuery from "@mui/material/useMediaQuery";
 
 interface AvailabilityCalendarProps {
   bookings: AnonymousBooking[];
@@ -20,26 +21,24 @@ interface Event {
 
 
 export default function AvailabilityCalendar({ bookings }: AvailabilityCalendarProps) {
-  console.log(bookings)
   const [date, setDate] = React.useState<Date>(new Date());
   const [view, setView] = React.useState<String>('week');
   const events : Event[] = bookings
-  .filter(b => b.currentstatus !== 'declined')
-  .map((b) =>
-    {
-      return {
-        title: `${b.currentstatus} booking`,
-        start: new Date(b.starttime),
-        end: new Date(b.endtime)
+    .filter(b => b.currentstatus !== 'declined')
+    .map((b) =>
+      {
+        return {
+          title: `${b.currentstatus} booking`,
+          start: new Date(b.starttime),
+          end: new Date(b.endtime)
+        }
       }
-    }
-  )
-  console.log(events[0])
-  console.log({
-    title: "event",
-    start: new Date("2024-07-07T05:30Z"),
-    end: new Date("2024-07-07T08:30Z"),
-  })
+    )
+  const theme = useTheme()
+  const isMobile : Boolean = useMediaQuery(theme.breakpoints.down("md")) ?? false;
+  React.useEffect(() => {
+    setView(isMobile ? 'day' : 'week');
+  }, [isMobile]);
 
   const handleDateChange = (newDate: Date | null) => {
     setDate(newDate ?? new Date());
@@ -105,11 +104,12 @@ export default function AvailabilityCalendar({ bookings }: AvailabilityCalendarP
         onNavigate={handleDateChange}
         date={date}
         events={events}
-        views={['day', 'week', 'agenda']}
+        views={isMobile ? ['day', 'week'] : ['day', 'week'] }
         view={view}
         onView={handleViewChange}
-        // min={new Date(0, 0, 0, 8)}
-        // max={new Date(0, 0, 0, 20)}
+        min={new Date(0, 0, 0, 8)}
+        max={new Date(0, 0, 0, 20)}
+        slotGroupPropGetter={() => ({ style: { minHeight: "50px" } })}
       />
     </StyledCalendarContainer>
   );
