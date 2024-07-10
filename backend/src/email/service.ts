@@ -5,7 +5,9 @@ import { db } from '../index'
 import { eq } from "drizzle-orm"
 import { person } from '../../drizzle/schema';
 
+// For testing
 const EMAIL_SENDER = '"Wilma 👻" <wilma44@ethereal.email>';
+const EMAIL_PASS = 'GWCxu8xEeJAwGAMGzF'
 
 export async function getEmailRecipient(zid: number) : Promise<EmailRecipient> {
 

@@ -22,7 +22,7 @@ export function fillEmailTemplate(template: EmailContents, values: { [key: strin
     };
 }
 export const BOOKING_REQUEST: EmailContents = {
-    subject: "New Request: Booking ID {{bookingId}}",
+    subject: "New Request: Booking ID {{bookingid}}",
     text: "Hello {{name}}, your booking request with ID {{bookingid}} has been submitted.",
     html: "<b>Hello {{name}}, your booking request with ID {{bookingid}} has been submitted.</b>"
 }
