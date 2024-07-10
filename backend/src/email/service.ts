@@ -25,7 +25,7 @@ export async function getEmailRecipient(zid: number) : Promise<EmailRecipient> {
     return res[0];
 }
 
-export async function sendBookingConfirmation(zid: number, booking: Booking) {
+export async function sendBookingRequest(zid: number, booking: Booking) {
 
     const emailRecipient = await getEmailRecipient(zid);
 

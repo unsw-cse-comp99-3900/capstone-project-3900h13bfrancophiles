@@ -15,7 +15,7 @@ import {
 import typia, { tags } from "typia";
 import isEqual from 'lodash/isEqual';
 import { formatBookingDates, initialBookingStatus, withinDateRange as dateInRange } from '../utils';
-import { sendBookingConfirmation } from '../email/service';
+import { sendBookingRequest } from '../email/service';
 
 export async function currentBookings(
   req: TypedGETRequest,
@@ -367,7 +367,7 @@ export async function createBooking(
   }
 
   // TODO: Booking confirmation email
-  sendBookingConfirmation(req.token.user, createdBooking);
+  sendBookingRequest(req.token.user, createdBooking);
 
   res.json({ booking: createdBooking });
 }
