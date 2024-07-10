@@ -56,7 +56,6 @@ export default function PastBookings() {
   const [sort, setSort] = React.useState('newest');
   const {pastBookings, total, isLoading} = usePastBookings(page + 1, rowsPerPage, filter, sort);
 
-  console.log(pastBookings);
   React.useEffect(() => {
     if (!isLoading && pastBookings) {
       const rowsData = pastBookings.map((booking) => ({

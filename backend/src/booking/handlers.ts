@@ -41,8 +41,14 @@ export async function currentBookings(
   }
 }
 
+interface BookingParams {
+  type: 'desks' | 'rooms' | 'all';
+  sort: 'soonest' | 'latest';
+}
+
 type UpcomingBookingsRequest = {
   type: string;
+  sort: string;
 }
 
 export async function upcomingBookings(
@@ -50,7 +56,7 @@ export async function upcomingBookings(
   res: TypedResponse<{ bookings: Booking[] }>,
 ) {
   try {
-    if (!['rooms', 'all', 'desks'].includes(req.query.type)) {
+    if (!typia.is<BookingParams>({ type: req.query.type, sort: req.query.sort })) {
       res.status(400).json({ error: "Invalid input" });
       return;
     }
@@ -70,17 +76,34 @@ export async function upcomingBookings(
         subQuery = db.select({id: booking.spaceid}).from(booking)
     }
 
-
-    const upcomingBookings = await db
-      .select()
-      .from(booking)
-      .where(
-        and(
-          inArray(booking.spaceid, subQuery),
-          gt(booking.starttime, currentTime),
-          eq(booking.zid, zid)
+    let upcomingBookings;
+    if (req.query.sort === 'soonest') {
+      upcomingBookings = await db
+        .select()
+        .from(booking)
+        .where(
+          and(
+            inArray(booking.spaceid, subQuery),
+            gt(booking.starttime, currentTime),
+            eq(booking.zid, zid)
+          )
         )
-      );
+        .orderBy(asc(booking.starttime));
+    } else {
+      upcomingBookings = await db
+        .select()
+        .from(booking)
+        .where(
+          and(
+            inArray(booking.spaceid, subQuery),
+            gt(booking.starttime, currentTime),
+            eq(booking.zid, zid)
+          )
+        )
+        .orderBy(desc(booking.starttime));
+    }
+
+
 
     res.json({ bookings: upcomingBookings.map(formatBookingDates) });
   } catch (error) {
