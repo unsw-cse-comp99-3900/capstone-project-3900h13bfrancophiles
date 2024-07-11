@@ -30,7 +30,7 @@ const FloorPlanViewer = ({ level }: FloorPlanViewerProps) => {
         >
           <Image src={`/${level}.svg`} fill alt={`${level} floorplan`} style={{ position: "absolute" }}/>
           {desks.map(desk => (
-            <DeskIcon {...desk} />
+            <DeskIcon key={desk.id} {...desk} />
           ))}
         </TransformComponent>
       </TransformWrapper>

@@ -7,3 +7,5 @@ export type Room = { id: string, name: string, type: string, capacity: number, r
 export type Desk = { id: string, name: string, floor: string, room: string, desknumber: number };
 
 export type Space = Room | Desk;
+
+export type SpaceOption = { name: string; id: string; isRoom: boolean };

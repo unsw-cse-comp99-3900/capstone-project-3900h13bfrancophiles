@@ -1,9 +1,17 @@
 // Booking endpoint handlers
 
 import { db } from '../index'
-import { and, count, desc, eq, gt, gte, lt, lte } from "drizzle-orm"
-import { booking } from '../../drizzle/schema';
-import { Booking, BookingDetailsRequest, BookingEdit, IDatetimeRange, TypedGETRequest, TypedRequest, TypedResponse } from '../types';
+import {and, asc, count, desc, eq, gt, gte, inArray, lt, lte} from "drizzle-orm"
+import {booking, hotdesk, room} from '../../drizzle/schema';
+import {
+  Booking,
+  BookingDetailsRequest,
+  BookingEdit,
+  IDatetimeRange,
+  TypedGETRequest,
+  TypedRequest,
+  TypedResponse
+} from '../types';
 import typia, { tags } from "typia";
 import isEqual from 'lodash/isEqual';
 import { formatBookingDates, initialBookingStatus, withinDateRange as dateInRange } from '../utils';
@@ -33,23 +41,55 @@ export async function currentBookings(
   }
 }
 
+interface BookingParams {
+  type: 'desks' | 'rooms' | 'all';
+  sort: 'soonest' | 'latest';
+}
+
+type UpcomingBookingsRequest = {
+  type: string;
+  sort: string;
+}
+
 export async function upcomingBookings(
-  req: TypedGETRequest,
+  req: TypedGETRequest<UpcomingBookingsRequest>,
   res: TypedResponse<{ bookings: Booking[] }>,
 ) {
   try {
+    if (!typia.is<BookingParams>(req.query)) {
+      res.status(400).json({ error: "Invalid input" });
+      return;
+    }
     const zid = req.token.user;
     const currentTime = new Date().toISOString();
+
+    let subQuery;
+
+    switch (req.query.type) {
+      case 'desks':
+        subQuery = db.select({id: hotdesk.id}).from(hotdesk)
+        break;
+      case 'rooms':
+        subQuery = db.select({id: room.id}).from(room)
+        break;
+      default:
+        subQuery = db.select({id: booking.spaceid}).from(booking)
+    }
 
     const upcomingBookings = await db
       .select()
       .from(booking)
       .where(
         and(
+          inArray(booking.spaceid, subQuery),
           gt(booking.starttime, currentTime),
           eq(booking.zid, zid)
         )
-      );
+      )
+      .orderBy(req.query.sort == 'soonest' ? asc(booking.starttime) : desc(booking.starttime))
+
+
+
 
     res.json({ bookings: upcomingBookings.map(formatBookingDates) });
   } catch (error) {
@@ -60,14 +100,23 @@ export async function upcomingBookings(
 interface IPagination {
   page: number & tags.Minimum<1>;
   limit: number & tags.Minimum<1>;
+  type: 'desks' | 'rooms' | 'all';
+  sort: 'newest' | 'oldest';
+}
+
+type PastBookingsRequest = {
+  page: string;
+  limit: string;
+  type: string;
+  sort: string;
 }
 
 export async function pastBookings(
-  req: TypedGETRequest<{ page: string, limit: string }>,
+  req: TypedGETRequest<PastBookingsRequest>,
   res: TypedResponse<{ bookings: Booking[];  total: number }>,
 ) {
   try {
-    if (!typia.is<IPagination>({ page: parseInt(req.query.page), limit: parseInt(req.query.limit) }) ) {
+    if (!typia.is<IPagination>({ ...req.query, page: parseInt(req.query.page), limit: parseInt(req.query.limit)})) {
       res.status(400).json({ error: "Invalid input" });
       return;
     }
@@ -78,30 +127,46 @@ export async function pastBookings(
     const offset = (page - 1) * limit;
     const currentTime = new Date().toISOString();
 
-    const totalBookingsCount = await db
+    let subQuery;
+
+    switch (req.query.type) {
+      case 'desks':
+        subQuery = db.select({id: hotdesk.id}).from(hotdesk)
+        break;
+      case 'rooms':
+        subQuery = db.select({id: room.id}).from(room)
+        break;
+      default:
+        subQuery = db.select({id: booking.spaceid}).from(booking)
+    }
+
+    const totalBookings = await db
       .select({ count: count() })
       .from(booking)
       .where(and(
+        inArray(booking.spaceid, subQuery),
         eq(booking.zid, zid),
         lt(booking.endtime, currentTime)
       ));
+
 
     const pastBookings = await db
       .select()
       .from(booking)
       .where(and(
+        inArray(booking.spaceid, subQuery),
         eq(booking.zid, zid),
         lt(booking.endtime, currentTime)
       ))
-      .orderBy(
-        desc(booking.starttime)
-      )
+      .orderBy(req.query.sort == 'newest' ? desc(booking.starttime) : asc(booking.starttime))
       .limit(limit)
       .offset(offset);
 
+
+
     res.json({
       bookings: pastBookings.map(formatBookingDates),
-      total: totalBookingsCount[0].count
+      total: totalBookings[0].count
     });
   } catch (error) {
     res.status(500).json({ error: 'Failed to fetch past bookings' });
@@ -360,6 +425,7 @@ export async function deleteBooking(
   }
 }
 
+
 export async function editBooking(
   req: TypedRequest<BookingEdit>,
   res: TypedResponse<{ booking: Booking }>,
@@ -371,8 +437,8 @@ export async function editBooking(
     }
 
     const existingBooking = await db
-    .select()
-    .from(booking)
+      .select()
+      .from(booking)
       .where(
         and(
           eq(booking.id, req.body.id),
@@ -421,7 +487,7 @@ export async function editBooking(
         )
         .returning();
 
-        formattedBooking = formatBookingDates(res[0]);
+      formattedBooking = formatBookingDates(res[0]);
     } catch (e: any) {
       res.status(400).json({ error: `${e}` });
       return;
