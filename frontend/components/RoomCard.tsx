@@ -92,4 +92,4 @@ const RoomCard: React.FC<RoomCardProps> = ({
   );
 };
 
-export default RoomCard;g
+export default RoomCard;
