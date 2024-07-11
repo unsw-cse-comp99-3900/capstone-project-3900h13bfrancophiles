@@ -7,13 +7,27 @@ import MeetingRoomOutlinedIcon from "@mui/icons-material/MeetingRoomOutlined";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCalendarPlus } from "@fortawesome/free-regular-svg-icons";
 import { Room } from "@/types";
+import useSpaceStatus from "@/hooks/useSpaceStatus";
 
 interface RoomCardProps {
   room: Room;
   handleBook: (room: Room) => void;
+  datetimeStart: string;
+  datetimeEnd: string;
 }
 
-const RoomCard: React.FC<RoomCardProps> = ({ room, handleBook }) => {
+const RoomCard: React.FC<RoomCardProps> = ({ room, handleBook, datetimeStart, datetimeEnd }) => {
+  const { statusResponse, isLoading, error } = useSpaceStatus(datetimeStart, datetimeEnd);
+
+  let availability = "Checking...";
+
+  if (error) {
+    availability = "Error";
+    // TODO: add banner here
+  } else if (statusResponse) {
+    availability = statusResponse[room.id].status;
+  }
+
   return (
     <Card
       sx={{
@@ -50,13 +64,10 @@ const RoomCard: React.FC<RoomCardProps> = ({ room, handleBook }) => {
       </CardContent>
       <CardOverflow
         variant="solid"
-        color={"success"}
-        // color={room.available ? "success" : "danger"}
+        color={availability === "Available" ? "success" : "danger"}
         sx={{ padding: "8px", alignItems: "center", flexWrap: "wrap" }}
       >
-        {/* <b>{room.available ? "Available" : "Unavailable"}</b> */}
-        <b>Available</b>
-
+        <b>{availability}</b>
       </CardOverflow>
     </Card>
   );
