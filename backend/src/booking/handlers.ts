@@ -56,7 +56,7 @@ export async function upcomingBookings(
   res: TypedResponse<{ bookings: Booking[] }>,
 ) {
   try {
-    if (!typia.is<BookingParams>({ type: req.query.type, sort: req.query.sort })) {
+    if (!typia.is<BookingParams>(req.query)) {
       res.status(400).json({ error: "Invalid input" });
       return;
     }
@@ -116,7 +116,7 @@ export async function pastBookings(
   res: TypedResponse<{ bookings: Booking[];  total: number }>,
 ) {
   try {
-    if (!typia.is<IPagination>({ page: parseInt(req.query.page), limit: parseInt(req.query.limit), type: req.query.type, sort: req.query.sort })) {
+    if (!typia.is<IPagination>({ ...req.query, page: parseInt(req.query.page), limit: parseInt(req.query.limit)})) {
       res.status(400).json({ error: "Invalid input" });
       return;
     }
