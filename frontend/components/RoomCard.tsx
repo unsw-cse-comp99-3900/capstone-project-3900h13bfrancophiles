@@ -39,9 +39,6 @@ const RoomCard: React.FC<RoomCardProps> = ({ room, handleBook }) => {
                 {room.name}
               </Typography>
             </Link>
-            <Typography level="title-lg" sx={{ mt: 1, fontWeight: "xl" }}>
-              {room.name}
-            </Typography>
             <IconButton onClick={() => handleBook(room)}>
               <FontAwesomeIcon fontSize="24px" icon={faCalendarPlus} />
             </IconButton>
