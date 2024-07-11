@@ -135,8 +135,9 @@ function UpcomingBookingRow({ row, mutate }: UpcomingBookingRowProps) {
 }
 
 export default function UpcomingBookings() {
+  const [sort, setSort] = React.useState('soonest');
   const [filter, setFilter] = React.useState("all");
-  const { upcomingBookings, isLoading, mutate } = useUpcomingBookings(filter); // Get mutate function from hook
+  const { upcomingBookings, isLoading, mutate } = useUpcomingBookings(filter, sort); // Get mutate function from hook
   const [rows, setRows] = React.useState<Row[]>([]);
 
   React.useEffect(() => {
@@ -155,8 +156,6 @@ export default function UpcomingBookings() {
 
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
-  const [filteredRows, setFilteredRows] = React.useState(rows.sort((a, b) => (a.startTime < b.startTime ? 1 : -1)));
-  const [sortNewest, setSortNewest] = React.useState(true);
 
   const handleChangePage = (newPage: number) => {
     setPage(newPage);
@@ -182,19 +181,13 @@ export default function UpcomingBookings() {
   };
 
   const handleChangeSort = (event: React.SyntheticEvent | null, newValue: string | null) => {
-    setSortNewest(newValue === "soonest");
+    if (newValue !== null) {
+      setSort(newValue);
+    }
   };
 
-  React.useEffect(() => {
-    setFilteredRows([...rows]
-      .sort((a, b) => a.startTime > b.startTime ? sortNewest ? 1 : -1 : sortNewest ? -1 : 1)); // this will also be backend
-  }, [rows, sortNewest]);
-
   const getLabelDisplayedRowsTo = () => {
-    if (filteredRows.length === -1) {
-      return (page + 1) * rowsPerPage;
-    }
-    return rowsPerPage === -1 ? filteredRows.length : Math.min(filteredRows.length, (page + 1) * rowsPerPage);
+    return rowsPerPage === -1 ? rows.length : Math.min(rows.length, (page + 1) * rowsPerPage);
   };
 
   return (<Stack>
@@ -247,7 +240,7 @@ export default function UpcomingBookings() {
           </tr>
           </thead>
           <tbody>
-            {filteredRows
+            {rows
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               .map((row) => (
                 <UpcomingBookingRow key={row.id} row={row} mutate={mutate} />
@@ -274,9 +267,9 @@ export default function UpcomingBookings() {
                 </FormControl>
                 <Typography textAlign="center" sx={{minWidth: 80}}>
                   {labelDisplayedRows({
-                    from: filteredRows.length === 0 ? 0 : page * rowsPerPage + 1,
+                    from: rows.length === 0 ? 0 : page * rowsPerPage + 1,
                     to: getLabelDisplayedRowsTo(),
-                    count: filteredRows.length === -1 ? -1 : filteredRows.length,
+                    count: rows.length === -1 ? -1 : rows.length,
                   })}
                 </Typography>
                 <Box sx={{display: "flex", gap: 1}}>
@@ -294,7 +287,7 @@ export default function UpcomingBookings() {
                     size="sm"
                     color="neutral"
                     variant="outlined"
-                    disabled={filteredRows.length !== -1 ? page >= Math.ceil(filteredRows.length / rowsPerPage) - 1 : false}
+                    disabled={page >= Math.ceil(rows.length / rowsPerPage) - 1}
                     onClick={() => handleChangePage(page + 1)}
                     sx={{bgcolor: "background.surface"}}
                   >

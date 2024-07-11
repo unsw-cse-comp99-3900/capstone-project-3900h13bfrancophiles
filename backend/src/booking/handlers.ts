@@ -1,7 +1,7 @@
 // Booking endpoint handlers
 
 import { db } from '../index'
-import {and, count, desc, eq, gt, gte, inArray, lt, lte} from "drizzle-orm"
+import {and, asc, count, desc, eq, gt, gte, inArray, lt, lte} from "drizzle-orm"
 import {booking, hotdesk, room} from '../../drizzle/schema';
 import {
   Booking,
@@ -41,8 +41,14 @@ export async function currentBookings(
   }
 }
 
+interface BookingParams {
+  type: 'desks' | 'rooms' | 'all';
+  sort: 'soonest' | 'latest';
+}
+
 type UpcomingBookingsRequest = {
   type: string;
+  sort: string;
 }
 
 export async function upcomingBookings(
@@ -50,7 +56,7 @@ export async function upcomingBookings(
   res: TypedResponse<{ bookings: Booking[] }>,
 ) {
   try {
-    if (!['rooms', 'all', 'desks'].includes(req.query.type)) {
+    if (!typia.is<BookingParams>(req.query)) {
       res.status(400).json({ error: "Invalid input" });
       return;
     }
@@ -70,7 +76,6 @@ export async function upcomingBookings(
         subQuery = db.select({id: booking.spaceid}).from(booking)
     }
 
-
     const upcomingBookings = await db
       .select()
       .from(booking)
@@ -80,7 +85,11 @@ export async function upcomingBookings(
           gt(booking.starttime, currentTime),
           eq(booking.zid, zid)
         )
-      );
+      )
+      .orderBy(req.query.sort == 'soonest' ? asc(booking.starttime) : desc(booking.starttime))
+
+
+
 
     res.json({ bookings: upcomingBookings.map(formatBookingDates) });
   } catch (error) {
@@ -91,13 +100,15 @@ export async function upcomingBookings(
 interface IPagination {
   page: number & tags.Minimum<1>;
   limit: number & tags.Minimum<1>;
-  type: 'desks' | 'rooms' | 'all'
+  type: 'desks' | 'rooms' | 'all';
+  sort: 'newest' | 'oldest';
 }
 
 type PastBookingsRequest = {
   page: string;
   limit: string;
   type: string;
+  sort: string;
 }
 
 export async function pastBookings(
@@ -105,7 +116,7 @@ export async function pastBookings(
   res: TypedResponse<{ bookings: Booking[];  total: number }>,
 ) {
   try {
-    if (!typia.is<IPagination>({ page: parseInt(req.query.page), limit: parseInt(req.query.limit), type: req.query.type })) {
+    if (!typia.is<IPagination>({ ...req.query, page: parseInt(req.query.page), limit: parseInt(req.query.limit)})) {
       res.status(400).json({ error: "Invalid input" });
       return;
     }
@@ -138,6 +149,7 @@ export async function pastBookings(
         lt(booking.endtime, currentTime)
       ));
 
+
     const pastBookings = await db
       .select()
       .from(booking)
@@ -146,9 +158,11 @@ export async function pastBookings(
         eq(booking.zid, zid),
         lt(booking.endtime, currentTime)
       ))
-      .orderBy(desc(booking.starttime))
+      .orderBy(req.query.sort == 'newest' ? desc(booking.starttime) : asc(booking.starttime))
       .limit(limit)
       .offset(offset);
+
+
 
     res.json({
       bookings: pastBookings.map(formatBookingDates),
