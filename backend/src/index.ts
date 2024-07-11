@@ -16,7 +16,8 @@ import {
   checkInBooking,
   checkOutBooking,
   deleteBooking,
-  createBooking
+  createBooking,
+  editBooking
 } from './booking/handlers';
 import { roomDetails, singleSpaceDetails, spaceAvailabilities } from "./spaces/handlers";
 import { spaceStatus } from './status/handlers';
@@ -45,6 +46,7 @@ app.post("/bookings/create", validateToken, authoriseAtLeast("hdr"), createBooki
 
 app.post("/bookings/checkin", validateToken, checkInBooking);
 app.post("/bookings/checkout", validateToken, checkOutBooking);
+app.put("/bookings/edit", validateToken, editBooking);
 
 app.get("/spaces/:spaceId", validateToken, singleSpaceDetails);
 app.get("/rooms", validateToken, roomDetails);
