@@ -76,32 +76,18 @@ export async function upcomingBookings(
         subQuery = db.select({id: booking.spaceid}).from(booking)
     }
 
-    let upcomingBookings;
-    if (req.query.sort === 'soonest') {
-      upcomingBookings = await db
-        .select()
-        .from(booking)
-        .where(
-          and(
-            inArray(booking.spaceid, subQuery),
-            gt(booking.starttime, currentTime),
-            eq(booking.zid, zid)
-          )
+    const upcomingBookings = await db
+      .select()
+      .from(booking)
+      .where(
+        and(
+          inArray(booking.spaceid, subQuery),
+          gt(booking.starttime, currentTime),
+          eq(booking.zid, zid)
         )
-        .orderBy(asc(booking.starttime));
-    } else {
-      upcomingBookings = await db
-        .select()
-        .from(booking)
-        .where(
-          and(
-            inArray(booking.spaceid, subQuery),
-            gt(booking.starttime, currentTime),
-            eq(booking.zid, zid)
-          )
-        )
-        .orderBy(desc(booking.starttime));
-    }
+      )
+      .orderBy(req.query.sort == 'soonest' ? asc(booking.starttime) : desc(booking.starttime))
+
 
 
 
@@ -163,33 +149,19 @@ export async function pastBookings(
         lt(booking.endtime, currentTime)
       ));
 
-    let pastBookings;
 
-    if (req.query.sort == 'newest') {
-      pastBookings = await db
-        .select()
-        .from(booking)
-        .where(and(
-          inArray(booking.spaceid, subQuery),
-          eq(booking.zid, zid),
-          lt(booking.endtime, currentTime)
-        ))
-        .orderBy(desc(booking.starttime))
-        .limit(limit)
-        .offset(offset);
-    } else {
-        pastBookings = await db
-          .select()
-          .from(booking)
-          .where(and(
-            inArray(booking.spaceid, subQuery),
-            eq(booking.zid, zid),
-            lt(booking.endtime, currentTime)
-          ))
-          .orderBy(asc(booking.starttime))
-          .limit(limit)
-          .offset(offset);
-    }
+    const pastBookings = await db
+      .select()
+      .from(booking)
+      .where(and(
+        inArray(booking.spaceid, subQuery),
+        eq(booking.zid, zid),
+        lt(booking.endtime, currentTime)
+      ))
+      .orderBy(req.query.sort == 'newest' ? desc(booking.starttime) : asc(booking.starttime))
+      .limit(limit)
+      .offset(offset);
+
 
 
     res.json({
