@@ -45,10 +45,8 @@ export interface TypedRequest<B = Empty, P = Empty> extends Request<P> {
  * Q is the type of the query params (req.query)
  * P is the type of the path params (req.params)
  */
-export interface TypedGETRequest<Q = Empty, P = Empty> extends Request<P,any,any,Q> {
-  query: Q,
-  params: P,
-  token: TokenPayload
+export interface TypedGETRequest<P = Empty> extends TypedRequest<Empty, P> {
+  query: Record<string, string>,
 }
 
 /*
