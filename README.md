@@ -16,13 +16,12 @@ brew services start postgresql
 Create and initialise a database for the project:
 ```
 createdb 3900
-psql 3900 -f postgres/init.sql
+psql 3900 -f postgres/01_init.sql
+psql 3900 -f postgres/02_data.sql
 ```
-For now any changes to the database schema will mean you need to edit `init.sql`, drop the database, recreate it, and reinitialise it with the updated `init.sql`. Commands for this:
+For now any changes to the database schema will mean you need to edit `01_init.sql`, drop the database, recreate it, and reinitialise it with the updated `01_init.sql`. Commands for this:
 ```
-dropdb 3900
-createdb 3900
-psql 3900 -f postgres/init.sql
+./postgres/resetdb.sh
 ```
 
 [For a WSL installation](https://learn.microsoft.com/en-us/windows/wsl/tutorials/wsl-database):
