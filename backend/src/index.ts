@@ -18,6 +18,7 @@ import {
 import { allSpaces, roomDetails, singleSpaceDetails, spaceAvailabilities } from "./spaces/handlers";
 import { spaceStatus } from './status/handlers';
 import { currentBookings, pastBookings, rangeOfBookings, upcomingBookings } from './booking/fetchBookings';
+import {pendingBookings} from "./admin/handlers";
 
 const pool = new Pool({
   connectionString: DATABASE_URL,
@@ -50,6 +51,8 @@ app.get("/spaces/:spaceId", validateToken, singleSpaceDetails);
 app.get("/rooms", validateToken, roomDetails);
 app.get("/status", validateToken, spaceStatus);
 app.get("/availabilities/:spaceId", validateToken, spaceAvailabilities);
+
+app.get("/admin/bookings/pending", validateToken, authoriseAtLeast("admin"), pendingBookings);
 
 app.listen(PORT, () => {
   console.log(`Server is running at http://localhost:${PORT}`);
