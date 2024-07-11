@@ -9,18 +9,15 @@ import { drizzle } from "drizzle-orm/node-postgres";
 import { login, logout } from './auth/handlers';
 import { authoriseAtLeast, validateToken } from './auth/middleware';
 import {
-  currentBookings,
-  upcomingBookings,
-  pastBookings,
-  rangeOfBookings,
   checkInBooking,
   checkOutBooking,
   deleteBooking,
   createBooking,
   editBooking
-} from './booking/handlers';
+} from './booking/manageBookings';
 import { allSpaces, roomDetails, singleSpaceDetails, spaceAvailabilities } from "./spaces/handlers";
 import { spaceStatus } from './status/handlers';
+import { currentBookings, pastBookings, rangeOfBookings, upcomingBookings } from './booking/fetchBookings';
 
 const pool = new Pool({
   connectionString: DATABASE_URL,
