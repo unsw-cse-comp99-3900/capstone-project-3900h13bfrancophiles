@@ -1,5 +1,6 @@
 import { BACKEND_URL } from '@/config';
 import { deleteCookie, getCookie } from 'cookies-next';
+import { Booking } from '@/types';
 
 type HTTPMethod = 'GET' | 'POST' | 'PUT' | 'DELETE';
 
@@ -23,9 +24,12 @@ const apiCall = <T>(
     },
   };
 
-  if (method === 'GET') {
+  if (method === 'GET' ) {
     // If GET, params go in URL
-    route += '?' + new URLSearchParams(params as Record<string, string>);
+    if (Object.keys(params).length !== 0) {
+      route += '?' + new URLSearchParams(params as Record<string, string>);
+    }
+
   } else {
     // Otherwise go in body
     options.body = JSON.stringify(params);
@@ -84,6 +88,15 @@ export const login = (
 
 export const logout = (): Promise<{}> => {
   return authApiCall('/auth/logout', 'POST', {});
+}
+
+export const createBooking = (
+  spaceid: string,
+  starttime: string,
+  endtime: string,
+  description: string
+): Promise<{ booking: Booking }> => {
+  return authApiCall('/bookings/create', 'POST', { spaceid, starttime, endtime, description });
 }
 
 export const deleteBooking = (id: number): Promise<{}> => {

@@ -86,25 +86,29 @@ create trigger trg_chk_overlap before insert or update
 on booking for each row execute procedure trg_chk_overlap();
 
 create function trg_chk_start_future() returns trigger as $$
+declare
+    now timestamp := CURRENT_TIMESTAMP at time zone 'UTC';
 begin
-    if new.starttime <= CURRENT_TIMESTAMP then
+    if new.starttime <= now then
         raise exception 'Booking start time must be in the future';
     end if;
 
-    if old.starttime <= CURRENT_TIMESTAMP then
+    if old.starttime <= now then
         raise exception 'Cannot edit a booking that has already started';
     end if;
 
     return new;
-END;
-$$ LANGUAGE plpgsql;
+end;
+$$ language plpgsql;
 
 create trigger trg_chk_start_future before insert or update
 on booking for each row execute procedure trg_chk_start_future();
 
 create function trg_chk_start_future_limit() returns trigger as $$
+declare
+    today timestamp := date_trunc('day', CURRENT_TIMESTAMP at time zone 'UTC');
 begin
-    if new.starttime > current_timestamp + interval '14 days' then
+    if new.starttime > today + interval '14 days' then
         raise exception 'Booking start time cannot be more than 14 days in the future';
     end if;
 

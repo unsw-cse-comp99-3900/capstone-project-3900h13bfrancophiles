@@ -45,6 +45,7 @@ interface Row {
   description: string;
 }
 
+
 function UpcomingBookingRow({ row, mutate }: UpcomingBookingRowProps) {
   const { space, isLoading } = useSpace(row.space);
   const [bookingToDelete, setBookingToDelete] = React.useState<number | null>(
@@ -134,7 +135,8 @@ function UpcomingBookingRow({ row, mutate }: UpcomingBookingRowProps) {
 }
 
 export default function UpcomingBookings() {
-  const { upcomingBookings, isLoading, mutate } = useUpcomingBookings(); // Get mutate function from hook
+  const [filter, setFilter] = React.useState("all");
+  const { upcomingBookings, isLoading, mutate } = useUpcomingBookings(filter); // Get mutate function from hook
   const [rows, setRows] = React.useState<Row[]>([]);
 
   React.useEffect(() => {
@@ -153,10 +155,7 @@ export default function UpcomingBookings() {
 
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
-  const [filter, setFilter] = React.useState("all");
-  const [filteredRows, setFilteredRows] = React.useState(
-    rows.sort((a, b) => (a.startTime < b.startTime ? 1 : -1))
-  );
+  const [filteredRows, setFilteredRows] = React.useState(rows.sort((a, b) => (a.startTime < b.startTime ? 1 : -1)));
   const [sortNewest, setSortNewest] = React.useState(true);
 
   const handleChangePage = (newPage: number) => {
@@ -169,56 +168,36 @@ export default function UpcomingBookings() {
   };
 
   function labelDisplayedRows({
-    from,
-    to,
-    count,
-  }: {
-    from: number;
-    to: number;
-    count: number;
+                                from, to, count,
+                              }: {
+    from: number; to: number; count: number;
   }) {
     return `${from}–${to} of ${count !== -1 ? count : `more than ${to}`}`;
   }
 
-  const handleChangeFilter = (event: any) => {
-    const value = event.target.value;
-    setFilter(value);
+  const handleChangeFilter = (event: any, newValue: string | null) => {
+    if (newValue !== null) {
+      setFilter(newValue);
+    }
   };
 
-  const handleChangeSort = (
-    event: React.SyntheticEvent | null,
-    newValue: string | null
-  ) => {
+  const handleChangeSort = (event: React.SyntheticEvent | null, newValue: string | null) => {
     setSortNewest(newValue === "soonest");
   };
 
   React.useEffect(() => {
-    setFilteredRows(
-      rows
-        .filter(() => true) // now filtering in the backend
-        .sort((a, b) =>
-          a.startTime < b.startTime
-            ? sortNewest
-              ? 1
-              : -1
-            : sortNewest
-            ? -1
-            : 1
-        )
-    ); // this will also be backend
-  }, [rows, filter, sortNewest]);
+    setFilteredRows([...rows]
+      .sort((a, b) => a.startTime > b.startTime ? sortNewest ? 1 : -1 : sortNewest ? -1 : 1)); // this will also be backend
+  }, [rows, sortNewest]);
 
   const getLabelDisplayedRowsTo = () => {
     if (filteredRows.length === -1) {
       return (page + 1) * rowsPerPage;
     }
-    return rowsPerPage === -1
-      ? filteredRows.length
-      : Math.min(filteredRows.length, (page + 1) * rowsPerPage);
+    return rowsPerPage === -1 ? filteredRows.length : Math.min(filteredRows.length, (page + 1) * rowsPerPage);
   };
 
-  return (
-    <Stack>
+  return (<Stack>
       <Stack direction="row" width="100%" my={1} spacing={1}>
         <Box width="200px">
           Space
@@ -243,12 +222,7 @@ export default function UpcomingBookings() {
       <Sheet
         variant="outlined"
         sx={{
-          display: { xs: "initial" },
-          width: "100%",
-          borderRadius: "sm",
-          flexShrink: 1,
-          overflow: "auto",
-          minHeight: 0,
+          display: {xs: "initial"}, width: "100%", borderRadius: "sm", flexShrink: 1, overflow: "auto", minHeight: 0,
         }}
       >
         <Table
@@ -256,23 +230,21 @@ export default function UpcomingBookings() {
           stickyHeader
           hoverRow
           sx={{
-            "--TableCell-headBackground":
-              "var(--joy-palette-background-level1)",
+            "--TableCell-headBackground": "var(--joy-palette-background-level1)",
             "--Table-headerUnderlineThickness": "1px",
-            "--TableRow-hoverBackground":
-              "var(--joy-palette-background-level1)",
+            "--TableRow-hoverBackground": "var(--joy-palette-background-level1)",
             "--TableCell-paddingY": "4px",
             "--TableCell-paddingX": "8px",
           }}
         >
           <thead>
-            <tr>
-              <th style={{ width: 100, padding: "12px 6px" }}>Status</th>
-              <th style={{ width: 140, padding: "12px 6px" }}>Time</th>
-              <th style={{ width: 140, padding: "12px 6px" }}>Location</th>
-              <th style={{ width: 150, padding: "12px 6px" }}>Description</th>
-              <th style={{ width: 100, padding: "12px 6px" }}></th>
-            </tr>
+          <tr>
+            <th style={{width: 100, padding: "12px 6px"}}>Status</th>
+            <th style={{width: 140, padding: "12px 6px"}}>Time</th>
+            <th style={{width: 140, padding: "12px 6px"}}>Location</th>
+            <th style={{width: 150, padding: "12px 6px"}}>Description</th>
+            <th style={{width: 100, padding: "12px 6px"}}></th>
+          </tr>
           </thead>
           <tbody>
             {filteredRows
@@ -282,69 +254,58 @@ export default function UpcomingBookings() {
               ))}
           </tbody>
           <tfoot>
-            <tr>
-              <td colSpan={5}>
-                <Box
-                  sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 2,
-                    justifyContent: "flex-end",
-                  }}
-                >
-                  <FormControl orientation="horizontal" size="sm">
-                    <FormLabel>Rows per page:</FormLabel>
-                    <Select
-                      onChange={handleChangeRowsPerPage}
-                      value={rowsPerPage}
-                    >
-                      <Option value={5}>5</Option>
-                      <Option value={10}>10</Option>
-                      <Option value={25}>25</Option>
-                    </Select>
-                  </FormControl>
-                  <Typography textAlign="center" sx={{ minWidth: 80 }}>
-                    {labelDisplayedRows({
-                      from:
-                        filteredRows.length === 0 ? 0 : page * rowsPerPage + 1,
-                      to: getLabelDisplayedRowsTo(),
-                      count:
-                        filteredRows.length === -1 ? -1 : filteredRows.length,
-                    })}
-                  </Typography>
-                  <Box sx={{ display: "flex", gap: 1 }}>
-                    <IconButton
-                      size="sm"
-                      color="neutral"
-                      variant="outlined"
-                      disabled={page === 0}
-                      onClick={() => handleChangePage(page - 1)}
-                      sx={{ bgcolor: "background.surface" }}
-                    >
-                      <KeyboardArrowLeftIcon />
-                    </IconButton>
-                    <IconButton
-                      size="sm"
-                      color="neutral"
-                      variant="outlined"
-                      disabled={
-                        filteredRows.length !== -1
-                          ? page >=
-                            Math.ceil(filteredRows.length / rowsPerPage) - 1
-                          : false
-                      }
-                      onClick={() => handleChangePage(page + 1)}
-                      sx={{ bgcolor: "background.surface" }}
-                    >
-                      <KeyboardArrowRightIcon />
-                    </IconButton>
-                  </Box>
+          <tr>
+            <td colSpan={5}>
+              <Box
+                sx={{
+                  display: "flex", alignItems: "center", gap: 2, justifyContent: "flex-end",
+                }}
+              >
+                <FormControl orientation="horizontal" size="sm">
+                  <FormLabel>Rows per page:</FormLabel>
+                  <Select
+                    onChange={handleChangeRowsPerPage}
+                    value={rowsPerPage}
+                  >
+                    <Option value={5}>5</Option>
+                    <Option value={10}>10</Option>
+                    <Option value={25}>25</Option>
+                  </Select>
+                </FormControl>
+                <Typography textAlign="center" sx={{minWidth: 80}}>
+                  {labelDisplayedRows({
+                    from: filteredRows.length === 0 ? 0 : page * rowsPerPage + 1,
+                    to: getLabelDisplayedRowsTo(),
+                    count: filteredRows.length === -1 ? -1 : filteredRows.length,
+                  })}
+                </Typography>
+                <Box sx={{display: "flex", gap: 1}}>
+                  <IconButton
+                    size="sm"
+                    color="neutral"
+                    variant="outlined"
+                    disabled={page === 0}
+                    onClick={() => handleChangePage(page - 1)}
+                    sx={{bgcolor: "background.surface"}}
+                  >
+                    <KeyboardArrowLeftIcon/>
+                  </IconButton>
+                  <IconButton
+                    size="sm"
+                    color="neutral"
+                    variant="outlined"
+                    disabled={filteredRows.length !== -1 ? page >= Math.ceil(filteredRows.length / rowsPerPage) - 1 : false}
+                    onClick={() => handleChangePage(page + 1)}
+                    sx={{bgcolor: "background.surface"}}
+                  >
+                    <KeyboardArrowRightIcon/>
+                  </IconButton>
                 </Box>
-              </td>
-            </tr>
+              </Box>
+            </td>
+          </tr>
           </tfoot>
         </Table>
       </Sheet>
-    </Stack>
-  );
+    </Stack>);
 }
