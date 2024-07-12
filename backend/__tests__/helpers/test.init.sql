@@ -1,10 +1,9 @@
 
 -- create a bunch of dummy static data to be used in all tests
 -- bookings (and nothing else) will be created by the tests
--- if u change any of this data, make sure to change
+-- if u change any of this data, make sure to change the constants.ts file
 
 -- 2 ppl for each user level
--- USERS[1].email
 INSERT INTO person(zid, email, fullname, title, school, faculty, role, usergrp)
 VALUES (1111111, 'admin1@email.com', 'Admin One', 'Mr', 'CSE', 'ENG', 'Professional', 'admin'),
        (2222222, 'admin2@email.com', 'Admin Two', 'Ms', 'CSE', 'ENG', 'Professional', 'admin'),
