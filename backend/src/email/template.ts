@@ -1,10 +1,14 @@
 import { EmailContents } from '../types';
 
-export function fillEmailTemplate(template: EmailContents, values: { [key: string]: string }): EmailContents {
+const { promisify } = require('util');
+const fs = require('fs');
+const readFileAsync = promisify(fs.readFile);
+
+export async function fillEmailTemplate(template: EmailContents, values: { [key: string]: string }): Promise<EmailContents> {
 
     let filledSubject = template.subject;
     let filledText = template.text;
-    let filledHtml = template.html;
+    let filledHtml = await readFileAsync(('src/email/' + template.html), 'utf-8');
 
     for (const key in values) {
         const placeholder = `{{${key}}}`;
@@ -24,5 +28,5 @@ export function fillEmailTemplate(template: EmailContents, values: { [key: strin
 export const BOOKING_REQUEST: EmailContents = {
     subject: "New Request: Booking ID {{bookingid}}",
     text: "Hello {{name}}, your booking request with ID {{bookingid}} has been submitted.",
-    html: "<b>Hello {{name}}, your booking request with ID {{bookingid}} has been submitted.</b>"
+    html: "templates/bookingRequest.html"
 }

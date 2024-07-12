@@ -30,9 +30,8 @@ export async function getEmailRecipient(zid: number) : Promise<EmailRecipient> {
 export async function sendBookingRequest(zid: number, booking: Booking) {
 
     const emailRecipient = await getEmailRecipient(zid);
-
     const emailContent = { name: emailRecipient.name, bookingid: String(booking.id) };
-    const email = fillEmailTemplate(BOOKING_REQUEST, emailContent);
+    const email = await fillEmailTemplate(BOOKING_REQUEST, emailContent);
 
     const emailInfo = await emailTransporter.sendMail({
         from: '"Wilma 👻" <wilma44@ethereal.email>',
