@@ -99,10 +99,25 @@ export default function desks() {
           </Button>
         </ModalDialog>
       </Modal>
-      <Sheet variant="plain" sx={{ boxShadow: "md", borderRadius: 10, zIndex: 2, position: "absolute", top: 60, right: 0, padding: 1, margin: 2 }}>
+      <Sheet variant="plain"
+        sx={{
+          boxShadow: "md",
+          borderRadius: 10,
+          zIndex: 2,
+          position: "absolute",
+          top: 60,
+          right: 0,
+          padding: 1.5,
+          margin: 2,
+          width: { xs: "calc(100vw - 32px)", sm: "auto" }
+        }}>
         <Stack direction="column">
-          <Stack direction="row" gap={2} flexWrap="wrap">
+          <Typography level="h4">
+            Search for available desks:
+          </Typography>
+          <Stack direction="row" gap={2} flexWrap="wrap" sx={{ marginTop: 1, marginBottom: 1 }}>
             <Input
+              sx={{ width: { xs: "100%", sm: "auto" } }}
               type="date"
               defaultValue={date}
               onChange={(event) => {
@@ -112,8 +127,9 @@ export default function desks() {
                 setDate(d);
               }}
             />
-            <Stack direction="row">
+            <Stack direction="row" spacing={1} width={{ xs: "100%", sm: "auto" }}>
               <Input
+                sx={{ width: "50%" }}
                 type="time"
                 defaultValue={startTime}
                 size="sm"
@@ -122,6 +138,7 @@ export default function desks() {
                 }}
               />
               <Input
+                sx={{ width: "50%" }}
                 type="time"
                 defaultValue={endTime}
                 size="sm"
@@ -131,30 +148,26 @@ export default function desks() {
               />
             </Stack>
           </Stack>
-          {
-            <Box sx={{ display: selectedDesk == "" ? "none" : "flex", flexDirection: "column", justifyContent: "space-between", alignItems: "center" }}>
-              <Button sx={{ display: available ? "block" : "none", marginTop: 1, width: "100%" }} onClick={() => setOpen(true)}>
-                Book desk {selectedDesk}
-              </Button>
-              <Box sx={{ display: available ? "none" : "flex", flexDirection: "column", justifyContent: "space-between", alignItems: "center", padding: 2 }}>
-                <Typography component="h2">
-                  Desk {selectedDesk}
-                </Typography>
-                <Avatar
-                  variant="solid"
-                  color="primary"
-                  src={user ? `data:image/jpeg;base64,${user.image}` : "/DeskIcon1.svg"}
-                  alt={user ? user.name.split(" ", 2).map((i) => i.charAt(0)).join("").toUpperCase() : "user"}
-                  sx={{ height: "100px", width: "100px", margin: 1 }}
-                >
-                  {user ? user.name.split(" ", 2).map((i) => i.charAt(0)).join("").toUpperCase() : ""}
-                </Avatar>
-                <Typography>
-                  Franco Reyes
-                </Typography>
-              </Box>
-            </Box>
-          }
+          <Button sx={{ display: available && selectedDesk ? "block" : "none", marginTop: 1, width: "100%" }} onClick={() => setOpen(true)}>
+            Book desk {selectedDesk}
+          </Button>
+          <Box sx={{ display: available || selectedDesk === "" ? "none" : "flex", flexDirection: {xs: "row", sm : "column"}, justifyContent: "space-around", alignItems: "center",}}>
+            <Typography component="h2">
+              Desk {selectedDesk}
+            </Typography>
+            <Avatar
+              variant="solid"
+              color="primary"
+              src={user ? `data:image/jpeg;base64,${user.image}` : "/DeskIcon1.svg"}
+              alt={user ? user.name.split(" ", 2).map((i) => i.charAt(0)).join("").toUpperCase() : "user"}
+              sx={{ height: { xs: "70px", sm: "100px" }, width: { xs: "70px", sm: "100px" }, margin: 1 }}
+            >
+              {user ? user.name.split(" ", 2).map((i) => i.charAt(0)).join("").toUpperCase() : ""}
+            </Avatar>
+            <Typography>
+              {user ? user.name : ""}
+            </Typography>
+          </Box>
         </Stack>
       </Sheet>
       <Tabs
