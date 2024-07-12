@@ -13,16 +13,17 @@ type StatusResponse = {
 }
 
 export async function spaceStatus(
-  req: TypedGETRequest<{ datetimeStart: string, datetimeEnd: string }>,
+  req: TypedGETRequest,
   res: TypedResponse<StatusResponse>,
 ) {
   try {
-    if (!typia.is<IDatetimeRange>(req.query)) {
+    const parsedQuery = typia.http.isQuery<IDatetimeRange>(new URLSearchParams(req.query));
+    if (!parsedQuery) {
       res.status(400).json({ error: "Invalid input" });
       return;
     }
-    const datetimeStart = req.query.datetimeStart;
-    const datetimeEnd = req.query.datetimeEnd;
+    const datetimeStart = parsedQuery.datetimeStart;
+    const datetimeEnd = parsedQuery.datetimeEnd;
 
     const spaceIds = await db
       .select({ id: space.id })

@@ -114,7 +114,7 @@ export default function PastBookings() {
 
   return (<Stack>
       <Stack direction="row" width="100%" my={1} spacing={1}>
-        <Box width="200px">
+        <Box width="150px">
           Space
           <Select
             defaultValue="all"
@@ -126,8 +126,8 @@ export default function PastBookings() {
             <Option value="desks">Desks</Option>
           </Select>
         </Box>
-        <Box width="200px">
-          Time
+        <Box width="150px">
+          Sort
           <Select defaultValue="newest" onChange={handleChangeSort}>
             <Option value="newest">Newest</Option>
             <Option value="oldest">Oldest</Option>

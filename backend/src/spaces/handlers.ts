@@ -3,9 +3,8 @@
 import { db } from '../index'
 import { eq, and, asc, gt, sql } from "drizzle-orm"
 import { hotdesk, room, space, booking } from '../../drizzle/schema';
-import { TypedGETRequest, TypedResponse, Room, Space, Booking, AnonymousBooking, SpaceType } from '../types';
+import { TypedGETRequest, TypedResponse, Room, Space, AnonymousBooking, SpaceType } from '../types';
 import { anonymiseBooking, formatBookingDates } from '../utils';
-import typia from 'typia';
 
 export async function roomDetails(
   req: TypedGETRequest,
@@ -34,15 +33,10 @@ type SingleSpaceRequest = { spaceId: string };
 type SingleSpaceResponse = { space: Space, }
 
 export async function singleSpaceDetails(
-  req: TypedGETRequest<{}, SingleSpaceRequest>,
+  req: TypedGETRequest<SingleSpaceRequest>,
   res: TypedResponse<{ space: Space, type: SpaceType }>,
 ) {
   try {
-    if (!typia.is<SingleSpaceRequest>(req.params)) {
-      res.status(400).json({ error: "Invalid input" });
-      return;
-    }
-
     // TODO: Maybe find a way to distinguish between room/desk?
     // Try get it as a room
     const roomRes = await db
@@ -103,15 +97,10 @@ export async function allSpaces(
 }
 
 export async function spaceAvailabilities(
-  req: TypedGETRequest<{}, SingleSpaceRequest>,
+  req: TypedGETRequest<SingleSpaceRequest>,
   res: TypedResponse<{ bookings: AnonymousBooking[] }>,
 ) {
   try {
-    if (!typia.is<SingleSpaceRequest>(req.params)) {
-      res.status(400).json({ error: "Invalid input" });
-      return;
-    }
-
     const currentTime = new Date().toISOString();
 
     const spaceExists = await db

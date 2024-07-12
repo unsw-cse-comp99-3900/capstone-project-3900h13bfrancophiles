@@ -198,7 +198,7 @@ export default function UpcomingBookings() {
 
   return (<Stack>
       <Stack direction="row" width="100%" my={1} spacing={1}>
-        <Box width="200px">
+        <Box width="150px">
           Space
           <Select
             defaultValue="all"
@@ -210,8 +210,8 @@ export default function UpcomingBookings() {
             <Option value="desks">Desks</Option>
           </Select>
         </Box>
-        <Box width="200px">
-          Time
+        <Box width="150px">
+          Sort
           <Select defaultValue="soonest" onChange={handleChangeSort}>
             <Option value="soonest">Soonest</Option>
             <Option value="latest">Latest</Option>
