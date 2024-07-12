@@ -14,9 +14,9 @@ module.exports = async function (globalConfig, projectConfig) {
   // execSync("./__tests__/helpers/db_setup.sh");
 
   console.log("\nStarting backend server...");
-  fs.truncateSync(`./__tests__/server.log`);
-  const out = fs.openSync(`./__tests__/server.log`, 'a');
+  const out = fs.openSync(`./__tests__/server.log`, 'w');
   const err = fs.openSync(`./__tests__/server.log`, 'a');
+
   const server = spawn(
     'yarn', ['dev', '-q'],
     { stdio: ['ignore', out, err] }
