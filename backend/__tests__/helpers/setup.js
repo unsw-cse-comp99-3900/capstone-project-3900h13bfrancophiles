@@ -1,6 +1,7 @@
 import { spawn } from 'child_process';
 import { configDotenv } from 'dotenv';
 import * as fs from 'fs';
+import { execSync } from 'node:child_process';
 import { Client } from 'pg';
 
 function sleep(ms) {
@@ -35,6 +36,10 @@ module.exports = async function (globalConfig, projectConfig) {
   globalThis.__err__ = err;
 
   console.log("\nStarting backend server...");
+  try {
+    // Make sure port 2001 is free
+    execSync("kill $(lsof -t -i:2001)", { stdio: 'ignore' });
+  } catch (e) {}
   globalThis.__server__ = spawn(
     'yarn', ['dev', '-q'],
     { stdio: ['ignore', out, err] }
