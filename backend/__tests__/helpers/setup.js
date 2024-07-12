@@ -11,7 +11,7 @@ function sleep(ms) {
 
 module.exports = async function (globalConfig, projectConfig) {
   // Set up database
-  execSync("./__tests__/helpers/db_setup.sh");
+  // execSync("./__tests__/helpers/db_setup.sh");
 
   console.log("\nStarting backend server...");
   fs.truncateSync(`./__tests__/server.log`);
