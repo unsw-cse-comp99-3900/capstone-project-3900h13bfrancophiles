@@ -12,21 +12,26 @@ import BookingModal from "@/components/BookingModal/BookingModal"
 
 
 export default function SpacePage({ params }: { params: { id: string } }) {
-  const { space, isLoading } = useSpace(params.id);
-  const { bookings } = useAvailabilities(params.id)
-  const isRoom : boolean = space?.capacity && !isLoading ? true : false;
+  const spaceOutput = useSpace(params.id);
+  const space = spaceOutput.space;
+  const spaceLoading = spaceOutput.isLoading;
+  const { bookings, isLoading, error, mutate } = useAvailabilities(params.id)
+  const isRoom : boolean = space?.capacity && !spaceLoading ? true : false;
   const room = space as Room
   const desk = space as Desk
 
   const [openModal, setOpenModal] = React.useState<boolean>(false)
 
-  if (isLoading) return <Loading page=""/>
+  if (spaceLoading) return <Loading page=""/>
 
   return (
     <>
       <BookingModal
         open={openModal}
-        onClose={() => setOpenModal(false)}
+        onClose={() => {
+          setOpenModal(false);
+          mutate();
+        }}
         space={space ? { id: space?.id, name: space?.name, isRoom: isRoom } : undefined}
       />
       <Stack>
@@ -40,7 +45,7 @@ export default function SpacePage({ params }: { params: { id: string } }) {
             <Button
               color="success"
               variant="solid"
-              onClick={() => setOpenModal(true)}
+              onClick={() => {setOpenModal(true)}}
             >
               Book Now
             </Button>

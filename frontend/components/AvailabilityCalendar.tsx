@@ -11,7 +11,7 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 import { Stack, ButtonGroup, Button, ToggleButtonGroup, Typography } from "@mui/joy";
 
 interface AvailabilityCalendarProps {
-  bookings: AnonymousBooking[];
+  bookings: AnonymousBooking[],
 }
 
 interface Event {
@@ -75,11 +75,10 @@ export default function AvailabilityCalendar({ bookings }: AvailabilityCalendarP
   const [date, setDate] = React.useState<Date>(new Date());
   const [view, setView] = React.useState<String>('week');
   const events : Event[] = bookings
-    .filter(b => b.currentstatus !== 'declined')
     .map((b) =>
       {
         return {
-          title: `${b.currentstatus} booking`,
+          title: `BOOKED`,
           start: new Date(b.starttime),
           end: new Date(b.endtime)
         }

@@ -131,7 +131,7 @@ export async function spaceAvailabilities(
       .where(
         and(
           eq(booking.spaceid, req.params.spaceId),
-          gt(booking.endtime, currentTime)
+          eq(booking.currentstatus, "confirmed")
         )
       )
       .orderBy(
