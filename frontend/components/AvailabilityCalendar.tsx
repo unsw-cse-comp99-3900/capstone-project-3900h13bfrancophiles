@@ -140,6 +140,9 @@ export default function AvailabilityCalendar({ bookings }: AvailabilityCalendarP
         borderTopRightRadius: "12px",
         borderRight: "none !important",
       },
+      "& .rbc-time-slot": {
+        margin: "auto"
+      },
     })
   );
 
