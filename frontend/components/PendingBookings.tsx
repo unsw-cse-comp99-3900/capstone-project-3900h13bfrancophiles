@@ -60,13 +60,10 @@ function PastBookingsRow({row}: PendingBookingRowProps) {
           </Stack>
         </Stack>
       </Skeleton>
-
-
     </td>
     <td>
       <Typography level="body-sm">{row.description}</Typography>
     </td>
-
     <td>
       <Stack direction="row" justifyContent="flex-end" px={1}>
         <IconButton variant="plain" color="success">
