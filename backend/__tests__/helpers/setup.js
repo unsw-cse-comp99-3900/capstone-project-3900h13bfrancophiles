@@ -1,5 +1,6 @@
 import { spawn, execSync } from 'child_process';
 import * as fs from 'fs';
+import { spawnSync } from 'node:child_process';
 
 
 
@@ -11,6 +12,7 @@ function sleep(ms) {
 
 module.exports = async function (globalConfig, projectConfig) {
   // Set up database
+  spawnSync('createdb', ['3900-test']);
   // execSync("./__tests__/helpers/db_setup.sh");
 
   console.log("\nStarting backend server...");
