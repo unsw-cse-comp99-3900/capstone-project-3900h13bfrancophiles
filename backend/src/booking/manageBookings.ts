@@ -1,194 +1,19 @@
 // Booking endpoint handlers
 
 import { db } from '../index'
-import {and, count, desc, eq, gt, gte, inArray, lt, lte} from "drizzle-orm"
-import {booking, hotdesk, room} from '../../drizzle/schema';
 import {
   Booking,
   BookingDetailsRequest,
-  BookingEdit,
-  IDatetimeRange,
-  TypedGETRequest,
+  BookingEditRequest,
   TypedRequest,
   TypedResponse
 } from '../types';
-import typia, { tags } from "typia";
+import { and, eq, gt, lt } from "drizzle-orm"
+import { booking } from '../../drizzle/schema';
+import typia from "typia";
 import isEqual from 'lodash/isEqual';
 import { formatBookingDates, initialBookingStatus, withinDateRange as dateInRange } from '../utils';
 import { sendBookingRequest } from '../email/service';
-
-export async function currentBookings(
-  req: TypedGETRequest,
-  res: TypedResponse<{ bookings: Booking[] }>,
-) {
-  try {
-    const zid = req.token.user;
-    const currentTime = new Date().toISOString();
-
-    const currentBookings = await db
-      .select()
-      .from(booking)
-      .where(
-        and(
-          lt(booking.starttime, currentTime),
-          gt(booking.endtime, currentTime),
-          eq(booking.zid, zid)
-        )
-    );
-
-    res.json({ bookings: currentBookings.map(formatBookingDates) });
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to fetch current bookings' });
-  }
-}
-
-type UpcomingBookingsRequest = {
-  type: string;
-}
-
-export async function upcomingBookings(
-  req: TypedGETRequest<UpcomingBookingsRequest>,
-  res: TypedResponse<{ bookings: Booking[] }>,
-) {
-  try {
-    if (!['rooms', 'all', 'desks'].includes(req.query.type)) {
-      res.status(400).json({ error: "Invalid input" });
-      return;
-    }
-    const zid = req.token.user;
-    const currentTime = new Date().toISOString();
-
-    let subQuery;
-
-    switch (req.query.type) {
-      case 'desks':
-        subQuery = db.select({id: hotdesk.id}).from(hotdesk)
-        break;
-      case 'rooms':
-        subQuery = db.select({id: room.id}).from(room)
-        break;
-      default:
-        subQuery = db.select({id: booking.spaceid}).from(booking)
-    }
-
-
-    const upcomingBookings = await db
-      .select()
-      .from(booking)
-      .where(
-        and(
-          inArray(booking.spaceid, subQuery),
-          gt(booking.starttime, currentTime),
-          eq(booking.zid, zid)
-        )
-      );
-
-    res.json({ bookings: upcomingBookings.map(formatBookingDates) });
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to fetch upcoming bookings' });
-  }
-}
-
-interface IPagination {
-  page: number & tags.Minimum<1>;
-  limit: number & tags.Minimum<1>;
-  type: 'desks' | 'rooms' | 'all'
-}
-
-type PastBookingsRequest = {
-  page: string;
-  limit: string;
-  type: string;
-}
-
-export async function pastBookings(
-  req: TypedGETRequest<PastBookingsRequest>,
-  res: TypedResponse<{ bookings: Booking[];  total: number }>,
-) {
-  try {
-    if (!typia.is<IPagination>({ page: parseInt(req.query.page), limit: parseInt(req.query.limit), type: req.query.type })) {
-      res.status(400).json({ error: "Invalid input" });
-      return;
-    }
-
-    const zid = req.token.user;
-    const page = parseInt(req.query.page);
-    const limit = parseInt(req.query.limit);
-    const offset = (page - 1) * limit;
-    const currentTime = new Date().toISOString();
-
-    let subQuery;
-
-    switch (req.query.type) {
-      case 'desks':
-        subQuery = db.select({id: hotdesk.id}).from(hotdesk)
-        break;
-      case 'rooms':
-        subQuery = db.select({id: room.id}).from(room)
-        break;
-      default:
-        subQuery = db.select({id: booking.spaceid}).from(booking)
-    }
-
-    const totalBookings = await db
-      .select({ count: count() })
-      .from(booking)
-      .where(and(
-        inArray(booking.spaceid, subQuery),
-        eq(booking.zid, zid),
-        lt(booking.endtime, currentTime)
-      ));
-
-    const pastBookings = await db
-      .select()
-      .from(booking)
-      .where(and(
-        inArray(booking.spaceid, subQuery),
-        eq(booking.zid, zid),
-        lt(booking.endtime, currentTime)
-      ))
-      .orderBy(desc(booking.starttime))
-      .limit(limit)
-      .offset(offset);
-
-    res.json({
-      bookings: pastBookings.map(formatBookingDates),
-      total: totalBookings[0].count
-    });
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to fetch past bookings' });
-  }
-}
-
-export async function rangeOfBookings(
-  req: TypedGETRequest<{ datetimeStart: string, datetimeEnd: string }>,
-  res: TypedResponse<{ bookings: Booking[] }>,
-) {
-  try {
-    if (!typia.is<IDatetimeRange>(req.query)) {
-      res.status(400).json({ error: "Invalid input" });
-      return;
-    }
-    const zid = req.token.user;
-    const datetimeStart = req.query.datetimeStart;
-    const datetimeEnd = req.query.datetimeEnd;
-
-    const currentBookings = await db
-      .select()
-      .from(booking)
-      .where(
-        and(
-          lte(booking.starttime, datetimeEnd),
-          gte(booking.endtime, datetimeStart),
-          eq(booking.zid, zid)
-        )
-      );
-
-    res.json({ bookings: currentBookings.map(formatBookingDates) });
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to fetch bookings' });
-  }
-}
 
 export async function checkInBooking(
   req: TypedRequest<{ id: number }>,
@@ -202,7 +27,7 @@ export async function checkInBooking(
 
     const currentTime = new Date();
 
-    const currentBooking = await db
+    const currentBookings = await db
     .select()
     .from(booking)
     .where(
@@ -212,30 +37,35 @@ export async function checkInBooking(
       )
     );
 
-    if (currentBooking.length != 1) {
+    if (currentBookings.length != 1) {
       res.status(403).json({ error: "Booking id does not exist for this user" });
       return;
     }
 
+    const currentBooking = formatBookingDates(currentBookings[0]);
+
     // 5 minute buffer value too long?
-    if (!dateInRange(currentTime, new Date(currentBooking[0].starttime), new Date(currentBooking[0].endtime), 5)) {
+    if (!dateInRange(currentTime, new Date(currentBooking.starttime), new Date(currentBooking.endtime), 5)) {
       res.status(403).json({ error: "Outside booking time window" });
       return;
     }
 
-    switch (currentBooking[0].currentstatus) {
+    switch (currentBooking.currentstatus) {
       case 'pending':
         res.status(403).json({ error: "Booking not yet confirmed" });
-        break;
+        return;
       case 'checkedin':
         res.status(403).json({ error: "Already checked in" });
-        break;
+        return;
       case 'completed':
         res.status(403).json({ error: "Already checked out" });
-        break;
+        return;
     }
 
-    const updatedBooking = await db
+
+    let updatedBooking: Booking;
+    try {
+      const res = await db
       .update(booking)
       .set({ checkintime: currentTime.toISOString(), currentstatus: "checkedin" })
       .where(
@@ -246,16 +76,18 @@ export async function checkInBooking(
           eq(booking.zid, req.token.user)))
       .returning();
 
-    if (updatedBooking.length != 1) {
-      res.status(500).json({ error: "Booking modified during operation" });
+      updatedBooking = formatBookingDates(res[0]);
+
+    } catch (e: any) {
+      res.status(400).json({ error: `${e}` });
       return;
     }
 
-  // If prior booking in this space didn't check out, update their checkout time now?
+    // If prior booking in this space didn't check out, update their checkout time now?
 
-    res.json({});
+    res.json({ booking: updatedBooking });
   } catch (error) {
-    res.status(204);
+    res.status(500).json({ error: 'Failed to check in' });
   }
 }
 
@@ -296,13 +128,13 @@ export async function checkOutBooking(
     switch (currentBooking[0].currentstatus) {
       case 'pending':
         res.status(403).json({ error: "Booking not yet confirmed" });
-        break;
+        return;
       case 'confirmed':
         res.status(403).json({ error: "Not yet checked in" });
-        break;
+        return;
       case 'completed':
         res.status(403).json({ error: "Already checked out" });
-        break;
+        return;
     }
 
     const updatedBooking = await db
@@ -325,7 +157,7 @@ export async function checkOutBooking(
 
     res.json({});
   } catch (error) {
-    res.status(204);
+    res.status(500);
   }
 }
 
@@ -412,17 +244,17 @@ export async function deleteBooking(
 
     res.json({});
   } catch (error) {
-    res.status(204);
+    res.status(500);
   }
 }
 
 
 export async function editBooking(
-  req: TypedRequest<BookingEdit>,
+  req: TypedRequest<BookingEditRequest>,
   res: TypedResponse<{ booking: Booking }>,
 ) {
   try {
-    if (!typia.is<BookingEdit>(req.body)) {
+    if (!typia.is<BookingEditRequest>(req.body)) {
       res.status(400).json({ error: "Invalid input" });
       return;
     }

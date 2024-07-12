@@ -53,8 +53,8 @@ export default function PastBookings() {
   const [rows, setRows] = React.useState<Row[]>([]);
   const [filter, setFilter] = React.useState("all");
 
-
-  const {pastBookings, total, isLoading} = usePastBookings(page + 1, rowsPerPage, filter);
+  const [sort, setSort] = React.useState('newest');
+  const {pastBookings, total, isLoading} = usePastBookings(page + 1, rowsPerPage, filter, sort);
 
   React.useEffect(() => {
     if (!isLoading && pastBookings) {
@@ -68,9 +68,6 @@ export default function PastBookings() {
       setRows(rowsData);
     }
   }, [page, rowsPerPage, pastBookings, isLoading]);
-
-  const [filteredRows, setFilteredRows] = React.useState(rows.sort((a, b) => (a.startTime < b.startTime ? 1 : -1)));
-  const [sortNewest, setSortNewest] = React.useState(true);
 
   const handleChangePage = (newPage: number) => {
     setPage(newPage);
@@ -96,13 +93,11 @@ export default function PastBookings() {
   };
 
   const handleChangeSort = (event: any, newValue: string | null) => {
-    setSortNewest(newValue === "newest");
-  };
+    if (newValue !== null) {
+      setSort(newValue);
+    }
 
-  React.useEffect(() => {
-    setFilteredRows([...rows]
-      .sort((a, b) => a.startTime < b.startTime ? sortNewest ? 1 : -1 : sortNewest ? -1 : 1));
-  }, [rows, sortNewest]);
+  };
 
   const getLabelDisplayedRowsTo = () => {
     if (total === undefined) {
@@ -113,7 +108,7 @@ export default function PastBookings() {
 
   return (<Stack>
       <Stack direction="row" width="100%" my={1} spacing={1}>
-        <Box width="200px">
+        <Box width="150px">
           Space
           <Select
             defaultValue="all"
@@ -125,8 +120,8 @@ export default function PastBookings() {
             <Option value="desks">Desks</Option>
           </Select>
         </Box>
-        <Box width="200px">
-          Time
+        <Box width="150px">
+          Sort
           <Select defaultValue="newest" onChange={handleChangeSort}>
             <Option value="newest">Newest</Option>
             <Option value="oldest">Oldest</Option>
@@ -159,7 +154,7 @@ export default function PastBookings() {
           </tr>
           </thead>
           <tbody>
-          {filteredRows
+          {rows
             .map((row) => (<PastBookingsRow key={row.id} row={row}/>))}
           </tbody>
           <tfoot>
@@ -183,7 +178,7 @@ export default function PastBookings() {
                 </FormControl>
                 <Typography textAlign="center" sx={{minWidth: 80}}>
                   {labelDisplayedRows({
-                    from: filteredRows.length === 0 ? 0 : page * rowsPerPage + 1,
+                    from: rows.length === 0 ? 0 : page * rowsPerPage + 1,
                     to: getLabelDisplayedRowsTo(),
                     count: total === undefined ? -1 : total,
                   })}
@@ -203,7 +198,7 @@ export default function PastBookings() {
                     size="sm"
                     color="neutral"
                     variant="outlined"
-                    disabled={filteredRows.length !== -1 ? page >= Math.ceil(total === undefined ? -1 : total / rowsPerPage) - 1 : false}
+                    disabled={page >= Math.ceil(total === undefined ? -1 : total / rowsPerPage) - 1}
                     onClick={() => handleChangePage(page + 1)}
                     sx={{bgcolor: "background.surface"}}
                   >
