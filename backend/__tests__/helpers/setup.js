@@ -21,7 +21,7 @@ module.exports = async function (globalConfig, projectConfig) {
     'yarn', ['dev', '-q'],
     { stdio: ['ignore', out, err] }
   );
-  await sleep(3000);
+  await sleep(10000);
 
   globalThis.__out__ = out;
   globalThis.__err__ = err;
