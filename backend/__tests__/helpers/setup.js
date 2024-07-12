@@ -23,5 +23,7 @@ module.exports = async function (globalConfig, projectConfig) {
   );
   await sleep(3000);
 
+  globalThis.__out__ = out;
+  globalThis.__err__ = err;
   globalThis.__server__ = server;
 };
