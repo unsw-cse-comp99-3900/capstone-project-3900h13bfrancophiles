@@ -13,6 +13,7 @@ interface RoomCardProps {
   handleBook: (room: Room) => void;
 }
 
+
 const RoomCard: React.FC<RoomCardProps> = ({ room, handleBook }) => {
   return (
     <Card
@@ -21,6 +22,10 @@ const RoomCard: React.FC<RoomCardProps> = ({ room, handleBook }) => {
         marginX: "auto",
         maxWidth: "100%",
         boxShadow: "lg",
+        "&:hover": {
+          transform: "scale(1.05)",
+          transition: "all .2s ease-in-out;"
+        }
       }}
     >
       <CardContent>

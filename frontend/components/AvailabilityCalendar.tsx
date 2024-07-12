@@ -1,13 +1,14 @@
 import * as React from "react";
 
 import { AnonymousBooking } from "@/types";
-import { Calendar, dateFnsLocalizer } from 'react-big-calendar'
-import { format, getDay, isToday, parse, startOfWeek } from "date-fns";
+import { Calendar, dateFnsLocalizer, ToolbarProps } from 'react-big-calendar'
+import { format, getDay, parse, startOfWeek, endOfWeek } from "date-fns";
 import { enAU } from 'date-fns/locale'
 import 'react-big-calendar/lib/css/react-big-calendar.css'
 import Box, { BoxProps } from "@mui/material/Box";
 import { styled, useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
+import { Stack, ButtonGroup, Button, ToggleButtonGroup, Typography } from "@mui/joy";
 
 interface AvailabilityCalendarProps {
   bookings: AnonymousBooking[];
@@ -18,6 +19,56 @@ interface Event {
   start: Date,
   end: Date
 }
+
+const CustomToolBar: React.FC<ToolbarProps & Date> = ({
+  view,
+  onNavigate,
+  onView,
+  label,
+  date
+}) => {
+  return (
+    <Stack
+      direction="row"
+      justifyContent="space-between"
+      mb={2}
+    >
+      <ButtonGroup sx={{ height: 30 }}>
+        <Button onClick={() => onNavigate("PREV")}>
+          Back
+        </Button>
+        <Button onClick={() => onNavigate("TODAY")}>
+          Today
+        </Button>
+        <Button onClick={() => onNavigate("NEXT")}>
+          Next
+        </Button>
+      </ButtonGroup>
+      <Typography sx={{ margin: "auto" }}>
+        {
+          view === "week" ? `${format(startOfWeek(date), 'dd MMM')} - ${format(endOfWeek(date), 'dd MMM')}`
+          : `${format(date, 'dd MMM Y')}`
+        }
+      </Typography>
+      <ToggleButtonGroup
+        value={view}
+        sx={(theme) => ({
+          [theme.breakpoints.down("md")]: {
+            display: "none",
+          },
+        })}
+      >
+        <Button value="week" onClick={() => onView("week")}>
+          Week
+        </Button>
+        <Button value="day" onClick={() => onView("day")}>
+          Day
+        </Button>
+      </ToggleButtonGroup>
+    </Stack>
+  );
+};
+
 
 
 export default function AvailabilityCalendar({ bookings }: AvailabilityCalendarProps) {
@@ -104,12 +155,15 @@ export default function AvailabilityCalendar({ bookings }: AvailabilityCalendarP
         onNavigate={handleDateChange}
         date={date}
         events={events}
-        views={isMobile ? ['day', 'week'] : ['day', 'week'] }
+        views={['day', 'week']}
         view={view}
         onView={handleViewChange}
         min={new Date(0, 0, 0, 8)}
         max={new Date(0, 0, 0, 20)}
         slotGroupPropGetter={() => ({ style: { minHeight: "50px" } })}
+        components={{
+            toolbar: (props : ToolbarProps) => ( <CustomToolBar {...props} date={date} /> ),
+        }}
       />
     </StyledCalendarContainer>
   );
