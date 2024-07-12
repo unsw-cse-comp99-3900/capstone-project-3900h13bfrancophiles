@@ -73,6 +73,7 @@ begin
               and b.endtime > new.starttime
               and b.currentStatus <> 'pending'
               and b.currentStatus <> 'declined'
+              and b.currentStatus <> 'deleted'
               and b.id != new.id
     ) then
         raise exception 'Overlapping booking found';
