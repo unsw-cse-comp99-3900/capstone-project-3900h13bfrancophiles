@@ -1,9 +1,10 @@
 import { emailTransporter } from '../index';
-import { Booking, EmailRecipient } from '../types';
+import { Booking, EmailContents, EmailRecipient } from '../types';
 import { fillEmailTemplate, BOOKING_REQUEST } from './template';
 import { db } from '../index'
 import { eq } from "drizzle-orm"
 import { person } from '../../drizzle/schema';
+import { bookingRelations } from '../../drizzle/relations';
 
 // For testing
 const EMAIL_SENDER = '"Wilma 👻" <wilma44@ethereal.email>';
@@ -27,11 +28,19 @@ export async function getEmailRecipient(zid: number) : Promise<EmailRecipient> {
     return res[0];
 }
 
-export async function sendBookingRequest(zid: number, booking: Booking) {
+export async function sendBookingEmail(zid: number, booking: Booking, template: EmailContents) {
 
     const emailRecipient = await getEmailRecipient(zid);
-    const emailContent = { name: emailRecipient.name, bookingid: String(booking.id) };
-    const email = await fillEmailTemplate(BOOKING_REQUEST, emailContent);
+    const emailContent = {
+        name: emailRecipient.name,
+        bookingid: String(booking.id),
+        starttime: String(booking.starttime),
+        endtime: String(booking.endtime),
+        spaceid: booking.spaceid,
+        currentstatus: booking.currentstatus,
+        description: booking.description
+    };
+    const email = await fillEmailTemplate(template, emailContent);
 
     const emailInfo = await emailTransporter.sendMail({
         from: '"Wilma 👻" <wilma44@ethereal.email>',

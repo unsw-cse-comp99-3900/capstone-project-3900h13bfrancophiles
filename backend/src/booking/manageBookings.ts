@@ -13,7 +13,8 @@ import { booking } from '../../drizzle/schema';
 import typia from "typia";
 import isEqual from 'lodash/isEqual';
 import { formatBookingDates, initialBookingStatus, withinDateRange as dateInRange } from '../utils';
-import { sendBookingRequest } from '../email/service';
+import { sendBookingEmail } from '../email/service';
+import { BOOKING_DELETE, BOOKING_EDIT, BOOKING_REQUEST } from '../email/template';
 
 export async function checkInBooking(
   req: TypedRequest<{ id: number }>,
@@ -198,8 +199,7 @@ export async function createBooking(
     return;
   }
 
-  // TODO: Booking confirmation email
-  sendBookingRequest(req.token.user, createdBooking);
+  sendBookingEmail(req.token.user, createdBooking, BOOKING_REQUEST);
 
   res.json({ booking: createdBooking });
 }
@@ -224,7 +224,7 @@ export async function deleteBooking(
       return;
     }
 
-    const deletedBooking = await db
+    const deletedBookings = await db
       .delete(booking)
       .where(
         and(
@@ -234,13 +234,13 @@ export async function deleteBooking(
       )
       .returning();
 
-    if (deletedBooking.length != 1) {
+    if (deletedBookings.length != 1) {
       res.status(403).json({ error: "User does not own this booking ID" });
       return;
     }
 
-    // TODO: send an email to the user confirming deletion
-    // email.deletionConfirmation(req.token.user, deletedBooking[0])
+    const deletedBooking = formatBookingDates(deletedBookings[0]);
+    sendBookingEmail(req.token.user, deletedBooking, BOOKING_DELETE);
 
     res.json({});
   } catch (error) {
@@ -317,7 +317,7 @@ export async function editBooking(
     }
 
     // TODO: send an email to the user confirming new booking details
-    // email.editConfirmation(req.token.user, updatedBooking[0])
+    sendBookingEmail(req.token.user, formattedBooking, BOOKING_EDIT);
 
     // TODO: trigger admin reapproval if newStatus is pending
 
