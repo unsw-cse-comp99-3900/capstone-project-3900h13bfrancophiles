@@ -106,6 +106,8 @@ export type Desk = {
 
 export type Space = Room | Desk;
 
+export type SpaceType = "room" | "desk";
+
 export interface IDatetimeRange {
   datetimeStart: string & tags.Format<'date-time'>
   datetimeEnd: string & tags.Format<'date-time'>

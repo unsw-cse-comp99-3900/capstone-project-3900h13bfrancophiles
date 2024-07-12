@@ -15,8 +15,8 @@ export default function SpacePage({ params }: { params: { id: string } }) {
   const spaceOutput = useSpace(params.id);
   const space = spaceOutput.space;
   const spaceLoading = spaceOutput.isLoading;
-  const { bookings, isLoading, error, mutate } = useAvailabilities(params.id)
-  const isRoom : boolean = space?.capacity && !spaceLoading ? true : false;
+  const { bookings, mutate } = useAvailabilities(params.id)
+  const isRoom : boolean = spaceOutput.type == "room" && !spaceLoading ? true : false;
   const room = space as Room
   const desk = space as Desk
 

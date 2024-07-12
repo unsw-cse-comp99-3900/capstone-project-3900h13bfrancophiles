@@ -3,7 +3,7 @@
 import { db } from '../index'
 import { eq, and, asc, gt, sql } from "drizzle-orm"
 import { hotdesk, room, space, booking } from '../../drizzle/schema';
-import { TypedGETRequest, TypedResponse, Room, Space, Booking, AnonymousBooking } from '../types';
+import { TypedGETRequest, TypedResponse, Room, Space, Booking, AnonymousBooking, SpaceType } from '../types';
 import { anonymiseBooking, formatBookingDates } from '../utils';
 import typia from 'typia';
 
@@ -31,10 +31,11 @@ export async function roomDetails(
 }
 
 type SingleSpaceRequest = { spaceId: string };
+type SingleSpaceResponse = { space: Space, }
 
 export async function singleSpaceDetails(
   req: TypedGETRequest<{}, SingleSpaceRequest>,
-  res: TypedResponse<{ space: Space }>,
+  res: TypedResponse<{ space: Space, type: SpaceType }>,
 ) {
   try {
     if (!typia.is<SingleSpaceRequest>(req.params)) {
@@ -57,7 +58,7 @@ export async function singleSpaceDetails(
       .where(eq(room.id, req.params.spaceId));
 
     if (roomRes.length) {
-      res.json({ space: roomRes[0] });
+      res.json({ space: roomRes[0], type: "room" });
       return;
     }
 
@@ -75,7 +76,7 @@ export async function singleSpaceDetails(
       .where(eq(hotdesk.id, req.params.spaceId));
 
     if (deskRes.length) {
-      res.json({ space: deskRes[0] });
+      res.json({ space: deskRes[0], type: "desk" });
       return;
     }
 
