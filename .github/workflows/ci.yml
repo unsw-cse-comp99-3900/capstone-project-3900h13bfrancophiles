@@ -1,0 +1,34 @@
+name: PostgreSQL Service Example
+on: [push, pull_request]
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_PASSWORD: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+      - name: Configure node toolchain
+        uses: actions/setup-node@v4
+        with:
+            node-version: latest
+      - name: Install dependencies
+        run: yarn --frozen-lockfile
+        working-directory: backend
+      - name: Run tests
+        run: yarn test
+        working-directory: backend
+        env:
+          POSTGRES_HOST: localhost
+          POSTGRES_PORT: 5432
