@@ -34,3 +34,5 @@ jobs:
           POSTGRES_PASSWORD: postgres
           POSTGRES_HOST: localhost
           POSTGRES_PORT: 5432
+          PORT: 2001
+          DATABASE_URL: postgresql://franco:franco@localhost:5432/3900-test
