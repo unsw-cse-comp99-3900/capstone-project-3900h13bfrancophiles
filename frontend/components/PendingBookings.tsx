@@ -16,6 +16,9 @@ import useSpace from "@/hooks/useSpace";
 import usePendingBookings from "@/hooks/usePendingBookings";
 import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
+import Avatar from '@mui/joy/Avatar';
+import useUser from "@/hooks/useUser";
+
 
 export interface PendingBookingRowProps {
   row: Row
@@ -23,6 +26,7 @@ export interface PendingBookingRowProps {
 
 interface Row {
   id: number,
+  zid: number,
   startTime: Date,
   endTime: Date,
   space: string,
@@ -30,7 +34,8 @@ interface Row {
 }
 
 function PastBookingsRow({row}: PendingBookingRowProps) {
-  const {space, isLoading} = useSpace(row.space);
+  const {space, isLoading: spaceIsLoading} = useSpace(row.space);
+  const {user, isLoading : userIsLoading} = useUser(row.zid);
 
   return <tr>
     <td>
@@ -39,8 +44,21 @@ function PastBookingsRow({row}: PendingBookingRowProps) {
       </Typography>
     </td>
     <td>
-      <Skeleton loading={isLoading}>
+      <Skeleton loading={spaceIsLoading}>
         <Typography level="body-sm">{space?.name}</Typography>
+      </Skeleton>
+    </td>
+    <td>
+      <Skeleton loading={userIsLoading}>
+        <Stack direction="row" alignItems='center' gap={2}>
+          <Avatar color='primary'>
+            {user?.fullname === undefined ? "" : getInitials(user?.fullname)}
+          </Avatar>
+          <Stack direction="column" >
+            <Typography level="body-sm" fontWeight='lg'>{user?.fullname}</Typography>
+            <Typography level="body-sm">{user?.email}</Typography>
+          </Stack>
+        </Stack>
       </Skeleton>
     </td>
     <td>
@@ -59,18 +77,24 @@ function PastBookingsRow({row}: PendingBookingRowProps) {
   </tr>;
 }
 
+function getInitials(fullname: string): string {
+  const names = fullname.split(' ');
+  return names[0][0] + names[names.length - 1][0];
+}
+
 export default function PendingBookings() {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [rows, setRows] = React.useState<Row[]>([]);
 
   const [sort, setSort] = React.useState('soonest');
-  const {pastBookings, total, isLoading} = usePendingBookings(page + 1, rowsPerPage, sort);
+  const {pendingBookings, total, isLoading} = usePendingBookings(page + 1, rowsPerPage, sort);
 
   React.useEffect(() => {
-    if (!isLoading && pastBookings) {
-      const rowsData = pastBookings.map((booking) => ({
+    if (!isLoading && pendingBookings) {
+      const rowsData = pendingBookings.map((booking) => ({
         id: booking.id,
+        zid: booking.zid,
         startTime: new Date(booking.starttime),
         endTime: new Date(booking.endtime),
         space: booking.spaceid,
@@ -78,7 +102,7 @@ export default function PendingBookings() {
       }));
       setRows(rowsData);
     }
-  }, [page, rowsPerPage, pastBookings, isLoading]);
+  }, [page, rowsPerPage, pendingBookings, isLoading]);
 
   const handleChangePage = (newPage: number) => {
     setPage(newPage);
@@ -140,9 +164,10 @@ export default function PendingBookings() {
       >
         <thead>
         <tr>
-          <th style={{width: 140, padding: "12px 6px"}}>Time</th>
-          <th style={{width: 140, padding: "12px 6px"}}>Location</th>
-          <th style={{width: 200, padding: "12px 6px"}}>Description</th>
+          <th style={{width: 100, padding: "12px 6px"}}>Time</th>
+          <th style={{width: 80, padding: "12px 6px"}}>Location</th>
+          <th style={{width: 140, padding: "12px 6px"}}>User</th>
+          <th style={{width: 140, padding: "12px 6px"}}>Description</th>
           <th style={{width: 50, padding: "12px 6px"}}></th>
         </tr>
         </thead>
@@ -152,7 +177,7 @@ export default function PendingBookings() {
         </tbody>
         <tfoot>
         <tr>
-          <td colSpan={4}>
+          <td colSpan={5}>
             <Box
               sx={{
                 display: "flex", alignItems: "center", gap: 2, justifyContent: "flex-end",
