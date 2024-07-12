@@ -1,1 +1,0 @@
-dropdb 3900-test -f

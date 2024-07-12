@@ -1,8 +1,7 @@
-import { spawn, execSync } from 'child_process';
+import { spawn } from 'child_process';
+import { configDotenv } from 'dotenv';
 import * as fs from 'fs';
-import { spawnSync } from 'node:child_process';
-
-
+import { Client } from 'pg';
 
 function sleep(ms) {
   return new Promise((resolve) => {
@@ -11,21 +10,40 @@ function sleep(ms) {
 }
 
 module.exports = async function (globalConfig, projectConfig) {
-  // Set up database
-  spawnSync('createdb', ['3900-test']);
-  // execSync("./__tests__/helpers/db_setup.sh");
+  configDotenv({ path: ".env.test" });
 
-  console.log("\nStarting backend server...");
+  // Create test database
+  const init_client = new Client({
+    connectionString: process.env.DATABASE_URL.replace("3900-test", "postgres"),
+  });
+  await init_client.connect();
+  await init_client.query(`DROP DATABASE IF EXISTS "3900-test";`);
+  await init_client.query(`CREATE DATABASE "3900-test";`);
+  await init_client.end();
+
+  // Initial database with schema and dummy data
+  globalThis.__pgclient__ = new Client({
+    connectionString: process.env.DATABASE_URL,
+  });
+  await globalThis.__pgclient__.connect();
+  await globalThis.__pgclient__.query(fs.readFileSync("../postgres/01_init.sql", "utf8"));
+  await globalThis.__pgclient__.query(fs.readFileSync("__tests__/helpers/test.init.sql", "utf8"));
+
   const out = fs.openSync(`./__tests__/server.log`, 'w');
   const err = fs.openSync(`./__tests__/server.log`, 'a');
+  globalThis.__out__ = out;
+  globalThis.__err__ = err;
 
-  const server = spawn(
+  console.log("\nStarting backend server...");
+  globalThis.__server__ = spawn(
     'yarn', ['dev', '-q'],
     { stdio: ['ignore', out, err] }
   );
-  await sleep(10000);
 
-  globalThis.__out__ = out;
-  globalThis.__err__ = err;
-  globalThis.__server__ = server;
+  // Wait for it to start up
+  for (let i = 0; i < 10; i++) {
+    await sleep(1000);
+    const log = fs.readFileSync(`./__tests__/server.log`, "utf8");
+    if (log.includes("Server is running")) break;
+  }
 };

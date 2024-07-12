@@ -1,5 +1,3 @@
-import { execSync } from 'child_process';
-
-global.beforeEach(() => {
-  // execSync("./__tests__/helpers/db_reset.sh");
+global.beforeEach(async () => {
+  await globalThis.__pgclient__.query("TRUNCATE TABLE booking;")
 });
