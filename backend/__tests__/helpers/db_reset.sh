@@ -1,0 +1,1 @@
+psql 3900-test -c "TRUNCATE TABLE booking;"
