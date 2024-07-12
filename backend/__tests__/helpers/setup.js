@@ -43,6 +43,7 @@ module.exports = async function (globalConfig, projectConfig) {
   // Wait for it to start up
   for (let i = 0; i < 10; i++) {
     await sleep(1000);
+    fs.fdatasyncSync(globalThis.__out__);
     const log = fs.readFileSync(`./__tests__/server.log`, "utf8");
     if (log.includes("Server is running")) break;
   }

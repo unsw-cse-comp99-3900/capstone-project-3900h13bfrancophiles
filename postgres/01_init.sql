@@ -1,3 +1,16 @@
+-- store configuration values that can be changed at runtime
+CREATE TABLE IF NOT EXISTS config (
+    key     TEXT PRIMARY KEY,
+    value   TEXT
+);
+
+CREATE OR REPLACE FUNCTION get_now() RETURNS TIMESTAMP AS $$
+SELECT COALESCE(
+    (SELECT value::TIMESTAMP FROM config WHERE key = 'current_timestamp'),
+    CURRENT_TIMESTAMP AT TIME ZONE 'UTC'
+);
+$$ LANGUAGE SQL;
+
 CREATE TYPE UserGroupEnum AS ENUM (
     'other', 'hdr', 'csestaff', 'admin'
 );
@@ -86,14 +99,12 @@ create trigger trg_chk_overlap before insert or update
 on booking for each row execute procedure trg_chk_overlap();
 
 create function trg_chk_start_future() returns trigger as $$
-declare
-    now timestamp := CURRENT_TIMESTAMP at time zone 'UTC';
 begin
-    if new.starttime <= now then
+    if new.starttime <= get_now() then
         raise exception 'Booking start time must be in the future';
     end if;
 
-    if old.starttime <= now then
+    if old.starttime <= get_now() then
         raise exception 'Cannot edit a booking that has already started';
     end if;
 
@@ -106,7 +117,7 @@ on booking for each row execute procedure trg_chk_start_future();
 
 create function trg_chk_start_future_limit() returns trigger as $$
 declare
-    today timestamp := date_trunc('day', CURRENT_TIMESTAMP at time zone 'UTC');
+    today timestamp := date_trunc('day', get_now);
 begin
     if new.starttime > today + interval '14 days' then
         raise exception 'Booking start time cannot be more than 14 days in the future';
