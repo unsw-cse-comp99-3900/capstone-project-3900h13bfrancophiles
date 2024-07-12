@@ -1,47 +1,38 @@
 import { ADMINS } from './helpers/constants';
-import { apiCall } from './helpers/helpers';
+import api from './helpers/api';
 
 describe("auth route tests", () => {
   it("successfully logs in", async () => {
-    const res = await apiCall(
-      "/auth/login", "POST",
-      { zid: `z${ADMINS[0].zid}`, zpass: `z${ADMINS[0].zid}` }
-    );
-    expect(res.status).toEqual(200);
-    expect(res.json).toHaveProperty("token");
+    const res = await api.login(`z${ADMINS[0].zid}`, `z${ADMINS[0].zid}`);
+    expect(res.status).toStrictEqual(200);
+    expect(res.json).toMatchObject({
+      token: expect.any(String),
+    });
   });
 
   it("fails to log in if invalid password", async () => {
-    let res = await apiCall(
-      "/auth/login", "POST",
-      { zid: `z${ADMINS[0].zid}` }
-    );
-    expect(res.status).toEqual(400);
+    let res = await api.login(`z${ADMINS[0].zid}`, undefined);
+    expect(res.status).toStrictEqual(400);
 
-    res = await apiCall(
-      "/auth/login", "POST",
-      { zid: `z${ADMINS[0].zid}`, zpass: "password" }
-    );
-    expect(res.status).toEqual(400);
+    res = await api.login(`z${ADMINS[0].zid}`, "password");
+    expect(res.status).toStrictEqual(400);
   });
 
   it("fails to log out if invalid token provided", async () => {
-    const res = await apiCall("/auth/logout", "POST", {}, "NOT A REAL TOKEN");
-    expect(res.status).toEqual(401);
+    const res = await api.logout("NOT A REAL TOKEN");
+    expect(res.status).toStrictEqual(401);
   });
 
   it("successfully logs out", async () => {
-    let res = await apiCall(
-      "/auth/login", "POST",
-      { zid: `z${ADMINS[0].zid}`, zpass: `z${ADMINS[0].zid}` }
-    );
+    let res = await api.login(`z${ADMINS[0].zid}`, `z${ADMINS[0].zid}`);
     const token = res.json.token;
 
-    res = await apiCall("/auth/logout", "POST", {}, token);
-    expect(res.status).toEqual(200);
+    res = await api.logout(token);
+    expect(res.status).toStrictEqual(200);
+    expect(res.json).toMatchObject({});
 
     // Shouldn't work, because now logged out
-    res = await apiCall("/auth/logout", "POST", {}, token);
-    expect(res.status).toEqual(401);
+    res = await api.logout(token);
+    expect(res.status).toStrictEqual(401);
   });
 });
