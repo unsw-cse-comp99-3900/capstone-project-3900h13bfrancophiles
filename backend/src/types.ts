@@ -45,10 +45,8 @@ export interface TypedRequest<B = Empty, P = Empty> extends Request<P> {
  * Q is the type of the query params (req.query)
  * P is the type of the path params (req.params)
  */
-export interface TypedGETRequest<Q = Empty, P = Empty> extends Request<P,any,any,Q> {
-  query: Q,
-  params: P,
-  token: TokenPayload
+export interface TypedGETRequest<P = Empty> extends TypedRequest<Empty, P> {
+  query: Record<string, string>,
 }
 
 /*
@@ -74,12 +72,12 @@ export type Booking = {
   checkouttime: string | null
 };
 
-export type BookingEdit = {
-  id: number,
-  starttime?: string,
-  endtime?: string,
-  spaceid?: string,
-  description?: string
+export interface BookingEditRequest {
+  id: number;
+  starttime?: string & tags.Format<'date-time'>;
+  endtime?: string & tags.Format<'date-time'>;
+  spaceid?: string;
+  description?: string;
 }
 
 export type AnonymousBooking = Omit<Booking, 'zid' | 'description'>;
@@ -119,3 +117,14 @@ export interface BookingDetailsRequest {
 }
 
 export type BookingStatus = typeof bookingstatusenum.enumValues[number];
+
+export type User = {
+  zid: number;
+  email: string;
+  fullname: string;
+  title: string | null;
+  school: string;
+  faculty: string;
+  role: string | null;
+  usergrp: "other" | "hdr" | "csestaff" | "admin";
+}

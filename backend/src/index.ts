@@ -9,18 +9,17 @@ import { drizzle } from "drizzle-orm/node-postgres";
 import { login, logout } from './auth/handlers';
 import { authoriseAtLeast, validateToken } from './auth/middleware';
 import {
-  currentBookings,
-  upcomingBookings,
-  pastBookings,
-  rangeOfBookings,
   checkInBooking,
   checkOutBooking,
   deleteBooking,
   createBooking,
   editBooking
-} from './booking/handlers';
+} from './booking/manageBookings';
 import { allSpaces, roomDetails, singleSpaceDetails, spaceAvailabilities } from "./spaces/handlers";
 import { spaceStatus } from './status/handlers';
+import { currentBookings, pastBookings, rangeOfBookings, upcomingBookings } from './booking/fetchBookings';
+import {pendingBookings} from "./admin/handlers";
+import {userDetails} from "./user/handlers";
 
 const pool = new Pool({
   connectionString: DATABASE_URL,
@@ -44,8 +43,8 @@ app.get("/bookings/range", validateToken, rangeOfBookings);
 app.delete("/bookings/delete", validateToken, authoriseAtLeast("hdr"), deleteBooking);
 app.post("/bookings/create", validateToken, authoriseAtLeast("hdr"), createBooking);
 
-app.post("/bookings/checkin", validateToken, checkInBooking);
-app.post("/bookings/checkout", validateToken, checkOutBooking);
+app.put("/bookings/checkin", validateToken, checkInBooking);
+app.put("/bookings/checkout", validateToken, checkOutBooking);
 app.put("/bookings/edit", validateToken, editBooking);
 
 app.get("/spaces", validateToken, allSpaces);
@@ -53,6 +52,11 @@ app.get("/spaces/:spaceId", validateToken, singleSpaceDetails);
 app.get("/rooms", validateToken, roomDetails);
 app.get("/status", validateToken, spaceStatus);
 app.get("/availabilities/:spaceId", validateToken, spaceAvailabilities);
+
+app.get("/admin/bookings/pending", validateToken, authoriseAtLeast("admin"), pendingBookings);
+
+app.get("/users/:zid", validateToken, userDetails);
+
 
 app.listen(PORT, () => {
   console.log(`Server is running at http://localhost:${PORT}`);

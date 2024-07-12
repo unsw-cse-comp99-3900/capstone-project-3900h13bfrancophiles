@@ -3,10 +3,12 @@
 import { AspectRatio, Sheet, Stack, Typography } from "@mui/joy";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import React from "react";
+import React, {useEffect, useState} from "react";
 import NextLink from "next/link";
 import { navData } from "@/app/data";
 import LogoutButton from "@/components/LogoutButton";
+import {getCookie} from "cookies-next";
+import * as jwt from "jsonwebtoken";
 
 interface NavProps {
   title: string;
@@ -45,6 +47,19 @@ function NavItem({ title, navigateTo }: NavProps) {
 }
 
 export default function NavBar() {
+  const [adminNavBar, setAdminNavBar] = useState(false);
+
+  useEffect(() => {
+    const token = getCookie('token');
+
+    if (token) {
+      const decoded = jwt.decode(`${token}`) as jwt.JwtPayload;
+      if (decoded.group === "admin") {
+        setAdminNavBar(true)
+      }
+    }
+  }, []);
+
   return (
     <Sheet
       sx={{ zIndex: 2, boxShadow: "md", height: 60, display: { xs: "none", sm: "flex" } }}
@@ -78,6 +93,9 @@ export default function NavBar() {
             {navData.map(({ text, href }, idx) => (
               <NavItem title={text} navigateTo={href} key={idx} />
             ))}
+            {adminNavBar ? (
+              <NavItem title="Admin" navigateTo='/admin' />
+            ) : null}
           </Stack>
           <LogoutButton />
         </Stack>

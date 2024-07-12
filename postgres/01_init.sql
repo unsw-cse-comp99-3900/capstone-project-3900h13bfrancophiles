@@ -98,26 +98,37 @@ $$ language plpgsql;
 create trigger trg_chk_overlap before insert or update
 on booking for each row execute procedure trg_chk_overlap();
 
-create function trg_chk_start_future() returns trigger as $$
+create function trg_chk_create_booking_start_future() returns trigger as $$
 begin
     if new.starttime <= get_now() then
         raise exception 'Booking start time must be in the future';
-    end if;
-
-    if old.starttime <= get_now() then
-        raise exception 'Cannot edit a booking that has already started';
     end if;
 
     return new;
 end;
 $$ language plpgsql;
 
-create trigger trg_chk_start_future before insert or update
-on booking for each row execute procedure trg_chk_start_future();
+create trigger trg_chk_create_booking_start_future before insert
+on booking for each row execute procedure trg_chk_create_booking_start_future();
+
+create function trg_chk_edit_booking_started() returns trigger as $$
+begin
+    if old.starttime <= get_now() then
+        if new.starttime <> old.starttime
+            or new.endtime <> old.endtime
+            or new.spaceid <> old.spaceid
+            or new.description <> old.description then
+                raise exception 'Cannot edit booking details other than currentstatus, check-in, and check-out times after the booking has started';
+        end if;
+    end if;
+
+    return new;
+end;
+$$ language plpgsql;
 
 create function trg_chk_start_future_limit() returns trigger as $$
 declare
-    today timestamp := date_trunc('day', get_now);
+    today timestamp := date_trunc('day', get_now());
 begin
     if new.starttime > today + interval '14 days' then
         raise exception 'Booking start time cannot be more than 14 days in the future';

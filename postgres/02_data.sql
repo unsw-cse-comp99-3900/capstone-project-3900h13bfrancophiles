@@ -44,7 +44,7 @@ INSERT INTO person VALUES (
 );
 
 -- Disable triggers to permit past bookings for testing
-ALTER TABLE booking DISABLE TRIGGER trg_chk_start_future;
+ALTER TABLE booking DISABLE TRIGGER trg_chk_create_booking_start_future;
 ALTER TABLE booking DISABLE TRIGGER trg_chk_start_future_limit;
 
 INSERT INTO booking (zId, startTime, endTime, spaceId, currentStatus, description) VALUES
@@ -70,5 +70,5 @@ INSERT INTO booking (zId, startTime, endTime, spaceId, currentStatus, descriptio
     (1234567, '2024-10-07T16:30', '2024-10-07T17:30', 'K-K17-402', 'declined', 'workshop');
 
 -- Reenable triggers for prod
-ALTER TABLE booking ENABLE TRIGGER trg_chk_start_future;
+ALTER TABLE booking ENABLE TRIGGER trg_chk_create_booking_start_future;
 ALTER TABLE booking ENABLE TRIGGER trg_chk_start_future_limit;
