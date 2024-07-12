@@ -74,8 +74,8 @@ export type Booking = {
 
 export interface BookingEditRequest {
   id: number;
-  starttime: string & tags.Format<'date-time'>;
-  endtime: string & tags.Format<'date-time'>;
+  starttime?: string & tags.Format<'date-time'>;
+  endtime?: string & tags.Format<'date-time'>;
   spaceid?: string;
   description?: string;
 }

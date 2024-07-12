@@ -45,9 +45,6 @@ export async function checkInBooking(
 
     // 5 minute buffer value too long?
     if (!dateInRange(currentTime, new Date(currentBooking.starttime), new Date(currentBooking.endtime), 5)) {
-      console.log(currentTime);
-      console.log(currentBooking.starttime);
-      console.log(currentBooking.endtime);
       res.status(403).json({ error: "Outside booking time window" });
       return;
     }
