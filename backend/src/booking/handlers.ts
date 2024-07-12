@@ -6,7 +6,7 @@ import {booking, hotdesk, room} from '../../drizzle/schema';
 import {
   Booking,
   BookingDetailsRequest,
-  BookingEdit,
+  BookingEditRequest,
   IDatetimeRange,
   TypedGETRequest,
   TypedRequest,
@@ -201,7 +201,7 @@ export async function checkInBooking(
 
     const currentTime = new Date();
 
-    const currentBooking = await db
+    const currentBookings = await db
     .select()
     .from(booking)
     .where(
@@ -211,30 +211,38 @@ export async function checkInBooking(
       )
     );
 
-    if (currentBooking.length != 1) {
+    if (currentBookings.length != 1) {
       res.status(403).json({ error: "Booking id does not exist for this user" });
       return;
     }
 
+    const currentBooking = formatBookingDates(currentBookings[0]);
+
     // 5 minute buffer value too long?
-    if (!dateInRange(currentTime, new Date(currentBooking[0].starttime), new Date(currentBooking[0].endtime), 5)) {
+    if (!dateInRange(currentTime, new Date(currentBooking.starttime), new Date(currentBooking.endtime), 5)) {
+      console.log(currentTime);
+      console.log(currentBooking.starttime);
+      console.log(currentBooking.endtime);
       res.status(403).json({ error: "Outside booking time window" });
       return;
     }
 
-    switch (currentBooking[0].currentstatus) {
+    switch (currentBooking.currentstatus) {
       case 'pending':
         res.status(403).json({ error: "Booking not yet confirmed" });
-        break;
+        return;
       case 'checkedin':
         res.status(403).json({ error: "Already checked in" });
-        break;
+        return;
       case 'completed':
         res.status(403).json({ error: "Already checked out" });
-        break;
+        return;
     }
 
-    const updatedBooking = await db
+
+    let updatedBooking: Booking;
+    try {
+      const res = await db
       .update(booking)
       .set({ checkintime: currentTime.toISOString(), currentstatus: "checkedin" })
       .where(
@@ -245,16 +253,18 @@ export async function checkInBooking(
           eq(booking.zid, req.token.user)))
       .returning();
 
-    if (updatedBooking.length != 1) {
-      res.status(500).json({ error: "Booking modified during operation" });
+      updatedBooking = formatBookingDates(res[0]);
+
+    } catch (e: any) {
+      res.status(400).json({ error: `${e}` });
       return;
     }
 
-  // If prior booking in this space didn't check out, update their checkout time now?
+    // If prior booking in this space didn't check out, update their checkout time now?
 
-    res.json({});
+    res.json({ booking: updatedBooking });
   } catch (error) {
-    res.status(204);
+    res.status(500).json({ error: 'Failed to check in' });
   }
 }
 

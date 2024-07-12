@@ -85,7 +85,7 @@ $$ language plpgsql;
 create trigger trg_chk_overlap before insert or update
 on booking for each row execute procedure trg_chk_overlap();
 
-create function trg_chk_start_future() returns trigger as $$
+create function trg_chk_create_booking_start_future() returns trigger as $$
 declare
     now timestamp := CURRENT_TIMESTAMP at time zone 'UTC';
 begin
@@ -93,16 +93,33 @@ begin
         raise exception 'Booking start time must be in the future';
     end if;
 
+    return new;
+end;
+$$ language plpgsql;
+
+create trigger trg_chk_create_booking_start_future before insert
+on booking for each row execute procedure trg_chk_create_booking_start_future();
+
+create function trg_chk_edit_booking_started() returns trigger as $$
+declare
+    now timestamp := CURRENT_TIMESTAMP at time zone 'UTC';
+begin
+
     if old.starttime <= now then
-        raise exception 'Cannot edit a booking that has already started';
+        if new.starttime <> old.starttime
+            or new.endtime <> old.endtime
+            or new.spaceid <> old.spaceid
+            or new.description <> old.description then
+                raise exception 'Cannot edit booking details other than currentstatus, check-in, and check-out times after the booking has started';
+        end if;
     end if;
 
     return new;
 end;
 $$ language plpgsql;
 
-create trigger trg_chk_start_future before insert or update
-on booking for each row execute procedure trg_chk_start_future();
+create trigger trg_chk_edit_booking_started before update
+on booking for each row execute procedure trg_chk_edit_booking_started();
 
 create function trg_chk_start_future_limit() returns trigger as $$
 declare
@@ -165,7 +182,7 @@ INSERT INTO person VALUES (
 );
 
 -- Disable triggers to permit past bookings for testing
-ALTER TABLE booking DISABLE TRIGGER trg_chk_start_future;
+ALTER TABLE booking DISABLE TRIGGER trg_chk_create_booking_start_future;
 ALTER TABLE booking DISABLE TRIGGER trg_chk_start_future_limit;
 
 INSERT INTO booking (zId, startTime, endTime, spaceId, currentStatus, description) VALUES
@@ -180,7 +197,7 @@ INSERT INTO booking (zId, startTime, endTime, spaceId, currentStatus, descriptio
     (1234567, '2022-01-11T13:30', '2022-01-011T14:30', 'K-K17-B01', 'confirmed', 'event'),
     (1234567, '2022-01-12T13:30', '2022-01-012T14:30', 'K-K17-B01', 'confirmed', 'studying'),
     (1234567, '2022-01-13T13:30', '2022-01-013T14:30', 'K-K17-B01', 'confirmed', 'workshop'),
-    (1234567, '2022-01-14T13:30', '2022-01-014T14:30', 'K-K17-B01', 'confirmed', 'sth'),
+    (1234567, '2024-07-12T01:00', '2024-07-12T08:30', 'K-K17-B01', 'confirmed', 'sth'),
 
 -- upcoming bookings
     (1234567, '2024-10-01T10:30', '2024-10-01T11:30', 'K-K17-B01', 'confirmed', 'class'),
@@ -191,5 +208,5 @@ INSERT INTO booking (zId, startTime, endTime, spaceId, currentStatus, descriptio
     (1234567, '2024-10-07T16:30', '2024-10-07T17:30', 'K-K17-402', 'declined', 'workshop');
 
 -- Reenable triggers for prod
-ALTER TABLE booking ENABLE TRIGGER trg_chk_start_future;
+ALTER TABLE booking ENABLE TRIGGER trg_chk_create_booking_start_future;
 ALTER TABLE booking ENABLE TRIGGER trg_chk_start_future_limit;

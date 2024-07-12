@@ -44,8 +44,8 @@ app.get("/bookings/range", validateToken, rangeOfBookings);
 app.delete("/bookings/delete", validateToken, authoriseAtLeast("hdr"), deleteBooking);
 app.post("/bookings/create", validateToken, authoriseAtLeast("hdr"), createBooking);
 
-app.post("/bookings/checkin", validateToken, checkInBooking);
-app.post("/bookings/checkout", validateToken, checkOutBooking);
+app.put("/bookings/checkin", validateToken, checkInBooking);
+app.put("/bookings/checkout", validateToken, checkOutBooking);
 app.put("/bookings/edit", validateToken, editBooking);
 
 app.get("/spaces", validateToken, allSpaces);
