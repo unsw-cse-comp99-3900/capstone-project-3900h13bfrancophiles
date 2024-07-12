@@ -1,32 +1,26 @@
 "use client";
 
 import * as React from "react";
-import { Card, CardContent, CardOverflow, Stack, Typography } from "@mui/joy";
+import { Card, CardContent, CardOverflow, IconButton, Stack, Typography } from "@mui/joy";
 import PeopleIcon from "@mui/icons-material/People";
 import MeetingRoomOutlinedIcon from "@mui/icons-material/MeetingRoomOutlined";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCalendarPlus } from "@fortawesome/free-regular-svg-icons";
-
-export type RoomData = {
-  id: string;
-  name: string;
-  type: string;
-  capacity: number;
-  available: boolean;
-};
+import { Room } from "@/types";
 
 interface RoomCardProps {
-  room: RoomData;
+  room: Room;
+  handleBook: (room: Room) => void;
 }
 
-export default function RoomCard({ room }: RoomCardProps) {
+const RoomCard: React.FC<RoomCardProps> = ({ room, handleBook }) => {
   return (
     <Card
       sx={{
-        width: 230,
+        width: "100%",
+        marginX: "auto",
         maxWidth: "100%",
         boxShadow: "lg",
-        background: "#F0F4F8",
       }}
     >
       <CardContent>
@@ -39,7 +33,9 @@ export default function RoomCard({ room }: RoomCardProps) {
             <Typography level="title-lg" sx={{ mt: 1, fontWeight: "xl" }}>
               {room.name}
             </Typography>
-            <FontAwesomeIcon fontSize="24px" icon={faCalendarPlus} />
+            <IconButton onClick={() => handleBook(room)}>
+              <FontAwesomeIcon fontSize="24px" icon={faCalendarPlus} />
+            </IconButton>
           </Stack>
           <Typography
             level="body-sm"
@@ -54,11 +50,16 @@ export default function RoomCard({ room }: RoomCardProps) {
       </CardContent>
       <CardOverflow
         variant="solid"
-        color={room.available ? "success" : "danger"}
+        color={"success"}
+        // color={room.available ? "success" : "danger"}
         sx={{ padding: "8px", alignItems: "center", flexWrap: "wrap" }}
       >
-        <b>{room.available ? "Available" : "Unavailable"}</b>
+        {/* <b>{room.available ? "Available" : "Unavailable"}</b> */}
+        <b>Available</b>
+
       </CardOverflow>
     </Card>
   );
 }
+
+export default RoomCard;

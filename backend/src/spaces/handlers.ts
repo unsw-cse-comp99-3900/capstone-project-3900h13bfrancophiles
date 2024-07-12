@@ -1,10 +1,10 @@
 // Spaces endpoint handlers
 
 import { db } from '../index'
-import { eq } from "drizzle-orm"
-import { hotdesk, room, space } from '../../drizzle/schema';
-import { TypedGETRequest, TypedResponse, Room, Space } from '../types';
-import typia from 'typia';
+import { eq, and, asc, gt, sql } from "drizzle-orm"
+import { hotdesk, room, space, booking } from '../../drizzle/schema';
+import { TypedGETRequest, TypedResponse, Room, Space, AnonymousBooking } from '../types';
+import { anonymiseBooking, formatBookingDates } from '../utils';
 
 export async function roomDetails(
   req: TypedGETRequest,
@@ -15,9 +15,9 @@ export async function roomDetails(
       .select({
         id: room.id,
         name: space.name,
+        type: room.type,
         capacity: room.capacity,
         roomnumber: room.roomnumber,
-        usage: room.usage
       })
       .from(room)
       .innerJoin(space, eq(space.id, room.id))
@@ -32,24 +32,19 @@ export async function roomDetails(
 type SingleSpaceRequest = { spaceId: string };
 
 export async function singleSpaceDetails(
-  req: TypedGETRequest<{}, SingleSpaceRequest>,
+  req: TypedGETRequest<SingleSpaceRequest>,
   res: TypedResponse<{ space: Space }>,
 ) {
   try {
-    if (!typia.is<SingleSpaceRequest>(req.params)) {
-      res.status(400).json({ error: "Invalid input" });
-      return;
-    }
-
     // TODO: Maybe find a way to distinguish between room/desk?
     // Try get it as a room
     const roomRes = await db
       .select({
         id: room.id,
         name: space.name,
+        type: room.type,
         capacity: room.capacity,
         roomnumber: room.roomnumber,
-        usage: room.usage
       })
       .from(room)
       .innerJoin(space, eq(space.id, room.id))
@@ -79,6 +74,62 @@ export async function singleSpaceDetails(
     }
 
     res.status(404).json({ error: `No space found with id "${req.params.spaceId}"` });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch rooms' });
+  }
+}
+
+export async function allSpaces(
+  req: TypedGETRequest,
+  res: TypedResponse<{ spaces: { id: string, name: string, isRoom: boolean }[] }>,
+) {
+  const subquery = db.select({ data: room.id }).from(room);
+  const spaces = await db
+    .select({
+      id: space.id,
+      name: space.name,
+      isRoom: sql<boolean>`${space.id} in (${subquery})`,
+    })
+    .from(space);
+
+  res.json({ spaces });
+}
+
+export async function spaceAvailabilities(
+  req: TypedGETRequest<SingleSpaceRequest>,
+  res: TypedResponse<{ bookings: AnonymousBooking[] }>,
+) {
+  try {
+    const currentTime = new Date().toISOString();
+
+    const spaceExists = await db
+      .select()
+      .from(space)
+      .where(
+        eq(space.id, req.params.spaceId),
+      )
+
+    if (spaceExists.length == 0) {
+      res.status(404).json({ error: "Space ID does not exist" });
+      return;
+    }
+
+    const existingBookings = await db
+      .select()
+      .from(booking)
+      .where(
+        and(
+          eq(booking.spaceid, req.params.spaceId),
+          gt(booking.endtime, currentTime)
+        )
+      )
+      .orderBy(
+        asc(booking.starttime)
+      )
+
+    res.json({ bookings: existingBookings.map(formatBookingDates).map(anonymiseBooking) });
+    return
+
   } catch (error) {
     res.status(500).json({ error: 'Failed to fetch rooms' });
   }

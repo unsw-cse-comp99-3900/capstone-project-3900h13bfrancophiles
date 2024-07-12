@@ -10,107 +10,64 @@ import FormLabel from "@mui/joy/FormLabel";
 import IconButton from "@mui/joy/IconButton";
 import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
+import {Sheet, Skeleton, Stack} from "@mui/joy";
+import {format} from 'date-fns';
+import useSpace from "@/hooks/useSpace";
+import usePastBookings from "@/hooks/usePastBookings";
 
-// import { authApiCall } from '@/api'
-// import useSWR from 'swr'
-import { Sheet, Stack } from "@mui/joy";
-import { format } from 'date-fns';
+export interface PastBookingRowProps {
+  row: Row
+}
+
+interface Row {
+  id: number,
+  startTime: Date,
+  endTime: Date,
+  space: string,
+  description: string
+}
+
+function PastBookingsRow({row}: PastBookingRowProps) {
+  const {space, isLoading} = useSpace(row.space);
+
+  return <tr>
+    <td>
+      <Typography level="body-sm">
+        {format(row.startTime, "dd/MM/yy k:mm")} - {format(row.endTime, "k:mm")}
+      </Typography>
+    </td>
+    <td>
+      <Skeleton loading={isLoading}>
+        <Typography level="body-sm">{space?.name}</Typography>
+      </Skeleton>
+    </td>
+    <td>
+      <Typography level="body-sm">{row.description}</Typography>
+    </td>
+  </tr>;
+}
 
 export default function PastBookings() {
-  function createData(
-    id: number,
-    startTime: Date,
-    endTime: Date,
-    space: string,
-    isRoom: boolean,
-    description: string
-  ) {
-    // Somehow concatenate space data to form space string
-    return { id, startTime, endTime, space, isRoom, description };
-  }
-
-  const rows = [
-    createData(
-      1,
-      new Date(2021, 4, 1, 17, 23, 42, 11),
-      new Date(2021, 4, 1, 18, 23, 42, 11),
-      "K17 L2 Desk 13",
-      false,
-      "Thesis"
-    ),
-    createData(
-      2,
-      new Date(2022, 4, 2, 17, 23, 42, 11),
-      new Date(2021, 4, 1, 18, 23, 42, 11),
-      "K17 L2 Desk 13",
-      false,
-      "Gaming"
-    ),
-    createData(
-      3,
-      new Date(2023, 4, 3, 17, 23, 42, 11),
-      new Date(2021, 4, 1, 18, 23, 42, 11),
-      "K17 Meeting Room G02",
-      true,
-      "Society event"
-    ),
-    createData(
-      4,
-      new Date(2024, 4, 4, 17, 23, 42, 11),
-      new Date(2021, 4, 1, 18, 23, 42, 11),
-      "K17 L2 Desk 13",
-      false,
-      "Working"
-    ),
-    createData(
-      5,
-      new Date(2025, 4, 5, 17, 23, 42, 11),
-      new Date(2021, 4, 1, 18, 23, 42, 11),
-      "K17 Meeting Room G02",
-      true,
-      "Assignment"
-    ),
-    createData(
-      6,
-      new Date(2026, 4, 6, 17, 23, 42, 11),
-      new Date(2021, 4, 1, 18, 23, 42, 11),
-      "K17 Meeting Room G02",
-      true,
-      "Filming a video"
-    ),
-    createData(
-      7,
-      new Date(2027, 4, 7, 17, 23, 42, 11),
-      new Date(2021, 4, 1, 18, 23, 42, 11),
-      "K17 Meeting Room G02",
-      true,
-      "Class"
-    ),
-  ];
-
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
+  const [rows, setRows] = React.useState<Row[]>([]);
   const [filter, setFilter] = React.useState("all");
-  const [filteredRows, setFilteredRows] = React.useState(
-    rows.sort((a, b) => (a.startTime < b.startTime ? 1 : -1))
-  );
-  const [sortNewest, setSortNewest] = React.useState(true);
 
-  // // will eventually get data from backend
-  // const getData = () => {
-  //   authApiCall(
-  //     "/bookings/past",
-  //     'GET',
-  //     {
-  //       page: 0,
-  //       limit: 5,
-  //     }
-  //   ).then(e => console.log(e))
-  // }
+  const [sort, setSort] = React.useState('newest');
+  const {pastBookings, total, isLoading} = usePastBookings(page + 1, rowsPerPage, filter, sort);
 
-  // const getData2 = () => {
-  //   const { data, error, isLoading } = useSWR('/api/user', fetch)
-  // }
+  React.useEffect(() => {
+    if (!isLoading && pastBookings) {
+      const rowsData = pastBookings.map((booking) => ({
+        id: booking.id,
+        startTime: new Date(booking.starttime),
+        endTime: new Date(booking.endtime),
+        space: booking.spaceid,
+        description: booking.description,
+      }));
+      setRows(rowsData);
+    }
+  }, [page, rowsPerPage, pastBookings, isLoading]);
 
   const handleChangePage = (newPage: number) => {
     setPage(newPage);
@@ -122,58 +79,36 @@ export default function PastBookings() {
   };
 
   function labelDisplayedRows({
-    from,
-    to,
-    count,
-  }: {
-    from: number;
-    to: number;
-    count: number;
+                                from, to, count,
+                              }: {
+    from: number; to: number; count: number;
   }) {
     return `${from}–${to} of ${count !== -1 ? count : `more than ${to}`}`;
   }
 
-  const handleChangeFilter = (event: any) => {
-    const value = event.target.value;
-    setFilter(value);
+  const handleChangeFilter = (event: any, newValue: string | null) => {
+    if (newValue !== null) {
+      setFilter(newValue);
+    }
   };
 
-  const handleChangeSort = (
-    event: React.SyntheticEvent | null,
-    newValue: string | null
-  ) => {
-    setSortNewest(newValue === "newest");
-  };
+  const handleChangeSort = (event: any, newValue: string | null) => {
+    if (newValue !== null) {
+      setSort(newValue);
+    }
 
-  React.useEffect(() => {
-    setFilteredRows(
-      rows
-        .filter(() => true) // now filtering in the backend
-        .sort((a, b) =>
-          a.startTime < b.startTime
-            ? sortNewest
-              ? 1
-              : -1
-            : sortNewest
-            ? -1
-            : 1
-        )
-    ); // this will also be backend
-  }, [filter, sortNewest]);
+  };
 
   const getLabelDisplayedRowsTo = () => {
-    if (filteredRows.length === -1) {
+    if (total === undefined) {
       return (page + 1) * rowsPerPage;
     }
-    return rowsPerPage === -1
-      ? filteredRows.length
-      : Math.min(filteredRows.length, (page + 1) * rowsPerPage);
+    return rowsPerPage === -1 ? total : Math.min(total, (page + 1) * rowsPerPage);
   };
 
-  return (
-    <Stack>
+  return (<Stack>
       <Stack direction="row" width="100%" my={1} spacing={1}>
-        <Box width="200px">
+        <Box width="150px">
           Space
           <Select
             defaultValue="all"
@@ -185,8 +120,8 @@ export default function PastBookings() {
             <Option value="desks">Desks</Option>
           </Select>
         </Box>
-        <Box width="200px">
-          Time
+        <Box width="150px">
+          Sort
           <Select defaultValue="newest" onChange={handleChangeSort}>
             <Option value="newest">Newest</Option>
             <Option value="oldest">Oldest</Option>
@@ -196,12 +131,7 @@ export default function PastBookings() {
       <Sheet
         variant="outlined"
         sx={{
-          display: { xs: "initial" },
-          width: "100%",
-          borderRadius: "sm",
-          flexShrink: 1,
-          overflow: "auto",
-          minHeight: 0,
+          display: {xs: "initial"}, width: "100%", borderRadius: "sm", flexShrink: 1, overflow: "auto", minHeight: 0,
         }}
       >
         <Table
@@ -209,105 +139,77 @@ export default function PastBookings() {
           stickyHeader
           hoverRow
           sx={{
-            "--TableCell-headBackground":
-              "var(--joy-palette-background-level1)",
+            "--TableCell-headBackground": "var(--joy-palette-background-level1)",
             "--Table-headerUnderlineThickness": "1px",
-            "--TableRow-hoverBackground":
-              "var(--joy-palette-background-level1)",
+            "--TableRow-hoverBackground": "var(--joy-palette-background-level1)",
             "--TableCell-paddingY": "4px",
             "--TableCell-paddingX": "8px",
           }}
         >
           <thead>
-            <tr>
-              <th style={{ width: 140, padding: "12px 6px" }}>Time</th>
-              <th style={{ width: 140, padding: "12px 6px" }}>Location</th>
-              <th style={{ width: 240, padding: "12px 6px" }}>Description</th>
-            </tr>
+          <tr>
+            <th style={{width: 140, padding: "12px 6px"}}>Time</th>
+            <th style={{width: 140, padding: "12px 6px"}}>Location</th>
+            <th style={{width: 240, padding: "12px 6px"}}>Description</th>
+          </tr>
           </thead>
           <tbody>
-            {filteredRows
-              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-              .map((row) => (
-                <tr key={row.id}>
-                  <td>
-                    <Typography level="body-sm">
-                      {format(row.startTime, "dd/MM/yy k:mm")} - {format(row.endTime, "k:mm")}
-                    </Typography>
-                  </td>
-                  <td>
-                    <Typography level="body-sm">{row.space}</Typography>
-                  </td>
-                  <td>
-                    <Typography level="body-sm">{row.description}</Typography>
-                  </td>
-                </tr>
-              ))}
+          {rows
+            .map((row) => (<PastBookingsRow key={row.id} row={row}/>))}
           </tbody>
           <tfoot>
-            <tr>
-              <td colSpan={3}>
-                <Box
-                  sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 2,
-                    justifyContent: "flex-end",
-                  }}
-                >
-                  <FormControl orientation="horizontal" size="sm">
-                    <FormLabel>Rows per page:</FormLabel>
-                    <Select
-                      onChange={handleChangeRowsPerPage}
-                      value={rowsPerPage}
-                    >
-                      <Option value={5}>5</Option>
-                      <Option value={10}>10</Option>
-                      <Option value={25}>25</Option>
-                    </Select>
-                  </FormControl>
-                  <Typography textAlign="center" sx={{ minWidth: 80 }}>
-                    {labelDisplayedRows({
-                      from:
-                        filteredRows.length === 0 ? 0 : page * rowsPerPage + 1,
-                      to: getLabelDisplayedRowsTo(),
-                      count:
-                        filteredRows.length === -1 ? -1 : filteredRows.length,
-                    })}
-                  </Typography>
-                  <Box sx={{ display: "flex", gap: 1 }}>
-                    <IconButton
-                      size="sm"
-                      color="neutral"
-                      variant="outlined"
-                      disabled={page === 0}
-                      onClick={() => handleChangePage(page - 1)}
-                      sx={{ bgcolor: "background.surface" }}
-                    >
-                      <KeyboardArrowLeftIcon />
-                    </IconButton>
-                    <IconButton
-                      size="sm"
-                      color="neutral"
-                      variant="outlined"
-                      disabled={
-                        filteredRows.length !== -1
-                          ? page >=
-                            Math.ceil(filteredRows.length / rowsPerPage) - 1
-                          : false
-                      }
-                      onClick={() => handleChangePage(page + 1)}
-                      sx={{ bgcolor: "background.surface" }}
-                    >
-                      <KeyboardArrowRightIcon />
-                    </IconButton>
-                  </Box>
+          <tr>
+            <td colSpan={3}>
+              <Box
+                sx={{
+                  display: "flex", alignItems: "center", gap: 2, justifyContent: "flex-end",
+                }}
+              >
+                <FormControl orientation="horizontal" size="sm">
+                  <FormLabel>Rows per page:</FormLabel>
+                  <Select
+                    onChange={handleChangeRowsPerPage}
+                    value={rowsPerPage}
+                  >
+                    <Option value={5}>5</Option>
+                    <Option value={10}>10</Option>
+                    <Option value={25}>25</Option>
+                  </Select>
+                </FormControl>
+                <Typography textAlign="center" sx={{minWidth: 80}}>
+                  {labelDisplayedRows({
+                    from: rows.length === 0 ? 0 : page * rowsPerPage + 1,
+                    to: getLabelDisplayedRowsTo(),
+                    count: total === undefined ? -1 : total,
+                  })}
+                </Typography>
+                <Box sx={{display: "flex", gap: 1}}>
+                  <IconButton
+                    size="sm"
+                    color="neutral"
+                    variant="outlined"
+                    disabled={page === 0}
+                    onClick={() => handleChangePage(page - 1)}
+                    sx={{bgcolor: "background.surface"}}
+                  >
+                    <KeyboardArrowLeftIcon/>
+                  </IconButton>
+                  <IconButton
+                    size="sm"
+                    color="neutral"
+                    variant="outlined"
+                    disabled={page >= Math.ceil(total === undefined ? -1 : total / rowsPerPage) - 1}
+                    onClick={() => handleChangePage(page + 1)}
+                    sx={{bgcolor: "background.surface"}}
+                  >
+                    <KeyboardArrowRightIcon/>
+                  </IconButton>
                 </Box>
-              </td>
-            </tr>
+              </Box>
+            </td>
+          </tr>
           </tfoot>
         </Table>
       </Sheet>
-    </Stack>
-  );
+    </Stack>);
 }

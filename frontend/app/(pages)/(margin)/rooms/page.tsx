@@ -17,15 +17,14 @@ import {
   ModalDialog,
   Stack,
   Slider,
+  Typography,
 } from "@mui/joy";
-
-interface Room {
-  id: string;
-  name: string;
-  type: string;
-  capacity: number;
-  available: boolean;
-}
+import useRoomDetails from "@/hooks/useRoomDetails";
+import { Room } from "@/types";
+import Loading from "@/components/Loading";
+import Error from "@/components/Error";
+import useTimeRange from '@/hooks/useTimeRange';
+import BookingModal from '@/components/BookingModal/BookingModal';
 
 interface FilterOption {
   value: string;
@@ -37,50 +36,23 @@ interface Filters {
   capacity: number;
 }
 
-const rooms: Room[] = [
-  {
-    id: "1",
-    name: "K17 G02",
-    type: "Consultation Room",
-    capacity: 2,
-    available: true,
-  },
-  {
-    id: "2",
-    name: "K17 302",
-    type: "Meeting Room",
-    capacity: 10,
-    available: false,
-  },
-  {
-    id: "3",
-    name: "J17 501",
-    type: "Meeting Room",
-    capacity: 15,
-    available: true,
-  },
-  {
-    id: "4",
-    name: "K17 G02",
-    type: "Consultation Room",
-    capacity: 2,
-    available: false,
-  },
-  {
-    id: "5",
-    name: "J17 402A",
-    type: "Consultation Room",
-    capacity: 4,
-    available: false,
-  },
-  {
-    id: "6",
-    name: "K17 601",
-    type: "Meeting Room",
-    capacity: 25,
-    available: true,
-  },
-];
+interface FilterControlProps {
+  label: string;
+  options: FilterOption[];
+  value: string;
+  onChange: (
+    event: React.MouseEvent | React.KeyboardEvent | React.FocusEvent | null,
+    value: string | null
+  ) => void;
+}
+
+interface CapacitySliderProps {
+  label: string;
+  min: number;
+  max: number;
+  value: number;
+  onChange: (value: number) => void;
+}
 
 const renderFilters = (
   tempFilters: Filters,
@@ -118,16 +90,6 @@ const renderFilters = (
   </React.Fragment>
 );
 
-interface FilterControlProps {
-  label: string;
-  options: FilterOption[];
-  value: string;
-  onChange: (
-    event: React.MouseEvent | React.KeyboardEvent | React.FocusEvent | null,
-    value: string | null
-  ) => void;
-}
-
 const FilterControl: React.FC<FilterControlProps> = ({
   label,
   options,
@@ -145,14 +107,6 @@ const FilterControl: React.FC<FilterControlProps> = ({
     </Select>
   </FormControl>
 );
-
-interface CapacitySliderProps {
-  label: string;
-  min: number;
-  max: number;
-  value: number;
-  onChange: (value: number) => void;
-}
 
 const CapacitySlider: React.FC<CapacitySliderProps> = ({
   label,
@@ -177,6 +131,7 @@ export default function Rooms() {
   const [filtersOpen, setFiltersOpen] = React.useState<boolean>(false);
   const [sort, setSort] = React.useState<boolean>(false);
   const [searchQuery, setSearchQuery] = React.useState<string>("");
+
   const [filters, setFilters] = React.useState<Filters>({
     type: "all",
     capacity: 1,
@@ -185,18 +140,17 @@ export default function Rooms() {
     type: "all",
     capacity: 1,
   });
-  const [date, setDate] = React.useState<string>(
-    new Date().toISOString().split("T")[0].toString()
-  );
-  const [startTime, setStartTime] = React.useState<string>(
-    new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
-  );
-  const [endTime, setEndTime] = React.useState<string>(
-    new Date(new Date().getTime() + 60 * 60 * 1000).toLocaleTimeString([], {
-      hour: "2-digit",
-      minute: "2-digit",
-    })
-  );
+  const {
+    date, start, end,
+    dateInputProps, startInputProps, endInputProps
+  } = useTimeRange();
+  const [selectedRoom, setSelectedRoom] = React.useState<Room>();
+
+  const { roomsData = [], isLoading, error } = useRoomDetails();
+  const [isFiltered, setIsFiltered] = React.useState<boolean>(false);
+
+  if (isLoading) return <Loading page="Rooms" />;
+  if (error) return <Error page="Rooms" message="Error loading rooms"/>;
 
   const toggleFilters = () => {
     setFiltersOpen(!filtersOpen);
@@ -208,11 +162,19 @@ export default function Rooms() {
 
   const applyFilters = () => {
     setFilters(tempFilters);
+    if (
+      tempFilters.type !== "all" ||
+      tempFilters.capacity !== 1
+    ) {
+      setIsFiltered(true);
+    } else {
+      setIsFiltered(false);
+    }
     setFiltersOpen(false);
   };
 
-  const filterRooms = (rooms: Room[]) => {
-    return rooms.filter((room) => {
+  const filterRooms = (roomsData: Room[]) => {
+    return roomsData.filter((room) => {
       const matchesType =
         filters.type === "all" ||
         room.type.toLowerCase().replace(" ", "-") === filters.type;
@@ -224,17 +186,27 @@ export default function Rooms() {
     });
   };
 
-  const sortedRooms = [...rooms].sort((a, b) => a.name.localeCompare(b.name));
+  const sortedRooms = [...roomsData].sort((a, b) =>
+    a.name.localeCompare(b.name)
+  );
   const displayedRooms = filterRooms(
     sort ? sortedRooms : sortedRooms.reverse()
   );
 
   return (
     <>
-      <h1>Rooms</h1>
+      {!!selectedRoom && <BookingModal
+        open={!!selectedRoom}
+        onClose={() => setSelectedRoom(undefined)}
+        space={selectedRoom ? { id: selectedRoom.id, name: selectedRoom.name, isRoom: true } : undefined}
+        date={date}
+        start={start}
+        end={end}
+      />}
+      <Typography level="h1" mb={0}>Rooms</Typography>
       <Stack
         className="SearchAndFilters"
-        alignItems="center"
+        alignItems="flex-end"
         direction="row"
         flexWrap="wrap"
         gap={2}
@@ -249,65 +221,51 @@ export default function Rooms() {
             onChange={(event) => setSearchQuery(event.target.value)}
           />
         </FormControl>
-        <Stack direction="row" gap={2} flexWrap="wrap">
-          <Input
-            type="date"
-            defaultValue={date}
-            onChange={(event) => {
-              const d = new Date(event.target.value)
-                .toISOString()
-                .split("T")[0];
-              setDate(d);
-            }}
-          />
+        <Stack direction="row" gap={2} flexWrap="wrap" alignItems="flex-end" >
+          <FormControl>
+            <FormLabel>Date</FormLabel>
+            <Input size="sm" {...dateInputProps} />
+          </FormControl>
           <Stack direction="row">
-            <Input
-              type="time"
-              defaultValue={startTime}
-              size="sm"
-              onChange={(event) => {
-                const d = new Date(event.target.value).toLocaleTimeString([], {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                });
-                setStartTime(d);
-              }}
-            />
-            <Input
-              type="time"
-              defaultValue={endTime}
-              size="sm"
-              onChange={(event) => {
-                const d = new Date(event.target.value).toLocaleTimeString([], {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                });
-                setEndTime(d);
-              }}
-            />
+            <FormControl>
+              <FormLabel>Start</FormLabel>
+              <Input
+                size="sm"
+                sx={{ borderBottomRightRadius: 0, borderTopRightRadius: 0, width: 115 }}
+                {...startInputProps}
+              />
+            </FormControl>
+            <FormControl>
+              <FormLabel>End</FormLabel>
+              <Input
+                size="sm"
+                sx={{ borderBottomLeftRadius: 0, borderTopLeftRadius: 0, borderLeft: 'none', width: 115 }}
+                {...endInputProps}
+              />
+            </FormControl>
           </Stack>
-          <Button
-            startDecorator={<FilterListIcon />}
-            variant={
-              sortedRooms.length === displayedRooms.length
-                ? "outlined"
-                : "solid"
-            }
-            color="neutral"
-            size="sm"
-            onClick={toggleFilters}
-          >
-            Filter
-          </Button>
-          <Button
-            startDecorator={<SwapVertIcon />}
-            variant={sort ? "solid" : "outlined"}
-            color="neutral"
-            size="sm"
-            onClick={toggleSort}
-          >
-            Sort
-          </Button>
+          <FormControl>
+            <Button
+              startDecorator={<FilterListIcon />}
+              variant={isFiltered ? "solid" : "outlined"}
+              color="neutral"
+              size="sm"
+              onClick={toggleFilters}
+            >
+              Filter
+            </Button>
+          </FormControl>
+          <FormControl>
+            <Button
+              startDecorator={<SwapVertIcon />}
+              variant={sort ? "solid" : "outlined"}
+              color="neutral"
+              size="sm"
+              onClick={toggleSort}
+            >
+              Sort
+            </Button>
+          </FormControl>
         </Stack>
       </Stack>
 
@@ -341,18 +299,18 @@ export default function Rooms() {
           </Box>
         </ModalDialog>
       </Modal>
-      <Stack
-        direction="row"
-        justifyContent="left"
-        gap={3}
-        flexWrap="wrap"
-        alignItems="center"
-        paddingTop="20px"
+      <Box
+        width="100%"
+        display="grid"
+        gridTemplateColumns="repeat(auto-fill, minmax(350px, 1fr))"
+        mt={4}
+        mb={5}
+        sx={{ gridGap: 30 }}
       >
         {displayedRooms.map((room) => (
-          <RoomCard key={room.id} room={room} />
+          <RoomCard key={room.id} room={room} handleBook={setSelectedRoom} />
         ))}
-      </Stack>
+      </Box>
     </>
   );
 }
