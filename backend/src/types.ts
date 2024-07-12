@@ -72,12 +72,12 @@ export type Booking = {
   checkouttime: string | null
 };
 
-export type BookingEdit = {
-  id: number,
-  starttime?: string,
-  endtime?: string,
-  spaceid?: string,
-  description?: string
+export interface BookingEditRequest {
+  id: number;
+  starttime?: string & tags.Format<'date-time'>;
+  endtime?: string & tags.Format<'date-time'>;
+  spaceid?: string;
+  description?: string;
 }
 
 export type AnonymousBooking = Omit<Booking, 'zid' | 'description'>;
