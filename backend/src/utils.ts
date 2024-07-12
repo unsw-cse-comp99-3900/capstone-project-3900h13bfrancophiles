@@ -77,7 +77,8 @@ export async function now(): Promise<Date> {
       .where(eq(config.key, "current_timestamp"));
 
     const currentTime = res?.[0].currentTime;
-    return currentTime ? new Date(currentTime + 'Z') : new Date();
+    console.log(res?.[0].currentTime);
+    return currentTime ? new Date(currentTime) : new Date();
   } else {
     return new Date();
   }

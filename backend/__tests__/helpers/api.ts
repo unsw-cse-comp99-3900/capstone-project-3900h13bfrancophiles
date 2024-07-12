@@ -8,7 +8,7 @@ type APIResponse = {
 async function apiCall(
   route: string,
   method: string,
-  body: object = {},
+  body?: object,
   token?: string
 ): Promise<APIResponse> {
   const options: RequestInit = {
@@ -38,7 +38,23 @@ function logout(token: string) {
   return apiCall("/auth/logout", "POST", {}, token);
 }
 
+function createBooking(
+  token: string,
+  spaceid: any,
+  starttime: any,
+  endtime: any,
+  description: any
+) {
+  return apiCall("/bookings/create", "POST", { spaceid, starttime, endtime, description }, token);
+}
+
+function currentBookings(token: string) {
+  return apiCall("/bookings/current", "GET", undefined, token);
+}
+
 export default {
   login,
   logout,
+  createBooking,
+  currentBookings,
 }

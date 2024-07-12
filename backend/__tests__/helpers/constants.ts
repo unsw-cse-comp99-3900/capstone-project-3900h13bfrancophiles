@@ -1,7 +1,7 @@
 
 export const API_URL = 'http://localhost:2001';
 
-export const BASE_TIME = new Date("2024-07-01T12:00:00+11:00");
+export const BASE_TIME = new Date("2024-07-01T12:00:00+10:00");
 
 export const ADMINS = [
   {
