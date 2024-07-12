@@ -1,11 +1,10 @@
 // Spaces endpoint handlers
 
 import { db } from '../index'
-import { eq, and, asc, gt } from "drizzle-orm"
+import { eq, and, asc, gt, sql } from "drizzle-orm"
 import { hotdesk, room, space, booking } from '../../drizzle/schema';
-import { TypedGETRequest, TypedResponse, Room, Space, Booking, AnonymousBooking } from '../types';
+import { TypedGETRequest, TypedResponse, Room, Space, AnonymousBooking } from '../types';
 import { anonymiseBooking, formatBookingDates } from '../utils';
-import typia from 'typia';
 
 export async function roomDetails(
   req: TypedGETRequest,
@@ -33,15 +32,10 @@ export async function roomDetails(
 type SingleSpaceRequest = { spaceId: string };
 
 export async function singleSpaceDetails(
-  req: TypedGETRequest<{}, SingleSpaceRequest>,
-  res: TypedResponse<{ space: Space, isRoom: Boolean }>,
+  req: TypedGETRequest<SingleSpaceRequest>,
+  res: TypedResponse<{ space: Space }>,
 ) {
   try {
-    if (!typia.is<SingleSpaceRequest>(req.params)) {
-      res.status(400).json({ error: "Invalid input" });
-      return;
-    }
-
     // TODO: Maybe find a way to distinguish between room/desk?
     // Try get it as a room
     const roomRes = await db
@@ -57,7 +51,7 @@ export async function singleSpaceDetails(
       .where(eq(room.id, req.params.spaceId));
 
     if (roomRes.length) {
-      res.json({ space: roomRes[0], isRoom: true });
+      res.json({ space: roomRes[0] });
       return;
     }
 
@@ -75,7 +69,7 @@ export async function singleSpaceDetails(
       .where(eq(hotdesk.id, req.params.spaceId));
 
     if (deskRes.length) {
-      res.json({ space: deskRes[0], isRoom: false });
+      res.json({ space: deskRes[0] });
       return;
     }
 
@@ -85,16 +79,27 @@ export async function singleSpaceDetails(
   }
 }
 
+export async function allSpaces(
+  req: TypedGETRequest,
+  res: TypedResponse<{ spaces: { id: string, name: string, isRoom: boolean }[] }>,
+) {
+  const subquery = db.select({ data: room.id }).from(room);
+  const spaces = await db
+    .select({
+      id: space.id,
+      name: space.name,
+      isRoom: sql<boolean>`${space.id} in (${subquery})`,
+    })
+    .from(space);
+
+  res.json({ spaces });
+}
+
 export async function spaceAvailabilities(
-  req: TypedGETRequest<{}, SingleSpaceRequest>,
+  req: TypedGETRequest<SingleSpaceRequest>,
   res: TypedResponse<{ bookings: AnonymousBooking[] }>,
 ) {
   try {
-    if (!typia.is<SingleSpaceRequest>(req.params)) {
-      res.status(400).json({ error: "Invalid input" });
-      return;
-    }
-
     const currentTime = new Date().toISOString();
 
     const spaceExists = await db

@@ -45,10 +45,8 @@ export interface TypedRequest<B = Empty, P = Empty> extends Request<P> {
  * Q is the type of the query params (req.query)
  * P is the type of the path params (req.params)
  */
-export interface TypedGETRequest<Q = Empty, P = Empty> extends Request<P,any,any,Q> {
-  query: Q,
-  params: P,
-  token: TokenPayload
+export interface TypedGETRequest<P = Empty> extends TypedRequest<Empty, P> {
+  query: Record<string, string>,
 }
 
 /*
@@ -62,7 +60,25 @@ export interface TypedResponse<T = Empty> extends Response {
 /**
  * Booking typed response
  */
-export type Booking = { id: number, zid: number, starttime: string, endtime: string, spaceid: string, currentstatus: string, description: string, checkintime: string | null, checkouttime: string | null };
+export type Booking = {
+  id: number,
+  zid: number,
+  starttime: string,
+  endtime: string,
+  spaceid: string,
+  currentstatus: BookingStatus,
+  description: string,
+  checkintime: string | null,
+  checkouttime: string | null
+};
+
+export interface BookingEditRequest {
+  id: number;
+  starttime?: string & tags.Format<'date-time'>;
+  endtime?: string & tags.Format<'date-time'>;
+  spaceid?: string;
+  description?: string;
+}
 
 export type AnonymousBooking = Omit<Booking, 'zid' | 'description'>;
 
@@ -70,9 +86,21 @@ export type AnonymousBooking = Omit<Booking, 'zid' | 'description'>;
 /**
  * Room typed response
  */
-export type Room = { id: string, name: string, type: string, capacity: number, roomnumber: string };
+export type Room = {
+  id: string,
+  name: string,
+  type: string,
+  capacity: number,
+  roomnumber: string
+};
 
-export type Desk = { id: string, name: string, floor: string, room: string, desknumber: number };
+export type Desk = {
+  id: string,
+  name: string,
+  floor: string,
+  room: string,
+  desknumber: number
+};
 
 export type Space = Room | Desk;
 
