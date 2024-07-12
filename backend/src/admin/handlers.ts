@@ -3,7 +3,7 @@ import {Booking, TypedGETRequest, TypedResponse} from "../types";
 import {db} from "../index";
 import {booking} from "../../drizzle/schema";
 import {and, asc, count, desc, eq, gt} from "drizzle-orm";
-import {formatBookingDates} from "../utils";
+import {formatBookingDates, now} from "../utils";
 
 interface PendingBookingsRequest {
   page: number & tags.Minimum<1>;
@@ -26,8 +26,7 @@ export async function pendingBookings (
     const page = parsedQuery.page;
     const limit = parsedQuery.limit;
     const offset = (page - 1) * limit;
-    const currentTime = new Date().toISOString();
-
+    const currentTime = (await now()).toISOString();
 
     const pendingBookingsTotal = await db
       .select({ count: count() })

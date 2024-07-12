@@ -2,7 +2,7 @@ import { Booking, IDatetimeRange, TypedGETRequest, TypedResponse } from '../type
 import { db } from '../index';
 import { booking, hotdesk, room } from '../../drizzle/schema';
 import { and, asc, count, desc, eq, gt, gte, inArray, lt, lte } from 'drizzle-orm';
-import { formatBookingDates } from '../utils';
+import { formatBookingDates, now } from '../utils';
 import typia, { tags } from 'typia';
 
 export async function currentBookings(
@@ -11,7 +11,7 @@ export async function currentBookings(
 ) {
   try {
     const zid = req.token.user;
-    const currentTime = new Date().toISOString();
+    const currentTime = (await now()).toISOString();
 
     const currentBookings = await db
       .select()
@@ -47,7 +47,7 @@ export async function upcomingBookings(
     }
 
     const zid = req.token.user;
-    const currentTime = new Date().toISOString();
+    const currentTime = (await now()).toISOString();
 
     let subQuery;
     switch (parsedQuery.type) {
@@ -101,7 +101,7 @@ export async function pastBookings(
     const page = parsedQuery.page;
     const limit = parsedQuery.limit;
     const offset = (page - 1) * limit;
-    const currentTime = new Date().toISOString();
+    const currentTime = (await now()).toISOString();
 
     let subQuery;
     switch (parsedQuery.type) {
