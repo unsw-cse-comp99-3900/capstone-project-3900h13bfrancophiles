@@ -219,25 +219,33 @@ export async function deleteBooking(
       return;
     }
 
-    const deletedBooking = await db
-      .delete(booking)
-      .where(
-        and(
-          eq(booking.id, req.body.id),
-          eq(booking.zid, req.token.user)
+    let formattedBooking: Booking;
+    try {
+      const res = await db
+        .update(booking)
+        .set({
+          currentstatus: "deleted",
+        })
+        .where(
+          and(
+            eq(booking.id, req.body.id),
+            eq(booking.zid, req.token.user)
+          )
         )
-      )
-      .returning();
+        .returning();
 
-    if (deletedBooking.length != 1) {
-      res.status(403).json({ error: "User does not own this booking ID" });
+      formattedBooking = formatBookingDates(res[0]);
+    } catch (e: any) {
+      res.status(400).json({ error: `${e}` });
       return;
     }
 
-    // TODO: send an email to the user confirming deletion
-    // email.deletionConfirmation(req.token.user, deletedBooking[0])
+    // TODO: send an email to the user confirming new booking details
+    // email.editConfirmation(req.token.user, updatedBooking[0])
 
-    res.json({});
+    // TODO: trigger admin reapproval if newStatus is pending
+
+    res.json({ booking: formattedBooking });
   } catch (error) {
     res.status(500);
   }

@@ -38,7 +38,7 @@ CREATE TABLE IF NOT EXISTS room (
 );
 
 CREATE TYPE BookingStatusEnum AS ENUM (
-    'pending', 'confirmed', 'declined', 'checkedin', 'completed'
+    'pending', 'confirmed', 'declined', 'checkedin', 'completed', 'deleted'
 );
 
 CREATE TABLE IF NOT EXISTS booking (
