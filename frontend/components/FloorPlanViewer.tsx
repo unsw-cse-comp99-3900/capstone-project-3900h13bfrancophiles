@@ -6,12 +6,16 @@ import { Box } from '@mui/joy';
 import Image from 'next/image';
 import { deskData } from '@/app/data';
 import DeskIcon from './DeskIcon';
+import { Status } from '@/types';
 
 interface FloorPlanViewerProps {
+  selectedDesk: string;
+  setSelectedDesk: React.Dispatch<React.SetStateAction<string>>;
   level: string;
+  statuses: { [spaceId: string]: Status };
 }
 
-const FloorPlanViewer = ({ level }: FloorPlanViewerProps) => {
+const FloorPlanViewer = ({ level, selectedDesk, setSelectedDesk, statuses}: FloorPlanViewerProps) => {
   const desks = deskData.find(data => data.level === level)?.desks ?? [];
 
   return (
@@ -29,8 +33,16 @@ const FloorPlanViewer = ({ level }: FloorPlanViewerProps) => {
           contentStyle={{ width: "var(--size-var)", height: "var(--size-var)", position: "relative" }}
         >
           <Image src={`/${level}.svg`} fill alt={`${level} floorplan`} style={{ position: "absolute" }}/>
-          {desks.map(desk => (
-            <DeskIcon key={desk.id} {...desk} />
+          {desks.map((desk, index) => (
+            <DeskIcon
+            key={index}
+            id={desk.id}
+            x={desk.x}
+            y={desk.y}
+            selectedDesk={selectedDesk}
+            setSelectedDesk={setSelectedDesk}
+            status={statuses[desk.id]}
+            />
           ))}
         </TransformComponent>
       </TransformWrapper>
