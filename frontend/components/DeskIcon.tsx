@@ -105,10 +105,10 @@ const Pin = ({ color, on }: PinProps) => {
 
 
 const DeskIcon = ({ id, x, y, selectedDesk, setSelectedDesk, setSelectedUser, setAvailable, status }: DeskIconProps) => {
-  const user = status ? (status.status === "available" ? null : getUser(status.booking.zid)) : null;
+  const user = status ? (status.status === "Available" ? null : getUser(status.booking.zid)) : null;
 
   const handleClick = () => {
-    setAvailable(status && status.status === "available");
+    setAvailable(status && status.status === "Available");
     setSelectedDesk(id);
     setSelectedUser(user);
   }
@@ -132,12 +132,12 @@ const DeskIcon = ({ id, x, y, selectedDesk, setSelectedDesk, setSelectedUser, se
           onClick={() => handleClick()}
           sx={{ overflow: "visible", height: "var(--size-var)", width: "var(--size-var)" }}
         >
-          <Pin color={status && status.status === "available" ? "#207920" : "#0B6BCB"} on={selectedDesk === id ? true : false} />
+          <Pin color={status && status.status === "Available" ? "#207920" : "#0B6BCB"} on={selectedDesk === id ? true : false} />
           <Avatar
             variant="solid"
-            color={status && status.status === "available" ? "success" : "primary"}
+            color={status && status.status === "Available" ? "success" : "primary"}
             src={
-              status && status.status === "available" ? "DeskIcon1.svg" :
+              status && status.status === "Available" ? "DeskIcon1.svg" :
                 user && user.name !== "anonymous" ? `data:image/jpeg;base64,${user.image}` :
                   "/defaultUser.svg"
             }

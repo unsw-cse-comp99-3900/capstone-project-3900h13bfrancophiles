@@ -6,7 +6,7 @@ import { Box } from '@mui/joy';
 import Image from 'next/image';
 import { deskData } from '@/app/data';
 import DeskIcon from './DeskIcon';
-import { Status, UserData } from '@/types';
+import { StatusResponse, UserData } from '@/types';
 
 interface FloorPlanViewerProps {
   selectedDesk: string;
@@ -14,7 +14,7 @@ interface FloorPlanViewerProps {
   setSelectedUser: React.Dispatch<React.SetStateAction<UserData | null>>;
   setAvailable: React.Dispatch<React.SetStateAction<boolean>>;
   level: string;
-  statuses: { [spaceId: string]: Status };
+  statuses: StatusResponse;
 }
 
 const FloorPlanViewer = ({ level, selectedDesk, setSelectedDesk, setSelectedUser, setAvailable, statuses }: FloorPlanViewerProps) => {

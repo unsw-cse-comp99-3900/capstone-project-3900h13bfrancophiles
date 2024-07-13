@@ -28,9 +28,6 @@ export type Desk = {
 
 export type Space = Room | Desk;
 
-export type Status = { status: "available" }
-  | { status: "unavailable", booking: Booking };
-
 export type BookingUser =   {
   zid: number;
   email: string;
@@ -50,7 +47,7 @@ export type UserData = {
 
 export type SpaceOption = { name: string; id: string; isRoom: boolean };
 
-type Status =
+export type Status =
   | { status: "Available" }
   | { status: "Unavailable"; booking: Booking };
 

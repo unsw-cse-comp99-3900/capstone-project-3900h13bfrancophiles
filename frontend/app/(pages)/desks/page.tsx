@@ -4,10 +4,10 @@ import FloorPlanViewer from "@/components/FloorPlanViewer";
 import { Tab, TabList, TabPanel, Tabs, Stack, Input, Button, Box, Sheet, Avatar, Modal, ModalClose, ModalDialog, DialogTitle, DialogContent, Typography } from "@mui/joy";
 import { deskData } from '@/app/data';
 import * as React from 'react';
-import { Status, UserData } from "@/types";
+import { StatusResponse, UserData } from "@/types";
 import useStatus from "@/hooks/useStatus";
 
-const getStatuses = (datetimeStart: string, datetimeEnd: string): { [spaceId: string]: Status } => {
+const getStatuses = (datetimeStart: string, datetimeEnd: string): StatusResponse => {
   const s = useStatus(datetimeStart, datetimeEnd);
   return s && s.data ? s.data : {};
 }
@@ -31,7 +31,7 @@ export default function desks() {
   const [user, setUser] = React.useState<null | UserData>(null);
   const [open, setOpen] = React.useState(false); // for confirmation modal
 
-  const statuses: { [spaceId: string]: Status } = getStatuses(`${date}T${startTime}:00Z`, `${date}T${endTime}:00Z`);
+  const statuses = getStatuses(`${date}T${startTime}:00Z`, `${date}T${endTime}:00Z`);
 
   return (
     <React.Fragment>
