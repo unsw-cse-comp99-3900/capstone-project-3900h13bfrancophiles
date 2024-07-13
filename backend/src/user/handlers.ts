@@ -1,11 +1,9 @@
-import { Booking, IDatetimeRange, TypedGETRequest, TypedResponse } from '../types';
+import { User, TypedGETRequest, TypedResponse } from '../types';
 import typia from 'typia';
 import { db } from '../index';
-import { booking, person } from '../../drizzle/schema';
+import { person } from '../../drizzle/schema';
 import { eq } from 'drizzle-orm';
-import { formatBookingDates } from '../utils';
 
-type User = { name: string, image: null | string };
 type Zid = { zid: number };
 
 export async function userData(

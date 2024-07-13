@@ -82,6 +82,13 @@ export interface BookingEditRequest {
 
 export type AnonymousBooking = Omit<Booking, 'zid' | 'description'>;
 
+/**
+ * User typed response
+*/
+export type User = {
+  name: string,
+  image: null | string
+};
 
 /**
  * Room typed response
