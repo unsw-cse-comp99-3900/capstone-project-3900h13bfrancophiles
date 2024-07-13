@@ -308,7 +308,7 @@ export default function Rooms() {
         sx={{ gridGap: 30 }}
       >
         {displayedRooms.map((room) => (
-          <RoomCard key={room.id} room={room} handleBook={setSelectedRoom} />
+          <RoomCard key={room.id} room={room} handleBook={setSelectedRoom} datetimeStart={start.toISOString()} datetimeEnd={end.toISOString()} />
         ))}
       </Box>
     </>
