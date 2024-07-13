@@ -38,8 +38,8 @@ export async function sendBookingEmail(zid: number, booking: Booking, template: 
     const emailContent = {
         name: emailRecipient.name,
         bookingid: String(booking.id),
-        starttime: String(booking.starttime),
-        endtime: String(booking.endtime),
+        starttime: booking.starttime,
+        endtime: booking.endtime,
         spaceid: booking.spaceid,
         currentstatus: booking.currentstatus,
         description: booking.description
