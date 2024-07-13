@@ -31,7 +31,7 @@ export default function desks() {
   const [user, setUser] = React.useState<null | UserData>(null);
   const [open, setOpen] = React.useState(false); // for confirmation modal
 
-  const statuses: { [spaceId: string]: Status } = getStatuses("2024-10-07T16:30:00.000Z", "2024-10-07T17:30:00.000Z");
+  const statuses: { [spaceId: string]: Status } = getStatuses(`${date}T${startTime}:00Z`, `${date}T${endTime}:00Z`);
 
   return (
     <React.Fragment>
