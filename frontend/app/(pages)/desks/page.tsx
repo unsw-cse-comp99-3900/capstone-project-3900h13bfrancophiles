@@ -12,6 +12,7 @@ const getStatuses = (datetimeStart: string, datetimeEnd: string): StatusResponse
   return s && s.data ? s.data : {};
 }
 
+// TODO: UPDATE DESK STATUS IN TOP RIGHT WINDOW WHEN TIME SELECTION CHANGES
 export default function desks() {
   const [date, setDate] = React.useState(
     new Date().toISOString().split("T")[0].toString()
@@ -83,6 +84,7 @@ export default function desks() {
                   .toISOString()
                   .split("T")[0];
                 setDate(d);
+                setSelectedDesk("");
               }}
             />
             <Stack direction="row" spacing={1} width={{ xs: "100%", sm: "auto" }}>
@@ -93,6 +95,7 @@ export default function desks() {
                 size="sm"
                 onChange={(event) => {
                   setStartTime(event.target.value);
+                  setSelectedDesk("");
                 }}
               />
               <Input
@@ -102,6 +105,7 @@ export default function desks() {
                 size="sm"
                 onChange={(event) => {
                   setEndTime(event.target.value);
+                  setSelectedDesk("");
                 }}
               />
             </Stack>

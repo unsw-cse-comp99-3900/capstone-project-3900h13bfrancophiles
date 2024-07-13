@@ -14,7 +14,7 @@ interface DeskIconProps {
   setSelectedDesk: React.Dispatch<React.SetStateAction<string>>,
   setSelectedUser: React.Dispatch<React.SetStateAction<UserData | null>>,
   setAvailable: React.Dispatch<React.SetStateAction<boolean>>,
-  status: Status,
+  status: Status
 }
 
 interface PinProps {
@@ -44,7 +44,7 @@ const getInitials = (name: string) => {
 }
 
 const activeStyle = {
-  transform: "scale(0.8)",
+  transform: "scale(0.8) translate(0%, -70%)",
   zIndex: 5
 }
 
@@ -65,7 +65,7 @@ const deskStyle = {
 
 const Pin = ({ color, on }: PinProps) => {
   return (
-    <Box sx={{ ...deskStyle }}  >
+    <Box sx={{ ...deskStyle, transform: "translate(0%, -55%)" }}  >
       <svg
         version="1.1"
         xmlns="http://www.w3.org/2000/svg"
@@ -145,7 +145,7 @@ const DeskIcon = ({ id, x, y, selectedDesk, setSelectedDesk, setSelectedUser, se
               ...deskStyle,
               ...(selectedDesk === id ? activeStyle : inactiveStyle),
               zIndex: 3,
-              transition: "transform 0.2s, box-shadow 0.2s",
+              transition: "transform 0.1s, box-shadow 0.1s",
             }}
           >
             {user && user.name ? getInitials(user.name) : ""}
