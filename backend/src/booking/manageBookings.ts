@@ -316,7 +316,6 @@ export async function editBooking(
       return;
     }
 
-    // TODO: send an email to the user confirming new booking details
     sendBookingEmail(req.token.user, formattedBooking, BOOKING_EDIT);
 
     // TODO: trigger admin reapproval if newStatus is pending
