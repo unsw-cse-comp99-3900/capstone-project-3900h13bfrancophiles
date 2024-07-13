@@ -118,7 +118,7 @@ const DeskIcon = ({ id, x, y, selectedDesk, setSelectedDesk, setSelectedUser, se
       key={id}
       sx={{
         display: status ? "block" : "none",
-        "--size-var": { xs: "33px", sm: "45px", md: "50px" },
+        "--size-var": { xs: "27px", sm: "35px", md: "40px" },
         position: "absolute",
         overflow: "visible",
         transform: "translate(-50%, -50%)",
