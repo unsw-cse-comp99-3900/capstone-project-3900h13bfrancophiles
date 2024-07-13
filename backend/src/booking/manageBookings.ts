@@ -1,4 +1,7 @@
-// Booking endpoint handlers
+import { and, eq, gt, lt } from "drizzle-orm"
+import { booking } from '../../drizzle/schema';
+import isEqual from 'lodash/isEqual';
+import typia from "typia";
 
 import { db } from '../index'
 import {
@@ -8,11 +11,11 @@ import {
   TypedRequest,
   TypedResponse
 } from '../types';
-import { and, eq, gt, lt } from "drizzle-orm"
-import { booking } from '../../drizzle/schema';
-import typia from "typia";
-import isEqual from 'lodash/isEqual';
-import { formatBookingDates, initialBookingStatus, withinDateRange as dateInRange } from '../utils';
+import {
+  formatBookingDates,
+  initialBookingStatus,
+  withinDateRange as dateInRange
+} from '../utils';
 
 export async function checkInBooking(
   req: TypedRequest<{ id: number }>,

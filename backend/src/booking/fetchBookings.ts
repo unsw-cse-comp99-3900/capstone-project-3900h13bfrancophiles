@@ -1,9 +1,15 @@
-import { Booking, IDatetimeRange, TypedGETRequest, TypedResponse } from '../types';
-import { db } from '../index';
 import { booking, hotdesk, room } from '../../drizzle/schema';
 import { and, asc, count, desc, eq, gt, gte, inArray, lt, lte, ne } from 'drizzle-orm';
-import { formatBookingDates } from '../utils';
 import typia, { tags } from 'typia';
+
+import { db } from '../index';
+import {
+  Booking,
+  IDatetimeRange,
+  TypedGETRequest,
+  TypedResponse
+} from '../types';
+import { formatBookingDates } from '../utils';
 
 export async function currentBookings(
   req: TypedGETRequest,

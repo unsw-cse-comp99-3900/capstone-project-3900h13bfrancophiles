@@ -1,7 +1,8 @@
-import { Booking, AnonymousBooking, BookingStatus, BookingEditRequest, USER_GROUPS, UserGroup } from './types';
 import { space } from '../drizzle/schema';
 import { eq } from 'drizzle-orm';
+
 import { db } from './index';
+import { AnonymousBooking, Booking, BookingStatus, USER_GROUPS, UserGroup } from './types';
 
 /**
  * Format the booking dates by adding a Z to the end to signify UTC time. It

@@ -1,8 +1,14 @@
-import { Booking, IDatetimeRange, TypedGETRequest, TypedResponse } from '../types';
-import typia from 'typia';
-import { db } from '../index';
 import { booking, space } from '../../drizzle/schema';
 import { and, gte, lte } from 'drizzle-orm';
+import typia from 'typia';
+
+import { db } from '../index';
+import {
+  Booking,
+  IDatetimeRange,
+  TypedGETRequest,
+  TypedResponse
+} from '../types';
 import { formatBookingDates } from '../utils';
 
 type Status = { status: "available" }

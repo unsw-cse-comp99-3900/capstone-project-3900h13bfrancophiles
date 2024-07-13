@@ -1,8 +1,13 @@
-import {TypedGETRequest, TypedResponse, User} from "../types";
-import {db} from "../index";
-import {person} from "../../drizzle/schema";
-import {eq} from "drizzle-orm";
-import typia, {tags} from "typia";
+import { person } from "../../drizzle/schema";
+import { eq } from "drizzle-orm";
+import typia, { tags } from "typia";
+
+import { db } from "../index";
+import {
+  TypedGETRequest,
+  TypedResponse,
+  User
+} from "../types";
 
 interface UserRequest {
   zid: number & tags.Minimum<1000000> & tags.Maximum<9999999>;

@@ -6,8 +6,22 @@ import morgan from "morgan";
 import { DATABASE_URL, PORT } from '../config';
 import { Pool } from 'pg';
 import { drizzle } from "drizzle-orm/node-postgres";
-import { login, logout } from './auth/handlers';
-import { authoriseAtLeast, validateToken } from './auth/middleware';
+
+import { pendingBookings } from "./admin/handlers";
+import {
+  login,
+  logout
+} from './auth/handlers';
+import {
+  authoriseAtLeast,
+  validateToken
+} from './auth/middleware';
+import {
+  currentBookings,
+  pastBookings,
+  rangeOfBookings,
+  upcomingBookings
+} from './booking/fetchBookings';
 import {
   checkInBooking,
   checkOutBooking,
@@ -15,11 +29,14 @@ import {
   createBooking,
   editBooking
 } from './booking/manageBookings';
-import { allSpaces, roomDetails, singleSpaceDetails, spaceAvailabilities } from "./spaces/handlers";
+import {
+  allSpaces,
+  roomDetails,
+  singleSpaceDetails,
+  spaceAvailabilities
+} from "./spaces/handlers";
 import { spaceStatus } from './status/handlers';
-import { currentBookings, pastBookings, rangeOfBookings, upcomingBookings } from './booking/fetchBookings';
-import {pendingBookings} from "./admin/handlers";
-import {userDetails} from "./user/handlers";
+import { userDetails } from "./user/handlers";
 
 const pool = new Pool({
   connectionString: DATABASE_URL,
