@@ -193,8 +193,6 @@ export default function Rooms() {
     sort ? sortedRooms : sortedRooms.reverse()
   );
 
-  console.log(start.toISOString())
-
   return (
     <>
       {!!selectedRoom && <BookingModal
