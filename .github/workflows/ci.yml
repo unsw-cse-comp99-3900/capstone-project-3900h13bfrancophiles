@@ -30,9 +30,5 @@ jobs:
         run: yarn test
         working-directory: backend
         env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_HOST: localhost
-          POSTGRES_PORT: 5432
           PORT: 2001
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/3900-test

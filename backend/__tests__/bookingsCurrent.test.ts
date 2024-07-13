@@ -2,7 +2,7 @@ import api from './helpers/api';
 import { ADMINS, ROOM } from './helpers/constants';
 import { minutesFromBase, mockCurrentTime } from './helpers/helpers';
 
-describe("/auth/login", () => {
+describe("/bookings/current", () => {
   test("Success - one booking", async () => {
     let res = await api.login(`z${ADMINS[0].zid}`, `z${ADMINS[0].zid}`);
     const token = res.json.token;

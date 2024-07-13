@@ -67,3 +67,14 @@ To run the frontend in development mode (automatically restarts whenever code ch
 ```
 yarn dev
 ```
+
+## Testing
+### Backend
+For backend testing, you will need to create a `.env.test` file. This will be of the same format as the normal backend `.env` file. However, it's recommended you change the `PORT` and database name in `DATABASE_URL` so it does not conflict with any
+current running instance of the backend. Example `.env.test`:
+```env
+PORT=2001
+DATABASE_URL=postgresql://franco:franco@localhost:5432/3900-test
+```
+
+To run the tests, just run `yarn test`. This will spin up a test database and backend server, there's no need to have your backend running separately like in COMP1531.

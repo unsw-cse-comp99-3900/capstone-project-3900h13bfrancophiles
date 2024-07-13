@@ -14,13 +14,14 @@ module.exports = async function (globalConfig, projectConfig) {
   configDotenv({ path: ".env.test" });
 
   // Create test database
-  const init_client = new Client({
-    connectionString: process.env.DATABASE_URL.replace("3900-test", "postgres"),
+  const dbName = process.env.DATABASE_URL.split("/")[3];
+  const initClient = new Client({
+    connectionString: process.env.DATABASE_URL.replace(dbName, "postgres"),
   });
-  await init_client.connect();
-  await init_client.query(`DROP DATABASE IF EXISTS "3900-test";`);
-  await init_client.query(`CREATE DATABASE "3900-test";`);
-  await init_client.end();
+  await initClient.connect();
+  await initClient.query(`DROP DATABASE IF EXISTS "${dbName}";`);
+  await initClient.query(`CREATE DATABASE "${dbName}";`);
+  await initClient.end();
 
   // Initial database with schema and dummy data
   globalThis.__pgclient__ = new Client({
@@ -38,7 +39,7 @@ module.exports = async function (globalConfig, projectConfig) {
   console.log("\nStarting backend server...");
   try {
     // Make sure port 2001 is free
-    execSync("kill $(lsof -t -i:2001)", { stdio: 'ignore' });
+    execSync(`kill $(lsof -t -i:${process.env.PORT || 2000})`, { stdio: 'ignore' });
   } catch (e) {}
   globalThis.__server__ = spawn(
     'yarn', ['dev', '-q'],
