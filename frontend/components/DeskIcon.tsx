@@ -1,15 +1,25 @@
 'use client';
 
-import React, { use } from 'react';
+import React from 'react';
 import { KeepScale } from 'react-zoom-pan-pinch';
 import { Box, Avatar } from '@mui/joy';
-import { Status } from '@/types';
+import { Status, UserData } from '@/types';
 import useUser from '@/hooks/useUser';
 
+interface DeskIconProps {
+  id: string,
+  x: number,
+  y: number,
+  selectedDesk: string,
+  setSelectedDesk: React.Dispatch<React.SetStateAction<string>>,
+  setSelectedUser: React.Dispatch<React.SetStateAction<UserData | null>>,
+  setAvailable: React.Dispatch<React.SetStateAction<boolean>>,
+  status: Status,
+}
 
-type UserData = {
-  name: string,
-  image: string | null,
+interface PinProps {
+  color: string,
+  on: boolean
 }
 
 const anonymousUser: UserData = {
@@ -20,7 +30,7 @@ const anonymousUser: UserData = {
 const getUser = (zid: number) => {
   const { user, isLoading, error } = useUser(zid);
   if (user) {
-    return { name: user.fullname, image: user.image} ;
+    return { name: user.fullname, image: user.image };
   } else {
     return anonymousUser;
   }
@@ -31,20 +41,6 @@ const getInitials = (name: string) => {
   const firstLetter = words[0] ? words[0][0] : '';
   const secondLetter = words[1] ? words[1][0] : '';
   return (firstLetter + secondLetter).toUpperCase();
-}
-
-interface DeskIconProps {
-  id: string,
-  x: number,
-  y: number,
-  selectedDesk: string,
-  setSelectedDesk: React.Dispatch<React.SetStateAction<string>>,
-  status: Status,
-}
-
-interface PinProps {
-  color: string,
-  on: boolean
 }
 
 const activeStyle = {
@@ -85,17 +81,17 @@ const Pin = ({ color, on }: PinProps) => {
         }}
       >
         <defs>
-        <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
-          <feGaussianBlur in="SourceAlpha" stdDeviation="3" />
-          <feOffset dx="2" dy="2" result="offsetblur" />
-          <feFlood floodColor="rgba(0, 0, 0, 0.2)" />
-          <feComposite in2="offsetblur" operator="in" />
-          <feMerge>
-            <feMergeNode />
-            <feMergeNode in="SourceGraphic" />
-          </feMerge>
-        </filter>
-      </defs>
+          <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur in="SourceAlpha" stdDeviation="3" />
+            <feOffset dx="2" dy="2" result="offsetblur" />
+            <feFlood floodColor="rgba(0, 0, 0, 0.2)" />
+            <feComposite in2="offsetblur" operator="in" />
+            <feMerge>
+              <feMergeNode />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+        </defs>
         <path
           fill={color}
           d="M50,25c0,8.2-9.7,20.3-9.7,20.3L25,64.1L9.7,45.2c0,0-9.8-11.7-9.7-20.2C0.2,12.7,10.4,0,25,0
@@ -104,12 +100,18 @@ const Pin = ({ color, on }: PinProps) => {
         />
       </svg>
     </Box>
-
   );
 };
 
-const DeskIcon = ({ id, x, y, selectedDesk, setSelectedDesk, status }: DeskIconProps) => {
+
+const DeskIcon = ({ id, x, y, selectedDesk, setSelectedDesk, setSelectedUser, setAvailable, status }: DeskIconProps) => {
   const user = status ? (status.status === "available" ? null : getUser(status.booking.zid)) : null;
+
+  const handleClick = () => {
+    setAvailable(status && status.status === "available");
+    setSelectedDesk(id);
+    setSelectedUser(user);
+  }
 
   return (
     <Box
@@ -127,7 +129,7 @@ const DeskIcon = ({ id, x, y, selectedDesk, setSelectedDesk, status }: DeskIconP
     >
       <KeepScale style={{ height: "var(--size-var)", width: "var(--size-var)", overflow: "visible" }}>
         <Box
-          onClick={() => setSelectedDesk(id)}
+          onClick={() => handleClick()}
           sx={{ overflow: "visible", height: "var(--size-var)", width: "var(--size-var)" }}
         >
           <Pin color={status && status.status === "available" ? "#207920" : "#0B6BCB"} on={selectedDesk === id ? true : false} />
@@ -136,8 +138,8 @@ const DeskIcon = ({ id, x, y, selectedDesk, setSelectedDesk, status }: DeskIconP
             color={status && status.status === "available" ? "success" : "primary"}
             src={
               status && status.status === "available" ? "DeskIcon1.svg" :
-              user && user.name !== "anonymous" ? `data:image/jpeg;base64,${user.image}` :
-              "/defaultUser.svg"
+                user && user.name !== "anonymous" ? `data:image/jpeg;base64,${user.image}` :
+                  "/defaultUser.svg"
             }
             sx={{
               ...deskStyle,

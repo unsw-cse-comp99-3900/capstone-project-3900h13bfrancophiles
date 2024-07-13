@@ -152,7 +152,17 @@ INSERT INTO space (id, name, minReqGrp, minBookGrp) VALUES
     ('K-K17-403', 'K17 403', 'hdr', 'admin'),
     ('K-K17-501M', 'K17 501M', 'csestaff', 'admin'),
     ('K-K17-508', 'K17 508', 'csestaff', 'admin'),
-    ('K-J17-504', 'J17 Design Next Studio', 'csestaff', 'admin');
+    ('K-J17-504', 'J17 Design Next Studio', 'csestaff', 'admin'),
+    ('K-K17-201-1', 'Desk 1', 'hdr', 'hdr'),
+    ('K-K17-201-2', 'Desk 2', 'hdr', 'hdr'),
+    ('K-K17-201-3', 'Desk 3', 'hdr', 'hdr'),
+    ('K-K17-201-4', 'Desk 4', 'hdr', 'hdr'),
+    ('K-K17-301-11', 'Desk 11', 'hdr', 'hdr'),
+    ('K-K17-301-12', 'Desk 12', 'hdr', 'hdr'),
+    ('K-K17-301-13', 'Desk 13', 'hdr', 'hdr'),
+    ('K-K17-301-14', 'Desk 14', 'hdr', 'hdr'),
+    ('K-K17-301-15', 'Desk 15', 'hdr', 'hdr'),
+    ('K-K17-301-16', 'Desk 16', 'hdr', 'hdr');
 
 INSERT INTO room (id, capacity, roomNumber, type) VALUES
     ('K-K17-B01', 100, 'B01', 'Seminar Room'),
@@ -169,6 +179,18 @@ INSERT INTO room (id, capacity, roomNumber, type) VALUES
     ('K-K17-501M', 15, '501M', 'Meeting Room'),
     ('K-K17-508', 6, '508', 'Conference Room'),
     ('K-J17-504', 110, '504', 'Seminar Room');
+
+INSERT INTO hotdesk (id, floor, room, deskNumber) VALUES
+    ('K-K17-201-1', '2', '201', 1),
+    ('K-K17-201-2', '2', '201', 2),
+    ('K-K17-201-3', '2', '201', 3),
+    ('K-K17-201-4', '2', '201', 4),
+    ('K-K17-301-11', '3', '301', 1),
+    ('K-K17-301-12', '3', '301', 12),
+    ('K-K17-301-13', '3', '301', 13),
+    ('K-K17-301-14', '3', '301', 14),
+    ('K-K17-301-15', '3', '301', 15),
+    ('K-K17-301-16', '3', '301', 16);
 
 -- temporary person
 INSERT INTO person VALUES (
@@ -217,10 +239,11 @@ INSERT INTO booking (zId, startTime, endTime, spaceId, currentStatus, descriptio
     (1234567, '2024-10-04T16:30', '2024-10-04T17:30', 'K-K17-402', 'pending', 'meeting'),
     (1234567, '2024-10-05T16:30', '2024-10-05T17:30', 'K-K17-402', 'pending', 'event'),
     (1234567, '2024-10-06T16:30', '2024-10-06T17:30', 'K-K17-402', 'pending', 'studying'),
-    (1234567, '2024-10-07T16:30', '2024-10-07T17:30', 'K-K17-402', 'declined', 'workshop');
+    (1234567, '2024-10-07T16:30', '2024-10-07T17:30', 'K-K17-402', 'declined', 'workshop'),
 
 -- upcoming desk bookings
-    (1234567, '2024-10-01T10:30', '2024-10-01T11:30', 'K-K17-301-12', 'confirmed', 'study'),
+    (1234567, '2024-10-07T16:30', '2024-10-07T17:30', 'K-K17-201-1', 'confirmed', 'studying'),
+    (7654321, '2024-10-07T16:30', '2024-10-07T17:30', 'K-K17-201-2', 'confirmed', 'studying');
 
 -- Reenable triggers for prod
 ALTER TABLE booking ENABLE TRIGGER trg_chk_create_booking_start_future;

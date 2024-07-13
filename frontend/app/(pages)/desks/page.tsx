@@ -4,61 +4,12 @@ import FloorPlanViewer from "@/components/FloorPlanViewer";
 import { Tab, TabList, TabPanel, Tabs, Stack, Input, Button, Box, Sheet, Avatar, Modal, ModalClose, ModalDialog, DialogTitle, DialogContent, Typography } from "@mui/joy";
 import { deskData } from '@/app/data';
 import * as React from 'react';
-import { Status } from "@/types";
-import useUser from "@/hooks/useUser";
+import { Status, UserData } from "@/types";
+import useStatus from "@/hooks/useStatus";
 
-type UserData = {
-  name: string,
-  image: string | null,
-}
-
-const anonymousUser: UserData = {
-  name: "anonymous",
-  image: null,
-}
-
-const exampleStatuses: { [spaceId: string]: Status } = {
-  "K-K17-201-1": { status: "available" },
-  "K-K17-201-2": { status: "available" },
-  "K-K17-201-3": {
-    status: "unavailable",
-    booking: {
-      id: 1,
-      zid: 1234567,
-      starttime: "3",
-      endtime: "4",
-      spaceid: "2",
-      currentstatus: "checked in",
-      description: "Umar is at this table!",
-      checkintime: null,
-      checkouttime: null
-    }
-  },
-  "K-K17-201-4": { status: "available" },
-  "K-K17-301-11": { status: "available" },
-  "K-K17-301-12": {
-    status: "unavailable",
-    booking: {
-      id: 1,
-      zid: 7654321,
-      starttime: "3",
-      endtime: "4",
-      spaceid: "2",
-      currentstatus: "checked in",
-      description: "Umar is at this table!",
-      checkintime: null,
-      checkouttime: null
-    }
-  },
-  "K-K17-301-13": { status: "available" },
-  "K-K17-301-14": { status: "available" },
-  "K-K17-301-15": { status: "available" },
-  "K-K17-301-16": { status: "available" },
-};
-
-// will eventually get backend data
-const getUser = (zid: number) => {
-  return useUser(zid);
+const getStatuses = (datetimeStart: string, datetimeEnd: string): { [spaceId: string]: Status } => {
+  const s = useStatus(datetimeStart, datetimeEnd);
+  return s && s.data ? s.data : {};
 }
 
 export default function desks() {
@@ -80,32 +31,7 @@ export default function desks() {
   const [user, setUser] = React.useState<null | UserData>(null);
   const [open, setOpen] = React.useState(false); // for confirmation modal
 
-  const statuses = exampleStatuses; // make this function only return desks (ie spaces that have deskdata)
-
-  const users = (() => {
-    const users: { [desk: string]: UserData } = {};
-    for (const desk in statuses) {
-      const status = statuses[desk];
-      if (status.status === "unavailable") {
-        const u = getUser(status.booking.zid);
-        users[desk] = u.user ? { name: u.user.fullname, image: u.user.image } : anonymousUser;
-      }
-    }
-    return users;
-  })();
-
-  React.useEffect(() => {
-    const status = statuses[selectedDesk];
-    if (status) {
-      if (status.status === "available") {
-        setAvailable(true);
-        setUser(null);
-      } else {
-        setAvailable(false);
-        setUser(users[selectedDesk])
-      }
-    }
-  }, [selectedDesk]);
+  const statuses: { [spaceId: string]: Status } = getStatuses("2024-10-07T16:30:00.000Z", "2024-10-07T17:30:00.000Z");
 
   return (
     <React.Fragment>
@@ -221,6 +147,8 @@ export default function desks() {
             <FloorPlanViewer
               selectedDesk={selectedDesk}
               setSelectedDesk={setSelectedDesk}
+              setSelectedUser={setUser}
+              setAvailable={setAvailable}
               level={level.level}
               statuses={statuses}
             />

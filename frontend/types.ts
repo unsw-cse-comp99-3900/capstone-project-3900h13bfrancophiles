@@ -21,4 +21,9 @@ export type BookingUser =   {
   image: string | null;
 }
 
+export type UserData = {
+  name: string;
+  image: string | null;
+}
+
 export type SpaceOption = { name: string; id: string; isRoom: boolean };
