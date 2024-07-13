@@ -28,18 +28,18 @@ export async function fillEmailTemplate(template: EmailContents, values: { [key:
 
 export const BOOKING_REQUEST: EmailContents = {
     subject: "New Booking Request: Booking ID {{bookingid}}",
-    text: "Hello {{name}},\n\nYour booking request with ID {{bookingid}} has been submitted.\n\nDetails:\n-----------\nStart Time (Sydney): {{starttime}}\nEnd Time (Sydney): {{endtime}}\nSpace ID: {{spaceid}}\nStatus: {{currentstatus}}\n\nDescription:\n-----------\n{{description}}\n\nThank you for your booking.",
+    text: "Hello {{name}},\n\nYour booking request #{{bookingid}} has been submitted.\n\nDetails:\n-----------\nStart Time (Sydney): {{starttime}}\nEnd Time (Sydney): {{endtime}}\nSpace ID: {{spaceid}}\nStatus: {{currentstatus}}\n\nDescription:\n-----------\n{{description}}\n\nThank you for your booking.",
     html: "templates/bookingRequest.html"
 }
 
 export const BOOKING_EDIT: EmailContents = {
     subject: "Booking Edited: Booking ID {{bookingid}}",
-    text: "Hello {{name}},\n\nYour booking with ID {{bookingid}} has been edited.\n\nDetails:\n-----------\nStart Time (Sydney): {{starttime}}\nEnd Time (Sydney): {{endtime}}\nSpace ID: {{spaceid}}\nStatus: {{currentstatus}}\n\nDescription:\n-----------\n{{description}}\n\nThank you for your booking.",
+    text: "Hello {{name}},\n\nYour booking #{{bookingid}} has been edited.\n\nDetails:\n-----------\nStart Time (Sydney): {{starttime}}\nEnd Time (Sydney): {{endtime}}\nSpace ID: {{spaceid}}\nStatus: {{currentstatus}}\n\nDescription:\n-----------\n{{description}}\n\nThank you for your booking.",
     html: "templates/bookingEdit.html"
 }
 
 export const BOOKING_DELETE: EmailContents = {
     subject: "Booking Deleted: Booking ID {{bookingid}}",
-    text: "Hello {{name}},\n\nYour booking with ID {{bookingid}} has been deleted.\n\nDetails:\n-----------\nStart Time (Sydney): {{starttime}}\nEnd Time (Sydney): {{endtime}}\nSpace ID: {{spaceid}}\nStatus: {{currentstatus}}\n\nDescription:\n-----------\n{{description}}\n\nThank you.",
+    text: "Hello {{name}},\n\nYour booking #{{bookingid}} has been deleted.\n\nDetails:\n-----------\nStart Time (Sydney): {{starttime}}\nEnd Time (Sydney): {{endtime}}\nSpace ID: {{spaceid}}\nStatus: {{currentstatus}}\n\nDescription:\n-----------\n{{description}}\n\nThank you.",
     html: "templates/bookingDelete.html"
 }
