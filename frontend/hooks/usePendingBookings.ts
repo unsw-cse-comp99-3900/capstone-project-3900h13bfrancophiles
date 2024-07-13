@@ -8,5 +8,5 @@ import { Booking } from '@/types';
 export default function usePendingBookings(page: number, limit: number, sort: string) {
   const { data, isLoading, error } = useSWR<{ bookings: Booking[], total: number }>(`/admin/bookings/pending?page=${page}&limit=${limit}&sort=${sort}`, swrFetcher);
 
-  return { pastBookings: data?.bookings, total: data?.total, isLoading, error };
+  return { pendingBookings: data?.bookings, total: data?.total, isLoading, error };
 }
