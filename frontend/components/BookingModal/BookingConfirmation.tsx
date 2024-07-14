@@ -14,6 +14,7 @@ interface BookingConfirmationProps {
   isSubmitted: boolean,
   bookingRef?: number,
   isPending?: boolean,
+  editing?: boolean,
   handleSubmit: () => void,
   handleBack: () => void,
   handleClose: () => void,
@@ -29,14 +30,20 @@ const BookingConfirmation: React.FC<BookingConfirmationProps> = ({
   isSubmitted,
   bookingRef,
   isPending,
+  editing,
   handleSubmit,
   handleBack,
   handleClose,
 }) => {
   return <>
-    <DialogTitle>{isSubmitted
+    <DialogTitle>{
+    editing
+    ? 'Booking edit successful!'
+    : (
+      isSubmitted
       ? `Booking ${isPending ? 'request ' : ''}submitted!`
       : "Confirm booking details"
+    )
     }</DialogTitle>
     {isPending &&
       <DialogContent>

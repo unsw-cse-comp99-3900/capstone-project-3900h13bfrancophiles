@@ -12,7 +12,7 @@ import BookingForm from '@/components/BookingModal/BookingForm';
 import BookingConfirmation from '@/components/BookingModal/BookingConfirmation';
 import WarningIcon from '@mui/icons-material/Warning';
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
-import { createBooking } from '@/api';
+import { createBooking, editBooking } from '@/api';
 import useTimeRange from '@/hooks/useTimeRange';
 
 type ModalState = 'form' | 'confirm' | 'submitted';
@@ -24,6 +24,9 @@ interface BookingModalProps {
   date?: Date;
   start?: Date;
   end?: Date;
+  desc?: string;
+  editing?: boolean;
+  editedBooking?: number;
 }
 
 const BookingModal: React.FC<BookingModalProps> = ({
@@ -33,6 +36,9 @@ const BookingModal: React.FC<BookingModalProps> = ({
   date: initialDate,
   start: initialStart,
   end: initialEnd,
+  desc: initialDesc,
+  editing,
+  editedBooking,
 }) => {
   // Modal control state
   const [state, setState] = React.useState<ModalState>('form');
@@ -41,11 +47,15 @@ const BookingModal: React.FC<BookingModalProps> = ({
 
   // Form state
   const [space, setSpace] = React.useState<SpaceOption | null>(initialSpace ?? null);
+  React.useEffect(() => {
+    setSpace(initialSpace!)
+  }, [initialSpace])
+
   const {
     date, start, end,
     dateInputProps, startInputProps, endInputProps
   } = useTimeRange({ date: initialDate, start: initialStart, end: initialEnd });
-  const [desc, setDesc] = React.useState<string>("");
+  const [desc, setDesc] = React.useState<string>(initialDesc ?? "");
 
   const onModalClose = () => {
     onClose();
@@ -62,7 +72,9 @@ const BookingModal: React.FC<BookingModalProps> = ({
         setState('form');
         return
       }
-      const res = await createBooking(space.id, start.toISOString(), end.toISOString(), desc);
+      const res = editing ?
+        await editBooking(editedBooking!, start.toISOString(), end.toISOString(), space.id, desc)
+        : await createBooking(space.id, start.toISOString(), end.toISOString(), desc);
       setBooking(res.booking);
       setState('submitted');
     } catch (e: any) {
@@ -75,7 +87,7 @@ const BookingModal: React.FC<BookingModalProps> = ({
     switch (state) {
       case 'form':
         return <>
-          <DialogTitle>Create a new booking</DialogTitle>
+          <DialogTitle>{editing ? "Edit booking ": "Create a new booking"}</DialogTitle>
           {error && (
             <Alert
               size="md"
@@ -139,6 +151,7 @@ const BookingModal: React.FC<BookingModalProps> = ({
             isSubmitted={true}
             bookingRef={booking.id}
             isPending={booking.currentstatus === 'pending'}
+            editing
             handleSubmit={onSubmit}
             handleBack={() => setState('form')}
             handleClose={onModalClose}

@@ -99,6 +99,16 @@ export const createBooking = (
   return authApiCall('/bookings/create', 'POST', { spaceid, starttime, endtime, description });
 }
 
+export const editBooking = (
+  id: number,
+  starttime: string,
+  endtime: string,
+  spaceid: string,
+  description: string,
+): Promise<{ booking: Booking }> => {
+  return authApiCall('/bookings/edit', 'PUT', { id, starttime, endtime, spaceid, description });
+}
+
 export const deleteBooking = (id: number): Promise<{}> => {
   return authApiCall('/bookings/delete', 'DELETE', { id });
 }
