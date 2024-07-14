@@ -5,6 +5,11 @@ export const bookingstatusenum = pgEnum("bookingstatusenum", ['pending', 'confir
 export const usergroupenum = pgEnum("usergroupenum", ['other', 'hdr', 'csestaff', 'admin'])
 
 
+export const config = pgTable("config", {
+	key: text("key").primaryKey().notNull(),
+	value: text("value"),
+});
+
 export const space = pgTable("space", {
 	id: text("id").primaryKey().notNull(),
 	name: text("name").notNull(),
