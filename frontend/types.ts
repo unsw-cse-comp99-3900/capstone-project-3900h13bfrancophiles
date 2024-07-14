@@ -28,9 +28,6 @@ export type Desk = {
 
 export type Space = Room | Desk;
 
-export type Status = { status: "available" }
-  | { status: "unavailable", booking: Booking };
-
 export type User = null | { name: string, image: string }
 
 export type BookingUser =   {
