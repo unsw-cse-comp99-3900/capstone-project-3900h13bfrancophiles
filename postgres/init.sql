@@ -153,16 +153,16 @@ INSERT INTO space (id, name, minReqGrp, minBookGrp) VALUES
     ('K-K17-501M', 'K17 501M', 'csestaff', 'admin'),
     ('K-K17-508', 'K17 508', 'csestaff', 'admin'),
     ('K-J17-504', 'J17 Design Next Studio', 'csestaff', 'admin'),
-    ('K-K17-201-1', 'Desk 1', 'hdr', 'hdr'),
-    ('K-K17-201-2', 'Desk 2', 'hdr', 'hdr'),
-    ('K-K17-201-3', 'Desk 3', 'hdr', 'hdr'),
-    ('K-K17-201-4', 'Desk 4', 'hdr', 'hdr'),
-    ('K-K17-301-11', 'Desk 11', 'hdr', 'hdr'),
-    ('K-K17-301-12', 'Desk 12', 'hdr', 'hdr'),
-    ('K-K17-301-13', 'Desk 13', 'hdr', 'hdr'),
-    ('K-K17-301-14', 'Desk 14', 'hdr', 'hdr'),
-    ('K-K17-301-15', 'Desk 15', 'hdr', 'hdr'),
-    ('K-K17-301-16', 'Desk 16', 'hdr', 'hdr');
+    ('K-K17-201-1', 'K17 201 Desk 1', 'hdr', 'hdr'),
+    ('K-K17-201-2', 'K17 201 Desk 2', 'hdr', 'hdr'),
+    ('K-K17-201-3', 'K17 201 Desk 3', 'hdr', 'hdr'),
+    ('K-K17-201-4', 'K17 201 Desk 4', 'hdr', 'hdr'),
+    ('K-K17-301-11', 'K17 301 Desk 11', 'hdr', 'hdr'),
+    ('K-K17-301-12', 'K17 301 Desk 12', 'hdr', 'hdr'),
+    ('K-K17-301-13', 'K17 301 Desk 13', 'hdr', 'hdr'),
+    ('K-K17-301-14', 'K17 301 Desk 14', 'hdr', 'hdr'),
+    ('K-K17-301-15', 'K17 301 Desk 15', 'hdr', 'hdr'),
+    ('K-K17-301-16', 'K17 301 Desk 16', 'hdr', 'hdr');
 
 INSERT INTO room (id, capacity, roomNumber, type) VALUES
     ('K-K17-B01', 100, 'B01', 'Seminar Room'),

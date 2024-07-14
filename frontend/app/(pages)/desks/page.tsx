@@ -12,7 +12,6 @@ const getStatuses = (datetimeStart: string, datetimeEnd: string): StatusResponse
   return s && s.data ? s.data : {};
 }
 
-// TODO: UPDATE DESK STATUS IN TOP RIGHT WINDOW WHEN TIME SELECTION CHANGES
 export default function desks() {
   const [date, setDate] = React.useState(
     new Date().toISOString().split("T")[0].toString()
