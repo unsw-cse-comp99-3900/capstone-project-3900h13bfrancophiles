@@ -1,20 +1,47 @@
 "use client";
 
 import * as React from "react";
-import { Card, CardContent, CardOverflow, IconButton, Link, Stack, Typography } from "@mui/joy";
+import {
+  Card,
+  CardContent,
+  CardOverflow,
+  IconButton,
+  Stack,
+  Typography,
+  Link
+} from "@mui/joy";
 import PeopleIcon from "@mui/icons-material/People";
 import MeetingRoomOutlinedIcon from "@mui/icons-material/MeetingRoomOutlined";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCalendarPlus } from "@fortawesome/free-regular-svg-icons";
 import { Room } from "@/types";
-
+import useSpaceStatus from "@/hooks/useSpaceStatus";
 interface RoomCardProps {
   room: Room;
   handleBook: (room: Room) => void;
+  datetimeStart: string;
+  datetimeEnd: string;
 }
 
+const RoomCard: React.FC<RoomCardProps> = ({
+  room,
+  handleBook,
+  datetimeStart,
+  datetimeEnd,
+}) => {
+  const { statusResponse, isLoading, error } = useSpaceStatus(
+    datetimeStart,
+    datetimeEnd
+  );
 
-const RoomCard: React.FC<RoomCardProps> = ({ room, handleBook }) => {
+  let availability = "";
+
+  if (error) {
+    availability = "Error";
+  } else if (statusResponse) {
+    availability = statusResponse[room.id].status;
+  }
+
   return (
     <Card
       sx={{
@@ -61,16 +88,19 @@ const RoomCard: React.FC<RoomCardProps> = ({ room, handleBook }) => {
       </CardContent>
       <CardOverflow
         variant="solid"
-        color={"success"}
-        // color={room.available ? "success" : "danger"}
+        color={
+          availability === "Available"
+            ? "success"
+            : availability === "Unavailable"
+            ? "danger"
+            : "neutral"
+        }
         sx={{ padding: "8px", alignItems: "center", flexWrap: "wrap" }}
       >
-        {/* <b>{room.available ? "Available" : "Unavailable"}</b> */}
-        <b>Available</b>
-
+        <b>{availability}</b>
       </CardOverflow>
     </Card>
   );
-}
+};
 
 export default RoomCard;
