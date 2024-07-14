@@ -1,4 +1,4 @@
-import { space } from '../drizzle/schema';
+import { space, config } from '../drizzle/schema';
 import { eq } from 'drizzle-orm';
 
 import { db } from './index';
@@ -65,4 +65,21 @@ export function anonymiseBooking(booking: Booking): AnonymousBooking {
     checkintime: booking.checkintime,
     checkouttime: booking.checkouttime
   };
+}
+
+/**
+ * Utility function to get the current time, which may be mocked for testing
+ */
+export async function now(): Promise<Date> {
+  if (process.env.NODE_ENV === 'test') {
+    const res = await db
+      .select({ currentTime: config.value })
+      .from(config)
+      .where(eq(config.key, "current_timestamp"));
+
+    const currentTime = res?.[0].currentTime;
+    return currentTime ? new Date(currentTime) : new Date();
+  } else {
+    return new Date();
+  }
 }

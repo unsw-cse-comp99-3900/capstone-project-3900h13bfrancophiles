@@ -14,7 +14,8 @@ import {
 import {
   formatBookingDates,
   initialBookingStatus,
-  withinDateRange as dateInRange
+  withinDateRange,
+  now
 } from '../utils';
 
 export async function checkInBooking(
@@ -27,7 +28,7 @@ export async function checkInBooking(
       return;
     }
 
-    const currentTime = new Date();
+    const currentTime = await now();
 
     const currentBookings = await db
     .select()
@@ -47,7 +48,7 @@ export async function checkInBooking(
     const currentBooking = formatBookingDates(currentBookings[0]);
 
     // 5 minute buffer value too long?
-    if (!dateInRange(currentTime, new Date(currentBooking.starttime), new Date(currentBooking.endtime), 5)) {
+    if (!withinDateRange(currentTime, new Date(currentBooking.starttime), new Date(currentBooking.endtime), 5)) {
       res.status(403).json({ error: "Outside booking time window" });
       return;
     }
@@ -103,7 +104,7 @@ export async function checkOutBooking(
       return;
     }
 
-    const currentTime = new Date();
+    const currentTime = await now();
 
     const currentBooking = await db
     .select()
@@ -122,7 +123,7 @@ export async function checkOutBooking(
     }
 
     // 5 minute buffer value too long?
-    if (!dateInRange(currentTime, new Date(currentBooking[0].starttime), new Date(currentBooking[0].endtime), 5)) {
+    if (!withinDateRange(currentTime, new Date(currentBooking[0].starttime), new Date(currentBooking[0].endtime), 5)) {
       res.status(403).json({ error: "Outside booking time window" });
       return;
     }

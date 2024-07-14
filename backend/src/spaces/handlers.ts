@@ -11,7 +11,8 @@ import {
 } from '../types';
 import {
   anonymiseBooking,
-  formatBookingDates
+  formatBookingDates,
+  now
 } from '../utils';
 
 export async function roomDetails(
@@ -108,7 +109,7 @@ export async function spaceAvailabilities(
   res: TypedResponse<{ bookings: AnonymousBooking[] }>,
 ) {
   try {
-    const currentTime = new Date().toISOString();
+    const currentTime = (await now()).toISOString();
 
     const spaceExists = await db
       .select()

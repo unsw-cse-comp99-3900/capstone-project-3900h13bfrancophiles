@@ -11,8 +11,8 @@ import {
 } from '../types';
 import { formatBookingDates } from '../utils';
 
-type Status = { status: "available" }
-            | { status: "unavailable", booking: Booking };
+type Status = { status: "Available" }
+            | { status: "Unavailable", booking: Booking };
 
 type StatusResponse = {
   [spaceId: string]: Status;
@@ -49,7 +49,7 @@ export async function spaceStatus(
     for (const booking of overlappingBookings) {
       if (booking.spaceid in result) continue;
       result[booking.spaceid] = {
-        status: "unavailable",
+        status: "Unavailable",
         booking: formatBookingDates(booking)
       };
     }
@@ -57,7 +57,7 @@ export async function spaceStatus(
     // Mark the remaining as available
     for (const { id } of spaceIds) {
       if (id in result) continue;
-      result[id] = { status: "available" };
+      result[id] = { status: "Available" };
     }
 
     res.json(result);

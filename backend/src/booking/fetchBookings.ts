@@ -17,7 +17,7 @@ export async function currentBookings(
 ) {
   try {
     const zid = req.token.user;
-    const currentTime = new Date().toISOString();
+    const currentTime = (await now()).toISOString();
 
     const currentBookings = await db
       .select()
@@ -54,7 +54,7 @@ export async function upcomingBookings(
     }
 
     const zid = req.token.user;
-    const currentTime = new Date().toISOString();
+    const currentTime = (await now()).toISOString();
 
     let subQuery;
     switch (parsedQuery.type) {
@@ -109,7 +109,7 @@ export async function pastBookings(
     const page = parsedQuery.page;
     const limit = parsedQuery.limit;
     const offset = (page - 1) * limit;
-    const currentTime = new Date().toISOString();
+    const currentTime = (await now()).toISOString();
 
     let subQuery;
     switch (parsedQuery.type) {
