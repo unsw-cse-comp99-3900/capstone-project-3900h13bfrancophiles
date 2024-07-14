@@ -151,7 +151,7 @@ const BookingModal: React.FC<BookingModalProps> = ({
             isSubmitted={true}
             bookingRef={booking.id}
             isPending={booking.currentstatus === 'pending'}
-            editing
+            editing={editing}
             handleSubmit={onSubmit}
             handleBack={() => setState('form')}
             handleClose={onModalClose}

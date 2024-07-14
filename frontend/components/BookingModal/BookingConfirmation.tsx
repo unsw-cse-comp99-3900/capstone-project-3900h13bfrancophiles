@@ -37,13 +37,9 @@ const BookingConfirmation: React.FC<BookingConfirmationProps> = ({
 }) => {
   return <>
     <DialogTitle>{
-    editing
-    ? 'Booking edit successful!'
-    : (
       isSubmitted
-      ? `Booking ${isPending ? 'request ' : ''}submitted!`
+      ? `Booking ${editing ? 'edit ' : ''}${isPending ? 'request ' : ''}submitted!`
       : "Confirm booking details"
-    )
     }</DialogTitle>
     {isPending &&
       <DialogContent>
