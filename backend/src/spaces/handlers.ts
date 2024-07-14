@@ -1,10 +1,19 @@
-// Spaces endpoint handlers
-
-import { db } from '../index'
 import { eq, and, asc, gt, sql } from "drizzle-orm"
 import { hotdesk, room, space, booking } from '../../drizzle/schema';
-import { TypedGETRequest, TypedResponse, Room, Space, AnonymousBooking } from '../types';
-import { anonymiseBooking, formatBookingDates, now } from '../utils';
+
+import { db } from '../index'
+import {
+  TypedGETRequest,
+  TypedResponse,
+  Room,
+  Space,
+  AnonymousBooking
+} from '../types';
+import {
+  anonymiseBooking,
+  formatBookingDates,
+  now
+} from '../utils';
 
 export async function roomDetails(
   req: TypedGETRequest,

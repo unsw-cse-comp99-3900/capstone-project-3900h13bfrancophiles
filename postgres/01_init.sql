@@ -51,7 +51,7 @@ CREATE TABLE IF NOT EXISTS room (
 );
 
 CREATE TYPE BookingStatusEnum AS ENUM (
-    'pending', 'confirmed', 'declined', 'checkedin', 'completed'
+    'pending', 'confirmed', 'declined', 'checkedin', 'completed', 'deleted'
 );
 
 CREATE TABLE IF NOT EXISTS booking (
@@ -86,6 +86,7 @@ begin
               and b.endtime > new.starttime
               and b.currentStatus <> 'pending'
               and b.currentStatus <> 'declined'
+              and b.currentStatus <> 'deleted'
               and b.id != new.id
     ) then
         raise exception 'Overlapping booking found';

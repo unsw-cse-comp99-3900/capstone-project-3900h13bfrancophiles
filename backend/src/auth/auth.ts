@@ -1,11 +1,14 @@
 import * as jwt from 'jsonwebtoken';
 import * as crypto from 'node:crypto';
-
-import { TokenPayload, UserGroup } from '../types';
-import { AUTH_SECRET } from '../../config';
-import { db } from '../index';
 import { person } from '../../drizzle/schema';
 import { eq } from 'drizzle-orm';
+
+import { AUTH_SECRET } from '../../config';
+import { db } from '../index';
+import {
+  TokenPayload,
+  UserGroup
+} from '../types';
 
 // Helpers for validating user and password
 export function validateLogin(zid: number, zpass: string): boolean {

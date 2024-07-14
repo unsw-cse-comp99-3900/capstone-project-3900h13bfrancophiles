@@ -48,13 +48,26 @@ function createBooking(
   return apiCall("/bookings/create", "POST", { spaceid, starttime, endtime, description }, token);
 }
 
+function deleteBooking(
+  id: number,
+  token: string
+) {
+  return apiCall("/bookings/delete", "DELETE", { id }, token);
+}
+
 function currentBookings(token: string) {
   return apiCall("/bookings/current", "GET", undefined, token);
+}
+
+function upcomingBookings(token: string) {
+  return apiCall("/bookings/upcoming", "GET", undefined, token);
 }
 
 export default {
   login,
   logout,
   createBooking,
+  deleteBooking,
   currentBookings,
+  upcomingBookings,
 }

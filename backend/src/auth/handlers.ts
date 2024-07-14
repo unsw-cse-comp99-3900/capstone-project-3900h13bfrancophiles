@@ -1,8 +1,15 @@
-// Route handlers for login and logout
-
-import { TypedRequest, TypedResponse } from '../types';
-import { createToken, getUserGroup, invalidateToken, validateLogin } from './auth';
 import typia from 'typia';
+
+import {
+  createToken,
+  getUserGroup,
+  invalidateToken,
+  validateLogin
+} from './auth';
+import {
+  TypedRequest,
+  TypedResponse
+} from '../types';
 
 const ZID_REGEX = /z(\d{7})/
 
