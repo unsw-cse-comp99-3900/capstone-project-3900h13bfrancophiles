@@ -80,7 +80,7 @@ export interface BookingEditRequest {
   description?: string;
 }
 
-export type AnonymousBooking = Omit<Booking, 'zid' | 'description'>;
+export type AnonymousBooking = Omit<Booking, 'description'>;
 
 
 /**

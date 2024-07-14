@@ -1,7 +1,7 @@
 import * as React from "react";
 
 import { AnonymousBooking } from "@/types";
-import { Calendar, dateFnsLocalizer, ToolbarProps } from 'react-big-calendar'
+import { Calendar, dateFnsLocalizer, DateRange, ToolbarProps, EventProps } from 'react-big-calendar'
 import { format, getDay, parse, startOfWeek, endOfWeek } from "date-fns";
 import { enAU } from 'date-fns/locale'
 import 'react-big-calendar/lib/css/react-big-calendar.css'
@@ -9,22 +9,22 @@ import Box, { BoxProps } from "@mui/material/Box";
 import { styled, useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { Stack, ButtonGroup, Button, ToggleButtonGroup, Typography } from "@mui/joy";
+import useUser from "@/hooks/useUser";
 
 interface AvailabilityCalendarProps {
   bookings: AnonymousBooking[],
 }
 
 interface Event {
-  title: String,
+  zid: number,
   start: Date,
   end: Date
 }
 
-const CustomToolBar: React.FC<ToolbarProps & Date> = ({
+const CustomToolBar : React.FC<ToolbarProps & Date> = ({
   view,
   onNavigate,
   onView,
-  label,
   date
 }) => {
   return (
@@ -47,7 +47,7 @@ const CustomToolBar: React.FC<ToolbarProps & Date> = ({
       <Typography sx={{ margin: "auto" }}>
         {
           view === "week" ? `${format(startOfWeek(date), 'dd MMM')} - ${format(endOfWeek(date), 'dd MMM')}`
-          : `${format(date, 'dd MMM Y')}`
+          : `${format(date, 'dd MMM y')}`
         }
       </Typography>
       <ToggleButtonGroup
@@ -69,16 +69,52 @@ const CustomToolBar: React.FC<ToolbarProps & Date> = ({
   );
 };
 
+const CustomEvent : React.FC<EventProps> = ({event}) => {
+  const { user, isLoading, error } = useUser(event.zid);
+  return (
+    <>
+      {isLoading || error ? "..." : user!.fullname}
+    </>
+  )
+};
 
+const formatTime = (
+  date: Date,
+  culture: string | undefined,
+  localizer?: dateFnsLocalizer
+) => {
+  if (!localizer) {
+    throw new Error("No date localizer");
+  }
+  let res = localizer.format(date, "h", culture);
+  if (date.getMinutes() !== 0) {
+    res += localizer.format(date, ":mm", culture);
+  }
+  res += localizer.format(date, " a", culture);
+  return res;
+};
+
+const formatTimeRange = (
+  { start, end }: DateRange,
+  culture: string | undefined,
+  localizer?: dateFnsLocalizer
+) => {
+  return (
+    formatTime(start, culture, localizer) +
+    " - " +
+    formatTime(end, culture, localizer)
+  );
+};
 
 export default function AvailabilityCalendar({ bookings }: AvailabilityCalendarProps) {
+
   const [date, setDate] = React.useState<Date>(new Date());
   const [view, setView] = React.useState<String>('week');
   const events : Event[] = bookings
     .map((b) =>
       {
         return {
-          title: `BOOKED`,
+          zid: b.zid,
           start: new Date(b.starttime),
           end: new Date(b.endtime)
         }
@@ -165,6 +201,11 @@ export default function AvailabilityCalendar({ bookings }: AvailabilityCalendarP
         slotGroupPropGetter={() => ({ style: { minHeight: "50px" } })}
         components={{
             toolbar: (props : ToolbarProps) => ( <CustomToolBar {...props} date={date} /> ),
+            event: CustomEvent
+        }}
+        formats={{
+          timeGutterFormat: formatTime,
+          eventTimeRangeFormat: formatTimeRange,
         }}
       />
     </StyledCalendarContainer>

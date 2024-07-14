@@ -10,7 +10,7 @@ export type Booking = {
   checkouttime: string | null;
 };
 
-export type AnonymousBooking = Omit<Booking, 'zid' | 'description'>;
+export type AnonymousBooking = Omit<Booking, 'description'>;
 
 export type Room = {
   id: string;
