@@ -30,7 +30,6 @@ export async function roomDetails(
 }
 
 type SingleSpaceRequest = { spaceId: string };
-type SingleSpaceResponse = { space: Space, }
 
 export async function singleSpaceDetails(
   req: TypedGETRequest<SingleSpaceRequest>,

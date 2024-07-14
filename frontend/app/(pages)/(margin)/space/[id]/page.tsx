@@ -5,7 +5,7 @@ import { Box, Stack, Typography, Button } from "@mui/joy";
 import useSpace from '@/hooks/useSpace';
 import useTimeRange from "@/hooks/useTimeRange"
 import useAvailabilities from "@/hooks/useAvailabilities";
-import { Space, Room, Desk } from "@/types";
+import { Space, Room, Desk, SpaceType } from "@/types";
 import Loading from "@/components/Loading";
 import AvailabilityCalendar from "@/components/AvailabilityCalendar";
 import BookingModal from "@/components/BookingModal/BookingModal"
@@ -15,8 +15,8 @@ export default function SpacePage({ params }: { params: { id: string } }) {
   const spaceOutput = useSpace(params.id);
   const space = spaceOutput.space;
   const spaceLoading = spaceOutput.isLoading;
+  const spaceType = spaceLoading ? null : spaceOutput.type;
   const { bookings, mutate } = useAvailabilities(params.id)
-  const isRoom : boolean = spaceOutput.type == "room" && !spaceLoading ? true : false;
   const room = space as Room
   const desk = space as Desk
 
@@ -32,14 +32,14 @@ export default function SpacePage({ params }: { params: { id: string } }) {
           setOpenModal(false);
           mutate();
         }}
-        space={space ? { id: space?.id, name: space?.name, isRoom: isRoom } : undefined}
+        space={space ? { id: space?.id, name: space?.name, isRoom: spaceType === "room" } : undefined}
       />
       <Stack>
         <Stack
           sx={{ display: "flex" , alignItems: "center", flexDirection: "row"}}
         >
           <Typography level="h1">
-            {isRoom ? `${room!.type} ${room!.name}` : `${desk!.name} ${desk!.floor} ${desk!.desknumber}`}
+            {spaceType === "room" ? `${room!.type} ${room!.name}` : `${desk!.name} ${desk!.floor} ${desk!.desknumber}`}
           </Typography>
           <Box sx={{ marginLeft: "auto" }}>
             <Button
@@ -51,7 +51,7 @@ export default function SpacePage({ params }: { params: { id: string } }) {
             </Button>
           </Box>
         </Stack>
-        {isRoom ?
+        {spaceType === "room" ?
           <Stack
             alignItems="center"
             direction="row"
