@@ -9,7 +9,7 @@ import {
   TypedGETRequest,
   TypedResponse
 } from '../types';
-import { formatBookingDates } from '../utils';
+import { formatBookingDates, now } from '../utils';
 
 export async function currentBookings(
   req: TypedGETRequest,
