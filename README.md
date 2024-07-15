@@ -1,4 +1,5 @@
 ![tests passing badge](https://github.com/unsw-cse-comp99-3900-24t1/capstone-project-3900h13bfrancophiles/actions/workflows/ci.yml/badge.svg)
+![coverage badge](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/francojreyes/3d481eb538d823383b0c03f00e366db3/raw/capstone-project-3900h13bfrancophiles-lcov-coverage.json)
 
 # H13B Francophiles COMP3900 Project
 This is the project.
