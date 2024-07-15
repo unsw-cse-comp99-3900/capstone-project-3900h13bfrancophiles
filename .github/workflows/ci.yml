@@ -32,3 +32,8 @@ jobs:
         env:
           PORT: 2001
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/3900-test
+      - name: Archive server log
+        uses: actions/upload-artifact@v4
+        with:
+          name: server-log
+          path: backend/__tests__/server.log
