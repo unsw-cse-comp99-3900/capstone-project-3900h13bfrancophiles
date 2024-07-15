@@ -41,7 +41,7 @@ function PastBookingsRow({row}: PastBookingRowProps) {
     <td>
       <Skeleton loading={isLoading}>
         <Link
-          href={`/space/${row.space}`}
+          href={`/rooms/${row.space}`}
           level="body-sm"
           component={NextLink}
         >

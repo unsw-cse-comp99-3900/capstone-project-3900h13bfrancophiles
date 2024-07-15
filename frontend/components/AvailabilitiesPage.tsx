@@ -1,22 +1,26 @@
-"use client"
 
 import * as React from "react";
 import { Box, Stack, Typography, Button } from "@mui/joy";
 import useSpace from '@/hooks/useSpace';
-import useTimeRange from "@/hooks/useTimeRange"
 import useAvailabilities from "@/hooks/useAvailabilities";
 import { Space, Room, Desk, SpaceType } from "@/types";
 import Loading from "@/components/Loading";
 import AvailabilityCalendar from "@/components/AvailabilityCalendar";
 import BookingModal from "@/components/BookingModal/BookingModal"
 
+interface AvailabilitesPageProps {
+  spaceId: string;
+  spaceType: string;
+}
 
-export default function SpacePage({ params }: { params: { id: string } }) {
-  const spaceOutput = useSpace(params.id);
+const AvailabilitiesPage : React.FC<AvailabilitesPageProps> = ({
+  spaceId,
+  spaceType,
+}) => {
+  const spaceOutput = useSpace(spaceId);
   const space = spaceOutput.space;
   const spaceLoading = spaceOutput.isLoading;
-  const spaceType = spaceLoading ? null : spaceOutput.type;
-  const { bookings, mutate } = useAvailabilities(params.id)
+  const { bookings, mutate } = useAvailabilities(spaceId)
   const room = space as Room
   const desk = space as Desk
 
@@ -36,20 +40,20 @@ export default function SpacePage({ params }: { params: { id: string } }) {
       />
       <Stack>
         <Stack
-          sx={{ display: "flex" , alignItems: "center", flexDirection: "row"}}
+          justifyContent="space-between"
+          alignItems="center"
+          direction="row"
         >
           <Typography level="h1">
-            {spaceType === "room" ? `${room!.type} ${room!.name}` : `${desk!.name} ${desk!.floor} ${desk!.desknumber}`}
+            {spaceType === "room" ? `${room!.type} ${room!.name}` : `${desk!.name}`}
           </Typography>
-          <Box sx={{ marginLeft: "auto" }}>
-            <Button
-              color="success"
-              variant="solid"
-              onClick={() => {setOpenModal(true)}}
-            >
-              Book Now
-            </Button>
-          </Box>
+          <Button
+            color="success"
+            variant="solid"
+            onClick={() => {setOpenModal(true)}}
+          >
+            Book Now
+          </Button>
         </Stack>
         {spaceType === "room" ?
           <Stack
@@ -94,3 +98,5 @@ export default function SpacePage({ params }: { params: { id: string } }) {
     </>
   );
 }
+
+export default AvailabilitiesPage
