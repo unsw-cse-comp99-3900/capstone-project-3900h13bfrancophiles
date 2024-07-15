@@ -42,7 +42,7 @@ module.exports = async function (globalConfig, projectConfig) {
     execSync(`kill $(lsof -t -i:${process.env.PORT || 2000})`, { stdio: 'ignore' });
   } catch (e) {}
   globalThis.__server__ = spawn(
-    'nyc', ['--reporter=lcov', 'ts-node', 'src/index.ts'],
+    'nyc', ['--reporter=cobertura', '--reporter=html', 'ts-node', 'src/index.ts'],
     { stdio: ['ignore', out, err] }
   );
 
