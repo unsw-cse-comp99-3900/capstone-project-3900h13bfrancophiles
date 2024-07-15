@@ -2,7 +2,7 @@
 
 import FloorPlanViewer from "@/components/FloorPlanViewer";
 import BookingModal from "@/components/BookingModal/BookingModal";
-import { Tab, TabList, TabPanel, Tabs, Stack, Input, Button, Box, Sheet, Avatar, Modal, ModalClose, ModalDialog, DialogTitle, DialogContent, Typography } from "@mui/joy";
+import { Tab, TabList, TabPanel, Tabs, Stack, Input, Button, Box, Sheet, Avatar, Modal, ModalClose, ModalDialog, DialogTitle, DialogContent, Typography, FormControl, FormLabel } from "@mui/joy";
 import { deskData } from '@/app/data';
 import * as React from 'react';
 import { UserData } from "@/types";
@@ -36,14 +36,14 @@ export default function desks() {
 
   return (
     <React.Fragment>
-      <BookingModal
+      {open && <BookingModal
         open={open}
         onClose={() => setOpen(false)}
         space={{ id: selectedDesk, name: deskName, isRoom: false }}
         date={date}
         start={start}
         end={end}
-      />
+      />}
       <Sheet variant="plain"
         sx={{
           boxShadow: "md",
@@ -78,7 +78,9 @@ export default function desks() {
           </Stack>
           <Button sx={{ display: available && selectedDesk ? "block" : "none", marginTop: 1, width: "100%" }} onClick={() => setOpen(true)}>
             Book {deskName}
-          </Button>
+          </Button> {
+            // TODO PRESSING THIS BUTTON IS RERENDERING
+          }
           <Box sx={{ display: available || selectedDesk === "" ? "none" : "flex", flexDirection: { xs: "row", sm: "column" }, justifyContent: "space-around", alignItems: "center", }}>
             <Typography component="h2">
               {deskName}
