@@ -1,4 +1,7 @@
-// Booking endpoint handlers
+import { and, eq, gt, lt } from "drizzle-orm"
+import { booking } from '../../drizzle/schema';
+import isEqual from 'lodash/isEqual';
+import typia from "typia";
 
 import { db } from '../index'
 import {
@@ -8,11 +11,12 @@ import {
   TypedRequest,
   TypedResponse
 } from '../types';
-import { and, eq, gt, lt } from "drizzle-orm"
-import { booking } from '../../drizzle/schema';
-import typia from "typia";
-import isEqual from 'lodash/isEqual';
-import { formatBookingDates, initialBookingStatus, withinDateRange as dateInRange } from '../utils';
+import {
+  formatBookingDates,
+  initialBookingStatus,
+  withinDateRange,
+  now
+} from '../utils';
 
 export async function checkInBooking(
   req: TypedRequest<{ id: number }>,
@@ -24,7 +28,7 @@ export async function checkInBooking(
       return;
     }
 
-    const currentTime = new Date();
+    const currentTime = await now();
 
     const currentBookings = await db
     .select()
@@ -44,7 +48,7 @@ export async function checkInBooking(
     const currentBooking = formatBookingDates(currentBookings[0]);
 
     // 5 minute buffer value too long?
-    if (!dateInRange(currentTime, new Date(currentBooking.starttime), new Date(currentBooking.endtime), 5)) {
+    if (!withinDateRange(currentTime, new Date(currentBooking.starttime), new Date(currentBooking.endtime), 5)) {
       res.status(403).json({ error: "Outside booking time window" });
       return;
     }
@@ -100,7 +104,7 @@ export async function checkOutBooking(
       return;
     }
 
-    const currentTime = new Date();
+    const currentTime = await now();
 
     const currentBooking = await db
     .select()
@@ -119,7 +123,7 @@ export async function checkOutBooking(
     }
 
     // 5 minute buffer value too long?
-    if (!dateInRange(currentTime, new Date(currentBooking[0].starttime), new Date(currentBooking[0].endtime), 5)) {
+    if (!withinDateRange(currentTime, new Date(currentBooking[0].starttime), new Date(currentBooking[0].endtime), 5)) {
       res.status(403).json({ error: "Outside booking time window" });
       return;
     }
@@ -219,25 +223,33 @@ export async function deleteBooking(
       return;
     }
 
-    const deletedBooking = await db
-      .delete(booking)
-      .where(
-        and(
-          eq(booking.id, req.body.id),
-          eq(booking.zid, req.token.user)
+    let formattedBooking: Booking;
+    try {
+      const res = await db
+        .update(booking)
+        .set({
+          currentstatus: "deleted",
+        })
+        .where(
+          and(
+            eq(booking.id, req.body.id),
+            eq(booking.zid, req.token.user)
+          )
         )
-      )
-      .returning();
+        .returning();
 
-    if (deletedBooking.length != 1) {
-      res.status(403).json({ error: "User does not own this booking ID" });
+      formattedBooking = formatBookingDates(res[0]);
+    } catch (e: any) {
+      res.status(400).json({ error: `${e}` });
       return;
     }
 
-    // TODO: send an email to the user confirming deletion
-    // email.deletionConfirmation(req.token.user, deletedBooking[0])
+    // TODO: send an email to the user confirming new booking details
+    // email.editConfirmation(req.token.user, updatedBooking[0])
 
-    res.json({});
+    // TODO: trigger admin reapproval if newStatus is pending
+
+    res.json({ booking: formattedBooking });
   } catch (error) {
     res.status(500);
   }

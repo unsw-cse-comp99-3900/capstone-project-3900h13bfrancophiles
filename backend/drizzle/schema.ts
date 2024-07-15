@@ -1,9 +1,14 @@
 import { pgTable, pgEnum, text, foreignKey, integer, serial, timestamp, varchar } from "drizzle-orm/pg-core"
   import { sql } from "drizzle-orm"
 
-export const bookingstatusenum = pgEnum("bookingstatusenum", ['pending', 'confirmed', 'declined', 'checkedin', 'completed'])
+export const bookingstatusenum = pgEnum("bookingstatusenum", ['pending', 'confirmed', 'declined', 'checkedin', 'completed', 'deleted'])
 export const usergroupenum = pgEnum("usergroupenum", ['other', 'hdr', 'csestaff', 'admin'])
 
+
+export const config = pgTable("config", {
+	key: text("key").primaryKey().notNull(),
+	value: text("value"),
+});
 
 export const space = pgTable("space", {
 	id: text("id").primaryKey().notNull(),

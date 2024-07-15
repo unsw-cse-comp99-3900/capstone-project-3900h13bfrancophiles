@@ -30,6 +30,7 @@ import BookingStatusPill from "@/components/BookingStatusPill";
 import useUpcomingBookings from "@/hooks/useUpcomingBookings";
 import useSpace from "@/hooks/useSpace";
 import { deleteBooking } from "@/api";
+import BookingModal from "./BookingModal/BookingModal";
 
 export interface UpcomingBookingRowProps {
   row: Row;
@@ -47,11 +48,12 @@ interface Row {
 
 
 function UpcomingBookingRow({ row, mutate }: UpcomingBookingRowProps) {
-  const { space, isLoading } = useSpace(row.space);
+  const { space, isLoading } = useSpace(row.space); // TODO: USESPACE WILL RETURN TYPE, USE THIS
   const [bookingToDelete, setBookingToDelete] = React.useState<number | null>(
     null
   );
   const [modalOpen, setModalOpen] = React.useState(false);
+  const [editModalOpen, setEditModalOpen] = React.useState(false);
 
   const handleDelete = async () => {
     if (bookingToDelete !== null) {
@@ -73,6 +75,15 @@ function UpcomingBookingRow({ row, mutate }: UpcomingBookingRowProps) {
   const handleCloseModal = () => {
     setBookingToDelete(null);
     setModalOpen(false);
+  };
+
+  const handleOpenEditModal = () => {
+    setEditModalOpen(true);
+  };
+
+  const handleCloseEditModal = () => {
+    setEditModalOpen(false);
+    mutate();
   };
 
   return (
@@ -97,7 +108,11 @@ function UpcomingBookingRow({ row, mutate }: UpcomingBookingRowProps) {
         </td>
         <td>
           <Stack direction="row" justifyContent="flex-end" px={1}>
-            <IconButton variant="plain" color="neutral">
+            <IconButton
+              variant="plain"
+              color="neutral"
+              onClick={() => handleOpenEditModal()}
+            >
               <EditIcon />
             </IconButton>
             <IconButton
@@ -130,6 +145,19 @@ function UpcomingBookingRow({ row, mutate }: UpcomingBookingRowProps) {
           </DialogActions>
         </ModalDialog>
       </Modal>
+      <BookingModal
+        open={editModalOpen}
+        onClose={() => handleCloseEditModal()}
+        space={space ? { id: space!.id, name: space!.name, isRoom: true } : undefined}
+        // isRoom can be changed once useSpace updated to also return type
+        date={row.startTime}
+        start={row.startTime}
+        end={row.endTime}
+        desc={row.description}
+        editing
+        editedBooking={row.id}
+        // I think reapproval stuff is handled by backend so don't need to pass status?
+      />
     </>
   );
 }
