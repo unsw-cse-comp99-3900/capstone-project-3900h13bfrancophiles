@@ -1,8 +1,7 @@
-// File for utility types
 import { Request, Response } from 'express';
 import { Send } from 'express-serve-static-core';
-import { tags } from 'typia';
 import { bookingstatusenum } from '../drizzle/schema';
+import { tags } from 'typia';
 
 // Order matters - lowest to highest
 export const USER_GROUPS = ["other", "hdr", "csestaff", "admin"] as const;
@@ -82,7 +81,6 @@ export interface BookingEditRequest {
 
 export type AnonymousBooking = Omit<Booking, 'description'>;
 
-
 /**
  * Room typed response
  */
@@ -129,4 +127,5 @@ export type User = {
   faculty: string;
   role: string | null;
   usergrp: "other" | "hdr" | "csestaff" | "admin";
+  image: string | null;
 }

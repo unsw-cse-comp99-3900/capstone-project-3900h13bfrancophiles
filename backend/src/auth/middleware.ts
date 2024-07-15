@@ -3,9 +3,13 @@ import { Request, Response, NextFunction } from 'express';
 import * as jwt from 'jsonwebtoken';
 import typia from "typia";
 
-import { AUTH_SECRET } from '../../config';
-import { TokenPayload, USER_GROUPS, UserGroup } from '../types';
 import { tokenIsActive } from './auth';
+import { AUTH_SECRET } from '../../config';
+import {
+  TokenPayload,
+  UserGroup,
+  USER_GROUPS
+} from '../types';
 
 // Middleware implementation
 export function validateToken(req: Request, res: Response, next: NextFunction) {

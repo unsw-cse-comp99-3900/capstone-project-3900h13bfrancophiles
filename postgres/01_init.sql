@@ -23,7 +23,8 @@ CREATE TABLE IF NOT EXISTS person (
     school        TEXT NOT NULL,
     faculty       TEXT NOT NULL,
     role          TEXT, -- eg Academic, Professional, PhD, MRes
-    userGrp       UserGroupEnum NOT NULL
+    userGrp       UserGroupEnum NOT NULL,
+    image         TEXT
 );
 
 CREATE TABLE IF NOT EXISTS space (
@@ -51,7 +52,7 @@ CREATE TABLE IF NOT EXISTS room (
 );
 
 CREATE TYPE BookingStatusEnum AS ENUM (
-    'pending', 'confirmed', 'declined', 'checkedin', 'completed'
+    'pending', 'confirmed', 'declined', 'checkedin', 'completed', 'deleted'
 );
 
 CREATE TABLE IF NOT EXISTS booking (
@@ -86,6 +87,7 @@ begin
               and b.endtime > new.starttime
               and b.currentStatus <> 'pending'
               and b.currentStatus <> 'declined'
+              and b.currentStatus <> 'deleted'
               and b.id != new.id
     ) then
         raise exception 'Overlapping booking found';
