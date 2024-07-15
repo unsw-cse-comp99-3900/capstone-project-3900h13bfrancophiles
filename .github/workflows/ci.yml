@@ -45,5 +45,5 @@ jobs:
       - name: Update coverage badge
         uses: gaelgirodon/ci-badges-action@v1
         with:
-          gist-id: f3d481eb538d823383b0c03f00e366db3
+          gist-id: 3d481eb538d823383b0c03f00e366db3
           token: ${{ secrets.GIST_TOKEN }}
