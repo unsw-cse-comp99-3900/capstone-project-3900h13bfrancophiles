@@ -39,15 +39,15 @@ function PastBookingsRow({row}: PastBookingRowProps) {
       </Typography>
     </td>
     <td>
-      <Link
-        href={`/space/${row.space}`}
-        level="body-sm"
-        component={NextLink}
-      >
-        <Skeleton loading={isLoading}>
-          {space?.name}
-        </Skeleton>
-      </Link>
+      <Skeleton loading={isLoading}>
+        <Link
+          href={`/space/${row.space}`}
+          level="body-sm"
+          component={NextLink}
+        >
+            {space?.name}
+        </Link>
+      </Skeleton>
     </td>
     <td>
       <Typography level="body-sm">{row.description}</Typography>

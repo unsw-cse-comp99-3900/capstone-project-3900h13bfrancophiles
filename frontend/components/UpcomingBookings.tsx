@@ -100,15 +100,15 @@ function UpcomingBookingRow({ row, mutate }: UpcomingBookingRowProps) {
           </Typography>
         </td>
         <td>
-          <Link
-            href={`/space/${row.space}`}
-            level="body-sm"
-            component={NextLink}
-          >
-            <Skeleton loading={isLoading}>
+          <Skeleton loading={isLoading}>
+            <Link
+              href={`/space/${row.space}`}
+              level="body-sm"
+              component={NextLink}
+            >
               {space?.name}
-            </Skeleton>
-          </Link>
+            </Link>
+          </Skeleton>
         </td>
         <td>
           <Typography level="body-sm">{row.description}</Typography>
