@@ -49,7 +49,7 @@ interface Row {
 }
 
 function UpcomingBookingRow({ row, mutate }: UpcomingBookingRowProps) {
-  const { space, isLoading } = useSpace(row.space); // TODO: USESPACE WILL RETURN TYPE, USE THIS
+  const { space, type, isLoading } = useSpace(row.space);
   const [bookingToDelete, setBookingToDelete] = React.useState<number | null>(
     null
   );
@@ -102,7 +102,7 @@ function UpcomingBookingRow({ row, mutate }: UpcomingBookingRowProps) {
         <td>
           <Skeleton loading={isLoading}>
             <Link
-              href={`/space/${row.space}`}
+              href={type === 'room' ? `/rooms/${row.space}` : `/desks/${row.space}`}
               level="body-sm"
               component={NextLink}
             >
@@ -155,8 +155,7 @@ function UpcomingBookingRow({ row, mutate }: UpcomingBookingRowProps) {
       <BookingModal
         open={editModalOpen}
         onClose={() => handleCloseEditModal()}
-        space={space ? { id: space!.id, name: space!.name, isRoom: true } : undefined}
-        // isRoom can be changed once useSpace updated to also return type
+        space={space ? { id: space!.id, name: space!.name, isRoom: type === 'room' } : undefined}
         date={row.startTime}
         start={row.startTime}
         end={row.endTime}
