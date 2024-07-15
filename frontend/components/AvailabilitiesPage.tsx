@@ -7,6 +7,7 @@ import { Space, Room, Desk, SpaceType } from "@/types";
 import Loading from "@/components/Loading";
 import AvailabilityCalendar from "@/components/AvailabilityCalendar";
 import BookingModal from "@/components/BookingModal/BookingModal"
+import Error from "@/components/Error";
 
 interface AvailabilitesPageProps {
   spaceId: string;
@@ -20,11 +21,17 @@ const AvailabilitiesPage : React.FC<AvailabilitesPageProps> = ({
   const spaceOutput = useSpace(spaceId);
   const space = spaceOutput.space;
   const spaceLoading = spaceOutput.isLoading;
-  const { bookings, mutate } = useAvailabilities(spaceId)
-  const room = space as Room
-  const desk = space as Desk
+  const { bookings, mutate } = useAvailabilities(spaceId);
+  const room = space as Room;
+  const desk = space as Desk;
 
-  const [openModal, setOpenModal] = React.useState<boolean>(false)
+  const [openModal, setOpenModal] = React.useState<boolean>(false);
+
+  if (spaceType !== spaceOutput.type || spaceOutput.error)
+    return <Error
+      page={`${spaceType}s/${spaceId}`}
+      message={`${spaceType} ID not found`}
+    />
 
   if (spaceLoading) return <Loading page=""/>
 
