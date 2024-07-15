@@ -1,26 +1,19 @@
 'use client';
 
 import FloorPlanViewer from "@/components/FloorPlanViewer";
+import BookingModal from "@/components/BookingModal/BookingModal";
 import { Tab, TabList, TabPanel, Tabs, Stack, Input, Button, Box, Sheet, Avatar, Modal, ModalClose, ModalDialog, DialogTitle, DialogContent, Typography } from "@mui/joy";
 import { deskData } from '@/app/data';
 import * as React from 'react';
 import { UserData } from "@/types";
 import useStatus from "@/hooks/useStatus";
-
+import useTimeRange from "@/hooks/useTimeRange";
 
 export default function desks() {
-  const [date, setDate] = React.useState(
-    new Date().toISOString().split("T")[0].toString()
-  );
-  const [startTime, setStartTime] = React.useState(
-    new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
-  );
-  const [endTime, setEndTime] = React.useState(
-    new Date(new Date().getTime() + 60 * 60 * 1000).toLocaleTimeString([], {
-      hour: "2-digit",
-      minute: "2-digit",
-    })
-  );
+  const {
+    date, start, end,
+    dateInputProps, startInputProps, endInputProps
+  } = useTimeRange();
 
   const getInitials = (name: string) => {
     const words = name.trim().split(" ", 2);
@@ -35,32 +28,22 @@ export default function desks() {
   const [deskName, setDeskName] = React.useState("");
   const [open, setOpen] = React.useState(false);
 
-  const { data: statuses } = useStatus(`${date}T${startTime}:00Z`, `${date}T${endTime}:00Z`);
+  const { data: statuses } = useStatus(start.toISOString(), end.toISOString());
+
+  React.useEffect(() => {
+    setSelectedDesk("");
+  }, [date, start, end]);
 
   return (
     <React.Fragment>
-      <Modal open={open} onClose={() => setOpen(false)}>
-        <ModalDialog>
-          <DialogTitle>Confirm booking</DialogTitle>
-          <ModalClose />
-          <DialogContent>
-            <Typography>
-              {date}
-            </Typography>
-            <Typography>
-              {startTime} - {endTime}
-            </Typography>
-          </DialogContent>
-          <Button
-            onClick={() => {
-              alert("booked!");
-              setOpen(false);
-            }}
-          >
-            Book
-          </Button>
-        </ModalDialog>
-      </Modal>
+      <BookingModal
+        open={open}
+        onClose={() => setOpen(false)}
+        space={{ id: selectedDesk, name: deskName, isRoom: false }}
+        date={date}
+        start={start}
+        end={end}
+      />
       <Sheet variant="plain"
         sx={{
           boxShadow: "md",
@@ -80,36 +63,16 @@ export default function desks() {
           <Stack direction="row" gap={2} flexWrap="wrap" sx={{ marginTop: 1, marginBottom: 1 }}>
             <Input
               sx={{ width: { xs: "100%", sm: "auto" } }}
-              type="date"
-              defaultValue={date}
-              onChange={(event) => {
-                const d = new Date(event.target.value)
-                  .toISOString()
-                  .split("T")[0];
-                setDate(d);
-                setSelectedDesk("");
-              }}
+              {...dateInputProps}
             />
             <Stack direction="row" spacing={1} width={{ xs: "100%", sm: "auto" }}>
               <Input
                 sx={{ width: "50%" }}
-                type="time"
-                defaultValue={startTime}
-                size="sm"
-                onChange={(event) => {
-                  setStartTime(event.target.value);
-                  setSelectedDesk("");
-                }}
+                {...startInputProps}
               />
               <Input
                 sx={{ width: "50%" }}
-                type="time"
-                defaultValue={endTime}
-                size="sm"
-                onChange={(event) => {
-                  setEndTime(event.target.value);
-                  setSelectedDesk("");
-                }}
+                {...endInputProps}
               />
             </Stack>
           </Stack>
