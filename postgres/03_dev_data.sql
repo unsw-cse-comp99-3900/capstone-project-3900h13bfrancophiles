@@ -38,9 +38,8 @@ INSERT INTO booking (zId, startTime, endTime, spaceId, currentStatus, descriptio
     (1234567, '2024-10-07T16:30', '2024-10-07T17:30', 'K-K17-402', 'declined', 'workshop'),
 
     -- upcoming desk bookings
-    (1234567, '2024-10-07T16:30', '2024-10-07T17:30', 'K-K17-201-1', 'confirmed', 'studying'),
-    (7654321, '2024-10-07T16:30', '2024-10-07T17:30', 'K-K17-201-2', 'confirmed', 'studying');
-
+    (1234567, '2024-07-18T06:30', '2024-07-18T08:30', 'K-K17-201-1', 'confirmed', 'studying'),
+    (7654321, '2024-07-18T06:30', '2024-07-18T08:30', 'K-K17-201-2', 'confirmed', 'studying');
 
 -- Reenable triggers for prod
 ALTER TABLE booking ENABLE TRIGGER trg_chk_create_booking_start_future;
