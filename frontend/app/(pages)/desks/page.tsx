@@ -4,13 +4,9 @@ import FloorPlanViewer from "@/components/FloorPlanViewer";
 import { Tab, TabList, TabPanel, Tabs, Stack, Input, Button, Box, Sheet, Avatar, Modal, ModalClose, ModalDialog, DialogTitle, DialogContent, Typography } from "@mui/joy";
 import { deskData } from '@/app/data';
 import * as React from 'react';
-import { StatusResponse, UserData } from "@/types";
+import { UserData } from "@/types";
 import useStatus from "@/hooks/useStatus";
 
-const getStatuses = (datetimeStart: string, datetimeEnd: string): StatusResponse => {
-  const s = useStatus(datetimeStart, datetimeEnd);
-  return s && s.data ? s.data : {};
-}
 
 export default function desks() {
   const [date, setDate] = React.useState(
@@ -26,12 +22,20 @@ export default function desks() {
     })
   );
 
+  const getInitials = (name: string) => {
+    const words = name.trim().split(" ", 2);
+    const firstLetter = words[0] ? words[0][0] : '';
+    const secondLetter = words[1] ? words[1][0] : '';
+    return (firstLetter + secondLetter).toUpperCase();
+  }
+
   const [selectedDesk, setSelectedDesk] = React.useState("");
   const [available, setAvailable] = React.useState(false);
   const [user, setUser] = React.useState<null | UserData>(null);
-  const [open, setOpen] = React.useState(false); // for confirmation modal
+  const [deskName, setDeskName] = React.useState("");
+  const [open, setOpen] = React.useState(false);
 
-  const statuses = getStatuses(`${date}T${startTime}:00Z`, `${date}T${endTime}:00Z`);
+  const { data: statuses } = useStatus(`${date}T${startTime}:00Z`, `${date}T${endTime}:00Z`);
 
   return (
     <React.Fragment>
@@ -110,23 +114,23 @@ export default function desks() {
             </Stack>
           </Stack>
           <Button sx={{ display: available && selectedDesk ? "block" : "none", marginTop: 1, width: "100%" }} onClick={() => setOpen(true)}>
-            Book desk {selectedDesk}
+            Book {deskName}
           </Button>
           <Box sx={{ display: available || selectedDesk === "" ? "none" : "flex", flexDirection: { xs: "row", sm: "column" }, justifyContent: "space-around", alignItems: "center", }}>
             <Typography component="h2">
-              Desk {selectedDesk}
+              {deskName}
             </Typography>
             <Avatar
               variant="solid"
               color="primary"
-              src={user && user.name && user.name !== "anonymous" ? `data:image/jpeg;base64,${user.image}` : "defaultUser.svg"}
-              alt={user ? user.name.split(" ", 2).map((i) => i.charAt(0)).join("").toUpperCase() : "user"}
+              src={user?.name && user.name !== "anonymous" ? `data:image/jpeg;base64,${user.image}` : "defaultUser.svg"}
+              alt={user ? user.name : "user"}
               sx={{ height: { xs: "70px", sm: "100px" }, width: { xs: "70px", sm: "100px" }, margin: 1 }}
             >
-              {user ? user.name.split(" ", 2).map((i) => i.charAt(0)).join("").toUpperCase() : ""}
+              {getInitials(user?.name ?? '')}
             </Avatar>
             <Typography>
-              {user ? user.name : ""}
+              {user?.name ?? ""}
             </Typography>
           </Box>
         </Stack>
@@ -152,8 +156,9 @@ export default function desks() {
               setSelectedDesk={setSelectedDesk}
               setSelectedUser={setUser}
               setAvailable={setAvailable}
+              setDeskName={setDeskName}
               level={level.level}
-              statuses={statuses}
+              statuses={statuses || {}}
             />
           </TabPanel>
         ))}

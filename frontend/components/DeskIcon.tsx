@@ -5,6 +5,7 @@ import { KeepScale } from 'react-zoom-pan-pinch';
 import { Box, Avatar } from '@mui/joy';
 import { Status, UserData } from '@/types';
 import useUser from '@/hooks/useUser';
+import useSpace from '@/hooks/useSpace';
 
 interface DeskIconProps {
   id: string,
@@ -14,7 +15,8 @@ interface DeskIconProps {
   setSelectedDesk: React.Dispatch<React.SetStateAction<string>>,
   setSelectedUser: React.Dispatch<React.SetStateAction<UserData | null>>,
   setAvailable: React.Dispatch<React.SetStateAction<boolean>>,
-  status: Status
+  setDeskName: React.Dispatch<React.SetStateAction<string>>,
+  status: Status | undefined;
 }
 
 interface PinProps {
@@ -25,15 +27,6 @@ interface PinProps {
 const anonymousUser: UserData = {
   name: "anonymous",
   image: null,
-}
-
-const getUser = (zid: number) => {
-  const { user, isLoading, error } = useUser(zid);
-  if (user) {
-    return { name: user.fullname, image: user.image };
-  } else {
-    return anonymousUser;
-  }
 }
 
 const getInitials = (name: string) => {
@@ -104,20 +97,26 @@ const Pin = ({ color, on }: PinProps) => {
 };
 
 
-const DeskIcon = ({ id, x, y, selectedDesk, setSelectedDesk, setSelectedUser, setAvailable, status }: DeskIconProps) => {
-  const user = status ? (status.status === "Available" ? null : getUser(status.booking.zid)) : null;
+const DeskIcon = ({ id, x, y, selectedDesk, setSelectedDesk, setSelectedUser, setAvailable, setDeskName, status }: DeskIconProps) => {
+  const { space } = useSpace(id);
+  const { user } = useUser(status && status.status === "Unavailable" ? status.booking.zid : 1)
+
+  const userData = user ? { name: user.fullname, image: user.image } : anonymousUser;
+  const deskName = space ? space.name : "Desk";
 
   const handleClick = () => {
-    setAvailable(status && status.status === "Available");
+    setAvailable(status?.status === "Available");
     setSelectedDesk(id);
-    setSelectedUser(user);
+    setSelectedUser(userData);
+    setDeskName(deskName);
   }
+
+  if (!status) return <></>;
 
   return (
     <Box
       key={id}
       sx={{
-        display: status ? "block" : "none",
         "--size-var": { xs: "27px", sm: "35px", md: "40px" },
         position: "absolute",
         overflow: "visible",
@@ -132,13 +131,13 @@ const DeskIcon = ({ id, x, y, selectedDesk, setSelectedDesk, setSelectedUser, se
           onClick={() => handleClick()}
           sx={{ overflow: "visible", height: "var(--size-var)", width: "var(--size-var)" }}
         >
-          <Pin color={status && status.status === "Available" ? "#207920" : "#0B6BCB"} on={selectedDesk === id ? true : false} />
+          <Pin color={status.status === "Available" ? "#207920" : "#0B6BCB"} on={selectedDesk === id ? true : false} />
           <Avatar
             variant="solid"
-            color={status && status.status === "Available" ? "success" : "primary"}
+            color={status.status === "Available" ? "success" : "primary"}
             src={
-              status && status.status === "Available" ? "DeskIcon1.svg" :
-                user && user.name !== "anonymous" ? `data:image/jpeg;base64,${user.image}` :
+              status.status === "Available" ? "DeskIcon1.svg" :
+                userData && userData.name !== "anonymous" ? `data:image/jpeg;base64,${userData.image}` :
                   "/defaultUser.svg"
             }
             sx={{
@@ -148,7 +147,7 @@ const DeskIcon = ({ id, x, y, selectedDesk, setSelectedDesk, setSelectedUser, se
               transition: "transform 0.1s, box-shadow 0.1s",
             }}
           >
-            {user && user.name ? getInitials(user.name) : ""}
+            {getInitials(userData.name)}
           </Avatar>
         </Box>
       </KeepScale>

@@ -13,11 +13,12 @@ interface FloorPlanViewerProps {
   setSelectedDesk: React.Dispatch<React.SetStateAction<string>>;
   setSelectedUser: React.Dispatch<React.SetStateAction<UserData | null>>;
   setAvailable: React.Dispatch<React.SetStateAction<boolean>>;
+  setDeskName: React.Dispatch<React.SetStateAction<string>>;
   level: string;
   statuses: StatusResponse;
 }
 
-const FloorPlanViewer = ({ level, selectedDesk, setSelectedDesk, setSelectedUser, setAvailable, statuses }: FloorPlanViewerProps) => {
+const FloorPlanViewer = ({ level, selectedDesk, setSelectedDesk, setSelectedUser, setAvailable, setDeskName, statuses }: FloorPlanViewerProps) => {
   const desks = deskData.find(data => data.level === level)?.desks ?? [];
 
   return (
@@ -45,7 +46,9 @@ const FloorPlanViewer = ({ level, selectedDesk, setSelectedDesk, setSelectedUser
               setSelectedDesk={setSelectedDesk}
               setSelectedUser={setSelectedUser}
               setAvailable={setAvailable}
-              status={statuses[desk.id]}
+              setDeskName={setDeskName}
+              status={statuses[desk.id]
+              }
             />
           ))}
         </TransformComponent>
