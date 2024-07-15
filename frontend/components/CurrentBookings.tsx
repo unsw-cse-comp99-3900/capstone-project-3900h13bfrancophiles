@@ -162,7 +162,7 @@ function CurrentBookingCard({ booking }: CurrentBookingCardProps) {
               color="success"
               loading={isCheckingInOrOut}
             >
-              Delete Booking
+              {action === "checkIn" ? "Check in" : "Check out"}?
             </Button>
             <Button
               variant="plain"
