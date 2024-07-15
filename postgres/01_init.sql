@@ -23,7 +23,8 @@ CREATE TABLE IF NOT EXISTS person (
     school        TEXT NOT NULL,
     faculty       TEXT NOT NULL,
     role          TEXT, -- eg Academic, Professional, PhD, MRes
-    userGrp       UserGroupEnum NOT NULL
+    userGrp       UserGroupEnum NOT NULL,
+    image         TEXT
 );
 
 CREATE TABLE IF NOT EXISTS space (

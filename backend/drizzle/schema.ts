@@ -40,6 +40,7 @@ export const person = pgTable("person", {
 	faculty: text("faculty").notNull(),
 	role: text("role"),
 	usergrp: usergroupenum("usergrp").notNull(),
+	image: text("image"),
 });
 
 export const booking = pgTable("booking", {
