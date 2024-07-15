@@ -75,7 +75,14 @@ app.get("/admin/bookings/pending", validateToken, authoriseAtLeast("admin"), pen
 
 app.get("/users/:zid", validateToken, userDetails);
 
-
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`Server is running at http://localhost:${PORT}`);
 });
+
+const closeServer = () => {
+  server.close(err => err && console.log(`${err}`));
+  server.closeAllConnections();
+}
+
+process.on("SIGTERM", closeServer);
+process.on("SIGINT", closeServer);
