@@ -19,6 +19,7 @@ import {
   Stack,
   Table,
   Typography,
+  Link,
 } from "@mui/joy";
 import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
@@ -31,6 +32,7 @@ import useUpcomingBookings from "@/hooks/useUpcomingBookings";
 import useSpace from "@/hooks/useSpace";
 import { deleteBooking } from "@/api";
 import BookingModal from "./BookingModal/BookingModal";
+import NextLink from 'next/link'
 
 export interface UpcomingBookingRowProps {
   row: Row;
@@ -45,7 +47,6 @@ interface Row {
   space: string;
   description: string;
 }
-
 
 function UpcomingBookingRow({ row, mutate }: UpcomingBookingRowProps) {
   const { space, isLoading } = useSpace(row.space); // TODO: USESPACE WILL RETURN TYPE, USE THIS
@@ -100,7 +101,13 @@ function UpcomingBookingRow({ row, mutate }: UpcomingBookingRowProps) {
         </td>
         <td>
           <Skeleton loading={isLoading}>
-            <Typography level="body-sm">{space?.name}</Typography>
+            <Link
+              href={`/space/${row.space}`}
+              level="body-sm"
+              component={NextLink}
+            >
+              {space?.name}
+            </Link>
           </Skeleton>
         </td>
         <td>

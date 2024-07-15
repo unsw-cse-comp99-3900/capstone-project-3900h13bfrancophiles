@@ -58,6 +58,7 @@ export async function initialBookingStatus(
 export function anonymiseBooking(booking: Booking): AnonymousBooking {
   return {
     id: booking.id,
+    zid: booking.zid,
     starttime: booking.starttime,
     endtime: booking.endtime,
     spaceid: booking.spaceid,

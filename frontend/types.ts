@@ -10,6 +10,8 @@ export type Booking = {
   checkouttime: string | null;
 };
 
+export type AnonymousBooking = Omit<Booking, 'description'>;
+
 export type Room = {
   id: string;
   name: string;
@@ -27,6 +29,10 @@ export type Desk = {
 };
 
 export type Space = Room | Desk;
+
+export type SpaceType = "room" | "desk"
+
+export type User = null | { name: string, image: string }
 
 export type BookingUser =   {
   zid: number;

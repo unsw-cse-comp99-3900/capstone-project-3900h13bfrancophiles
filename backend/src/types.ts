@@ -79,7 +79,7 @@ export interface BookingEditRequest {
   description?: string;
 }
 
-export type AnonymousBooking = Omit<Booking, 'zid' | 'description'>;
+export type AnonymousBooking = Omit<Booking, 'description'>;
 
 /**
  * Room typed response
@@ -101,6 +101,8 @@ export type Desk = {
 };
 
 export type Space = Room | Desk;
+
+export type SpaceType = "room" | "desk";
 
 export interface IDatetimeRange {
   datetimeStart: string & tags.Format<'date-time'>

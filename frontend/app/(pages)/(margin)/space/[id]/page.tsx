@@ -1,0 +1,96 @@
+"use client"
+
+import * as React from "react";
+import { Box, Stack, Typography, Button } from "@mui/joy";
+import useSpace from '@/hooks/useSpace';
+import useTimeRange from "@/hooks/useTimeRange"
+import useAvailabilities from "@/hooks/useAvailabilities";
+import { Space, Room, Desk, SpaceType } from "@/types";
+import Loading from "@/components/Loading";
+import AvailabilityCalendar from "@/components/AvailabilityCalendar";
+import BookingModal from "@/components/BookingModal/BookingModal"
+
+
+export default function SpacePage({ params }: { params: { id: string } }) {
+  const spaceOutput = useSpace(params.id);
+  const space = spaceOutput.space;
+  const spaceLoading = spaceOutput.isLoading;
+  const spaceType = spaceLoading ? null : spaceOutput.type;
+  const { bookings, mutate } = useAvailabilities(params.id)
+  const room = space as Room
+  const desk = space as Desk
+
+  const [openModal, setOpenModal] = React.useState<boolean>(false)
+
+  if (spaceLoading) return <Loading page=""/>
+
+  return (
+    <>
+      <BookingModal
+        open={openModal}
+        onClose={() => {
+          setOpenModal(false);
+          mutate();
+        }}
+        space={space ? { id: space?.id, name: space?.name, isRoom: spaceType === "room" } : undefined}
+      />
+      <Stack>
+        <Stack
+          sx={{ display: "flex" , alignItems: "center", flexDirection: "row"}}
+        >
+          <Typography level="h1">
+            {spaceType === "room" ? `${room!.type} ${room!.name}` : `${desk!.name} ${desk!.floor} ${desk!.desknumber}`}
+          </Typography>
+          <Box sx={{ marginLeft: "auto" }}>
+            <Button
+              color="success"
+              variant="solid"
+              onClick={() => {setOpenModal(true)}}
+            >
+              Book Now
+            </Button>
+          </Box>
+        </Stack>
+        {spaceType === "room" ?
+          <Stack
+            alignItems="center"
+            direction="row"
+            flexWrap="wrap"
+            gap={5}
+            borderRadius="sm"
+            mb={3}
+          >
+            <Box>
+              <Typography level="h4" sx={{ color: "gray" }}>
+                Room ID
+              </Typography>
+              <Typography level="h3">
+                {room?.id}
+              </Typography>
+            </Box>
+            <Box>
+              <Typography level="h4" sx={{ color: "gray" }}>
+                Usage
+              </Typography>
+              <Typography level="h3">
+                {room?.type}
+              </Typography>
+            </Box>
+            <Box>
+              <Typography level="h4" sx={{ color: "gray" }}>
+                Capacity
+              </Typography>
+              <Typography level="h3">
+                {room?.capacity}
+              </Typography>
+            </Box>
+          </Stack>
+          : null
+        }
+        <AvailabilityCalendar
+          bookings={bookings ?? []}
+        />
+      </Stack>
+    </>
+  );
+}

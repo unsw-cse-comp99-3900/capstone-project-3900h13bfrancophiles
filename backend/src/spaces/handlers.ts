@@ -7,7 +7,8 @@ import {
   TypedResponse,
   Room,
   Space,
-  AnonymousBooking
+  AnonymousBooking,
+  SpaceType
 } from '../types';
 import {
   anonymiseBooking,
@@ -42,7 +43,7 @@ type SingleSpaceRequest = { spaceId: string };
 
 export async function singleSpaceDetails(
   req: TypedGETRequest<SingleSpaceRequest>,
-  res: TypedResponse<{ space: Space }>,
+  res: TypedResponse<{ space: Space, type: SpaceType }>,
 ) {
   try {
     // TODO: Maybe find a way to distinguish between room/desk?
@@ -60,7 +61,7 @@ export async function singleSpaceDetails(
       .where(eq(room.id, req.params.spaceId));
 
     if (roomRes.length) {
-      res.json({ space: roomRes[0] });
+      res.json({ space: roomRes[0], type: "room" });
       return;
     }
 
@@ -78,7 +79,7 @@ export async function singleSpaceDetails(
       .where(eq(hotdesk.id, req.params.spaceId));
 
     if (deskRes.length) {
-      res.json({ space: deskRes[0] });
+      res.json({ space: deskRes[0], type: "desk" });
       return;
     }
 
@@ -129,7 +130,7 @@ export async function spaceAvailabilities(
       .where(
         and(
           eq(booking.spaceid, req.params.spaceId),
-          gt(booking.endtime, currentTime)
+          eq(booking.currentstatus, "confirmed")
         )
       )
       .orderBy(
