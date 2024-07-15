@@ -32,6 +32,7 @@ import useUpcomingBookings from "@/hooks/useUpcomingBookings";
 import useSpace from "@/hooks/useSpace";
 import { deleteBooking } from "@/api";
 import BookingModal from "./BookingModal/BookingModal";
+import NextLink from 'next/link'
 
 export interface UpcomingBookingRowProps {
   row: Row;
@@ -46,7 +47,6 @@ interface Row {
   space: string;
   description: string;
 }
-
 
 function UpcomingBookingRow({ row, mutate }: UpcomingBookingRowProps) {
   const { space, isLoading } = useSpace(row.space); // TODO: USESPACE WILL RETURN TYPE, USE THIS
@@ -103,6 +103,7 @@ function UpcomingBookingRow({ row, mutate }: UpcomingBookingRowProps) {
           <Link
             href={`/space/${row.space}`}
             level="body-sm"
+            component={NextLink}
           >
             <Skeleton loading={isLoading}>
               {space?.name}

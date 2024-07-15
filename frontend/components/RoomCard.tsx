@@ -16,6 +16,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCalendarPlus } from "@fortawesome/free-regular-svg-icons";
 import { Room } from "@/types";
 import useSpaceStatus from "@/hooks/useSpaceStatus";
+import NextLink from 'next/link'
+
 interface RoomCardProps {
   room: Room;
   handleBook: (room: Room) => void;
@@ -66,6 +68,7 @@ const RoomCard: React.FC<RoomCardProps> = ({
               overlay
               href={`/space/${room.id}`}
               underline="none"
+              component={NextLink}
             >
               <Typography level="title-lg" sx={{ mt: 1, fontWeight: "xl" }}>
                 {room.name}

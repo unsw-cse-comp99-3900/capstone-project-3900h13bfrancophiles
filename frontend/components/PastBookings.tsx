@@ -15,6 +15,7 @@ import {Sheet, Skeleton, Stack} from "@mui/joy";
 import {format} from 'date-fns';
 import useSpace from "@/hooks/useSpace";
 import usePastBookings from "@/hooks/usePastBookings";
+import NextLink from "next/link";
 
 export interface PastBookingRowProps {
   row: Row
@@ -41,6 +42,7 @@ function PastBookingsRow({row}: PastBookingRowProps) {
       <Link
         href={`/space/${row.space}`}
         level="body-sm"
+        component={NextLink}
       >
         <Skeleton loading={isLoading}>
           {space?.name}
