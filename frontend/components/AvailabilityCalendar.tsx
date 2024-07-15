@@ -86,6 +86,7 @@ const formatTime = (
   if (!localizer) {
     throw new Error("No date localizer");
   }
+  if (date.getHours() === 23 && date.getMinutes() === 59) date = new Date(date.getTime() + 1) // for midnight fix
   let res = localizer.format(date, "h", culture);
   if (date.getMinutes() !== 0) {
     res += localizer.format(date, ":mm", culture);
@@ -186,7 +187,6 @@ export default function AvailabilityCalendar({ bookings }: AvailabilityCalendarP
     <StyledCalendarContainer>
       <Calendar
         startAccessor="start"
-        endAccessor="end"
         style={{ height: 700 }}
         localizer={localizer}
         defaultView="agenda"
@@ -196,12 +196,15 @@ export default function AvailabilityCalendar({ bookings }: AvailabilityCalendarP
         views={['day', 'week']}
         view={view}
         onView={handleViewChange}
-        min={new Date(0, 0, 0, 8)}
-        max={new Date(0, 0, 0, 20)}
+        scrollToTime={new Date(0, 0, 0, 8)}
         slotGroupPropGetter={() => ({ style: { minHeight: "50px" } })}
         components={{
             toolbar: (props : ToolbarProps) => ( <CustomToolBar {...props} date={date} /> ),
             event: CustomEvent
+        }}
+        endAccessor={({end}: Event) => {
+          if (end.getHours() === 0 && end.getMinutes() === 0) return new Date(end.getTime() - 1) // for midnight dates
+          return end
         }}
         formats={{
           timeGutterFormat: formatTime,
