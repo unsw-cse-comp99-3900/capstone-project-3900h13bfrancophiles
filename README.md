@@ -1,3 +1,5 @@
+![tests passing badge](https://github.com/unsw-cse-comp99-3900-24t1/capstone-project-3900h13bfrancophiles/actions/workflows/ci.yml/badge.svg)
+
 # H13B Francophiles COMP3900 Project
 This is the project.
 
