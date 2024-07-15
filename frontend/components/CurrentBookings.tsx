@@ -8,6 +8,12 @@ import {
   Skeleton,
   Stack,
   Typography,
+  Modal,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  ModalDialog,
+  Divider,
 } from "@mui/joy";
 import { Booking } from "@/types";
 import useSpace from "@/hooks/useSpace";
@@ -46,45 +52,45 @@ function CurrentBookingCard({ booking }: CurrentBookingCardProps) {
     null
   );
   const [checkedIn, setCheckedIn] = useState<boolean>(
-    booking.currentstatus === "checkedin");
+    booking.currentstatus === "checkedin"
+  );
+  const [isConfirmationOpen, setIsConfirmationOpen] = useState(false);
+  const [action, setAction] = useState<"checkIn" | "checkOut">();
 
   const handleCheckInOut = async () => {
-    if (checkedIn) {
-      // handle check out
-      setIsCheckingInOrOut(true);
-      setCheckInOrOutError(null);
-      try {
-        await checkOut(booking.id);
-        mutate();
-      } catch (error) {
-        if (error instanceof Error) {
-          setCheckInOrOutError(error.message);
-        } else {
-          setCheckInOrOutError("An unexpected error occurred");
-        }
-      } finally {
-        setIsCheckingInOrOut(false);
-      }
-      return;
-    } else {
-      // handle check in
-      setIsCheckingInOrOut(true);
-      setCheckInOrOutError(null);
+    if (!action) return;
 
-      try {
+    setIsCheckingInOrOut(true);
+    setCheckInOrOutError(null);
+
+    try {
+      if (action === "checkIn") {
         await checkIn(booking.id);
         setCheckedIn(true);
-        mutate();
-      } catch (error) {
-        if (error instanceof Error) {
-          setCheckInOrOutError(error.message);
-        } else {
-          setCheckInOrOutError("An unexpected error occurred");
-        }
-      } finally {
-        setIsCheckingInOrOut(false);
+      } else {
+        await checkOut(booking.id);
+        setCheckedIn(false);
       }
+      mutate();
+    } catch (error) {
+      if (error instanceof Error) {
+        setCheckInOrOutError(error.message);
+      } else {
+        setCheckInOrOutError("An unexpected error occurred");
+      }
+    } finally {
+      setIsCheckingInOrOut(false);
+      setIsConfirmationOpen(false);
     }
+  };
+
+  const handleOpenConfirmation = (actionType: "checkIn" | "checkOut") => {
+    setAction(actionType);
+    setIsConfirmationOpen(true);
+  };
+
+  const handleCloseConfirmation = () => {
+    setIsConfirmationOpen(false);
   };
 
   return (
@@ -104,7 +110,8 @@ function CurrentBookingCard({ booking }: CurrentBookingCardProps) {
             </Typography>
             <Typography level="body-lg" pb={1} sx={{ textWrap: "wrap" }}>
               <Skeleton loading={isLoading}>
-                Booked {format(new Date(booking.starttime), "p")} - {format(new Date(booking.endtime), "p")}
+                Booked {format(new Date(booking.starttime), "p")} -{" "}
+                {format(new Date(booking.endtime), "p")}
               </Skeleton>
             </Typography>
           </Box>
@@ -119,7 +126,9 @@ function CurrentBookingCard({ booking }: CurrentBookingCardProps) {
             <Button
               size="sm"
               color="success"
-              onClick={handleCheckInOut}
+              onClick={() =>
+                handleOpenConfirmation(checkedIn ? "checkOut" : "checkIn")
+              }
               sx={{ borderRadius: "20px", width: "100px" }}
               loading={isCheckingInOrOut}
             >
@@ -135,6 +144,36 @@ function CurrentBookingCard({ booking }: CurrentBookingCardProps) {
           </Stack>
         </Stack>
       </CardContent>
+      <Modal open={isConfirmationOpen} onClose={handleCloseConfirmation}>
+        <ModalDialog variant="outlined" role="alertdialog">
+          <DialogTitle>
+            {action === "checkIn"
+              ? "Check In Confirmation"
+              : "Check Out Confirmation"}
+          </DialogTitle>
+          <Divider />
+          <DialogContent>
+            Are you sure you want to{" "}
+            {action === "checkIn" ? "check in" : "check out"}?
+          </DialogContent>
+          <DialogActions>
+            <Button
+              onClick={handleCheckInOut}
+              color="success"
+              loading={isCheckingInOrOut}
+            >
+              Delete Booking
+            </Button>
+            <Button
+              variant="plain"
+              color="neutral"
+              onClick={handleCloseConfirmation}
+            >
+              Cancel
+            </Button>
+          </DialogActions>
+        </ModalDialog>
+      </Modal>
     </Card>
   );
 }
