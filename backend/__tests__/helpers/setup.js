@@ -39,10 +39,10 @@ module.exports = async function (globalConfig, projectConfig) {
   console.log("\nStarting backend server...");
   try {
     // Make sure port 2001 is free
-    execSync(`kill $(lsof -t -i:${process.env.PORT || 2000})`, { stdio: 'ignore' });
+    execSync(`kill -SIGKILL $(lsof -t -i:${process.env.PORT || 2000})`, { stdio: 'ignore' });
   } catch (e) {}
   globalThis.__server__ = spawn(
-    'yarn', ['dev', '-q'],
+    'nyc', ['--reporter=cobertura', '--reporter=html', 'ts-node', 'src/index.ts'],
     { stdio: ['ignore', out, err] }
   );
 

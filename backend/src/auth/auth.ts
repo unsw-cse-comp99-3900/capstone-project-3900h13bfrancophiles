@@ -37,7 +37,8 @@ export function createToken(user: number, group: UserGroup): string {
   const token = jwt.sign(payload, AUTH_SECRET, { expiresIn: EXPIRY_TIME_MS });
 
   activeTokenIds.add(id);
-  setTimeout(() => activeTokenIds.delete(id), EXPIRY_TIME_MS);
+  const timeout = setTimeout(() => activeTokenIds.delete(id), EXPIRY_TIME_MS);
+  timeout.unref();
 
   return token;
 }
