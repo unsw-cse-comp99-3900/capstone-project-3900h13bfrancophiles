@@ -89,9 +89,11 @@ const server = app.listen(PORT, () => {
   console.log(`Server is running at http://localhost:${PORT}`);
 });
 
-const closeServer = () => {
+const closeServer = async () => {
   server.close(err => err && console.log(`${err}`));
   server.closeAllConnections();
+  emailTransporter.close();
+  await pool.end();
 }
 
 process.on("SIGTERM", closeServer);
