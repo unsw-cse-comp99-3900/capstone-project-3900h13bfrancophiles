@@ -169,7 +169,7 @@ function CurrentBookingCard({ booking }: CurrentBookingCardProps) {
               color="success"
               loading={isCheckingInOrOut}
             >
-              {checkedIn ? "Check Out" : "Check In"}?
+              {checkedIn ? "Check Out" : "Check In"}
             </Button>
             <Button
               variant="plain"
