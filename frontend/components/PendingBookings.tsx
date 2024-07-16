@@ -114,12 +114,8 @@ export default function PendingBookings() {
     setPage(0);
   };
 
-  function labelDisplayedRows({
-                                from, to, count,
-                              }: {
-    from: number; to: number; count: number;
-  }) {
-    return `${from}–${to} of ${count !== -1 ? count : `more than ${to}`}`;
+  function labelDisplayedRows(from: number, to: number, count: number) {
+    return `${from}–${to} of ${count}`;
   }
 
   const handleChangeSort = (event: any, newValue: string | null) => {
@@ -129,19 +125,16 @@ export default function PendingBookings() {
   };
 
   const getLabelDisplayedRowsTo = () => {
-    if (total === undefined) {
-      return (page + 1) * rowsPerPage;
-    }
-    return rowsPerPage === -1 ? total : Math.min(total, (page + 1) * rowsPerPage);
+    return Math.min(total ?? 0, (page + 1) * rowsPerPage);
   };
 
   return (<Stack>
     <Stack direction="row" width="100%" my={1} spacing={1}>
-      <Box width="150px">
+      <Box width="150px" >
         Sort
-        <Select defaultValue="soonest" onChange={handleChangeSort}>
-          <Option value="soonest">Newest</Option>
-          <Option value="latest">Oldest</Option>
+        <Select defaultValue="soonest" placeholder="Soonest" onChange={handleChangeSort}>
+          <Option value="soonest">Soonest</Option>
+          <Option value="latest">Latest</Option>
         </Select>
       </Box>
     </Stack>
@@ -189,6 +182,7 @@ export default function PendingBookings() {
                 <FormLabel>Rows per page:</FormLabel>
                 <Select
                   onChange={handleChangeRowsPerPage}
+                  placeholder="5"
                   value={rowsPerPage}
                 >
                   <Option value={5}>5</Option>
@@ -197,11 +191,11 @@ export default function PendingBookings() {
                 </Select>
               </FormControl>
               <Typography textAlign="center" sx={{minWidth: 80}}>
-                {labelDisplayedRows({
-                  from: rows.length === 0 ? 0 : page * rowsPerPage + 1,
-                  to: getLabelDisplayedRowsTo(),
-                  count: total === undefined ? -1 : total,
-                })}
+                {labelDisplayedRows(
+                  rows.length === 0 ? 0 : page * rowsPerPage + 1,
+                  getLabelDisplayedRowsTo(),
+                  total ?? 0,
+                )}
               </Typography>
               <Box sx={{display: "flex", gap: 1}}>
                 <IconButton

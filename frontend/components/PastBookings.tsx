@@ -102,12 +102,8 @@ export default function PastBookings() {
     setPage(0);
   };
 
-  function labelDisplayedRows({
-                                from, to, count,
-                              }: {
-    from: number; to: number; count: number;
-  }) {
-    return `${from}–${to} of ${count !== -1 ? count : `more than ${to}`}`;
+  function labelDisplayedRows(from: number, to: number, count: number) {
+    return `${from}–${to} of ${count}`;
   }
 
   const handleChangeFilter = (event: any, newValue: string | null) => {
@@ -124,10 +120,7 @@ export default function PastBookings() {
   };
 
   const getLabelDisplayedRowsTo = () => {
-    if (total === undefined) {
-      return (page + 1) * rowsPerPage;
-    }
-    return rowsPerPage === -1 ? total : Math.min(total, (page + 1) * rowsPerPage);
+    return Math.min(total ?? 0, (page + 1) * rowsPerPage);
   };
 
   return (<Stack>
@@ -136,7 +129,7 @@ export default function PastBookings() {
           Space
           <Select
             defaultValue="all"
-            placeholder="Filter by space"
+            placeholder="All"
             onChange={handleChangeFilter}
           >
             <Option value="all">All</Option>
@@ -146,7 +139,7 @@ export default function PastBookings() {
         </Box>
         <Box width="150px">
           Sort
-          <Select defaultValue="newest" onChange={handleChangeSort}>
+          <Select defaultValue="newest" placeholder="Newest" onChange={handleChangeSort}>
             <Option value="newest">Newest</Option>
             <Option value="oldest">Oldest</Option>
           </Select>
@@ -194,6 +187,7 @@ export default function PastBookings() {
                   <FormLabel>Rows per page:</FormLabel>
                   <Select
                     onChange={handleChangeRowsPerPage}
+                    placeholder="5"
                     value={rowsPerPage}
                   >
                     <Option value={5}>5</Option>
@@ -202,11 +196,11 @@ export default function PastBookings() {
                   </Select>
                 </FormControl>
                 <Typography textAlign="center" sx={{minWidth: 80}}>
-                  {labelDisplayedRows({
-                    from: rows.length === 0 ? 0 : page * rowsPerPage + 1,
-                    to: getLabelDisplayedRowsTo(),
-                    count: total === undefined ? -1 : total,
-                  })}
+                  {labelDisplayedRows(
+                    rows.length === 0 ? 0 : page * rowsPerPage + 1,
+                    getLabelDisplayedRowsTo(),
+                    total ?? 0
+                  )}
                 </Typography>
                 <Box sx={{display: "flex", gap: 1}}>
                   <IconButton

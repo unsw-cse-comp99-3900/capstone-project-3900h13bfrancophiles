@@ -231,7 +231,7 @@ export default function UpcomingBookings() {
           Space
           <Select
             defaultValue="all"
-            placeholder="Filter by space"
+            placeholder="All"
             onChange={handleChangeFilter}
           >
             <Option value="all">All</Option>
@@ -241,7 +241,7 @@ export default function UpcomingBookings() {
         </Box>
         <Box width="150px">
           Sort
-          <Select defaultValue="soonest" onChange={handleChangeSort}>
+          <Select defaultValue="soonest" placeholder="Soonest" onChange={handleChangeSort}>
             <Option value="soonest">Soonest</Option>
             <Option value="latest">Latest</Option>
           </Select>
@@ -295,6 +295,7 @@ export default function UpcomingBookings() {
                   <FormLabel>Rows per page:</FormLabel>
                   <Select
                     onChange={handleChangeRowsPerPage}
+                    placeholder="5"
                     value={rowsPerPage}
                   >
                     <Option value={5}>5</Option>
