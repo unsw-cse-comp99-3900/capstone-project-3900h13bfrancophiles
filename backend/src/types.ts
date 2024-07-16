@@ -118,6 +118,16 @@ export interface BookingDetailsRequest {
 
 export type BookingStatus = typeof bookingstatusenum.enumValues[number];
 
+export interface EmailRecipient {
+  name: string;
+  email: string & tags.Format<'email'>;
+};
+
+export interface EmailContents {
+  subject: string;
+  text: string;
+  html: string;
+}
 export type User = {
   zid: number;
   email: string;

@@ -18,6 +18,7 @@ import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
 import Avatar from '@mui/joy/Avatar';
 import useUser from "@/hooks/useUser";
+import {NoBookingsRow} from "@/components/PastBookings";
 
 
 export interface PendingBookingRowProps {
@@ -77,7 +78,7 @@ function PastBookingsRow({row}: PendingBookingRowProps) {
   </tr>;
 }
 
-function getInitials(fullname: string): string {
+export function getInitials(fullname: string): string {
   const names = fullname.split(' ');
   return names[0][0] + names[names.length - 1][0];
 }
@@ -153,7 +154,7 @@ export default function PendingBookings() {
       <Table
         aria-labelledby="tableTitle"
         stickyHeader
-        hoverRow
+        hoverRow={rows.length !== 0}
         sx={{
           "--TableCell-headBackground": "var(--joy-palette-background-level1)",
           "--Table-headerUnderlineThickness": "1px",
@@ -172,8 +173,9 @@ export default function PendingBookings() {
         </tr>
         </thead>
         <tbody>
-        {rows
-          .map((row) => (<PastBookingsRow key={row.id} row={row}/>))}
+        {rows.length === 0
+          ? <NoBookingsRow bookingType='Pending' colSpan={5}/>
+          : rows.map((row) => (<PastBookingsRow key={row.id} row={row}/>))}
         </tbody>
         <tfoot>
         <tr>
