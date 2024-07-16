@@ -18,7 +18,8 @@ import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
 import Avatar from '@mui/joy/Avatar';
 import useUser from "@/hooks/useUser";
-import {NoBookingsRow} from "@/components/PastBookings";
+
+import { NoBookingsRow } from '@/components/NoBookingsRow';
 
 
 export interface PendingBookingRowProps {
@@ -128,6 +129,8 @@ export default function PendingBookings() {
     return Math.min(total ?? 0, (page + 1) * rowsPerPage);
   };
 
+  const numColumns = 5;
+
   return (<Stack>
     <Stack direction="row" width="100%" my={1} spacing={1}>
       <Box width="150px" >
@@ -167,12 +170,12 @@ export default function PendingBookings() {
         </thead>
         <tbody>
         {rows.length === 0
-          ? <NoBookingsRow bookingType='Pending' colSpan={5}/>
+          ? <NoBookingsRow bookingType='Pending' colSpan={numColumns} isLoading={isLoading} />
           : rows.map((row) => (<PastBookingsRow key={row.id} row={row}/>))}
         </tbody>
         <tfoot>
         <tr>
-          <td colSpan={5}>
+          <td colSpan={numColumns}>
             <Box
               sx={{
                 display: "flex", alignItems: "center", gap: 2, justifyContent: "flex-end",

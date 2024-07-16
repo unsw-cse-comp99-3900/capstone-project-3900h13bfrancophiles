@@ -33,7 +33,8 @@ import useSpace from "@/hooks/useSpace";
 import { deleteBooking } from "@/api";
 import BookingModal from "./BookingModal/BookingModal";
 import NextLink from 'next/link'
-import {NoBookingsRow} from "@/components/PastBookings";
+
+import { NoBookingsRow } from '@/components/NoBookingsRow';
 
 export interface UpcomingBookingRowProps {
   row: Row;
@@ -225,6 +226,8 @@ export default function UpcomingBookings() {
     return rowsPerPage === -1 ? rows.length : Math.min(rows.length, (page + 1) * rowsPerPage);
   };
 
+  const numColumns = 5;
+
   return (<Stack>
       <Stack direction="row" width="100%" my={1} spacing={1}>
         <Box width="150px">
@@ -276,7 +279,7 @@ export default function UpcomingBookings() {
           </thead>
           <tbody>
             {rows.length === 0
-              ? <NoBookingsRow bookingType='Upcoming' colSpan={5}/>
+              ? <NoBookingsRow bookingType='Upcoming' colSpan={numColumns} isLoading={isLoading} />
               :rows
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               .map((row) => (
@@ -285,7 +288,7 @@ export default function UpcomingBookings() {
           </tbody>
           <tfoot>
           <tr>
-            <td colSpan={5}>
+            <td colSpan={numColumns}>
               <Box
                 sx={{
                   display: "flex", alignItems: "center", gap: 2, justifyContent: "flex-end",

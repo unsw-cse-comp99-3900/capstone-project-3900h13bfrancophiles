@@ -11,12 +11,12 @@ import IconButton from "@mui/joy/IconButton";
 import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import Link from "@mui/joy/Link"
-import {Sheet, Skeleton, Stack} from "@mui/joy";
-import {format} from 'date-fns';
+import { Sheet, Skeleton, Stack } from "@mui/joy";
+import { format } from 'date-fns';
 import useSpace from "@/hooks/useSpace";
 import usePastBookings from "@/hooks/usePastBookings";
 import NextLink from "next/link";
-import { SpaceType } from "@/types";
+import { NoBookingsRow } from '@/components/NoBookingsRow';
 
 interface PastBookingRowProps {
   row: Row
@@ -54,21 +54,6 @@ function PastBookingsRow({row}: PastBookingRowProps) {
       <Typography level="body-sm">{row.description}</Typography>
     </td>
   </tr>;
-}
-
-interface NoBookingsRowProps {
-  bookingType: string;
-  colSpan: number;
-}
-
-export function NoBookingsRow({bookingType, colSpan}: NoBookingsRowProps) {
-  return <tr>
-    <td colSpan={colSpan}>
-      <Typography level="body-sm" textAlign='center'>
-        No {bookingType} Bookings
-      </Typography>
-    </td>
-  </tr>
 }
 
 export default function PastBookings() {
@@ -123,6 +108,8 @@ export default function PastBookings() {
     return Math.min(total ?? 0, (page + 1) * rowsPerPage);
   };
 
+  const numColumns = 3;
+
   return (<Stack>
       <Stack direction="row" width="100%" my={1} spacing={1}>
         <Box width="150px">
@@ -172,12 +159,12 @@ export default function PastBookings() {
           </thead>
           <tbody>
           {rows.length === 0
-            ? <NoBookingsRow bookingType='Past' colSpan={3}/>
+            ? <NoBookingsRow bookingType='Past' colSpan={numColumns} isLoading={isLoading}/>
             : rows.map((row) => (<PastBookingsRow key={row.id} row={row}/>))}
           </tbody>
           <tfoot>
           <tr>
-            <td colSpan={3}>
+            <td colSpan={numColumns}>
               <Box
                 sx={{
                   display: "flex", alignItems: "center", gap: 2, justifyContent: "flex-end",
