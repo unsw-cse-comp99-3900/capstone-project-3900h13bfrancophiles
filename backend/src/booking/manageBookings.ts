@@ -1,4 +1,4 @@
-import { and, eq, gt, lt } from "drizzle-orm"
+import { and, eq } from "drizzle-orm"
 import { booking } from '../../drizzle/schema';
 import isEqual from 'lodash/isEqual';
 import typia from "typia";
@@ -49,7 +49,7 @@ export async function checkInBooking(
     );
 
     if (currentBookings.length != 1) {
-      res.status(403).json({ error: "Booking id does not exist for this user" });
+      res.status(404).json({ error: "Booking id does not exist for this user" });
       return;
     }
 
@@ -57,34 +57,28 @@ export async function checkInBooking(
 
     // 5 minute buffer value too long?
     if (!withinDateRange(currentTime, new Date(currentBooking.starttime), new Date(currentBooking.endtime), 5)) {
-      res.status(403).json({ error: "Outside booking time window" });
+      res.status(400).json({ error: "Outside booking time window" });
       return;
     }
 
     switch (currentBooking.currentstatus) {
       case 'pending':
-        res.status(403).json({ error: "Booking not yet confirmed" });
+        res.status(400).json({ error: "Booking not yet confirmed" });
         return;
       case 'checkedin':
-        res.status(403).json({ error: "Already checked in" });
+        res.status(400).json({ error: "Already checked in" });
         return;
       case 'completed':
-        res.status(403).json({ error: "Already checked out" });
+        res.status(400).json({ error: "Already checked out" });
         return;
     }
-
 
     let updatedBooking: Booking;
     try {
       const res = await db
       .update(booking)
       .set({ checkintime: currentTime.toISOString(), currentstatus: "checkedin" })
-      .where(
-        and(
-          lt(booking.starttime, currentTime.toISOString()),
-          gt(booking.endtime, currentTime.toISOString()),
-          eq(booking.id, req.body.id),
-          eq(booking.zid, req.token.user)))
+      .where(eq(booking.id, req.body.id))
       .returning();
 
       updatedBooking = formatBookingDates(res[0]);
@@ -114,51 +108,45 @@ export async function checkOutBooking(
 
     const currentTime = await now();
 
-    const currentBooking = await db
+    const currentBookings = await db
     .select()
     .from(booking)
     .where(
       and(
         eq(booking.zid, req.token.user),
         eq(booking.id, req.body.id),
-        eq(booking.currentstatus, "confirmed")
       )
     );
 
-    if (currentBooking.length != 1) {
-      res.status(403).json({ error: "Booking id does not exist for this user" });
+    if (currentBookings.length != 1) {
+      res.status(404).json({ error: "Booking id does not exist for this user" });
       return;
     }
+
+    const currentBooking = formatBookingDates(currentBookings[0]);
 
     // 5 minute buffer value too long?
-    if (!withinDateRange(currentTime, new Date(currentBooking[0].starttime), new Date(currentBooking[0].endtime), 5)) {
-      res.status(403).json({ error: "Outside booking time window" });
+    if (!withinDateRange(currentTime, new Date(currentBooking.starttime), new Date(currentBooking.endtime), 5)) {
+      res.status(400).json({ error: "Outside booking time window" });
       return;
     }
 
-    switch (currentBooking[0].currentstatus) {
+    switch (currentBooking.currentstatus) {
       case 'pending':
-        res.status(403).json({ error: "Booking not yet confirmed" });
+        res.status(400).json({ error: "Booking not yet confirmed" });
         return;
       case 'confirmed':
-        res.status(403).json({ error: "Not yet checked in" });
+        res.status(400).json({ error: "Not yet checked in" });
         return;
       case 'completed':
-        res.status(403).json({ error: "Already checked out" });
+        res.status(400).json({ error: "Already checked out" });
         return;
     }
 
     const updatedBooking = await db
       .update(booking)
       .set({ checkouttime: currentTime.toISOString(), currentstatus: "completed"})
-      .where(
-        and(
-          lt(booking.starttime, currentTime.toISOString()),
-          gt(booking.endtime, currentTime.toISOString()),
-          eq(booking.id, req.body.id),
-          eq(booking.zid, req.token.user),
-          eq(booking.currentstatus, "checkedin"))
-          )
+      .where(eq(booking.id, req.body.id))
       .returning();
 
     if (updatedBooking.length != 1) {

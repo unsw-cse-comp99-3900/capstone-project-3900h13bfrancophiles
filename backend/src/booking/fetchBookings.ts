@@ -1,5 +1,5 @@
 import { booking, hotdesk, room } from '../../drizzle/schema';
-import { and, asc, count, desc, eq, gt, gte, inArray, lt, lte, ne } from 'drizzle-orm';
+import { and, asc, count, desc, eq, gt, gte, inArray, lt, lte, ne, or } from 'drizzle-orm';
 import typia, { tags } from 'typia';
 
 import { db } from '../index';
@@ -95,6 +95,22 @@ interface PastBookingsRequest {
   sort: 'newest' | 'oldest';
 }
 
+// Past bookings are either completed (checked out but not necessarily
+// in the past), or in the past but confirmed/checkedin (never checked
+// in or out)
+function isPastBooking(currentTime: string) {
+  return or(
+    eq(booking.currentstatus, "completed"),
+    and(
+      lte(booking.endtime, currentTime),
+      or(
+        eq(booking.currentstatus, "confirmed"),
+        eq(booking.currentstatus, "checkedin"),
+      )
+    )
+  )
+}
+
 export async function pastBookings(
   req: TypedGETRequest,
   res: TypedResponse<{ bookings: Booking[]; total: number }>,
@@ -130,8 +146,7 @@ export async function pastBookings(
       .where(and(
         inArray(booking.spaceid, subQuery),
         eq(booking.zid, zid),
-        lt(booking.endtime, currentTime),
-        ne(booking.currentstatus, "deleted")
+        isPastBooking(currentTime)
       ));
 
     const pastBookings = await db
@@ -140,8 +155,7 @@ export async function pastBookings(
       .where(and(
         inArray(booking.spaceid, subQuery),
         eq(booking.zid, zid),
-        lt(booking.endtime, currentTime),
-        ne(booking.currentstatus, "deleted")
+        isPastBooking(currentTime)
       ))
       .orderBy(parsedQuery.sort == 'newest' ? desc(booking.starttime) : asc(booking.starttime))
       .limit(limit)
