@@ -63,6 +63,7 @@ function CurrentBookingCard({ booking }: CurrentBookingCardProps) {
       setCheckInOrOutError(null);
       try {
         await checkOut(booking.id);
+        setCheckedIn(false);
         mutate();
       } catch (error) {
         if (error instanceof Error) {
@@ -70,8 +71,10 @@ function CurrentBookingCard({ booking }: CurrentBookingCardProps) {
         } else {
           setCheckInOrOutError("An unexpected error occurred");
         }
+        // TODO: handle error
       } finally {
         setIsCheckingInOrOut(false);
+        setIsConfirmationOpen(false);
       }
       return;
     } else {
@@ -89,8 +92,10 @@ function CurrentBookingCard({ booking }: CurrentBookingCardProps) {
         } else {
           setCheckInOrOutError("An unexpected error occurred");
         }
+        // TODO: handle error
       } finally {
         setIsCheckingInOrOut(false);
+        setIsConfirmationOpen(false);
       }
     }
   };
