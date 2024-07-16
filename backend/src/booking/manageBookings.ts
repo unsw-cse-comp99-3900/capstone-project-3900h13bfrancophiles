@@ -3,6 +3,14 @@ import { booking } from '../../drizzle/schema';
 import isEqual from 'lodash/isEqual';
 import typia from "typia";
 
+import {
+  sendBookingEmail
+} from '../email/service';
+import {
+  BOOKING_DELETE,
+  BOOKING_EDIT,
+  BOOKING_REQUEST
+} from '../email/template';
 import { db } from '../index'
 import {
   Booking,
@@ -195,10 +203,13 @@ export async function createBooking(
       .returning();
 
     createdBooking = formatBookingDates(res[0]);
+
   } catch (e: any) {
     res.status(400).json({ error: `${e}` });
     return;
   }
+
+  sendBookingEmail(req.token.user, createdBooking, BOOKING_REQUEST);
 
   res.json({ booking: createdBooking });
 }
@@ -244,8 +255,7 @@ export async function deleteBooking(
       return;
     }
 
-    // TODO: send an email to the user confirming new booking details
-    // email.editConfirmation(req.token.user, updatedBooking[0])
+    sendBookingEmail(req.token.user, formattedBooking, BOOKING_DELETE);
 
     // TODO: trigger admin reapproval if newStatus is pending
 
@@ -323,8 +333,8 @@ export async function editBooking(
       return;
     }
 
-    // TODO: send an email to the user confirming new booking details
-    // email.editConfirmation(req.token.user, updatedBooking[0])
+    // TODO: This email should show the old details, and the new details too...
+    sendBookingEmail(req.token.user, formattedBooking, BOOKING_EDIT);
 
     // TODO: trigger admin reapproval if newStatus is pending
 
