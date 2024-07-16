@@ -21,6 +21,7 @@ import useCurrentBookings from "@/hooks/useCurrentBookings";
 import { format } from "date-fns";
 import { useState } from "react";
 import { checkIn, checkOut } from "@/api";
+import { mutate } from 'swr';
 
 function CurrentBookings() {
   const { currentBookings } = useCurrentBookings();
@@ -45,7 +46,13 @@ interface CurrentBookingCardProps {
 
 function CurrentBookingCard({ booking }: CurrentBookingCardProps) {
   const { space, isLoading } = useSpace(booking.spaceid);
-  const { mutate } = useCurrentBookings(); // Get mutate function from useCurrentBookings
+
+  // Mutate both current and past bookings (goes to past on check out)
+  const mutateCurrentPast = () => mutate(
+    key => typeof key === 'string' && (
+      key.startsWith("/bookings/current") || key.startsWith("/bookings/past")
+    )
+  );
 
   const [isCheckingInOrOut, setIsCheckingInOrOut] = useState(false);
   const [checkInOrOutError, setCheckInOrOutError] = useState<string | null>(
@@ -64,7 +71,7 @@ function CurrentBookingCard({ booking }: CurrentBookingCardProps) {
       try {
         await checkOut(booking.id);
         setCheckedIn(false);
-        mutate();
+        await mutateCurrentPast();
       } catch (error) {
         if (error instanceof Error) {
           setCheckInOrOutError(error.message);
@@ -85,7 +92,7 @@ function CurrentBookingCard({ booking }: CurrentBookingCardProps) {
       try {
         await checkIn(booking.id);
         setCheckedIn(true);
-        mutate();
+        await mutateCurrentPast();
       } catch (error) {
         if (error instanceof Error) {
           setCheckInOrOutError(error.message);
