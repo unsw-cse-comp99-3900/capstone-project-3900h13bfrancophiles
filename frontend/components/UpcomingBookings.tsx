@@ -89,8 +89,8 @@ function UpcomingBookingRow({ row, mutate }: UpcomingBookingRowProps) {
         </td>
         <td>
           <Typography level="body-sm">
-            {format(new Date(row.starttime), "dd/MM/yy k:mm")} -{" "}
-            {format(new Date(row.endtime), "k:mm")}
+            {format(new Date(row.starttime), "dd/MM/yy H:mm")} -{" "}
+            {format(new Date(row.endtime), "H:mm")}
           </Typography>
         </td>
         <td>
