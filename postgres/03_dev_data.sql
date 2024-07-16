@@ -33,7 +33,7 @@ INSERT INTO booking (zId, startTime, endTime, spaceId, currentStatus, descriptio
     (1234567, '2024-07-21T11:30', '2024-07-21T12:30', 'K-K17-B01', 'confirmed', 'studying'),
 
     -- Admin upcoming desk bookings
-    (1234567, '2024-07-18T03:00', '2024-07-18T05:00', 'K-K17-301-11', 'confirmed', 'studying'),
+    (1234567, '2024-07-20T03:00', '2024-07-20T05:00', 'K-K17-301-11', 'confirmed', 'studying'),
 
     --------------------------------------------------------------------------------------------
     -- HDR upcoming room bookings
