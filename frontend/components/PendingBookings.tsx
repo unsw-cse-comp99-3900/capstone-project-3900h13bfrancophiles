@@ -18,30 +18,23 @@ import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
 import Avatar from '@mui/joy/Avatar';
 import useUser from "@/hooks/useUser";
-import {NoBookingsRow} from "@/components/PastBookings";
+
+import { NoBookingsRow } from '@/components/NoBookingsRow';
+import { Booking } from '@/types';
 
 
 export interface PendingBookingRowProps {
-  row: Row
-}
-
-interface Row {
-  id: number,
-  zid: number,
-  startTime: Date,
-  endTime: Date,
-  space: string,
-  description: string
+  row: Booking
 }
 
 function PastBookingsRow({row}: PendingBookingRowProps) {
-  const {space, isLoading: spaceIsLoading} = useSpace(row.space);
+  const {space, isLoading: spaceIsLoading} = useSpace(row.spaceid);
   const {user, isLoading : userIsLoading} = useUser(row.zid);
 
   return <tr>
     <td>
       <Typography level="body-sm">
-        {format(row.startTime, "dd/MM/yy k:mm")} - {format(row.endTime, "k:mm")}
+        {format(new Date(row.starttime), "dd/MM/yy k:mm")} - {format(new Date(row.endtime), "k:mm")}
       </Typography>
     </td>
     <td>
@@ -86,24 +79,9 @@ export function getInitials(fullname: string): string {
 export default function PendingBookings() {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
-  const [rows, setRows] = React.useState<Row[]>([]);
 
   const [sort, setSort] = React.useState('soonest');
   const {pendingBookings, total, isLoading} = usePendingBookings(page + 1, rowsPerPage, sort);
-
-  React.useEffect(() => {
-    if (!isLoading && pendingBookings) {
-      const rowsData = pendingBookings.map((booking) => ({
-        id: booking.id,
-        zid: booking.zid,
-        startTime: new Date(booking.starttime),
-        endTime: new Date(booking.endtime),
-        space: booking.spaceid,
-        description: booking.description,
-      }));
-      setRows(rowsData);
-    }
-  }, [page, rowsPerPage, pendingBookings, isLoading]);
 
   const handleChangePage = (newPage: number) => {
     setPage(newPage);
@@ -114,12 +92,8 @@ export default function PendingBookings() {
     setPage(0);
   };
 
-  function labelDisplayedRows({
-                                from, to, count,
-                              }: {
-    from: number; to: number; count: number;
-  }) {
-    return `${from}–${to} of ${count !== -1 ? count : `more than ${to}`}`;
+  function labelDisplayedRows(from: number, to: number, count: number) {
+    return `${from}–${to} of ${count}`;
   }
 
   const handleChangeSort = (event: any, newValue: string | null) => {
@@ -129,19 +103,18 @@ export default function PendingBookings() {
   };
 
   const getLabelDisplayedRowsTo = () => {
-    if (total === undefined) {
-      return (page + 1) * rowsPerPage;
-    }
-    return rowsPerPage === -1 ? total : Math.min(total, (page + 1) * rowsPerPage);
+    return Math.min(total ?? 0, (page + 1) * rowsPerPage);
   };
+
+  const numColumns = 5;
 
   return (<Stack>
     <Stack direction="row" width="100%" my={1} spacing={1}>
-      <Box width="150px">
+      <Box width="150px" >
         Sort
-        <Select defaultValue="soonest" onChange={handleChangeSort}>
-          <Option value="soonest">Newest</Option>
-          <Option value="latest">Oldest</Option>
+        <Select defaultValue="soonest" placeholder="Soonest" onChange={handleChangeSort}>
+          <Option value="soonest">Soonest</Option>
+          <Option value="latest">Latest</Option>
         </Select>
       </Box>
     </Stack>
@@ -154,7 +127,7 @@ export default function PendingBookings() {
       <Table
         aria-labelledby="tableTitle"
         stickyHeader
-        hoverRow={rows.length !== 0}
+        hoverRow={!!pendingBookings?.length}
         sx={{
           "--TableCell-headBackground": "var(--joy-palette-background-level1)",
           "--Table-headerUnderlineThickness": "1px",
@@ -173,13 +146,14 @@ export default function PendingBookings() {
         </tr>
         </thead>
         <tbody>
-        {rows.length === 0
-          ? <NoBookingsRow bookingType='Pending' colSpan={5}/>
-          : rows.map((row) => (<PastBookingsRow key={row.id} row={row}/>))}
+        {!!pendingBookings?.length
+          ? pendingBookings.map((row) => (<PastBookingsRow key={row.id} row={row}/>))
+          : <NoBookingsRow bookingType='Pending' colSpan={numColumns} isLoading={isLoading} />
+        }
         </tbody>
         <tfoot>
         <tr>
-          <td colSpan={5}>
+          <td colSpan={numColumns}>
             <Box
               sx={{
                 display: "flex", alignItems: "center", gap: 2, justifyContent: "flex-end",
@@ -189,6 +163,7 @@ export default function PendingBookings() {
                 <FormLabel>Rows per page:</FormLabel>
                 <Select
                   onChange={handleChangeRowsPerPage}
+                  placeholder="5"
                   value={rowsPerPage}
                 >
                   <Option value={5}>5</Option>
@@ -197,11 +172,11 @@ export default function PendingBookings() {
                 </Select>
               </FormControl>
               <Typography textAlign="center" sx={{minWidth: 80}}>
-                {labelDisplayedRows({
-                  from: rows.length === 0 ? 0 : page * rowsPerPage + 1,
-                  to: getLabelDisplayedRowsTo(),
-                  count: total === undefined ? -1 : total,
-                })}
+                {labelDisplayedRows(
+                  pendingBookings ? page * rowsPerPage + 1 : 0,
+                  getLabelDisplayedRowsTo(),
+                  total ?? 0,
+                )}
               </Typography>
               <Box sx={{display: "flex", gap: 1}}>
                 <IconButton
@@ -218,7 +193,7 @@ export default function PendingBookings() {
                   size="sm"
                   color="neutral"
                   variant="outlined"
-                  disabled={page >= Math.ceil(total === undefined ? -1 : total / rowsPerPage) - 1}
+                  disabled={page >= Math.ceil((total ?? 0) / rowsPerPage) - 1}
                   onClick={() => handleChangePage(page + 1)}
                   sx={{bgcolor: "background.surface"}}
                 >
