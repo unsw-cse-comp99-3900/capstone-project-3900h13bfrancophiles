@@ -10,10 +10,13 @@ import FormLabel from "@mui/joy/FormLabel";
 import IconButton from "@mui/joy/IconButton";
 import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
+import Link from "@mui/joy/Link"
 import {Sheet, Skeleton, Stack} from "@mui/joy";
 import {format} from 'date-fns';
 import useSpace from "@/hooks/useSpace";
 import usePastBookings from "@/hooks/usePastBookings";
+import NextLink from "next/link";
+import { SpaceType } from "@/types";
 
 export interface PastBookingRowProps {
   row: Row
@@ -24,11 +27,11 @@ interface Row {
   startTime: Date,
   endTime: Date,
   space: string,
-  description: string
+  description: string,
 }
 
 function PastBookingsRow({row}: PastBookingRowProps) {
-  const {space, isLoading} = useSpace(row.space);
+  const {space, type, isLoading} = useSpace(row.space);
 
   return <tr>
     <td>
@@ -38,7 +41,13 @@ function PastBookingsRow({row}: PastBookingRowProps) {
     </td>
     <td>
       <Skeleton loading={isLoading}>
-        <Typography level="body-sm">{space?.name}</Typography>
+        <Link
+          href={type === 'room' ? `/rooms/${row.space}` : `/desks/${row.space}`}
+          level="body-sm"
+          component={NextLink}
+        >
+            {space?.name}
+        </Link>
       </Skeleton>
     </td>
     <td>

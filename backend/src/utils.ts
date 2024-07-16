@@ -1,7 +1,8 @@
-import { Booking, AnonymousBooking, BookingStatus, BookingEditRequest, USER_GROUPS, UserGroup } from './types';
-import { space } from '../drizzle/schema';
+import { space, config } from '../drizzle/schema';
 import { eq } from 'drizzle-orm';
+
 import { db } from './index';
+import { AnonymousBooking, Booking, BookingStatus, USER_GROUPS, UserGroup } from './types';
 
 /**
  * Format the booking dates by adding a Z to the end to signify UTC time. It
@@ -57,6 +58,7 @@ export async function initialBookingStatus(
 export function anonymiseBooking(booking: Booking): AnonymousBooking {
   return {
     id: booking.id,
+    zid: booking.zid,
     starttime: booking.starttime,
     endtime: booking.endtime,
     spaceid: booking.spaceid,
@@ -64,4 +66,21 @@ export function anonymiseBooking(booking: Booking): AnonymousBooking {
     checkintime: booking.checkintime,
     checkouttime: booking.checkouttime
   };
+}
+
+/**
+ * Utility function to get the current time, which may be mocked for testing
+ */
+export async function now(): Promise<Date> {
+  if (process.env.NODE_ENV === 'test') {
+    const res = await db
+      .select({ currentTime: config.value })
+      .from(config)
+      .where(eq(config.key, "current_timestamp"));
+
+    const currentTime = res?.[0].currentTime;
+    return currentTime ? new Date(currentTime) : new Date();
+  } else {
+    return new Date();
+  }
 }

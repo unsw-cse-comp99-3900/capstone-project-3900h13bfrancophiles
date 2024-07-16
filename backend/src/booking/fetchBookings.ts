@@ -1,9 +1,15 @@
-import { Booking, IDatetimeRange, TypedGETRequest, TypedResponse } from '../types';
-import { db } from '../index';
 import { booking, hotdesk, room } from '../../drizzle/schema';
-import { and, asc, count, desc, eq, gt, gte, inArray, lt, lte } from 'drizzle-orm';
-import { formatBookingDates } from '../utils';
+import { and, asc, count, desc, eq, gt, gte, inArray, lt, lte, ne } from 'drizzle-orm';
 import typia, { tags } from 'typia';
+
+import { db } from '../index';
+import {
+  Booking,
+  IDatetimeRange,
+  TypedGETRequest,
+  TypedResponse
+} from '../types';
+import { formatBookingDates, now } from '../utils';
 
 export async function currentBookings(
   req: TypedGETRequest,
@@ -11,7 +17,7 @@ export async function currentBookings(
 ) {
   try {
     const zid = req.token.user;
-    const currentTime = new Date().toISOString();
+    const currentTime = (await now()).toISOString();
 
     const currentBookings = await db
       .select()
@@ -20,7 +26,8 @@ export async function currentBookings(
         and(
           lt(booking.starttime, currentTime),
           gt(booking.endtime, currentTime),
-          eq(booking.zid, zid)
+          eq(booking.zid, zid),
+          ne(booking.currentstatus, "deleted")
         )
       );
 
@@ -47,7 +54,7 @@ export async function upcomingBookings(
     }
 
     const zid = req.token.user;
-    const currentTime = new Date().toISOString();
+    const currentTime = (await now()).toISOString();
 
     let subQuery;
     switch (parsedQuery.type) {
@@ -68,7 +75,8 @@ export async function upcomingBookings(
         and(
           inArray(booking.spaceid, subQuery),
           gt(booking.starttime, currentTime),
-          eq(booking.zid, zid)
+          eq(booking.zid, zid),
+          ne(booking.currentstatus, "deleted")
         )
       )
       .orderBy(parsedQuery.sort == 'soonest' ? asc(booking.starttime) : desc(booking.starttime))
@@ -101,7 +109,7 @@ export async function pastBookings(
     const page = parsedQuery.page;
     const limit = parsedQuery.limit;
     const offset = (page - 1) * limit;
-    const currentTime = new Date().toISOString();
+    const currentTime = (await now()).toISOString();
 
     let subQuery;
     switch (parsedQuery.type) {
@@ -121,7 +129,8 @@ export async function pastBookings(
       .where(and(
         inArray(booking.spaceid, subQuery),
         eq(booking.zid, zid),
-        lt(booking.endtime, currentTime)
+        lt(booking.endtime, currentTime),
+        ne(booking.currentstatus, "deleted")
       ));
 
     const pastBookings = await db
@@ -130,7 +139,8 @@ export async function pastBookings(
       .where(and(
         inArray(booking.spaceid, subQuery),
         eq(booking.zid, zid),
-        lt(booking.endtime, currentTime)
+        lt(booking.endtime, currentTime),
+        ne(booking.currentstatus, "deleted")
       ))
       .orderBy(parsedQuery.sort == 'newest' ? desc(booking.starttime) : asc(booking.starttime))
       .limit(limit)
@@ -167,7 +177,8 @@ export async function rangeOfBookings(
         and(
           lte(booking.starttime, datetimeEnd),
           gte(booking.endtime, datetimeStart),
-          eq(booking.zid, zid)
+          eq(booking.zid, zid),
+          ne(booking.currentstatus, "deleted")
         )
       );
 

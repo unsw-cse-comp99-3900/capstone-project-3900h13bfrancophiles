@@ -19,6 +19,7 @@ import {
   Stack,
   Table,
   Typography,
+  Link,
 } from "@mui/joy";
 import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
@@ -30,6 +31,8 @@ import BookingStatusPill from "@/components/BookingStatusPill";
 import useUpcomingBookings from "@/hooks/useUpcomingBookings";
 import useSpace from "@/hooks/useSpace";
 import { deleteBooking } from "@/api";
+import BookingModal from "./BookingModal/BookingModal";
+import NextLink from 'next/link'
 
 export interface UpcomingBookingRowProps {
   row: Row;
@@ -45,13 +48,13 @@ interface Row {
   description: string;
 }
 
-
 function UpcomingBookingRow({ row, mutate }: UpcomingBookingRowProps) {
-  const { space, isLoading } = useSpace(row.space);
+  const { space, type, isLoading } = useSpace(row.space);
   const [bookingToDelete, setBookingToDelete] = React.useState<number | null>(
     null
   );
   const [modalOpen, setModalOpen] = React.useState(false);
+  const [editModalOpen, setEditModalOpen] = React.useState(false);
 
   const handleDelete = async () => {
     if (bookingToDelete !== null) {
@@ -75,6 +78,15 @@ function UpcomingBookingRow({ row, mutate }: UpcomingBookingRowProps) {
     setModalOpen(false);
   };
 
+  const handleOpenEditModal = () => {
+    setEditModalOpen(true);
+  };
+
+  const handleCloseEditModal = () => {
+    setEditModalOpen(false);
+    mutate();
+  };
+
   return (
     <>
       <tr>
@@ -89,7 +101,13 @@ function UpcomingBookingRow({ row, mutate }: UpcomingBookingRowProps) {
         </td>
         <td>
           <Skeleton loading={isLoading}>
-            <Typography level="body-sm">{space?.name}</Typography>
+            <Link
+              href={type === 'room' ? `/rooms/${row.space}` : `/desks/${row.space}`}
+              level="body-sm"
+              component={NextLink}
+            >
+              {space?.name}
+            </Link>
           </Skeleton>
         </td>
         <td>
@@ -97,7 +115,11 @@ function UpcomingBookingRow({ row, mutate }: UpcomingBookingRowProps) {
         </td>
         <td>
           <Stack direction="row" justifyContent="flex-end" px={1}>
-            <IconButton variant="plain" color="neutral">
+            <IconButton
+              variant="plain"
+              color="neutral"
+              onClick={() => handleOpenEditModal()}
+            >
               <EditIcon />
             </IconButton>
             <IconButton
@@ -130,6 +152,18 @@ function UpcomingBookingRow({ row, mutate }: UpcomingBookingRowProps) {
           </DialogActions>
         </ModalDialog>
       </Modal>
+      <BookingModal
+        open={editModalOpen}
+        onClose={() => handleCloseEditModal()}
+        space={space ? { id: space!.id, name: space!.name, isRoom: type === 'room' } : undefined}
+        date={row.startTime}
+        start={row.startTime}
+        end={row.endTime}
+        desc={row.description}
+        editing
+        editedBooking={row.id}
+        // I think reapproval stuff is handled by backend so don't need to pass status?
+      />
     </>
   );
 }
