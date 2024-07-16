@@ -43,7 +43,6 @@ INSERT INTO booking (zId, startTime, endTime, spaceId, currentStatus, descriptio
     (7654321, '2024-07-25T16:30', '2024-07-25T17:30', 'K-K17-402', 'declined', 'workshop'),
 
     -- HDR upcoming desk bookings
-    (7654321, '2024-07-18T03:00', '2024-07-18T05:00', 'K-K17-201-1', 'confirmed', 'doing research'),
     (7654321, '2024-07-19T03:00', '2024-07-19T05:00', 'K-K17-201-2', 'confirmed', 'studying'),
     (7654321, '2024-07-20T03:00', '2024-07-20T05:00', 'K-K17-201-3', 'confirmed', 'doing research'),
     (7654321, '2024-07-21T03:00', '2024-07-21T05:00', 'K-K17-201-1', 'confirmed', 'studying'),
@@ -54,8 +53,8 @@ INSERT INTO booking (zId, startTime, endTime, spaceId, currentStatus, descriptio
     --------------------------------------------------------------------------------------------
     -- DEMO B BOOKINGS
     -- Current bookings- wk 8 thursday 12pm - 4pm SYD time
-    (7654321, '2024-07-18T02:00', '2024-07-18T06:00', 'K-K17-402', 'confirmed', 'current booking demo B'),
-    (1234567, '2024-07-18T02:00', '2024-07-18T06:00', 'K-J17-504', 'confirmed', 'current booking demo B');
+    (1234567, '2024-07-18T02:00', '2024-07-18T06:00', 'K-K17-201-2', 'confirmed', 'current booking demo B'),
+    (7654321, '2024-07-18T02:00', '2024-07-18T06:00', 'K-J17-504', 'confirmed', 'current booking demo B');
 
 
 -- Reenable triggers for prod
