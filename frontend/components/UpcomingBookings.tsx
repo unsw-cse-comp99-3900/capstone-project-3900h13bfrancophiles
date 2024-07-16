@@ -33,6 +33,7 @@ import useSpace from "@/hooks/useSpace";
 import { deleteBooking } from "@/api";
 import BookingModal from "./BookingModal/BookingModal";
 import NextLink from 'next/link'
+import {NoBookingsRow} from "@/components/PastBookings";
 
 export interface UpcomingBookingRowProps {
   row: Row;
@@ -49,7 +50,7 @@ interface Row {
 }
 
 function UpcomingBookingRow({ row, mutate }: UpcomingBookingRowProps) {
-  const { space, isLoading } = useSpace(row.space); // TODO: USESPACE WILL RETURN TYPE, USE THIS
+  const { space, type, isLoading } = useSpace(row.space);
   const [bookingToDelete, setBookingToDelete] = React.useState<number | null>(
     null
   );
@@ -102,7 +103,7 @@ function UpcomingBookingRow({ row, mutate }: UpcomingBookingRowProps) {
         <td>
           <Skeleton loading={isLoading}>
             <Link
-              href={`/space/${row.space}`}
+              href={type === 'room' ? `/rooms/${row.space}` : `/desks/${row.space}`}
               level="body-sm"
               component={NextLink}
             >
@@ -155,8 +156,7 @@ function UpcomingBookingRow({ row, mutate }: UpcomingBookingRowProps) {
       <BookingModal
         open={editModalOpen}
         onClose={() => handleCloseEditModal()}
-        space={space ? { id: space!.id, name: space!.name, isRoom: true } : undefined}
-        // isRoom can be changed once useSpace updated to also return type
+        space={space ? { id: space!.id, name: space!.name, isRoom: type === 'room' } : undefined}
         date={row.startTime}
         start={row.startTime}
         end={row.endTime}
@@ -256,7 +256,7 @@ export default function UpcomingBookings() {
         <Table
           aria-labelledby="tableTitle"
           stickyHeader
-          hoverRow
+          hoverRow={rows.length !== 0}
           sx={{
             "--TableCell-headBackground": "var(--joy-palette-background-level1)",
             "--Table-headerUnderlineThickness": "1px",
@@ -275,7 +275,9 @@ export default function UpcomingBookings() {
           </tr>
           </thead>
           <tbody>
-            {rows
+            {rows.length === 0
+              ? <NoBookingsRow bookingType='Upcoming' colSpan={5}/>
+              :rows
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               .map((row) => (
                 <UpcomingBookingRow key={row.id} row={row} mutate={mutate} />
