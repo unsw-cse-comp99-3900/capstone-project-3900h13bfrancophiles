@@ -316,6 +316,7 @@ export async function editBooking(
       return;
     }
 
+    // TODO: This email should show the old details, and the new details too...
     sendBookingEmail(req.token.user, formattedBooking, BOOKING_EDIT);
 
     // TODO: trigger admin reapproval if newStatus is pending

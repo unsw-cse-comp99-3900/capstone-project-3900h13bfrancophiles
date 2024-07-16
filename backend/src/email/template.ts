@@ -1,14 +1,12 @@
 import { EmailContents } from '../types';
-
-const { promisify } = require('util');
-const fs = require('fs');
-const readFileAsync = promisify(fs.readFile);
+import { promisify } from 'util';
+import { readFile } from 'fs';
 
 export async function fillEmailTemplate(template: EmailContents, values: { [key: string]: string }): Promise<EmailContents> {
 
     let filledSubject = template.subject;
     let filledText = template.text;
-    let filledHtml = await readFileAsync(('src/email/' + template.html), 'utf-8');
+    let filledHtml = await promisify(readFile)(('src/email/' + template.html), 'utf-8');
 
     for (const key in values) {
         const placeholder = `{{${key}}}`;
