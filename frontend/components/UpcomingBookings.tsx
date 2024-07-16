@@ -33,6 +33,7 @@ import useSpace from "@/hooks/useSpace";
 import { deleteBooking } from "@/api";
 import BookingModal from "./BookingModal/BookingModal";
 import NextLink from 'next/link'
+import {NoBookingsRow} from "@/components/PastBookings";
 
 export interface UpcomingBookingRowProps {
   row: Row;
@@ -255,7 +256,7 @@ export default function UpcomingBookings() {
         <Table
           aria-labelledby="tableTitle"
           stickyHeader
-          hoverRow
+          hoverRow={rows.length !== 0}
           sx={{
             "--TableCell-headBackground": "var(--joy-palette-background-level1)",
             "--Table-headerUnderlineThickness": "1px",
@@ -274,7 +275,9 @@ export default function UpcomingBookings() {
           </tr>
           </thead>
           <tbody>
-            {rows
+            {rows.length === 0
+              ? <NoBookingsRow bookingType='Upcoming' colSpan={5}/>
+              :rows
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               .map((row) => (
                 <UpcomingBookingRow key={row.id} row={row} mutate={mutate} />
