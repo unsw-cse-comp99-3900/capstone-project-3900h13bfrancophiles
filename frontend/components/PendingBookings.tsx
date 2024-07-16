@@ -78,7 +78,7 @@ function PastBookingsRow({row}: PendingBookingRowProps) {
   </tr>;
 }
 
-function getInitials(fullname: string): string {
+export function getInitials(fullname: string): string {
   const names = fullname.split(' ');
   return names[0][0] + names[names.length - 1][0];
 }

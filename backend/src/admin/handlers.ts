@@ -27,7 +27,6 @@ export async function pendingBookings (
       return;
     }
 
-    const zid = req.token.user;
     const page = parsedQuery.page;
     const limit = parsedQuery.limit;
     const offset = (page - 1) * limit;
@@ -37,7 +36,6 @@ export async function pendingBookings (
       .select({ count: count() })
       .from(booking)
       .where(and(
-        eq(booking.zid, zid),
         gt(booking.starttime, currentTime),
         eq(booking.currentstatus, 'pending')
       ));
@@ -46,7 +44,6 @@ export async function pendingBookings (
       .select()
       .from(booking)
       .where(and(
-        eq(booking.zid, zid),
         gt(booking.starttime, currentTime),
         eq(booking.currentstatus, 'pending')
       ))
