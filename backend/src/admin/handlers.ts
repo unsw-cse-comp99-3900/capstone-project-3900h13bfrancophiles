@@ -1,27 +1,29 @@
-import {booking} from "../../drizzle/schema";
-import { and, asc, count, desc, eq, gt } from "drizzle-orm";
 import typia, { tags } from "typia";
-
-import {db} from "../index";
 import {
   Booking,
   TypedGETRequest,
-  TypedResponse
+  TypedRequest,
+  TypedResponse,
 } from "../types";
+import { db } from "../index";
+import { booking } from "../../drizzle/schema";
+import { and, asc, count, desc, eq, gt, lt, or, gte, lte } from "drizzle-orm";
 import { formatBookingDates, now } from "../utils";
 
 interface PendingBookingsRequest {
   page: number & tags.Minimum<1>;
   limit: number & tags.Minimum<1>;
-  sort: 'soonest' | 'latest';
+  sort: "soonest" | "latest";
 }
 
-export async function pendingBookings (
+export async function pendingBookings(
   req: TypedGETRequest,
-  res: TypedResponse<{ bookings: Booking[]; total: number }>,
+  res: TypedResponse<{ bookings: Booking[]; total: number }>
 ) {
   try {
-    const parsedQuery = typia.http.isQuery<PendingBookingsRequest>(new URLSearchParams(req.query));
+    const parsedQuery = typia.http.isQuery<PendingBookingsRequest>(
+      new URLSearchParams(req.query)
+    );
     if (!parsedQuery) {
       res.status(400).json({ error: "Invalid input" });
       return;
@@ -36,29 +38,117 @@ export async function pendingBookings (
     const pendingBookingsTotal = await db
       .select({ count: count() })
       .from(booking)
-      .where(and(
-        eq(booking.zid, zid),
-        gt(booking.starttime, currentTime),
-        eq(booking.currentstatus, 'pending')
-      ));
+      .where(
+        and(
+          gt(booking.starttime, currentTime),
+          eq(booking.currentstatus, "pending")
+        )
+      );
 
     const pendingBookings = await db
       .select()
       .from(booking)
-      .where(and(
-        eq(booking.zid, zid),
-        gt(booking.starttime, currentTime),
-        eq(booking.currentstatus, 'pending')
-      ))
-      .orderBy(parsedQuery.sort == 'soonest' ? desc(booking.starttime) : asc(booking.starttime))
+      .where(
+        and(
+          eq(booking.zid, zid),
+          gt(booking.starttime, currentTime),
+          eq(booking.currentstatus, "pending")
+        )
+      )
+      .orderBy(
+        parsedQuery.sort == "soonest"
+          ? desc(booking.starttime)
+          : asc(booking.starttime)
+      )
       .limit(limit)
       .offset(offset);
 
     res.json({
       bookings: pendingBookings.map(formatBookingDates),
-      total: pendingBookingsTotal[0].count
+      total: pendingBookingsTotal[0].count,
     });
   } catch (error) {
-    res.status(500).json({ error: 'Failed to fetch pending bookings' });
+    res.status(500).json({ error: "Failed to fetch pending bookings" });
   }
 }
+
+export async function approveBooking(
+  req: TypedRequest<{ id: number }>,
+  res: TypedResponse<{}>
+) {
+  try {
+    if (!typia.is<{ id: number }>(req.body)) {
+      res.status(400).json({ error: "Invalid input" });
+      return;
+    }
+
+    await db.transaction(async (trx) => {
+
+      const updatedBooking = await trx
+        .update(booking)
+        .set({ currentstatus: "confirmed" })
+        .where(eq(booking.id, req.body.id))
+        .returning();
+
+      if (updatedBooking.length != 1) {
+        throw new Error("Booking ID does not exist");
+      }
+
+      const updatedBookingDetails = updatedBooking[0];
+
+      // Decline overlapping bookings and get the updated records
+      const declinedBookings = await trx
+        .update(booking)
+        .set({ currentstatus: "declined" })
+        .where(
+          and(
+            eq(booking.currentstatus, "pending"),
+            eq(booking.spaceid, updatedBookingDetails.spaceid),
+            and(
+              lt(booking.starttime, updatedBookingDetails.endtime),
+              gt(booking.endtime, updatedBookingDetails.starttime),
+            )
+          )
+        )
+        .returning();
+
+      // Notify users about declined bookings
+      for (const declinedBooking of declinedBookings) {
+        // TODO: Send email to each user about their declined booking
+      }
+    });
+
+    // TODO: Send email to user that booking has been approved
+    res.status(200).json({ message: "Booking approved and overlapping bookings declined" });
+  } catch (error) {
+    res.status(500).json({ error: "Internal server error" });
+  }
+}
+
+export async function declineBooking(
+  req: TypedRequest<{ id: number }>,
+  res: TypedResponse<{}>
+) {
+  try {
+    if (!typia.is<{ id: number }>(req.body)) {
+      res.status(400).json({ error: "Invalid input" });
+      return;
+    }
+    
+      const updatedBooking = await db
+        .update(booking)
+        .set({ currentstatus: "declined" })
+        .where(eq(booking.id, req.body.id))
+        .returning();
+
+      if (updatedBooking.length != 1) {
+        throw new Error("Booking modified during operation");
+      }
+
+      // TODO: Send email to user that booking has been declined
+      res.status(200).json({ message: "Booking declined" });
+  } catch (error) {
+    res.status(500).json({ error: "Internal server error" });
+  }
+}
+
