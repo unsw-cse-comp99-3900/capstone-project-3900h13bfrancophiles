@@ -66,7 +66,7 @@ const RoomCard: React.FC<RoomCardProps> = ({
           >
             <Link
               overlay
-              href={`/space/${room.id}`}
+              href={`/rooms/${room.id}`}
               underline="none"
               component={NextLink}
             >

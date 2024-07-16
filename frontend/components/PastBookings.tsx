@@ -16,8 +16,9 @@ import {format} from 'date-fns';
 import useSpace from "@/hooks/useSpace";
 import usePastBookings from "@/hooks/usePastBookings";
 import NextLink from "next/link";
+import { SpaceType } from "@/types";
 
-export interface PastBookingRowProps {
+interface PastBookingRowProps {
   row: Row
 }
 
@@ -26,11 +27,11 @@ interface Row {
   startTime: Date,
   endTime: Date,
   space: string,
-  description: string
+  description: string,
 }
 
 function PastBookingsRow({row}: PastBookingRowProps) {
-  const {space, isLoading} = useSpace(row.space);
+  const {space, type, isLoading} = useSpace(row.space);
 
   return <tr>
     <td>
@@ -41,7 +42,7 @@ function PastBookingsRow({row}: PastBookingRowProps) {
     <td>
       <Skeleton loading={isLoading}>
         <Link
-          href={`/space/${row.space}`}
+          href={type === 'room' ? `/rooms/${row.space}` : `/desks/${row.space}`}
           level="body-sm"
           component={NextLink}
         >
@@ -53,6 +54,21 @@ function PastBookingsRow({row}: PastBookingRowProps) {
       <Typography level="body-sm">{row.description}</Typography>
     </td>
   </tr>;
+}
+
+interface NoBookingsRowProps {
+  bookingType: string;
+  colSpan: number;
+}
+
+export function NoBookingsRow({bookingType, colSpan}: NoBookingsRowProps) {
+  return <tr>
+    <td colSpan={colSpan}>
+      <Typography level="body-sm" textAlign='center'>
+        No {bookingType} Bookings
+      </Typography>
+    </td>
+  </tr>
 }
 
 export default function PastBookings() {
@@ -145,7 +161,7 @@ export default function PastBookings() {
         <Table
           aria-labelledby="tableTitle"
           stickyHeader
-          hoverRow
+          hoverRow={rows.length !== 0}
           sx={{
             "--TableCell-headBackground": "var(--joy-palette-background-level1)",
             "--Table-headerUnderlineThickness": "1px",
@@ -162,8 +178,9 @@ export default function PastBookings() {
           </tr>
           </thead>
           <tbody>
-          {rows
-            .map((row) => (<PastBookingsRow key={row.id} row={row}/>))}
+          {rows.length === 0
+            ? <NoBookingsRow bookingType='Past' colSpan={3}/>
+            : rows.map((row) => (<PastBookingsRow key={row.id} row={row}/>))}
           </tbody>
           <tfoot>
           <tr>

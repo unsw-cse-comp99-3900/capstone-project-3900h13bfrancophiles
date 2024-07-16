@@ -2,6 +2,7 @@ import bodyParser from "body-parser";
 import cors from "cors";
 import express from "express";
 import morgan from "morgan";
+import nodemailer from 'nodemailer';
 
 import { DATABASE_URL, PORT } from '../config';
 import { Pool } from 'pg';
@@ -42,6 +43,15 @@ const pool = new Pool({
   connectionString: DATABASE_URL,
   });
 export const db = drizzle(pool);
+
+export const emailTransporter = nodemailer.createTransport({
+  host: "smtp.ethereal.email",
+  port: 587,
+  auth: {
+    user: 'wilma44@ethereal.email',
+    pass: 'GWCxu8xEeJAwGAMGzF'
+  }
+});
 
 const app = express();
 app.use(morgan("dev"));
