@@ -15,6 +15,65 @@ INSERT INTO person VALUES (
     'hdr',
     null
 );
+INSERT INTO person VALUES (
+    7654322,
+    'z7654322@ad.unsw.edu.au',
+    'Sofia De Bellis',
+    'Ms',
+    'CSE',
+    'ENG',
+    'Academic',
+    'hdr',
+    null
+);
+
+INSERT INTO person VALUES (
+  7654333,
+  'z7654333@ad.unsw.edu.au',
+  'Ben Godwin',
+  'Mr',
+  'CSE',
+  'ENG',
+  'Academic',
+  'hdr',
+  null
+);
+
+INSERT INTO person VALUES (
+  7654444,
+  'z7654444@ad.unsw.edu.au',
+  'Tom Pacino',
+  'Mr',
+  'CSE',
+  'ENG',
+  'Academic',
+  'hdr',
+  null
+);
+
+INSERT INTO person VALUES (
+  7655555,
+  'z76555554@ad.unsw.edu.au',
+  'Tom Forsyth',
+  'Mr',
+  'CSE',
+  'ENG',
+  'Academic',
+  'hdr',
+  null
+);
+
+INSERT INTO person VALUES (
+  7666666,
+  'z7666666@ad.unsw.edu.au',
+  'Angela Wen',
+  'Ms',
+  'CSE',
+  'ENG',
+  'Academic',
+  'hdr',
+  null
+);
 
 INSERT INTO booking (zId, startTime, endTime, spaceId, currentStatus, description) VALUES
     -- Admin past bookings
@@ -53,8 +112,15 @@ INSERT INTO booking (zId, startTime, endTime, spaceId, currentStatus, descriptio
     --------------------------------------------------------------------------------------------
     -- DEMO B BOOKINGS
     -- Current bookings- wk 8 thursday 12pm - 4pm SYD time
-    (1234567, '2024-07-18T02:00', '2024-07-18T06:00', 'K-K17-201-2', 'confirmed', 'current booking demo B'),
-    (7654321, '2024-07-18T02:00', '2024-07-18T06:00', 'K-J17-504', 'confirmed', 'current booking demo B');
+    (1234567, '2024-07-18T02:00', '2024-07-18T06:00', 'K-K17-201-2', 'confirmed', 'current desk booking demo B'),
+    (7654321, '2024-07-18T02:00', '2024-07-18T06:00', 'K-J17-504', 'confirmed', 'current booking demo B'),
+    (7654322, '2024-07-18T02:00', '2024-07-18T06:00', 'K-K17-201-3', 'confirmed', 'current desk booking demo B'),
+    (7654333, '2024-07-18T02:00', '2024-07-18T06:00', 'K-K17-301-15', 'confirmed', 'current desk booking demo B'),
+    (7654444, '2024-07-18T02:00', '2024-07-18T06:00', 'K-K17-301-16', 'confirmed', 'current desk booking demo B'),
+    (7655555, '2024-07-18T02:00', '2024-07-18T06:00', 'K-K17-301-12', 'confirmed', 'current desk booking demo B'),
+    (7666666, '2024-07-18T02:00', '2024-07-18T06:00', 'K-K17-201-4', 'confirmed', 'current desk booking demo B');
+
+
 
 
 -- Reenable triggers for prod
