@@ -183,8 +183,8 @@ function PendingBookingsRow({
             ?
             <br />
             {/* TODO: Show the overlapping bookings and display how many there are */}
-            Approving this booking will automatically decline any overlapping
-            bookings.
+            {approving &&
+              "Approving this booking will automatically decline any overlapping bookings."}
           </DialogContent>
           <DialogActions>
             <Button
