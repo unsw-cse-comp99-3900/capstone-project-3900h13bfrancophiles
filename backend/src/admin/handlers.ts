@@ -34,28 +34,30 @@ export async function pendingBookings(
     const offset = (page - 1) * limit;
     const currentTime = (await now()).toISOString();
 
-    const pendingBookingsTotal = await db
-      .select({ count: count() })
-      .from(booking)
-      .where(and(
-        gt(booking.starttime, currentTime),
-        eq(booking.currentstatus, 'pending')
-      ));
-
-    const pendingBookings = await db
-      .select()
-      .from(booking)
-      .where(and(
-        gt(booking.starttime, currentTime),
-        eq(booking.currentstatus, 'pending')
-      ))
-      .orderBy(parsedQuery.sort == 'soonest' ? desc(booking.starttime) : asc(booking.starttime))
-      .limit(limit)
-      .offset(offset);
-
-    res.json({
-      bookings: pendingBookings.map(formatBookingDates),
-      total: pendingBookingsTotal[0].count,
+    await db.transaction(async (trx) => {
+      const pendingBookingsTotal = await trx
+        .select({ count: count() })
+        .from(booking)
+        .where(and(
+          gt(booking.starttime, currentTime),
+          eq(booking.currentstatus, 'pending')
+        ));
+  
+      const pendingBookings = await trx
+        .select()
+        .from(booking)
+        .where(and(
+          gt(booking.starttime, currentTime),
+          eq(booking.currentstatus, 'pending')
+        ))
+        .orderBy(parsedQuery.sort == 'soonest' ? desc(booking.starttime) : asc(booking.starttime))
+        .limit(limit)
+        .offset(offset);
+  
+      res.json({
+        bookings: pendingBookings.map(formatBookingDates),
+        total: pendingBookingsTotal[0].count,
+      });
     });
   } catch (error) {
     res.status(500).json({ error: "Failed to fetch pending bookings" });
