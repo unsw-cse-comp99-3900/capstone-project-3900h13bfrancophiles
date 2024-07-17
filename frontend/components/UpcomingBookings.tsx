@@ -33,24 +33,17 @@ import useSpace from "@/hooks/useSpace";
 import { deleteBooking } from "@/api";
 import BookingModal from "./BookingModal/BookingModal";
 import NextLink from 'next/link'
-import {NoBookingsRow} from "@/components/PastBookings";
+
+import { NoBookingsRow } from '@/components/NoBookingsRow';
+import { Booking } from '@/types';
 
 export interface UpcomingBookingRowProps {
-  row: Row;
+  row: Booking;
   mutate: () => void; // Pass mutate function as prop
 }
 
-interface Row {
-  id: number;
-  status: string;
-  startTime: Date;
-  endTime: Date;
-  space: string;
-  description: string;
-}
-
 function UpcomingBookingRow({ row, mutate }: UpcomingBookingRowProps) {
-  const { space, type, isLoading } = useSpace(row.space);
+  const { space, type, isLoading } = useSpace(row.spaceid);
   const [bookingToDelete, setBookingToDelete] = React.useState<number | null>(
     null
   );
@@ -92,18 +85,18 @@ function UpcomingBookingRow({ row, mutate }: UpcomingBookingRowProps) {
     <>
       <tr>
         <td>
-          <BookingStatusPill status={row.status} />
+          <BookingStatusPill status={row.currentstatus} />
         </td>
         <td>
           <Typography level="body-sm">
-            {format(row.startTime, "dd/MM/yy k:mm")} -{" "}
-            {format(row.endTime, "k:mm")}
+            {format(new Date(row.starttime), "dd/MM/yy H:mm")} -{" "}
+            {format(new Date(row.endtime), "H:mm")}
           </Typography>
         </td>
         <td>
           <Skeleton loading={isLoading}>
             <Link
-              href={type === 'room' ? `/rooms/${row.space}` : `/desks/${row.space}`}
+              href={type === 'room' ? `/rooms/${row.spaceid}` : `/desks/${row.spaceid}`}
               level="body-sm"
               component={NextLink}
             >
@@ -157,9 +150,9 @@ function UpcomingBookingRow({ row, mutate }: UpcomingBookingRowProps) {
         open={editModalOpen}
         onClose={() => handleCloseEditModal()}
         space={space ? { id: space!.id, name: space!.name, isRoom: type === 'room' } : undefined}
-        date={row.startTime}
-        start={row.startTime}
-        end={row.endTime}
+        date={new Date(row.starttime)}
+        start={new Date(row.starttime)}
+        end={new Date(row.endtime)}
         desc={row.description}
         editing
         editedBooking={row.id}
@@ -173,21 +166,6 @@ export default function UpcomingBookings() {
   const [sort, setSort] = React.useState('soonest');
   const [filter, setFilter] = React.useState("all");
   const { upcomingBookings, isLoading, mutate } = useUpcomingBookings(filter, sort); // Get mutate function from hook
-  const [rows, setRows] = React.useState<Row[]>([]);
-
-  React.useEffect(() => {
-    if (!isLoading && upcomingBookings) {
-      const rowsData = upcomingBookings.map((booking) => ({
-        id: booking.id,
-        status: booking.currentstatus,
-        startTime: new Date(booking.starttime),
-        endTime: new Date(booking.endtime),
-        space: booking.spaceid,
-        description: booking.description,
-      }));
-      setRows(rowsData);
-    }
-  }, [upcomingBookings, isLoading]);
 
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
@@ -201,12 +179,8 @@ export default function UpcomingBookings() {
     setPage(0);
   };
 
-  function labelDisplayedRows({
-                                from, to, count,
-                              }: {
-    from: number; to: number; count: number;
-  }) {
-    return `${from}–${to} of ${count !== -1 ? count : `more than ${to}`}`;
+  function labelDisplayedRows(from: number, to: number, count: number) {
+    return `${from}–${to} of ${count}`;
   }
 
   const handleChangeFilter = (event: any, newValue: string | null) => {
@@ -222,8 +196,10 @@ export default function UpcomingBookings() {
   };
 
   const getLabelDisplayedRowsTo = () => {
-    return rowsPerPage === -1 ? rows.length : Math.min(rows.length, (page + 1) * rowsPerPage);
+    return Math.min(upcomingBookings?.length ?? 0, (page + 1) * rowsPerPage);
   };
+
+  const numColumns = 5;
 
   return (<Stack>
       <Stack direction="row" width="100%" my={1} spacing={1}>
@@ -231,7 +207,7 @@ export default function UpcomingBookings() {
           Space
           <Select
             defaultValue="all"
-            placeholder="Filter by space"
+            placeholder="All"
             onChange={handleChangeFilter}
           >
             <Option value="all">All</Option>
@@ -241,7 +217,7 @@ export default function UpcomingBookings() {
         </Box>
         <Box width="150px">
           Sort
-          <Select defaultValue="soonest" onChange={handleChangeSort}>
+          <Select defaultValue="soonest" placeholder="Soonest" onChange={handleChangeSort}>
             <Option value="soonest">Soonest</Option>
             <Option value="latest">Latest</Option>
           </Select>
@@ -256,7 +232,7 @@ export default function UpcomingBookings() {
         <Table
           aria-labelledby="tableTitle"
           stickyHeader
-          hoverRow={rows.length !== 0}
+          hoverRow={!!upcomingBookings?.length}
           sx={{
             "--TableCell-headBackground": "var(--joy-palette-background-level1)",
             "--Table-headerUnderlineThickness": "1px",
@@ -275,17 +251,18 @@ export default function UpcomingBookings() {
           </tr>
           </thead>
           <tbody>
-            {rows.length === 0
-              ? <NoBookingsRow bookingType='Upcoming' colSpan={5}/>
-              :rows
-              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-              .map((row) => (
-                <UpcomingBookingRow key={row.id} row={row} mutate={mutate} />
-              ))}
+            {!!upcomingBookings?.length
+              ? upcomingBookings
+                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                .map((row) => (
+                  <UpcomingBookingRow key={row.id} row={row} mutate={mutate} />
+                ))
+              : <NoBookingsRow bookingType='Upcoming' colSpan={numColumns} isLoading={isLoading} />
+            }
           </tbody>
           <tfoot>
           <tr>
-            <td colSpan={5}>
+            <td colSpan={numColumns}>
               <Box
                 sx={{
                   display: "flex", alignItems: "center", gap: 2, justifyContent: "flex-end",
@@ -295,6 +272,7 @@ export default function UpcomingBookings() {
                   <FormLabel>Rows per page:</FormLabel>
                   <Select
                     onChange={handleChangeRowsPerPage}
+                    placeholder="5"
                     value={rowsPerPage}
                   >
                     <Option value={5}>5</Option>
@@ -303,11 +281,11 @@ export default function UpcomingBookings() {
                   </Select>
                 </FormControl>
                 <Typography textAlign="center" sx={{minWidth: 80}}>
-                  {labelDisplayedRows({
-                    from: rows.length === 0 ? 0 : page * rowsPerPage + 1,
-                    to: getLabelDisplayedRowsTo(),
-                    count: rows.length === -1 ? -1 : rows.length,
-                  })}
+                  {labelDisplayedRows(
+                    upcomingBookings ? page * rowsPerPage + 1 : 0,
+                    getLabelDisplayedRowsTo(),
+                    upcomingBookings?.length ?? 0,
+                  )}
                 </Typography>
                 <Box sx={{display: "flex", gap: 1}}>
                   <IconButton
@@ -324,7 +302,7 @@ export default function UpcomingBookings() {
                     size="sm"
                     color="neutral"
                     variant="outlined"
-                    disabled={page >= Math.ceil(rows.length / rowsPerPage) - 1}
+                    disabled={page >= Math.ceil((upcomingBookings?.length ?? 0) / rowsPerPage) - 1}
                     onClick={() => handleChangePage(page + 1)}
                     sx={{bgcolor: "background.surface"}}
                   >
