@@ -34,28 +34,30 @@ export async function pendingBookings(
     const offset = (page - 1) * limit;
     const currentTime = (await now()).toISOString();
 
-    const pendingBookingsTotal = await db
-      .select({ count: count() })
-      .from(booking)
-      .where(and(
-        gt(booking.starttime, currentTime),
-        eq(booking.currentstatus, 'pending')
-      ));
-
-    const pendingBookings = await db
-      .select()
-      .from(booking)
-      .where(and(
-        gt(booking.starttime, currentTime),
-        eq(booking.currentstatus, 'pending')
-      ))
-      .orderBy(parsedQuery.sort == 'soonest' ? desc(booking.starttime) : asc(booking.starttime))
-      .limit(limit)
-      .offset(offset);
-
-    res.json({
-      bookings: pendingBookings.map(formatBookingDates),
-      total: pendingBookingsTotal[0].count,
+    await db.transaction(async (trx) => {
+      const pendingBookingsTotal = await trx
+        .select({ count: count() })
+        .from(booking)
+        .where(and(
+          gt(booking.starttime, currentTime),
+          eq(booking.currentstatus, 'pending')
+        ));
+  
+      const pendingBookings = await trx
+        .select()
+        .from(booking)
+        .where(and(
+          gt(booking.starttime, currentTime),
+          eq(booking.currentstatus, 'pending')
+        ))
+        .orderBy(parsedQuery.sort == 'soonest' ? desc(booking.starttime) : asc(booking.starttime))
+        .limit(limit)
+        .offset(offset);
+  
+      res.json({
+        bookings: pendingBookings.map(formatBookingDates),
+        total: pendingBookingsTotal[0].count,
+      });
     });
   } catch (error) {
     res.status(500).json({ error: "Failed to fetch pending bookings" });
@@ -142,3 +144,46 @@ export async function declineBooking(
   }
 }
 
+export async function overlappingBookings(
+  req: TypedRequest<{ id: number }>,
+  res: TypedResponse<{ bookings: Booking[] }>) {
+    try {
+      if (!typia.is<{ id: number }>(req.body)) {
+        res.status(400).json({ error: "Invalid input" });
+        return;
+      }
+      
+      await db.transaction(async (trx) => {
+        const updatedBooking = await trx
+        .select()
+        .from(booking)
+        .where(eq(booking.id, req.body.id));
+    
+        if (updatedBooking.length != 1) {
+          throw new Error("Booking ID does not exist");
+        }
+    
+        const updatedBookingDetails = updatedBooking[0];
+    
+        const overlapping = await trx
+        .select()
+        .from(booking)
+        .where(
+          and(
+            eq(booking.currentstatus, "pending"),
+            eq(booking.spaceid, updatedBookingDetails.spaceid),
+            and(
+              lt(booking.starttime, updatedBookingDetails.endtime),
+              gt(booking.endtime, updatedBookingDetails.starttime),
+            )
+          )
+        )
+  
+        res.json({
+          bookings: overlapping,
+        });
+      });
+    } catch (error) { 
+      res.status(500).json({ error: "Internal server error" });
+    }
+}

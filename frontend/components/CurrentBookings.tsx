@@ -156,6 +156,7 @@ function CurrentBookingCard({ booking }: CurrentBookingCardProps) {
                 size="sm"
                 color="primary"
                 sx={{ borderRadius: "20px", width: "150px" }}
+                onClick={() => setContactOpen(true)}
               >
                 Contact Support
               </Button>
