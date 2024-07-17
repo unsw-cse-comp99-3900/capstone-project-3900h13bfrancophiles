@@ -15,52 +15,13 @@ INSERT INTO space (id, name, minReqGrp, minBookGrp) VALUES
     ('K-K17-508', 'K17 508', 'csestaff', 'admin'),
     ('K-J17-504', 'J17 Design Next Studio', 'csestaff', 'admin');
 
-    -- -- K-K17-201 desks
-    -- ('K-K17-201-1', 'K17 201 Desk 1', 'hdr', 'hdr'),
-    -- ('K-K17-201-2', 'K17 201 Desk 2', 'hdr', 'hdr'),
-    -- ('K-K17-201-3', 'K17 201 Desk 3', 'hdr', 'hdr'),
-    -- ('K-K17-201-4', 'K17 201 Desk 4', 'hdr', 'hdr'),
-    -- ('K-K17-201-5', 'K17 201 Desk 5', 'hdr', 'hdr'),
-    -- ('K-K17-201-6', 'K17 201 Desk 6', 'hdr', 'hdr'),
-    -- ('K-K17-201-7', 'K17 201 Desk 7', 'hdr', 'hdr'),
-    -- ('K-K17-201-8', 'K17 201 Desk 8', 'hdr', 'hdr'),
-    -- ('K-K17-201-9', 'K17 201 Desk 9', 'hdr', 'hdr'),
-    -- ('K-K17-201-10', 'K17 201 Desk 10', 'hdr', 'hdr'),
-    -- ('K-K17-201-11', 'K17 201 Desk 11', 'hdr', 'hdr'),
-    -- ('K-K17-201-12', 'K17 201 Desk 12', 'hdr', 'hdr'),
-    -- ('K-K17-201-13', 'K17 201 Desk 13', 'hdr', 'hdr'),
-    -- ('K-K17-201-14', 'K17 201 Desk 14', 'hdr', 'hdr'),
-    -- ('K-K17-201-15', 'K17 201 Desk 15', 'hdr', 'hdr'),
-    -- ('K-K17-201-16', 'K17 201 Desk 16', 'hdr', 'hdr'),
-    -- ('K-K17-201-17', 'K17 201 Desk 7', 'hdr', 'hdr'),
-    -- ('K-K17-201-18', 'K17 201 Desk 8', 'hdr', 'hdr'),
-    -- ('K-K17-201-19', 'K17 201 Desk 9', 'hdr', 'hdr'),
-    -- ('K-K17-201-20', 'K17 201 Desk 10', 'hdr', 'hdr'),
-    -- ('K-K17-201-21', 'K17 201 Desk 11', 'hdr', 'hdr'),
-    -- ('K-K17-201-22', 'K17 201 Desk 12', 'hdr', 'hdr'),
-    -- ('K-K17-201-23', 'K17 201 Desk 13', 'hdr', 'hdr'),
-    -- ('K-K17-201-24', 'K17 201 Desk 14', 'hdr', 'hdr'),
-    -- ('K-K17-201-25', 'K17 201 Desk 15', 'hdr', 'hdr'),
-    -- ('K-K17-201-16', 'K17 201 Desk 16', 'hdr', 'hdr'),
-    -- ('K-K17-201-17', 'K17 201 Desk 7', 'hdr', 'hdr'),
-    -- ('K-K17-201-18', 'K17 201 Desk 8', 'hdr', 'hdr'),
-    -- ('K-K17-201-19', 'K17 201 Desk 9', 'hdr', 'hdr'),
-    -- ('K-K17-201-20', 'K17 201 Desk 10', 'hdr', 'hdr'),
-    -- ('K-K17-201-21', 'K17 201 Desk 11', 'hdr', 'hdr'),
-    -- ('K-K17-201-22', 'K17 201 Desk 12', 'hdr', 'hdr'),
-    -- ('K-K17-201-23', 'K17 201 Desk 13', 'hdr', 'hdr'),
-    -- ('K-K17-201-24', 'K17 201 Desk 14', 'hdr', 'hdr'),
-    -- ('K-K17-201-25', 'K17 201 Desk 15', 'hdr', 'hdr'),
-    -- -- K-K17-217 desks
-
-
     -- -- K-K17-301 desks
-    -- ('K-K17-301-17', 'K17 301 Desk 11', 'hdr', 'hdr'),
-    -- ('K-K17-301-18', 'K17 301 Desk 12', 'hdr', 'hdr'),
-    -- ('K-K17-301-19', 'K17 301 Desk 13', 'hdr', 'hdr'),
-    -- ('K-K17-301-20', 'K17 301 Desk 14', 'hdr', 'hdr'),
-    -- ('K-K17-301-21', 'K17 301 Desk 15', 'hdr', 'hdr'),
-    -- ('K-K17-301-22', 'K17 301 Desk 16', 'hdr', 'hdr');
+    ('K-K17-301-11', 'K17 301 Desk 11', 'hdr', 'hdr'),
+    ('K-K17-301-12', 'K17 301 Desk 12', 'hdr', 'hdr'),
+    ('K-K17-301-13', 'K17 301 Desk 13', 'hdr', 'hdr'),
+    ('K-K17-301-14', 'K17 301 Desk 14', 'hdr', 'hdr'),
+    ('K-K17-301-15', 'K17 301 Desk 15', 'hdr', 'hdr'),
+    ('K-K17-301-16', 'K17 301 Desk 16', 'hdr', 'hdr');
 
 DO
 $$
@@ -99,21 +60,13 @@ INSERT INTO room (id, capacity, roomNumber, type) VALUES
     ('K-K17-508', 6, '508', 'Conference Room'),
     ('K-J17-504', 110, '504', 'Seminar Room');
 
--- INSERT INTO hotdesk (id, floor, room, deskNumber) VALUES
---     ('K-K17-201-1', '2', '201', 1),
---     ('K-K17-201-2', '2', '201', 2),
---     ('K-K17-201-3', '2', '201', 3),
---     ('K-K17-201-4', '2', '201', 4),
---     ('K-K17-201-5', '2', '201', 5),
---     ('K-K17-201-6', '2', '201', 6),
---     ('K-K17-201-7', '2', '201', 7),
---     ('K-K17-201-8', '2', '201', 8),
---     ('K-K17-301-11', '3', '301', 1),
---     ('K-K17-301-12', '3', '301', 12),
---     ('K-K17-301-13', '3', '301', 13),
---     ('K-K17-301-14', '3', '301', 14),
---     ('K-K17-301-15', '3', '301', 15),
---     ('K-K17-301-16', '3', '301', 16);
+INSERT INTO hotdesk (id, floor, room, deskNumber) VALUES
+    ('K-K17-301-11', '3', '301', 1),
+    ('K-K17-301-12', '3', '301', 12),
+    ('K-K17-301-13', '3', '301', 13),
+    ('K-K17-301-14', '3', '301', 14),
+    ('K-K17-301-15', '3', '301', 15),
+    ('K-K17-301-16', '3', '301', 16);
 
 -- temporary person, should be populated with the given spreadsheet
 -- this is in data rather than dev_data since it's unusable without people
