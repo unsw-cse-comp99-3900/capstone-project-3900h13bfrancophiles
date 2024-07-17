@@ -173,7 +173,7 @@ function CurrentBookingCard({ booking }: CurrentBookingCardProps) {
           <DialogActions>
             <Button
               onClick={handleCheckInOut}
-              color="success"
+              color={checkedIn ? "danger" : "success"}
               loading={isCheckingInOrOut}
             >
               {checkedIn ? "Check Out" : "Check In"}

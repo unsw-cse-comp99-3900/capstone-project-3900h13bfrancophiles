@@ -120,3 +120,11 @@ export const checkIn = (id: number): Promise<{}> => {
 export const checkOut = (id: number): Promise<{}> => {
   return authApiCall('/bookings/checkout', 'POST', { id });
 }
+
+export const approveBooking = (id: number): Promise<{}> => {
+  return authApiCall('/admin/bookings/approve', 'PUT', { id });
+}
+
+export const declineBooking = (id: number): Promise<{}> => {
+  return authApiCall('/admin/bookings/decline', 'PUT', { id });
+}
