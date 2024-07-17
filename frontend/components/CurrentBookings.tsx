@@ -9,6 +9,7 @@ import {
   DialogContent,
   DialogTitle,
   Divider,
+  Input,
   Modal,
   ModalDialog,
   Skeleton,
@@ -22,6 +23,8 @@ import { format } from "date-fns";
 import { useState } from "react";
 import { checkIn, checkOut } from "@/api";
 import { mutate } from 'swr';
+import ConstructionIcon from "@mui/icons-material/Construction";
+import MailIcon from "@mui/icons-material/Mail";
 
 function CurrentBookings() {
   const { currentBookings } = useCurrentBookings();
@@ -62,6 +65,8 @@ function CurrentBookingCard({ booking }: CurrentBookingCardProps) {
     booking.currentstatus === "checkedin"
   );
   const [isConfirmationOpen, setIsConfirmationOpen] = useState(false);
+
+  const [contactOpen, setContactOpen] = useState(false);
 
   const handleCheckInOut = async () => {
     if (checkedIn) {
@@ -182,6 +187,38 @@ function CurrentBookingCard({ booking }: CurrentBookingCardProps) {
               variant="plain"
               color="neutral"
               onClick={() => setIsConfirmationOpen(false)}
+            >
+              Cancel
+            </Button>
+          </DialogActions>
+        </ModalDialog>
+      </Modal>
+      <Modal open={contactOpen} onClose={() => setContactOpen(false)}>
+        <ModalDialog variant="outlined" role="alertdialog">
+          <DialogTitle>
+            <ConstructionIcon />
+            Contact Support
+          </DialogTitle>
+          <Divider />
+          <DialogContent>
+            <Input
+              startDecorator={<MailIcon />}
+              placeholder="Type in here..."
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button
+              variant="solid"
+              color="primary"
+              onClick={() => setContactOpen(false)}
+              // TODO: Add functionality to send email on click
+            >
+              Message
+            </Button>
+            <Button
+              variant="plain"
+              color="neutral"
+              onClick={() => setContactOpen(false)}
             >
               Cancel
             </Button>
