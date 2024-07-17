@@ -46,7 +46,7 @@ export default function useTimeRange(initialValues: InitialValues = {}) {
   const weekFromToday = addWeeks(today, 1);
 
   const [date, setDate] = React.useState(
-    initialValues.date ?? startOfDay(now)
+    startOfDay(initialValues.date ?? now)
   );
   const [start, setStart] = React.useState<Date>(
     initialValues.start ?? now

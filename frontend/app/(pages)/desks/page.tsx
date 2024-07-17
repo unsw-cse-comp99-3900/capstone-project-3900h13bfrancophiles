@@ -2,13 +2,13 @@
 
 import FloorPlanViewer from "@/components/FloorPlanViewer";
 import BookingModal from "@/components/BookingModal/BookingModal";
-import { Tab, TabList, TabPanel, Tabs, Stack, Input, Button, Box, Sheet, Avatar, Modal, ModalClose, ModalDialog, DialogTitle, DialogContent, Typography, FormControl, FormLabel, Link } from "@mui/joy";
+import { Tab, TabList, TabPanel, Tabs, Stack, Input, Button, Box, Sheet, Avatar, Typography, Link } from "@mui/joy";
 import { deskData } from '@/app/data';
 import * as React from 'react';
 import { UserData } from "@/types";
-import useStatus from "@/hooks/useStatus";
 import useTimeRange from "@/hooks/useTimeRange";
 import NextLink from "next/link"
+import useSpaceStatus from '@/hooks/useSpaceStatus';
 
 export default function desks() {
   const {
@@ -29,7 +29,7 @@ export default function desks() {
   const [deskName, setDeskName] = React.useState("");
   const [open, setOpen] = React.useState(false);
 
-  const { data: statuses } = useStatus(start.toISOString(), end.toISOString());
+  const { statusResponse } = useSpaceStatus(start.toISOString(), end.toISOString());
 
   React.useEffect(() => {
     setSelectedDesk("");
@@ -132,7 +132,7 @@ export default function desks() {
               setAvailable={setAvailable}
               setDeskName={setDeskName}
               level={level.level}
-              statuses={statuses || {}}
+              statuses={statusResponse || {}}
             />
           </TabPanel>
         ))}

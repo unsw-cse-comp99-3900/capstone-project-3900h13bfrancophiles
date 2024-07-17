@@ -1,5 +1,5 @@
 import { booking, space } from '../../drizzle/schema';
-import { and, gte, lte } from 'drizzle-orm';
+import { and, gt, lt } from 'drizzle-orm';
 import typia from 'typia';
 
 import { db } from '../index';
@@ -39,8 +39,8 @@ export async function spaceStatus(
       .select()
       .from(booking)
       .where(and(
-        lte(booking.starttime, datetimeEnd),
-        gte(booking.endtime, datetimeStart),
+        lt(booking.starttime, datetimeEnd),
+        gt(booking.endtime, datetimeStart),
       ))
       .orderBy(booking.starttime);
 
