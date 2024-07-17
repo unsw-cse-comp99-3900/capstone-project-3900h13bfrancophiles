@@ -18,6 +18,10 @@ interface FloorPlanViewerProps {
   statuses: StatusResponse;
 }
 
+const coordToPercent = (x: number) => {
+  return x / 10
+}
+
 const FloorPlanViewer = ({ level, selectedDesk, setSelectedDesk, setSelectedUser, setAvailable, setDeskName, statuses }: FloorPlanViewerProps) => {
   const desks = deskData.find(data => data.level === level)?.desks ?? [];
 
@@ -40,8 +44,8 @@ const FloorPlanViewer = ({ level, selectedDesk, setSelectedDesk, setSelectedUser
             <DeskIcon
               key={index}
               id={desk.id}
-              x={desk.x}
-              y={desk.y}
+              x={coordToPercent(desk.x)}
+              y={coordToPercent(desk.y)}
               selectedDesk={selectedDesk}
               setSelectedDesk={setSelectedDesk}
               setSelectedUser={setSelectedUser}

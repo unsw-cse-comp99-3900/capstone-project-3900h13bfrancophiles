@@ -32,13 +32,14 @@ const anonymousUser: UserData = {
 
 const activeStyle = {
   transform: "scale(0.8) translate(0%, -70%)",
-  zIndex: 5
+  zIndex: 5,
 }
 
 const inactiveStyle = {
   "&:hover": {
     transform: "scale(1.1)",
-    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)"
+    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
+    zIndex: 6,
   }
 }
 
@@ -52,7 +53,7 @@ const deskStyle = {
 
 const Pin = ({ color, on }: PinProps) => {
   return (
-    <Box sx={{ ...deskStyle, transform: "translate(0%, -55%)" }}  >
+    <Box sx={{ ...deskStyle, pointerEvents: on ? "auto" : "none", transform: "translate(0%, -55%)" }}  >
       <svg
         version="1.1"
         xmlns="http://www.w3.org/2000/svg"
@@ -99,10 +100,17 @@ const DeskIcon = ({ id, x, y, selectedDesk, setSelectedDesk, setSelectedUser, se
   const deskName = space ? space.name : "Desk";
 
   const handleClick = () => {
-    setAvailable(status?.status === "Available");
-    setSelectedDesk(id);
-    setSelectedUser(userData);
-    setDeskName(deskName);
+    if (selectedDesk === id) {
+      setAvailable(false);
+      setSelectedDesk("");
+      setSelectedUser(null);
+      setDeskName("");
+    } else {
+      setAvailable(status?.status === "Available");
+      setSelectedDesk(id);
+      setSelectedUser(userData);
+      setDeskName(deskName);
+    }
   }
 
   if (!status) return <></>;
@@ -111,11 +119,14 @@ const DeskIcon = ({ id, x, y, selectedDesk, setSelectedDesk, setSelectedUser, se
     <Box
       key={id}
       sx={{
-        "--size-var": { xs: "27px", sm: "35px", md: "40px" },
+        "--size-var": { xs: "25px", sm: "30px", md: "35px" },
         position: "absolute",
         overflow: "visible",
         transform: "translate(-50%, -50%)",
         zIndex: selectedDesk === id ? 3 : 2,
+        "&:hover": {
+          zIndex: 4
+        },
         left: `${x}%`,
         top: `${y}%`
       }}
@@ -123,11 +134,19 @@ const DeskIcon = ({ id, x, y, selectedDesk, setSelectedDesk, setSelectedUser, se
       <KeepScale style={{ height: "var(--size-var)", width: "var(--size-var)", overflow: "visible" }}>
         <Box
           onClick={() => handleClick()}
-          sx={{ overflow: "visible", height: "var(--size-var)", width: "var(--size-var)" }}
+          sx={{
+            height: "var(--size-var)",
+            width: "var(--size-var)",
+            "&:hover": {
+              transform: "scale(1.1)",
+            },
+            transition: 'transform 0.1s'
+          }}
         >
           <Pin color={status.status === "Available" ? "#207920" : "#0B6BCB"} on={selectedDesk === id ? true : false} />
           <Avatar
             variant="solid"
+            size='sm'
             color={status.status === "Available" ? "success" : "primary"}
             src={
               status.status === "Available" ? "DeskIcon1.svg" :
@@ -137,7 +156,6 @@ const DeskIcon = ({ id, x, y, selectedDesk, setSelectedDesk, setSelectedUser, se
             sx={{
               ...deskStyle,
               ...(selectedDesk === id ? activeStyle : inactiveStyle),
-              zIndex: 3,
               transition: "transform 0.1s, box-shadow 0.1s",
             }}
           >
