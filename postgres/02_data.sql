@@ -13,7 +13,7 @@ INSERT INTO space (id, name, minReqGrp, minBookGrp) VALUES
     ('K-K17-403', 'K17 403', 'hdr', 'admin'),
     ('K-K17-501M', 'K17 501M', 'csestaff', 'admin'),
     ('K-K17-508', 'K17 508', 'csestaff', 'admin'),
-    ('K-J17-504', 'J17 Design Next Studio', 'csestaff', 'admin');
+    ('K-J17-504', 'J17 Design Next Studio', 'csestaff', 'admin'),
 
     -- -- K-K17-301 desks
     ('K-K17-301-11', 'K17 301 Desk 11', 'hdr', 'hdr'),
