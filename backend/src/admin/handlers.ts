@@ -144,7 +144,7 @@ export async function declineBooking(
 
 export async function overlappingBookings(
   req: TypedRequest<{ id: number }>,
-  res: TypedResponse<{ bookings: Booking[]; total: number }>) {
+  res: TypedResponse<{ bookings: Booking[] }>) {
     try {
       if (!typia.is<{ id: number }>(req.body)) {
         res.status(400).json({ error: "Invalid input" });
@@ -177,23 +177,8 @@ export async function overlappingBookings(
           )
         )
   
-        const overlappingBookingsCount = await trx
-        .select({ count: count() })
-        .from(booking)
-        .where(
-          and(
-            eq(booking.currentstatus, "pending"),
-            eq(booking.spaceid, updatedBookingDetails.spaceid),
-            and(
-              lt(booking.starttime, updatedBookingDetails.endtime),
-              gt(booking.endtime, updatedBookingDetails.starttime),
-            )
-          )
-        )
-  
         res.json({
           bookings: overlapping,
-          total: overlappingBookingsCount[0].count,
         });
       });
     } catch (error) { 

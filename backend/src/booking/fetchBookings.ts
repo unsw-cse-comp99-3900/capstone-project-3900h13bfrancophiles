@@ -27,8 +27,7 @@ export async function currentBookings(
           lt(booking.starttime, currentTime),
           gt(booking.endtime, currentTime),
           eq(booking.zid, zid),
-          ne(booking.currentstatus, "deleted"),
-          ne(booking.currentstatus, "completed"),
+          inArray(booking.currentstatus, ["confirmed", "checkedin"]),
         )
       );
 
