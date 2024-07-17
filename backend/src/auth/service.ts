@@ -17,14 +17,14 @@ export function validateLogin(zid: number, zpass: string): boolean {
 }
 
 // Helpers for managing permissions
-export async function getUserGroup(zid: number): Promise<UserGroup> {
+export async function getUserGroup(zid: number): Promise<UserGroup | undefined> {
   // TODO: Integrate with UNSW db
   const res = await db
     .select({ group: person.usergrp })
     .from(person)
     .where(eq(person.zid, zid));
 
-  return res?.[0].group ?? "other";
+  return res?.[0]?.group;
 }
 
 // Helpers for managing tokens

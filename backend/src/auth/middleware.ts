@@ -3,7 +3,7 @@ import { Request, Response, NextFunction } from 'express';
 import * as jwt from 'jsonwebtoken';
 import typia from "typia";
 
-import { tokenIsActive } from './auth';
+import { tokenIsActive } from './service';
 import { AUTH_SECRET } from '../../config';
 import {
   TokenPayload,
