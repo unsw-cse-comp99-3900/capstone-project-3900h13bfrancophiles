@@ -1,5 +1,5 @@
 import api from './helpers/api';
-import { DESK, HDR, ROOM } from './helpers/constants';
+import { ADMINS, DESK, HDR, ROOM } from './helpers/constants';
 import { minutesFromBase } from './helpers/helpers';
 
 describe("/bookings/create", () => {
@@ -58,24 +58,106 @@ describe("/bookings/create", () => {
     expect(res.status).toStrictEqual(403);
   });
 
-  test("Failure - time already booked", async () => {
+  test("Failure - overlapping bookings", async () => {
+    await api.createBooking(
+      token, DESK[0].id, minutesFromBase(60), minutesFromBase(120), ""
+    );
+
+    let res = await api.login(`z${ADMINS[1].zid}`, `z${ADMINS[1].zid}`);
+    const otherToken = res.json.token;
+
+    // Start before, end during
+    res = await api.createBooking(
+      otherToken, DESK[0].id, minutesFromBase(30), minutesFromBase(90), ""
+    );
+    expect(res.status).toStrictEqual(400);
+
+    // Start during, end during
+    res = await api.createBooking(
+      otherToken, DESK[0].id, minutesFromBase(75), minutesFromBase(105), ""
+    );
+    expect(res.status).toStrictEqual(400);
+
+    // Start during, end after
+    res = await api.createBooking(
+      otherToken, DESK[0].id, minutesFromBase(90), minutesFromBase(150), ""
+    );
+    expect(res.status).toStrictEqual(400);
+
+    // Start before, end after
+    res = await api.createBooking(
+      otherToken, DESK[0].id, minutesFromBase(30), minutesFromBase(150), ""
+    );
+    expect(res.status).toStrictEqual(400);
+
+    // BUG - INSTA BOOK WHERE A REQUEST EXISTS
+  });
+
+  test("Failure - overlapping own booking", async () => {
+    await api.createBooking(
+      token, DESK[0].id, minutesFromBase(60), minutesFromBase(120), "fun times"
+    );
+
+    const res = await api.createBooking(
+      token, DESK[0].id, minutesFromBase(30), minutesFromBase(90), "fun times"
+    );
+    expect(res.status).toStrictEqual(400);
   });
 
   test("Failure - booking in the past", async () => {
+    let res = await api.createBooking(
+      token, DESK[0].id, minutesFromBase(-60), minutesFromBase(-30), "fun times"
+    );
+    expect(res.status).toStrictEqual(400);
+
+    res = await api.createBooking(
+      token, DESK[0].id, minutesFromBase(-30), minutesFromBase(30), "fun times"
+    );
+    expect(res.status).toStrictEqual(400);
   });
 
   test("Failure - end not after start", async () => {
+    let res = await api.createBooking(
+      token, DESK[0].id, minutesFromBase(30), minutesFromBase(30), "fun times"
+    );
+    expect(res.status).toStrictEqual(400);
+
+    res = await api.createBooking(
+      token, DESK[0].id, minutesFromBase(45), minutesFromBase(15), "fun times"
+    );
+    expect(res.status).toStrictEqual(400);
   });
 
   test("Failure - booking not a multiple of 15 minutes", async () => {
+    let res = await api.createBooking(
+      token, DESK[0].id, minutesFromBase(30), minutesFromBase(50), "fun times"
+    );
+    expect(res.status).toStrictEqual(400);
+
+    res = await api.createBooking(
+      token, DESK[0].id, minutesFromBase(35), minutesFromBase(60), "fun times"
+    );
+    expect(res.status).toStrictEqual(400);
   });
 
   test("Failure - booking not on 15 minute boundaries", async () => {
+    let res = await api.createBooking(
+      token, DESK[0].id, minutesFromBase(20), minutesFromBase(50), "fun times"
+    );
+    expect(res.status).toStrictEqual(400);
   });
 
   test("Failure - booking across midnight", async () => {
+    let res = await api.createBooking(
+      token, DESK[0].id, "2024-07-18T11:30:00+11:00", "2024-07-19T00:30:00+11:00", "fun times"
+    );
+    expect(res.status).toStrictEqual(400);
   });
 
   test("Failure - booking far in the future", async () => {
+    let res = await api.createBooking(
+      token, DESK[0].id, minutesFromBase(60 * 24 * 60),  minutesFromBase(60 * 24 * 60 + 60), "fun times"
+    );
+    expect(res.status).toStrictEqual(400);
   });
 });
