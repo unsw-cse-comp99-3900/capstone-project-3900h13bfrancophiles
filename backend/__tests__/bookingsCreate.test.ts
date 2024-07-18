@@ -89,8 +89,6 @@ describe("/bookings/create", () => {
       otherToken, DESK[0].id, minutesFromBase(30), minutesFromBase(150), ""
     );
     expect(res.status).toStrictEqual(400);
-
-    // BUG - INSTA BOOK WHERE A REQUEST EXISTS
   });
 
   test("Failure - overlapping own booking", async () => {
