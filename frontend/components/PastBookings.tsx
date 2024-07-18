@@ -11,38 +11,31 @@ import IconButton from "@mui/joy/IconButton";
 import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import Link from "@mui/joy/Link"
-import {Sheet, Skeleton, Stack} from "@mui/joy";
-import {format} from 'date-fns';
+import { Sheet, Skeleton, Stack } from "@mui/joy";
+import { format } from 'date-fns';
 import useSpace from "@/hooks/useSpace";
 import usePastBookings from "@/hooks/usePastBookings";
 import NextLink from "next/link";
-import { SpaceType } from "@/types";
+import { NoBookingsRow } from '@/components/NoBookingsRow';
+import { Booking } from '@/types';
 
-export interface PastBookingRowProps {
-  row: Row
-}
-
-interface Row {
-  id: number,
-  startTime: Date,
-  endTime: Date,
-  space: string,
-  description: string,
+interface PastBookingRowProps {
+  row: Booking
 }
 
 function PastBookingsRow({row}: PastBookingRowProps) {
-  const {space, type, isLoading} = useSpace(row.space);
+  const {space, type, isLoading} = useSpace(row.spaceid);
 
   return <tr>
     <td>
       <Typography level="body-sm">
-        {format(row.startTime, "dd/MM/yy k:mm")} - {format(row.endTime, "k:mm")}
+        {format(new Date(row.starttime), "dd/MM/yy H:mm")} - {format(new Date(row.endtime), "H:mm")}
       </Typography>
     </td>
     <td>
       <Skeleton loading={isLoading}>
         <Link
-          href={type === 'room' ? `/rooms/${row.space}` : `/desks/${row.space}`}
+          href={type === 'room' ? `/rooms/${row.spaceid}` : `/desks/${row.spaceid}`}
           level="body-sm"
           component={NextLink}
         >
@@ -59,24 +52,10 @@ function PastBookingsRow({row}: PastBookingRowProps) {
 export default function PastBookings() {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
-  const [rows, setRows] = React.useState<Row[]>([]);
   const [filter, setFilter] = React.useState("all");
 
   const [sort, setSort] = React.useState('newest');
   const {pastBookings, total, isLoading} = usePastBookings(page + 1, rowsPerPage, filter, sort);
-
-  React.useEffect(() => {
-    if (!isLoading && pastBookings) {
-      const rowsData = pastBookings.map((booking) => ({
-        id: booking.id,
-        startTime: new Date(booking.starttime),
-        endTime: new Date(booking.endtime),
-        space: booking.spaceid,
-        description: booking.description,
-      }));
-      setRows(rowsData);
-    }
-  }, [page, rowsPerPage, pastBookings, isLoading]);
 
   const handleChangePage = (newPage: number) => {
     setPage(newPage);
@@ -87,12 +66,8 @@ export default function PastBookings() {
     setPage(0);
   };
 
-  function labelDisplayedRows({
-                                from, to, count,
-                              }: {
-    from: number; to: number; count: number;
-  }) {
-    return `${from}–${to} of ${count !== -1 ? count : `more than ${to}`}`;
+  function labelDisplayedRows(from: number, to: number, count: number) {
+    return `${from}–${to} of ${count}`;
   }
 
   const handleChangeFilter = (event: any, newValue: string | null) => {
@@ -109,11 +84,10 @@ export default function PastBookings() {
   };
 
   const getLabelDisplayedRowsTo = () => {
-    if (total === undefined) {
-      return (page + 1) * rowsPerPage;
-    }
-    return rowsPerPage === -1 ? total : Math.min(total, (page + 1) * rowsPerPage);
+    return Math.min(total ?? 0, (page + 1) * rowsPerPage);
   };
+
+  const numColumns = 3;
 
   return (<Stack>
       <Stack direction="row" width="100%" my={1} spacing={1}>
@@ -121,7 +95,7 @@ export default function PastBookings() {
           Space
           <Select
             defaultValue="all"
-            placeholder="Filter by space"
+            placeholder="All"
             onChange={handleChangeFilter}
           >
             <Option value="all">All</Option>
@@ -131,7 +105,7 @@ export default function PastBookings() {
         </Box>
         <Box width="150px">
           Sort
-          <Select defaultValue="newest" onChange={handleChangeSort}>
+          <Select defaultValue="newest" placeholder="Newest" onChange={handleChangeSort}>
             <Option value="newest">Newest</Option>
             <Option value="oldest">Oldest</Option>
           </Select>
@@ -146,7 +120,7 @@ export default function PastBookings() {
         <Table
           aria-labelledby="tableTitle"
           stickyHeader
-          hoverRow
+          hoverRow={!!pastBookings?.length}
           sx={{
             "--TableCell-headBackground": "var(--joy-palette-background-level1)",
             "--Table-headerUnderlineThickness": "1px",
@@ -163,12 +137,14 @@ export default function PastBookings() {
           </tr>
           </thead>
           <tbody>
-          {rows
-            .map((row) => (<PastBookingsRow key={row.id} row={row}/>))}
+          {!!pastBookings?.length
+            ? pastBookings.map((row) => (<PastBookingsRow key={row.id} row={row}/>))
+            : <NoBookingsRow bookingType='Past' colSpan={numColumns} isLoading={isLoading}/>
+          }
           </tbody>
           <tfoot>
           <tr>
-            <td colSpan={3}>
+            <td colSpan={numColumns}>
               <Box
                 sx={{
                   display: "flex", alignItems: "center", gap: 2, justifyContent: "flex-end",
@@ -178,6 +154,7 @@ export default function PastBookings() {
                   <FormLabel>Rows per page:</FormLabel>
                   <Select
                     onChange={handleChangeRowsPerPage}
+                    placeholder="5"
                     value={rowsPerPage}
                   >
                     <Option value={5}>5</Option>
@@ -186,11 +163,11 @@ export default function PastBookings() {
                   </Select>
                 </FormControl>
                 <Typography textAlign="center" sx={{minWidth: 80}}>
-                  {labelDisplayedRows({
-                    from: rows.length === 0 ? 0 : page * rowsPerPage + 1,
-                    to: getLabelDisplayedRowsTo(),
-                    count: total === undefined ? -1 : total,
-                  })}
+                  {labelDisplayedRows(
+                    pastBookings ? page * rowsPerPage + 1 : 0,
+                    getLabelDisplayedRowsTo(),
+                    total ?? 0
+                  )}
                 </Typography>
                 <Box sx={{display: "flex", gap: 1}}>
                   <IconButton
@@ -207,7 +184,7 @@ export default function PastBookings() {
                     size="sm"
                     color="neutral"
                     variant="outlined"
-                    disabled={page >= Math.ceil(total === undefined ? -1 : total / rowsPerPage) - 1}
+                    disabled={page >= Math.ceil((total ?? 0) / rowsPerPage) - 1}
                     onClick={() => handleChangePage(page + 1)}
                     sx={{bgcolor: "background.surface"}}
                   >

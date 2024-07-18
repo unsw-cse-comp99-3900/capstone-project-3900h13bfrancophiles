@@ -5,7 +5,7 @@ import {
   getUserGroup,
   invalidateToken,
   validateLogin
-} from './auth';
+} from './service';
 import {
   TypedRequest,
   TypedResponse
@@ -37,6 +37,11 @@ export async function login(
   }
 
   const group = await getUserGroup(zid);
+  if (!group) {
+    res.status(400).json({ error: "Non-existent user id" });
+    return;
+  }
+
   const token = createToken(zid, group);
   res.json({ token });
 }

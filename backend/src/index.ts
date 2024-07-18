@@ -2,12 +2,18 @@ import bodyParser from "body-parser";
 import cors from "cors";
 import express from "express";
 import morgan from "morgan";
+import nodemailer from 'nodemailer';
 
-import { DATABASE_URL, PORT } from '../config';
-import { Pool } from 'pg';
+import { DATABASE_URL, PORT } from "../config";
+import { Pool } from "pg";
 import { drizzle } from "drizzle-orm/node-postgres";
 
-import { pendingBookings } from "./admin/handlers";
+import { 
+  approveBooking, 
+  declineBooking, 
+  pendingBookings, 
+  overlappingBookings 
+} from "./admin/handlers";
 import {
   login,
   logout
@@ -40,14 +46,23 @@ import { userDetails } from "./user/handlers";
 
 const pool = new Pool({
   connectionString: DATABASE_URL,
-  });
+});
 export const db = drizzle(pool);
+
+export const emailTransporter = nodemailer.createTransport({
+  host: "smtp.ethereal.email",
+  port: 587,
+  auth: {
+    user: 'wilma44@ethereal.email',
+    pass: 'GWCxu8xEeJAwGAMGzF'
+  }
+});
 
 const app = express();
 app.use(morgan("dev"));
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json())
+app.use(bodyParser.json());
 
 app.post("/auth/login", login);
 app.post("/auth/logout", validateToken, logout);
@@ -72,10 +87,22 @@ app.get("/status", validateToken, spaceStatus);
 app.get("/availabilities/:spaceId", validateToken, spaceAvailabilities);
 
 app.get("/admin/bookings/pending", validateToken, authoriseAtLeast("admin"), pendingBookings);
+app.put("/admin/bookings/approve",validateToken,authoriseAtLeast("admin"), approveBooking);
+app.put("/admin/bookings/decline", validateToken, authoriseAtLeast("admin"), declineBooking);
+app.get("/admin/bookings/overlapping", validateToken, authoriseAtLeast("admin"), overlappingBookings);
 
 app.get("/users/:zid", validateToken, userDetails);
 
-
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`Server is running at http://localhost:${PORT}`);
 });
+
+const closeServer = async () => {
+  server.close(err => err && console.log(`${err}`));
+  server.closeAllConnections();
+  emailTransporter.close();
+  await pool.end();
+}
+
+process.on("SIGTERM", closeServer);
+process.on("SIGINT", closeServer);
