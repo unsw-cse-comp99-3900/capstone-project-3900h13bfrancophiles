@@ -24,7 +24,7 @@ jobs:
         with:
             node-version: latest
       - name: Install dependencies
-        run: yarn --frozen-lockfile --network-timeout 100000
+        run: yarn --frozen-lockfile
         working-directory: backend
       - name: Run tests
         run: yarn test
