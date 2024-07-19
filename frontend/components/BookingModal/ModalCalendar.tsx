@@ -1,19 +1,18 @@
 import * as React from "react";
 
-import { Calendar, dateFnsLocalizer, DateRange, ToolbarProps, EventProps } from 'react-big-calendar'
-import { format, getDay, parse, startOfWeek, endOfWeek } from "date-fns";
+import { Calendar, dateFnsLocalizer, EventProps } from 'react-big-calendar'
+import { format, getDay, parse, startOfWeek } from "date-fns";
 import { enAU } from 'date-fns/locale'
 import 'react-big-calendar/lib/css/react-big-calendar.css'
-import Box, { BoxProps } from "@mui/material/Box";
-import { styled, useTheme } from "@mui/material/styles";
-import useMediaQuery from "@mui/material/useMediaQuery";
+import Box from "@mui/material/Box";
+import { styled } from "@mui/material/styles";
 import useUser from "@/hooks/useUser";
 import { Event, StyledCalendarContainer, formatTime, formatTimeRange } from "@/utils/calendar"
 import useAvailabilities from "@/hooks/useAvailabilities";
 import Loading from "../Loading";
 import * as jwt from "jsonwebtoken";
-import {getCookie} from "cookies-next";
-import { roundToInterval } from "@/hooks/useTimeRange";
+import { getCookie } from "cookies-next";
+import { roundToNearestMinutes } from 'date-fns';
 
 
 interface ModalCalendarProps {
@@ -25,7 +24,7 @@ interface ModalCalendarProps {
 
 interface MyEvent extends Event {
   color?: string
-  unConfirmed?: boolean
+  unconfirmed?: boolean
 }
 
 const CustomEvent : React.FC<EventProps> = ({event}) => {
@@ -34,18 +33,18 @@ const CustomEvent : React.FC<EventProps> = ({event}) => {
     <Box sx={{
       backgroundColor: event.color ?? "",
     }}>
-      {isLoading || error ? "..." : (event.unConfirmed ? "New Booking" : user!.fullname) } {}
+      {isLoading || error ? "..." : (event.unconfirmed ? "New Booking" : user!.fullname) } {}
     </Box>
   )
 };
 
 const MyStyledCalendarContainer = styled(StyledCalendarContainer)`
-    .rbc-time-content {
-      border-top: none
-    }
-    .rbc-event {
-      border: none !important
-    }
+  .rbc-time-content {
+    border-top: none
+  }
+  .rbc-event {
+    border: none !important
+  }
 `
 
 const localizer = dateFnsLocalizer({
@@ -62,18 +61,16 @@ const eventStyleGetter = (event: MyEvent) => {
 }
 
 export default function ModalCalendar({ space, date, start, end }: ModalCalendarProps) {
-  if (!space) return <Loading page=""/>
+  if (!space) return <Box alignSelf={"center"}>Select a space you would like to book!</Box>
 
-  const theme = useTheme()
-  const { bookings } = useAvailabilities(space)
+  const { bookings, isLoading } = useAvailabilities(space)
 
   const token = getCookie('token');
   const decoded = jwt.decode(`${token}`) as jwt.JwtPayload;
   const curUser = decoded.user;
 
-  // const { user } = useUser()
-  if (!bookings) return <Loading page=""/>
-  const events : MyEvent[] = bookings
+  if (isLoading) return <Loading page=""/>
+  const events : MyEvent[] = bookings!
     .map((b) =>
       {
         return {
@@ -89,11 +86,11 @@ export default function ModalCalendar({ space, date, start, end }: ModalCalendar
   })
   events.push({
     zid: curUser,
-    start: roundToInterval(start),
-    end: roundToInterval(end),
+    start: roundToNearestMinutes(start, { nearestTo: 15 }),
+    end: roundToNearestMinutes(end, { nearestTo: 15 }),
     // color: overlaps ? theme.palette.warning.main : theme.palette.primary.main,
     color: overlaps ? "#C70039" : "green",
-    unConfirmed: true
+    unconfirmed: true
   })
 
   return (
@@ -106,7 +103,6 @@ export default function ModalCalendar({ space, date, start, end }: ModalCalendar
         date={date}
         scrollToTime={start}
         events={events}
-        view={"day"}
         slotGroupPropGetter={() => ({ style: { minHeight: "50px" } })}
         eventPropGetter={eventStyleGetter}
         components={{

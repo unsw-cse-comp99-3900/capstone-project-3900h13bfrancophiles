@@ -128,14 +128,12 @@ const BookingModal: React.FC<BookingModalProps> = ({
               <Typography level="body-md" textAlign="center" fontWeight={500}>
                 {format(date, 'EEEE, MMMM d')}
               </Typography>
-              {/* <Sheet variant="outlined" sx={{ height: "100%", borderRadius: 10 }}> */}
-                <ModalCalendar
-                  space={space?.id}
-                  date={date}
-                  start={start}
-                  end={end}
-                />
-              {/* </Sheet> */}
+              <ModalCalendar
+                space={space?.id}
+                date={date}
+                start={start}
+                end={end}
+              />
             </Stack>
           </Stack>
         </>

@@ -1,4 +1,4 @@
-import { dateFnsLocalizer, DateRange} from 'react-big-calendar'
+import { dateFnsLocalizer, DateRange } from 'react-big-calendar'
 import 'react-big-calendar/lib/css/react-big-calendar.css'
 import Box, { BoxProps } from "@mui/material/Box";
 import { styled, useTheme } from "@mui/material/styles";
