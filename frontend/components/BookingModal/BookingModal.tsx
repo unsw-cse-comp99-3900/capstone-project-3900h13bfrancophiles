@@ -1,19 +1,22 @@
 "use client"
 
-import React from 'react';
+import React, { use } from 'react';
 import Modal from '@mui/joy/Modal';
 import ModalDialog from '@mui/joy/ModalDialog';
 import DialogTitle from '@mui/joy/DialogTitle';
 import Stack from '@mui/joy/Stack';
-import { Alert, IconButton, Sheet, Typography } from '@mui/joy';
+import { Alert, IconButton, ModalOverflow, Sheet, Typography } from '@mui/joy';
 import { format } from 'date-fns';
 import { Booking, SpaceOption } from '@/types';
 import BookingForm from '@/components/BookingModal/BookingForm';
 import BookingConfirmation from '@/components/BookingModal/BookingConfirmation';
+import ModalCalendar from './ModalCalendar';
 import WarningIcon from '@mui/icons-material/Warning';
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import { createBooking, editBooking } from '@/api';
 import useTimeRange from '@/hooks/useTimeRange';
+import { useTheme } from "@mui/material/styles";
+import useMediaQuery from "@mui/material/useMediaQuery";
 
 type ModalState = 'form' | 'confirm' | 'submitted';
 
@@ -83,6 +86,9 @@ const BookingModal: React.FC<BookingModalProps> = ({
     }
   }
 
+  const theme = useTheme();
+  const isMobile : Boolean = useMediaQuery(theme.breakpoints.down("sm")) ?? false;
+
   const renderModalContent = () => {
     switch (state) {
       case 'form':
@@ -103,7 +109,11 @@ const BookingModal: React.FC<BookingModalProps> = ({
               <b>{error}</b>
             </Alert>
           )}
-          <Stack direction="row" justifyContent="space-between" spacing={6}>
+          <Stack
+            direction={isMobile ? "column" : "row"}
+            justifyContent={isMobile ? "center" : "space-between"}
+            spacing={isMobile ? 3 : 6}
+          >
             <BookingForm
               space={space}
               setSpace={setSpace}
@@ -114,13 +124,18 @@ const BookingModal: React.FC<BookingModalProps> = ({
               setDesc={setDesc}
               onSubmit={() => setState('confirm')}
             />
-            <Stack direction="column" width={300} spacing={1}>
+            <Stack direction="column" width={isMobile ? 250 : 300} spacing={1}>
               <Typography level="body-md" textAlign="center" fontWeight={500}>
                 {format(date, 'EEEE, MMMM d')}
               </Typography>
-              <Sheet variant="outlined" sx={{ height: "100%", borderRadius: 10 }}>
-                {/* TODO: put a calendar here */}
-              </Sheet>
+              {/* <Sheet variant="outlined" sx={{ height: "100%", borderRadius: 10 }}> */}
+                <ModalCalendar
+                  space={space?.id}
+                  date={date}
+                  start={start}
+                  end={end}
+                />
+              {/* </Sheet> */}
             </Stack>
           </Stack>
         </>
@@ -161,10 +176,16 @@ const BookingModal: React.FC<BookingModalProps> = ({
   }
 
   return (
-    <Modal open={open} onClose={onModalClose}>
-      <ModalDialog>
-        {renderModalContent()}
-      </ModalDialog>
+    <Modal
+      open={open}
+      onClose={onModalClose}
+      sx={{ overflowY: "auto" }} // makes the modal scrollable
+    >
+      <ModalOverflow>
+        <ModalDialog>
+          {renderModalContent()}
+        </ModalDialog>
+      </ModalOverflow>
     </Modal>
   );
 }

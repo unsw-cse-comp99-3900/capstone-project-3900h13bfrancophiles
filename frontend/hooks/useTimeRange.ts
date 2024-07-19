@@ -140,6 +140,6 @@ export default function useTimeRange(initialValues: InitialValues = {}) {
   }
 }
 
-function roundToInterval(date: Date): Date {
+export function roundToInterval(date: Date): Date {
   return date && roundToNearestMinutes(date, { nearestTo: 15 })
 }
