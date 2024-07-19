@@ -1,11 +1,11 @@
 "use client"
 
-import React, { use } from 'react';
+import React from 'react';
 import Modal from '@mui/joy/Modal';
 import ModalDialog from '@mui/joy/ModalDialog';
 import DialogTitle from '@mui/joy/DialogTitle';
 import Stack from '@mui/joy/Stack';
-import { Alert, IconButton, ModalOverflow, Sheet, Typography } from '@mui/joy';
+import { Alert, IconButton, ModalOverflow, Typography } from '@mui/joy';
 import { format } from 'date-fns';
 import { Booking, SpaceOption } from '@/types';
 import BookingForm from '@/components/BookingModal/BookingForm';
@@ -177,7 +177,6 @@ const BookingModal: React.FC<BookingModalProps> = ({
     <Modal
       open={open}
       onClose={onModalClose}
-      sx={{ overflowY: "auto" }} // makes the modal scrollable
     >
       <ModalOverflow>
         <ModalDialog>
