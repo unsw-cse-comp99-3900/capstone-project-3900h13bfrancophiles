@@ -19,20 +19,26 @@ interface ModalCalendarProps {
   date: Date,
   start: Date,
   end: Date,
+  editing?: boolean
+  editedBooking?: number
 }
 
 interface MyEvent extends Event {
   color?: string
-  unconfirmed?: boolean
+  new?: boolean
+  edited?: boolean
+  old?: boolean
 }
 
 const CustomEvent : React.FC<EventProps> = ({event}) => {
   const { user, isLoading, error } = useUser(event.zid);
+  let adjective = ""
+  if (event.new) adjective = "New"
+  if (event.edited) adjective = "New"
+  if (event.old) adjective = "Old"
   return (
-    <Box sx={{
-      backgroundColor: event.color ?? "",
-    }}>
-      {event.unconfirmed ? "New Booking" : (isLoading || error ? "..." : user!.fullname) }
+    <Box>
+      {adjective ? `${adjective} Booking` : (isLoading || error ? "..." : user!.fullname) }
     </Box>
   )
 };
@@ -59,7 +65,7 @@ const eventStyleGetter = (event: MyEvent) => {
   return { style: { backgroundColor: color } }
 }
 
-export default function ModalCalendar({ space, date, start, end }: ModalCalendarProps) {
+export default function ModalCalendar({ space, date, start, end, editing, editedBooking }: ModalCalendarProps) {
   const isMobile : Boolean = useMediaQuery(theme.breakpoints.down("sm")) ?? false;
 
   const { bookings, isLoading } = useAvailabilities(space!)
@@ -68,16 +74,20 @@ export default function ModalCalendar({ space, date, start, end }: ModalCalendar
   const events : MyEvent[] = bookings!
     .map((b) =>
       {
+        const old = b.id === editedBooking
         return {
           zid: b.zid,
           start: new Date(b.starttime),
-          end: new Date(b.endtime)
+          end: new Date(b.endtime),
+          old: old,
+          color: old ? "rgba(49, 116, 173, 0.6)" : ""
         }
       }
     )
   let overlaps = false
-  events.forEach(e => {
-    if (e.start < end && e.end > start) overlaps = true;
+  bookings!.forEach(b => {
+    if (b.id === editedBooking) return;
+    if (new Date(b.starttime) < end && new Date(b.endtime) > start) overlaps = true;
   })
   events.push({
     zid: 0,
@@ -85,7 +95,8 @@ export default function ModalCalendar({ space, date, start, end }: ModalCalendar
     end: roundToNearestMinutes(end, { nearestTo: 15 }),
     // color: overlaps ? theme.palette.warning.main : theme.palette.primary.main,
     color: overlaps ? "#C70039" : "green",
-    unconfirmed: true
+    new: !editing,
+    edited: editing
   })
 
   return (

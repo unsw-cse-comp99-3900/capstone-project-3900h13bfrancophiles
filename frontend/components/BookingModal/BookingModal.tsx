@@ -131,6 +131,8 @@ const BookingModal: React.FC<BookingModalProps> = ({
                   date={date}
                   start={start}
                   end={end}
+                  editing={editing ?? false}
+                  editedBooking={editedBooking ?? undefined}
                 />
                 : <Box alignSelf={"center"}>Select a space you would like to book!</Box>
               }
