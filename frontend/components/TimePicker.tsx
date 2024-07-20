@@ -10,10 +10,8 @@ import { unstable_useTimeField as useTimeField, UseTimeFieldProps } from '@mui/x
 import { useClearableField } from '@mui/x-date-pickers/hooks';
 import { BaseSingleInputFieldProps, FieldSection, TimeValidationError, } from '@mui/x-date-pickers/models';
 import { theme as joyTheme } from '@/app/ThemeRegistry';
-import { TimePicker, TimePickerProps } from '@mui/x-date-pickers';
+import { DesktopTimePicker, DesktopTimePickerProps } from '@mui/x-date-pickers';
 import { AccessTime } from '@mui/icons-material';
-import IconButton from '@mui/joy/IconButton';
-import { IconButtonProps as MaterialIconButtonProps } from '@mui/material/IconButton'
 
 interface JoyFieldProps extends InputProps {
   label?: React.ReactNode;
@@ -51,6 +49,8 @@ const JoyField = React.forwardRef((
     ...other
   } = props;
 
+  console.log("DesktopTimePicker:", props.onBlur !== undefined)
+
   return (
     <FormControl
       disabled={disabled}
@@ -79,6 +79,7 @@ const JoyField = React.forwardRef((
           root: { ...slotProps?.root, ref: containerRef },
           input: { ...slotProps?.input, ref: inputRef },
         }}
+        readOnly={true}
         {...other}
       />
     </FormControl>
@@ -116,34 +117,30 @@ const JoyTimeField = React.forwardRef(
   },
 );
 
-function OpenPickerButton(props: MaterialIconButtonProps) {
-  return (
-    <IconButton onClick={props.onClick}>
-      <AccessTime fontSize="small"/>
-    </IconButton>
-  )
-}
-
 export const JoyTimePicker = React.forwardRef(
-  (props: TimePickerProps<Date>, ref: React.Ref<HTMLDivElement>) => {
+  (props: DesktopTimePickerProps<Date>, ref: React.Ref<HTMLDivElement>) => {
+    const [isOpen, setOpen] = React.useState(false);
+
     return (
-      <TimePicker
+      <DesktopTimePicker
         ref={ref}
         {...props}
+        open={isOpen}
+        onClose={() => setOpen(false)}
+        disableOpenPicker
         slots={{
           ...props.slots,
           field: JoyTimeField,
-          openPickerButton: OpenPickerButton
         }}
         slotProps={{
           ...props.slotProps,
           field: {
             ...props.slotProps?.field,
-            formControlSx: {
-              flexDirection: 'row',
-              width: 140,
-            },
+            formControlSx: { flexDirection: 'row' },
             size: "sm",
+            onClick: () => setOpen(true),
+            readOnly: true,
+            endDecorator: <AccessTime fontSize="small"/>,
           } as any,
         }}
       />
@@ -151,7 +148,7 @@ export const JoyTimePicker = React.forwardRef(
   },
 );
 
-export default function JoyV6Field(props: TimePickerProps<Date>) {
+export default function JoyV6Field(props: DesktopTimePickerProps<Date>) {
   return (
     <MaterialCssVarsProvider>
       <CssVarsProvider theme={{ [THEME_ID]: joyTheme }}>
@@ -159,7 +156,8 @@ export default function JoyV6Field(props: TimePickerProps<Date>) {
           <JoyTimePicker
             {...props}
             slotProps={{
-              field: { clearable: false },
+              ...props.slotProps,
+              field: { ...props.slotProps?.field, clearable: false },
             }}
             minutesStep={15}
             skipDisabled={true}
