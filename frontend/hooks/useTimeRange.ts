@@ -104,8 +104,8 @@ export default function useTimeRange(initialValues: InitialValues = {}) {
 
   const startTimePickerProps: JoyTimePickerProps = {
     value: start,
-    onChange: (newStart: Date | null) => {
-      if (newStart) handleStartChange(newStart, date);
+    onChange: (newStart, ctx) => {
+      if (newStart && !ctx.validationError) handleStartChange(newStart, date);
     },
     shouldDisableTime: shouldDisableStartTime,
     minutesStep: 15,
@@ -122,8 +122,8 @@ export default function useTimeRange(initialValues: InitialValues = {}) {
 
   const endTimePickerProps: JoyTimePickerProps = {
     value: end,
-    onChange: (newEnd: Date | null) => {
-      if (newEnd) handleEndChange(newEnd, start);
+    onChange: (newEnd, ctx) => {
+      if (newEnd && !ctx.validationError) handleEndChange(newEnd, start);
     },
     shouldDisableTime: shouldDisableEndTime,
     minutesStep: 15,
