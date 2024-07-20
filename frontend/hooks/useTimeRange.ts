@@ -69,10 +69,10 @@ export default function useTimeRange(initialValues: InitialValues = {}) {
     setStart(limitedStart);
 
     const shiftedEnd = min([addMinutes(end, changeInTime), addDays(date, 1)]);
-    handleEndChange(shiftedEnd);
+    handleEndChange(shiftedEnd, limitedStart);
   }
 
-  const handleEndChange = (newEnd: Date) => {
+  const handleEndChange = (newEnd: Date, start: Date) => {
     if (newEnd.getHours() == 0 && newEnd.getMinutes() == 0) {
       setEnd(addDays(date, 1));
     } else {
@@ -123,7 +123,7 @@ export default function useTimeRange(initialValues: InitialValues = {}) {
   const endTimePickerProps: JoyTimePickerProps = {
     value: end,
     onChange: (newEnd: Date | null) => {
-      if (newEnd) handleEndChange(newEnd);
+      if (newEnd) handleEndChange(newEnd, start);
     },
     shouldDisableTime: shouldDisableEndTime,
     minutesStep: 15,
