@@ -60,9 +60,9 @@ const eventStyleGetter = (event: MyEvent) => {
 }
 
 export default function ModalCalendar({ space, date, start, end }: ModalCalendarProps) {
-  if (!space) return <Box alignSelf={"center"}>Select a space you would like to book!</Box>
+  const isMobile : Boolean = useMediaQuery(theme.breakpoints.down("sm")) ?? false;
 
-  const { bookings, isLoading } = useAvailabilities(space)
+  const { bookings, isLoading } = useAvailabilities(space!)
 
   if (isLoading) return <Loading page=""/>
   const events : MyEvent[] = bookings!
@@ -87,8 +87,6 @@ export default function ModalCalendar({ space, date, start, end }: ModalCalendar
     color: overlaps ? "#C70039" : "green",
     unconfirmed: true
   })
-
-  const isMobile : Boolean = useMediaQuery(theme.breakpoints.down("sm")) ?? false;
 
   return (
     <MyStyledCalendarContainer>

@@ -5,7 +5,7 @@ import Modal from '@mui/joy/Modal';
 import ModalDialog from '@mui/joy/ModalDialog';
 import DialogTitle from '@mui/joy/DialogTitle';
 import Stack from '@mui/joy/Stack';
-import { Alert, IconButton, ModalOverflow, Typography } from '@mui/joy';
+import { Alert, Box, IconButton, ModalOverflow, Typography } from '@mui/joy';
 import { format } from 'date-fns';
 import { Booking, SpaceOption } from '@/types';
 import BookingForm from '@/components/BookingModal/BookingForm';
@@ -124,12 +124,16 @@ const BookingModal: React.FC<BookingModalProps> = ({
               <Typography level="body-md" textAlign="center" fontWeight={500}>
                 {format(date, 'EEEE, MMMM d')}
               </Typography>
-              <ModalCalendar
-                space={space?.id}
-                date={date}
-                start={start}
-                end={end}
-              />
+              {
+                space ?
+                <ModalCalendar
+                  space={space?.id}
+                  date={date}
+                  start={start}
+                  end={end}
+                />
+                : <Box alignSelf={"center"}>Select a space you would like to book!</Box>
+              }
             </Stack>
           </Stack>
         </>
