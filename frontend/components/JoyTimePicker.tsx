@@ -5,8 +5,10 @@ import FormLabel from '@mui/joy/FormLabel';
 import { unstable_useTimeField as useTimeField, UseTimeFieldProps } from '@mui/x-date-pickers/TimeField';
 import { useClearableField } from '@mui/x-date-pickers/hooks';
 import { BaseSingleInputFieldProps, FieldSection, TimeValidationError, } from '@mui/x-date-pickers/models';
-import { DesktopTimePicker, DesktopTimePickerProps } from '@mui/x-date-pickers';
+import { DesktopTimePicker, DesktopTimePickerProps, PickersActionBarProps } from '@mui/x-date-pickers';
 import { AccessTime } from '@mui/icons-material';
+import { Button, DialogActions } from '@mui/joy';
+import { startOfDay } from 'date-fns';
 
 interface JoyFieldProps extends InputProps {
   label?: React.ReactNode;
@@ -110,9 +112,32 @@ const JoyTimeField = React.forwardRef(
   },
 );
 
+export interface JoyTimePickerProps extends DesktopTimePickerProps<Date> {
+  showMidnightButton?: boolean
+}
+
 const JoyTimePicker = React.forwardRef(
-  (props: DesktopTimePickerProps<Date>, ref: React.Ref<HTMLDivElement>) => {
+  (props: JoyTimePickerProps, ref: React.Ref<HTMLDivElement>) => {
     const [isOpen, setOpen] = React.useState(false);
+
+    const selectMidnight = () => props.onChange?.(
+      startOfDay(props.referenceDate ?? new Date()),
+      { validationError: null }
+    );
+
+    const renderActionBar = (actionBarProps: PickersActionBarProps) => {
+      return props.showMidnightButton && (
+        <DialogActions className={actionBarProps.className}>
+          <Button
+            variant="plain"
+            sx={{ borderRadius: "0px 0px 4px 4px" }}
+            onClick={selectMidnight}
+          >
+            Midnight
+          </Button>
+        </DialogActions>
+      )
+    }
 
     return (
       <DesktopTimePicker
@@ -122,11 +147,12 @@ const JoyTimePicker = React.forwardRef(
         onClose={() => setOpen(false)}
         disableOpenPicker
         closeOnSelect={false}
-        minutesStep={15}
+        thresholdToRenderTimeInASingleColumn={48}
         skipDisabled
         slots={{
           ...props.slots,
           field: JoyTimeField,
+          actionBar: renderActionBar
         }}
         slotProps={{
           ...props.slotProps,
@@ -138,9 +164,6 @@ const JoyTimePicker = React.forwardRef(
             readOnly: true,
             endDecorator: <AccessTime fontSize="small"/>,
           } as any,
-          actionBar: {
-            actions: [],
-          },
           digitalClockSectionItem: {
             sx: {
               borderRadius: 1,
