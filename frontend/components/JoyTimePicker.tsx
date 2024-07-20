@@ -1,3 +1,5 @@
+// Most of this file is from the example MUI X Date Pickers + JoyUI integration:
+// https://mui.com/x/react-date-pickers/custom-field/#usage-with-joy-ui
 import * as React from 'react';
 import Input, { InputProps } from '@mui/joy/Input';
 import { unstable_useTimeField as useTimeField, UseTimeFieldProps } from '@mui/x-date-pickers/TimeField';
