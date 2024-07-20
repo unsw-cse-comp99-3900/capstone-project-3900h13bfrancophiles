@@ -1,31 +1,19 @@
 import * as React from 'react';
-import {
-  useTheme as useMaterialTheme,
-  useColorScheme as useMaterialColorScheme,
-  Experimental_CssVarsProvider as MaterialCssVarsProvider,
-} from '@mui/material/styles';
-import {
-  useColorScheme,
-  CssVarsProvider,
-  THEME_ID,
-} from '@mui/joy/styles';
+import { Experimental_CssVarsProvider as MaterialCssVarsProvider, } from '@mui/material/styles';
+import { CssVarsProvider, THEME_ID } from '@mui/joy/styles';
 import Input, { InputProps } from '@mui/joy/Input';
 import FormControl from '@mui/joy/FormControl';
 import FormLabel from '@mui/joy/FormLabel';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFnsV3';
-import {
-  unstable_useTimeField as useTimeField,
-  UseTimeFieldProps
-} from '@mui/x-date-pickers/TimeField';
+import { unstable_useTimeField as useTimeField, UseTimeFieldProps } from '@mui/x-date-pickers/TimeField';
 import { useClearableField } from '@mui/x-date-pickers/hooks';
-import {
-  BaseSingleInputFieldProps,
-  TimeValidationError,
-  FieldSection,
-} from '@mui/x-date-pickers/models';
+import { BaseSingleInputFieldProps, FieldSection, TimeValidationError, } from '@mui/x-date-pickers/models';
 import { theme as joyTheme } from '@/app/ThemeRegistry';
 import { TimePicker, TimePickerProps } from '@mui/x-date-pickers';
+import { AccessTime } from '@mui/icons-material';
+import IconButton from '@mui/joy/IconButton';
+import { IconButtonProps as MaterialIconButtonProps } from '@mui/material/IconButton'
 
 interface JoyFieldProps extends InputProps {
   label?: React.ReactNode;
@@ -43,58 +31,59 @@ type JoyFieldComponent = ((
   props: JoyFieldProps & React.RefAttributes<HTMLDivElement>,
 ) => React.JSX.Element) & { propTypes?: any };
 
-const JoyField = React.forwardRef(
-  (props: JoyFieldProps, ref: React.Ref<HTMLDivElement>) => {
-    const {
-      // Should be ignored
-      enableAccessibleFieldDOMStructure,
+const JoyField = React.forwardRef((
+  props: JoyFieldProps,
+  ref: React.Ref<HTMLDivElement>
+) => {
+  const {
+    // Should be ignored
+    enableAccessibleFieldDOMStructure,
 
-      disabled,
-      id,
-      label,
-      InputProps: { ref: containerRef, startAdornment, endAdornment } = {},
-      formControlSx,
-      endDecorator,
-      startDecorator,
-      slotProps,
-      inputRef,
-      ...other
-    } = props;
+    disabled,
+    id,
+    label,
+    InputProps: { ref: containerRef, startAdornment, endAdornment } = {},
+    formControlSx,
+    endDecorator,
+    startDecorator,
+    slotProps,
+    inputRef,
+    ...other
+  } = props;
 
-    return (
-      <FormControl
-        disabled={disabled}
-        id={id}
-        sx={[...(Array.isArray(formControlSx) ? formControlSx : [formControlSx])]}
+  return (
+    <FormControl
+      disabled={disabled}
+      id={id}
+      sx={[...(Array.isArray(formControlSx) ? formControlSx : [formControlSx])]}
+      ref={ref}
+    >
+      <FormLabel>{label}</FormLabel>
+      <Input
         ref={ref}
-      >
-        <FormLabel>{label}</FormLabel>
-        <Input
-          ref={ref}
-          disabled={disabled}
-          startDecorator={
-            <React.Fragment>
-              {startAdornment}
-              {startDecorator}
-            </React.Fragment>
-          }
-          endDecorator={
-            <React.Fragment>
-              {endAdornment}
-              {endDecorator}
-            </React.Fragment>
-          }
-          slotProps={{
-            ...slotProps,
-            root: { ...slotProps?.root, ref: containerRef },
-            input: { ...slotProps?.input, ref: inputRef },
-          }}
-          {...other}
-        />
-      </FormControl>
-    );
-  },
-) as JoyFieldComponent;
+        disabled={disabled}
+        startDecorator={
+          <React.Fragment>
+            {startAdornment}
+            {startDecorator}
+          </React.Fragment>
+        }
+        endDecorator={
+          <React.Fragment>
+            {endAdornment}
+            {endDecorator}
+          </React.Fragment>
+        }
+        slotProps={{
+          ...slotProps,
+          root: { ...slotProps?.root, ref: containerRef },
+          input: { ...slotProps?.input, ref: inputRef },
+        }}
+        {...other}
+      />
+    </FormControl>
+  );
+}) as JoyFieldComponent;
 
 interface JoyTimeFieldProps
   extends UseTimeFieldProps<Date, false>,
@@ -104,7 +93,8 @@ interface JoyTimeFieldProps
       FieldSection,
       false,
       TimeValidationError
-    > {}
+    > {
+}
 
 const JoyTimeField = React.forwardRef(
   (props: JoyTimeFieldProps, ref: React.Ref<HTMLDivElement>) => {
@@ -126,20 +116,34 @@ const JoyTimeField = React.forwardRef(
   },
 );
 
-const JoyTimePicker = React.forwardRef(
+function OpenPickerButton(props: MaterialIconButtonProps) {
+  return (
+    <IconButton onClick={props.onClick}>
+      <AccessTime fontSize="small"/>
+    </IconButton>
+  )
+}
+
+export const JoyTimePicker = React.forwardRef(
   (props: TimePickerProps<Date>, ref: React.Ref<HTMLDivElement>) => {
     return (
       <TimePicker
         ref={ref}
         {...props}
-        slots={{ ...props.slots, field: JoyTimeField }}
+        slots={{
+          ...props.slots,
+          field: JoyTimeField,
+          openPickerButton: OpenPickerButton
+        }}
         slotProps={{
           ...props.slotProps,
           field: {
             ...props.slotProps?.field,
             formControlSx: {
               flexDirection: 'row',
+              width: 140,
             },
+            size: "sm",
           } as any,
         }}
       />
@@ -147,34 +151,23 @@ const JoyTimePicker = React.forwardRef(
   },
 );
 
-/**
- * This component is for syncing the theme mode of this demo with the MUI docs mode.
- * You might not need this component in your project.
- */
-function SyncThemeMode({ mode }: { mode: 'light' | 'dark' }) {
-  const { setMode } = useColorScheme();
-  const { setMode: setMaterialMode } = useMaterialColorScheme();
-  React.useEffect(() => {
-    setMode(mode);
-    setMaterialMode(mode);
-  }, [mode, setMode, setMaterialMode]);
-  return null;
-}
-
-export default function JoyV6Field() {
-  const materialTheme = useMaterialTheme();
+export default function JoyV6Field(props: TimePickerProps<Date>) {
   return (
     <MaterialCssVarsProvider>
       <CssVarsProvider theme={{ [THEME_ID]: joyTheme }}>
-        <SyncThemeMode mode={materialTheme.palette.mode} />
         <LocalizationProvider dateAdapter={AdapterDateFns}>
           <JoyTimePicker
+            {...props}
             slotProps={{
-              field: { clearable: true },
+              field: { clearable: false },
             }}
+            minutesStep={15}
+            skipDisabled={true}
           />
         </LocalizationProvider>
       </CssVarsProvider>
     </MaterialCssVarsProvider>
   );
 }
+
+
