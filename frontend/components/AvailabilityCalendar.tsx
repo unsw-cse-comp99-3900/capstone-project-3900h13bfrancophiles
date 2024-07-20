@@ -5,7 +5,7 @@ import { Calendar, dateFnsLocalizer, DateRange, ToolbarProps, EventProps } from 
 import { format, getDay, parse, startOfWeek, endOfWeek } from "date-fns";
 import { enAU } from 'date-fns/locale'
 import 'react-big-calendar/lib/css/react-big-calendar.css'
-import { useTheme } from "@mui/material/styles";
+import { theme } from '@/app/ThemeRegistry';
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { Stack, ButtonGroup, Button, ToggleButtonGroup, Typography } from "@mui/joy";
 import useUser from "@/hooks/useUser";
@@ -86,7 +86,6 @@ export default function AvailabilityCalendar({ bookings }: AvailabilityCalendarP
         }
       }
     )
-  const theme = useTheme()
   const isMobile : Boolean = useMediaQuery(theme.breakpoints.down("md")) ?? false;
   React.useEffect(() => {
     setView(isMobile ? 'day' : 'week');

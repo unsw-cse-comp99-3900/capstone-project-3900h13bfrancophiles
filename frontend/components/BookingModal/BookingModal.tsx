@@ -15,8 +15,6 @@ import WarningIcon from '@mui/icons-material/Warning';
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import { createBooking, editBooking } from '@/api';
 import useTimeRange from '@/hooks/useTimeRange';
-import { useTheme } from "@mui/material/styles";
-import useMediaQuery from "@mui/material/useMediaQuery";
 
 type ModalState = 'form' | 'confirm' | 'submitted';
 
@@ -86,8 +84,6 @@ const BookingModal: React.FC<BookingModalProps> = ({
     }
   }
 
-  const theme = useTheme();
-  const isMobile : Boolean = useMediaQuery(theme.breakpoints.down("sm")) ?? false;
 
   const renderModalContent = () => {
     switch (state) {
@@ -110,9 +106,9 @@ const BookingModal: React.FC<BookingModalProps> = ({
             </Alert>
           )}
           <Stack
-            direction={isMobile ? "column" : "row"}
-            justifyContent={isMobile ? "center" : "space-between"}
-            spacing={isMobile ? 3 : 6}
+            direction={{ xs: 'column-reverse' , sm: 'row' }}
+            justifyContent={{ xs: 'center', sm: 'space-between' }}
+            spacing={{ xs: 3, sm: 6 }}
           >
             <BookingForm
               space={space}
@@ -124,7 +120,7 @@ const BookingModal: React.FC<BookingModalProps> = ({
               setDesc={setDesc}
               onSubmit={() => setState('confirm')}
             />
-            <Stack direction="column" width={isMobile ? 250 : 300} spacing={1}>
+            <Stack direction="column" width={{ xs: 250, sm: 300 }} spacing={1}>
               <Typography level="body-md" textAlign="center" fontWeight={500}>
                 {format(date, 'EEEE, MMMM d')}
               </Typography>

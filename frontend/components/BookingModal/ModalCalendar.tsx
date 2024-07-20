@@ -4,16 +4,15 @@ import { Calendar, dateFnsLocalizer, EventProps } from 'react-big-calendar'
 import { format, getDay, parse, startOfWeek } from "date-fns";
 import { enAU } from 'date-fns/locale'
 import 'react-big-calendar/lib/css/react-big-calendar.css'
-import Box from "@mui/material/Box";
-import { styled } from "@mui/material/styles";
+import Box from "@mui/joy/Box";
+import { styled } from "@mui/joy/styles";
 import useUser from "@/hooks/useUser";
 import { Event, StyledCalendarContainer, formatTime, formatTimeRange } from "@/utils/calendar"
 import useAvailabilities from "@/hooks/useAvailabilities";
 import Loading from "../Loading";
-import * as jwt from "jsonwebtoken";
-import { getCookie } from "cookies-next";
 import { roundToNearestMinutes } from 'date-fns';
-
+import useMediaQuery from "@mui/material/useMediaQuery";
+import { theme } from '@/app/ThemeRegistry';
 
 interface ModalCalendarProps {
   space: string | undefined,
@@ -33,7 +32,7 @@ const CustomEvent : React.FC<EventProps> = ({event}) => {
     <Box sx={{
       backgroundColor: event.color ?? "",
     }}>
-      {isLoading || error ? "..." : (event.unconfirmed ? "New Booking" : user!.fullname) } {}
+      {event.unconfirmed ? "New Booking" : (isLoading || error ? "..." : user!.fullname) }
     </Box>
   )
 };
@@ -65,10 +64,6 @@ export default function ModalCalendar({ space, date, start, end }: ModalCalendar
 
   const { bookings, isLoading } = useAvailabilities(space)
 
-  const token = getCookie('token');
-  const decoded = jwt.decode(`${token}`) as jwt.JwtPayload;
-  const curUser = decoded.user;
-
   if (isLoading) return <Loading page=""/>
   const events : MyEvent[] = bookings!
     .map((b) =>
@@ -85,7 +80,7 @@ export default function ModalCalendar({ space, date, start, end }: ModalCalendar
     if (e.start < end && e.end > start) overlaps = true;
   })
   events.push({
-    zid: curUser,
+    zid: 0,
     start: roundToNearestMinutes(start, { nearestTo: 15 }),
     end: roundToNearestMinutes(end, { nearestTo: 15 }),
     // color: overlaps ? theme.palette.warning.main : theme.palette.primary.main,
@@ -93,18 +88,21 @@ export default function ModalCalendar({ space, date, start, end }: ModalCalendar
     unconfirmed: true
   })
 
+  const isMobile : Boolean = useMediaQuery(theme.breakpoints.down("sm")) ?? false;
+
   return (
     <MyStyledCalendarContainer>
       <Calendar
         startAccessor="start"
         localizer={localizer}
         defaultView="day"
-        style={{ height: 405 }}
+        style={{ height: isMobile ? 230 : 400 }}
         date={date}
         scrollToTime={start}
         events={events}
         slotGroupPropGetter={() => ({ style: { minHeight: "50px" } })}
         eventPropGetter={eventStyleGetter}
+        dayPropGetter={() => ({ style: { backgroundColor: "none" } })}
         components={{
             event: CustomEvent
         }}

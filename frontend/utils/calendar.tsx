@@ -1,7 +1,7 @@
 import { dateFnsLocalizer, DateRange } from 'react-big-calendar'
 import 'react-big-calendar/lib/css/react-big-calendar.css'
-import Box, { BoxProps } from "@mui/material/Box";
-import { styled, useTheme } from "@mui/material/styles";
+import Box, { BoxProps } from "@mui/joy/Box";
+import { styled } from "@mui/material/styles";
 
 export interface Event {
   zid: number,
