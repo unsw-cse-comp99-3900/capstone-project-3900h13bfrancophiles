@@ -1,8 +1,11 @@
 'use client';
 
 import React from 'react';
-import {CssVarsProvider, extendTheme} from '@mui/joy/styles';
+import { Experimental_CssVarsProvider as MaterialCssVarsProvider, } from '@mui/material/styles';
+import { CssVarsProvider as JoyCssVarsProvider, extendTheme, THEME_ID } from '@mui/joy/styles';
 import CssBaseline from '@mui/joy/CssBaseline';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFnsV3';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 
 declare module '@mui/joy/styles' {
   interface TypographySystemOverrides {
@@ -20,10 +23,14 @@ export default function ThemeRegistry({
   children
 }: ThemeRegistryProps) {
   return (
-    <CssVarsProvider theme={theme}>
-      <CssBaseline />
-      {children}
-    </CssVarsProvider>
+    <MaterialCssVarsProvider>
+      <JoyCssVarsProvider theme={{ [THEME_ID]: theme }}>
+        <CssBaseline />
+        <LocalizationProvider dateAdapter={AdapterDateFns}>
+          {children}
+        </LocalizationProvider>
+      </JoyCssVarsProvider>
+    </MaterialCssVarsProvider>
   );
 }
 

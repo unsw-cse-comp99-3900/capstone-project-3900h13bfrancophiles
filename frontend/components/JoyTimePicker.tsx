@@ -1,15 +1,10 @@
 import * as React from 'react';
-import { Experimental_CssVarsProvider as MaterialCssVarsProvider, } from '@mui/material/styles';
-import { CssVarsProvider, THEME_ID } from '@mui/joy/styles';
 import Input, { InputProps } from '@mui/joy/Input';
 import FormControl from '@mui/joy/FormControl';
 import FormLabel from '@mui/joy/FormLabel';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFnsV3';
 import { unstable_useTimeField as useTimeField, UseTimeFieldProps } from '@mui/x-date-pickers/TimeField';
 import { useClearableField } from '@mui/x-date-pickers/hooks';
 import { BaseSingleInputFieldProps, FieldSection, TimeValidationError, } from '@mui/x-date-pickers/models';
-import { theme as joyTheme } from '@/app/ThemeRegistry';
 import { DesktopTimePicker, DesktopTimePickerProps } from '@mui/x-date-pickers';
 import { AccessTime } from '@mui/icons-material';
 
@@ -48,8 +43,6 @@ const JoyField = React.forwardRef((
     inputRef,
     ...other
   } = props;
-
-  console.log("DesktopTimePicker:", props.onBlur !== undefined)
 
   return (
     <FormControl
@@ -128,6 +121,9 @@ const JoyTimePicker = React.forwardRef(
         open={isOpen}
         onClose={() => setOpen(false)}
         disableOpenPicker
+        closeOnSelect={false}
+        minutesStep={15}
+        skipDisabled
         slots={{
           ...props.slots,
           field: JoyTimeField,
@@ -136,7 +132,7 @@ const JoyTimePicker = React.forwardRef(
           ...props.slotProps,
           field: {
             ...props.slotProps?.field,
-            formControlSx: { flexDirection: 'row' },
+            formControlSx: { flexDirection: 'column' },
             size: "sm",
             onClick: () => setOpen(true),
             readOnly: true,
@@ -156,29 +152,4 @@ const JoyTimePicker = React.forwardRef(
   },
 );
 
-export default function JoyV6Field(props: DesktopTimePickerProps<Date>) {
-  return (
-    <MaterialCssVarsProvider>
-      <CssVarsProvider theme={{ [THEME_ID]: joyTheme }}>
-        <LocalizationProvider dateAdapter={AdapterDateFns}>
-          <JoyTimePicker
-            {...props}
-            slotProps={{
-              ...props.slotProps,
-              field: {
-                ...props.slotProps?.field,
-                clearable: false
-              },
-            }}
-            closeOnSelect={false}
-            minutesStep={15}
-            skipDisabled
-            thresholdToRenderTimeInASingleColumn={12 * 24}
-          />
-        </LocalizationProvider>
-      </CssVarsProvider>
-    </MaterialCssVarsProvider>
-  );
-}
-
-
+export default JoyTimePicker;
