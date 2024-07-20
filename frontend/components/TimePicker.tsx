@@ -117,7 +117,7 @@ const JoyTimeField = React.forwardRef(
   },
 );
 
-export const JoyTimePicker = React.forwardRef(
+const JoyTimePicker = React.forwardRef(
   (props: DesktopTimePickerProps<Date>, ref: React.Ref<HTMLDivElement>) => {
     const [isOpen, setOpen] = React.useState(false);
 
@@ -142,6 +142,14 @@ export const JoyTimePicker = React.forwardRef(
             readOnly: true,
             endDecorator: <AccessTime fontSize="small"/>,
           } as any,
+          actionBar: {
+            actions: [],
+          },
+          digitalClockSectionItem: {
+            sx: {
+              borderRadius: 1,
+            }
+          },
         }}
       />
     );
@@ -157,10 +165,15 @@ export default function JoyV6Field(props: DesktopTimePickerProps<Date>) {
             {...props}
             slotProps={{
               ...props.slotProps,
-              field: { ...props.slotProps?.field, clearable: false },
+              field: {
+                ...props.slotProps?.field,
+                clearable: false
+              },
             }}
+            closeOnSelect={false}
             minutesStep={15}
-            skipDisabled={true}
+            skipDisabled
+            thresholdToRenderTimeInASingleColumn={12 * 24}
           />
         </LocalizationProvider>
       </CssVarsProvider>
