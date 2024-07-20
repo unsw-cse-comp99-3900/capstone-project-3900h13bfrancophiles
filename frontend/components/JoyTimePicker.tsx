@@ -1,7 +1,5 @@
 import * as React from 'react';
 import Input, { InputProps } from '@mui/joy/Input';
-import FormControl from '@mui/joy/FormControl';
-import FormLabel from '@mui/joy/FormLabel';
 import { unstable_useTimeField as useTimeField, UseTimeFieldProps } from '@mui/x-date-pickers/TimeField';
 import { useClearableField } from '@mui/x-date-pickers/hooks';
 import { BaseSingleInputFieldProps, FieldSection, TimeValidationError, } from '@mui/x-date-pickers/models';
@@ -47,37 +45,29 @@ const JoyField = React.forwardRef((
   } = props;
 
   return (
-    <FormControl
-      disabled={disabled}
-      id={id}
-      sx={[...(Array.isArray(formControlSx) ? formControlSx : [formControlSx])]}
+    <Input
       ref={ref}
-    >
-      <FormLabel>{label}</FormLabel>
-      <Input
-        ref={ref}
-        disabled={disabled}
-        startDecorator={
-          <React.Fragment>
-            {startAdornment}
-            {startDecorator}
-          </React.Fragment>
-        }
-        endDecorator={
-          <React.Fragment>
-            {endAdornment}
-            {endDecorator}
-          </React.Fragment>
-        }
-        slotProps={{
-          ...slotProps,
-          root: { ...slotProps?.root, ref: containerRef },
-          input: { ...slotProps?.input, ref: inputRef },
-        }}
-        readOnly={true}
-        {...other}
-      />
-    </FormControl>
+      disabled={disabled}
+      startDecorator={
+        <React.Fragment>
+          {startAdornment}
+          {startDecorator}
+        </React.Fragment>
+      }
+      endDecorator={
+        <React.Fragment>
+          {endAdornment}
+          {endDecorator}
+        </React.Fragment>
+      }
+      slotProps={{
+        ...slotProps,
+        root: { ...slotProps?.root, ref: containerRef },
+        input: { ...slotProps?.input, ref: inputRef },
+      }}
+      readOnly={true}
+      {...other}
+    />
   );
 }) as JoyFieldComponent;
 
@@ -113,7 +103,8 @@ const JoyTimeField = React.forwardRef(
 );
 
 export interface JoyTimePickerProps extends DesktopTimePickerProps<Date> {
-  showMidnightButton?: boolean
+  showMidnightButton?: boolean,
+  size?: "sm" | "md" | "lg",
 }
 
 const JoyTimePicker = React.forwardRef(
@@ -158,8 +149,7 @@ const JoyTimePicker = React.forwardRef(
           ...props.slotProps,
           field: {
             ...props.slotProps?.field,
-            formControlSx: { flexDirection: 'column' },
-            size: "sm",
+            size: props.size ?? "md",
             onClick: () => setOpen(true),
             readOnly: true,
             endDecorator: <AccessTime fontSize="small"/>,

@@ -17,13 +17,14 @@ import Button from '@mui/joy/Button';
 import useSpaces from '@/hooks/useSpaces';
 import MeetingRoomTwoToneIcon from '@mui/icons-material/MeetingRoomTwoTone';
 import TableRestaurantTwoToneIcon from '@mui/icons-material/TableRestaurantTwoTone';
+import JoyTimePicker, { JoyTimePickerProps } from '@/components/JoyTimePicker';
 
 interface BookingFormProps {
   space: SpaceOption | null;
   setSpace: React.Dispatch<React.SetStateAction<SpaceOption | null>>;
   dateInputProps: InputProps,
-  startInputProps: InputProps,
-  endInputProps: InputProps,
+  startTimePickerProps: JoyTimePickerProps,
+  endTimePickerProps: JoyTimePickerProps,
   desc: string;
   setDesc: React.Dispatch<React.SetStateAction<string>>;
   onSubmit: () => void;
@@ -32,8 +33,8 @@ interface BookingFormProps {
 const BookingForm: React.FC<BookingFormProps> = ({
   space, setSpace,
   dateInputProps,
-  startInputProps,
-  endInputProps,
+  startTimePickerProps,
+  endTimePickerProps,
   desc, setDesc,
   onSubmit
 }) => {
@@ -50,12 +51,12 @@ const BookingForm: React.FC<BookingFormProps> = ({
         </FormControl>
         <FormControl>
           <FormLabel>Time</FormLabel>
-          <Input required {...startInputProps} />
+          <JoyTimePicker sx={{ pl: 0.5 }} {...startTimePickerProps} />
         </FormControl>
         <FormControl>
           <Divider sx={{ mb: 1 }}>to</Divider>
           <FormLabel sx={{ display: 'none' }}>End Time</FormLabel>
-          <Input required {...endInputProps} />
+          <JoyTimePicker sx={{ pl: 0.5 }} {...endTimePickerProps} />
         </FormControl>
         <FormControl>
           <FormLabel>Description</FormLabel>

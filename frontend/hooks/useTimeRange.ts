@@ -7,10 +7,9 @@ import {
   format,
   getHours,
   getMinutes,
-  isEqual,
+  isBefore,
   max,
   min,
-  parse,
   roundToNearestMinutes,
   setHours,
   setMinutes,
@@ -19,6 +18,7 @@ import {
 } from 'date-fns';
 import React from 'react';
 import { InputProps } from '@mui/joy/Input';
+import { JoyTimePickerProps } from '@/components/JoyTimePicker';
 
 type InitialValues = {
   date?: Date;
@@ -66,15 +66,20 @@ export default function useTimeRange(initialValues: InitialValues = {}) {
     const startTime = max([newStart, now, date]);
     const limitedStart = min([startTime, setHours(setMinutes(date, 45), 23)]);
     const changeInTime = differenceInMinutes(limitedStart, start);
-
     setStart(limitedStart);
-    handleEndChange(addMinutes(end, changeInTime), date, limitedStart);
+
+    const shiftedEnd = min([addMinutes(end, changeInTime), addDays(date, 1)]);
+    handleEndChange(shiftedEnd);
   }
 
-  const handleEndChange = (newEnd: Date, date: Date, start: Date) => {
-    const limitedEnd = min([newEnd, addDays(date, 1)]);
-    const minEnd = addMinutes(start, 15);
-    setEnd(max([minEnd, limitedEnd]));
+  const handleEndChange = (newEnd: Date) => {
+    if (newEnd.getHours() == 0 && newEnd.getMinutes() == 0) {
+      setEnd(addDays(date, 1));
+    } else {
+      const adjustedEnd = new Date(start);
+      adjustedEnd.setHours(newEnd.getHours(), newEnd.getMinutes());
+      setEnd(adjustedEnd);
+    }
   }
 
   const dateInputProps: InputProps = {
@@ -92,39 +97,38 @@ export default function useTimeRange(initialValues: InitialValues = {}) {
     }
   }
 
-  const startInputProps: InputProps = {
-    type: "time",
-    value: format(start, 'HH:mm'),
-    onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
-      if (!e.target.value.match(/\d{2}:\d{2}/)) return;
-      handleStartChange(parse(e.target.value, 'HH:mm', date), date);
-    },
-    onBlur: () => handleStartChange(roundToInterval(start), date),
-    slotProps: {
-      input: {
-        min: isEqual(startOfDay(now), date) ? format(now, 'HH:mm') : '00:00',
-        max: '23:45',
-        step: 15 * 60,
-      }
-    }
+  // Start must be greater than now, and start of day
+  const shouldDisableStartTime = (time: Date) => {
+    return isBefore(time, now) || isBefore(time, date);
   }
 
-  const endInputProps: InputProps = {
-    type: "time",
-    value: format(end, 'HH:mm'),
-    onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
-      if (!e.target.value.match(/\d{2}:\d{2}/)) return;
-      handleEndChange(parse(e.target.value, 'HH:mm', date), date, start);
+  const startTimePickerProps: JoyTimePickerProps = {
+    value: start,
+    onChange: (newStart: Date | null) => {
+      if (newStart) handleStartChange(newStart, date);
     },
-    onBlur: () => handleEndChange(roundToInterval(end), date, start),
-    slotProps: {
-      input: {
-        min: (format(end, 'HH:mm') !== '00:00')
-          ? format(start, 'HH:mm')
-          : undefined,
-        step: 15 * 60,
-      }
-    }
+    shouldDisableTime: shouldDisableStartTime,
+    minutesStep: 15,
+  }
+
+  // End time can always be midnight, but must be at least start + 15m
+  const shouldDisableEndTime = (time: Date) => {
+    if (time.getHours() == 0 && time.getMinutes() == 0) return false;
+
+    const adjustedEnd = new Date(start);
+    adjustedEnd.setHours(time.getHours(), time.getMinutes());
+    return isBefore(adjustedEnd, addMinutes(start, 15));
+  }
+
+  const endTimePickerProps: JoyTimePickerProps = {
+    value: end,
+    onChange: (newEnd: Date | null) => {
+      if (newEnd) handleEndChange(newEnd);
+    },
+    shouldDisableTime: shouldDisableEndTime,
+    minutesStep: 15,
+    referenceDate: date,
+    showMidnightButton: true,
   }
 
   return {
@@ -133,13 +137,9 @@ export default function useTimeRange(initialValues: InitialValues = {}) {
     end,
     handleDateChange,
     handleStartChange,
-    handleEndChange,
+    handleEndChange: setEnd,
     dateInputProps,
-    startInputProps,
-    endInputProps,
+    startTimePickerProps,
+    endTimePickerProps,
   }
-}
-
-function roundToInterval(date: Date): Date {
-  return date && roundToNearestMinutes(date, { nearestTo: 15 })
 }

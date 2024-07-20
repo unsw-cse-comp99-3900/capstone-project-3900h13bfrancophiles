@@ -53,7 +53,7 @@ const BookingModal: React.FC<BookingModalProps> = ({
 
   const {
     date, start, end,
-    dateInputProps, startInputProps, endInputProps
+    dateInputProps, startTimePickerProps, endTimePickerProps
   } = useTimeRange({ date: initialDate, start: initialStart, end: initialEnd });
   const [desc, setDesc] = React.useState<string>(initialDesc ?? "");
 
@@ -108,8 +108,8 @@ const BookingModal: React.FC<BookingModalProps> = ({
               space={space}
               setSpace={setSpace}
               dateInputProps={dateInputProps}
-              startInputProps={startInputProps}
-              endInputProps={endInputProps}
+              startTimePickerProps={startTimePickerProps}
+              endTimePickerProps={endTimePickerProps}
               desc={desc}
               setDesc={setDesc}
               onSubmit={() => setState('confirm')}
