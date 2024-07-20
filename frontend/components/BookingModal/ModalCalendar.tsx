@@ -13,6 +13,8 @@ import Loading from "../Loading";
 import { roundToNearestMinutes } from 'date-fns';
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { theme } from '@/app/ThemeRegistry';
+import * as jwt from 'jsonwebtoken';
+import { getCookie } from 'cookies-next';
 
 interface ModalCalendarProps {
   space: string | undefined,
@@ -30,7 +32,7 @@ interface MyEvent extends Event {
   old?: boolean
 }
 
-const CustomEvent : React.FC<EventProps> = ({event}) => {
+const CustomEvent : React.FC<EventProps<MyEvent>> = ({event}) => {
   const { user, isLoading, error } = useUser(event.zid);
   let adjective = ""
   if (event.new) adjective = "New"
@@ -89,8 +91,10 @@ export default function ModalCalendar({ space, date, start, end, editing, edited
     if (b.id === editedBooking) return;
     if (new Date(b.starttime) < end && new Date(b.endtime) > start) overlaps = true;
   })
+
+  const token = jwt.decode(`${getCookie('token')}`) as jwt.JwtPayload;
   events.push({
-    zid: 0,
+    zid: token.user,
     start: roundToNearestMinutes(start, { nearestTo: 15 }),
     end: roundToNearestMinutes(end, { nearestTo: 15 }),
     // color: overlaps ? theme.palette.warning.main : theme.palette.primary.main,

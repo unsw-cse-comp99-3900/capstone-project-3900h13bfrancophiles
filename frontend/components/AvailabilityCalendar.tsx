@@ -1,7 +1,7 @@
 import * as React from "react";
 
 import { AnonymousBooking } from "@/types";
-import { Calendar, dateFnsLocalizer, DateRange, ToolbarProps, EventProps } from 'react-big-calendar'
+import { Calendar, dateFnsLocalizer, ToolbarProps, EventProps, View } from 'react-big-calendar'
 import { format, getDay, parse, startOfWeek, endOfWeek } from "date-fns";
 import { enAU } from 'date-fns/locale'
 import 'react-big-calendar/lib/css/react-big-calendar.css'
@@ -15,7 +15,7 @@ interface AvailabilityCalendarProps {
   bookings: AnonymousBooking[],
 }
 
-const CustomToolBar : React.FC<ToolbarProps & Date> = ({
+const CustomToolBar : React.FC<ToolbarProps> = ({
   view,
   onNavigate,
   onView,
@@ -63,7 +63,7 @@ const CustomToolBar : React.FC<ToolbarProps & Date> = ({
   );
 };
 
-const CustomEvent : React.FC<EventProps> = ({event}) => {
+const CustomEvent : React.FC<EventProps<Event>> = ({event}) => {
   const { user, isLoading, error } = useUser(event.zid);
   return (
     <>
@@ -75,7 +75,7 @@ const CustomEvent : React.FC<EventProps> = ({event}) => {
 export default function AvailabilityCalendar({ bookings }: AvailabilityCalendarProps) {
 
   const [date, setDate] = React.useState<Date>(new Date());
-  const [view, setView] = React.useState<String>('week');
+  const [view, setView] = React.useState<View>('week');
   const events : Event[] = bookings
     .map((b) =>
       {
@@ -95,7 +95,7 @@ export default function AvailabilityCalendar({ bookings }: AvailabilityCalendarP
     setDate(newDate ?? new Date());
   };
 
-  const handleViewChange = (newView: String | null) => {
+  const handleViewChange = (newView: View | null) => {
     setView(newView ?? 'week');
   };
 
