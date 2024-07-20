@@ -20,7 +20,6 @@ import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import WarningIcon from '@mui/icons-material/Warning';
 
 import { login } from '@/api';
-import TimePicker from '@/components/TimePicker';
 
 export default function Login() {
   const router = useRouter();
@@ -58,7 +57,6 @@ export default function Login() {
 
   return (
     <Stack justifyContent="center" alignItems="center" height="100vh" spacing={4}>
-      <TimePicker />
       <AspectRatio variant="plain" ratio="10/3" sx={{ backgroundColor: 'transparent', width: { xs: 300, sm: 380 } }} >
         <Image src="/roomallocfull.svg" alt="roomalloc logo" fill />
       </AspectRatio>
