@@ -3,18 +3,10 @@ import { and, asc, count, desc, eq, gt, gte, inArray, lt, lte, ne, or } from 'dr
 import typia, { tags } from 'typia';
 
 import { db } from '../index';
-import {
-  Booking,
-  IDatetimeRange,
-  TypedGETRequest,
-  TypedResponse
-} from '../types';
+import { Booking, IDatetimeRange, TypedGETRequest, TypedResponse } from '../types';
 import { formatBookingDates, now } from '../utils';
 
-export async function currentBookings(
-  req: TypedGETRequest,
-  res: TypedResponse<{ bookings: Booking[] }>,
-) {
+export async function currentBookings(req: TypedGETRequest, res: TypedResponse<{ bookings: Booking[] }>) {
   try {
     const zid = req.token.user;
     const currentTime = (await now()).toISOString();
@@ -27,8 +19,8 @@ export async function currentBookings(
           lt(booking.starttime, currentTime),
           gt(booking.endtime, currentTime),
           eq(booking.zid, zid),
-          inArray(booking.currentstatus, ["confirmed", "checkedin"]),
-        )
+          inArray(booking.currentstatus, ['confirmed', 'checkedin']),
+        ),
       );
 
     res.json({ bookings: currentBookings.map(formatBookingDates) });
@@ -42,14 +34,11 @@ interface UpcomingBookingsRequest {
   sort: 'soonest' | 'latest';
 }
 
-export async function upcomingBookings(
-  req: TypedGETRequest,
-  res: TypedResponse<{ bookings: Booking[] }>,
-) {
+export async function upcomingBookings(req: TypedGETRequest, res: TypedResponse<{ bookings: Booking[] }>) {
   try {
     const parsedQuery = typia.http.query<UpcomingBookingsRequest>(new URLSearchParams(req.query));
     if (!parsedQuery) {
-      res.status(400).json({ error: "Invalid input" });
+      res.status(400).json({ error: 'Invalid input' });
       return;
     }
 
@@ -59,13 +48,13 @@ export async function upcomingBookings(
     let subQuery;
     switch (parsedQuery.type) {
       case 'desks':
-        subQuery = db.select({ id: hotdesk.id }).from(hotdesk)
+        subQuery = db.select({ id: hotdesk.id }).from(hotdesk);
         break;
       case 'rooms':
-        subQuery = db.select({ id: room.id }).from(room)
+        subQuery = db.select({ id: room.id }).from(room);
         break;
       default:
-        subQuery = db.select({ id: booking.spaceid }).from(booking)
+        subQuery = db.select({ id: booking.spaceid }).from(booking);
     }
 
     const upcomingBookings = await db
@@ -76,10 +65,10 @@ export async function upcomingBookings(
           inArray(booking.spaceid, subQuery),
           gt(booking.starttime, currentTime),
           eq(booking.zid, zid),
-          ne(booking.currentstatus, "deleted")
-        )
+          ne(booking.currentstatus, 'deleted'),
+        ),
       )
-      .orderBy(parsedQuery.sort == 'soonest' ? asc(booking.starttime) : desc(booking.starttime))
+      .orderBy(parsedQuery.sort == 'soonest' ? asc(booking.starttime) : desc(booking.starttime));
 
     res.json({ bookings: upcomingBookings.map(formatBookingDates) });
   } catch (error) {
@@ -99,25 +88,19 @@ interface PastBookingsRequest {
 // in or out)
 function isPastBooking(currentTime: string) {
   return or(
-    eq(booking.currentstatus, "completed"),
+    eq(booking.currentstatus, 'completed'),
     and(
       lte(booking.endtime, currentTime),
-      or(
-        eq(booking.currentstatus, "confirmed"),
-        eq(booking.currentstatus, "checkedin"),
-      )
-    )
-  )
+      or(eq(booking.currentstatus, 'confirmed'), eq(booking.currentstatus, 'checkedin')),
+    ),
+  );
 }
 
-export async function pastBookings(
-  req: TypedGETRequest,
-  res: TypedResponse<{ bookings: Booking[]; total: number }>,
-) {
+export async function pastBookings(req: TypedGETRequest, res: TypedResponse<{ bookings: Booking[]; total: number }>) {
   try {
     const parsedQuery = typia.http.isQuery<PastBookingsRequest>(new URLSearchParams(req.query));
     if (!parsedQuery) {
-      res.status(400).json({ error: "Invalid input" });
+      res.status(400).json({ error: 'Invalid input' });
       return;
     }
 
@@ -130,53 +113,42 @@ export async function pastBookings(
     let subQuery;
     switch (parsedQuery.type) {
       case 'desks':
-        subQuery = db.select({ id: hotdesk.id }).from(hotdesk)
+        subQuery = db.select({ id: hotdesk.id }).from(hotdesk);
         break;
       case 'rooms':
-        subQuery = db.select({ id: room.id }).from(room)
+        subQuery = db.select({ id: room.id }).from(room);
         break;
       default:
-        subQuery = db.select({ id: booking.spaceid }).from(booking)
+        subQuery = db.select({ id: booking.spaceid }).from(booking);
     }
 
     const totalBookings = await db
       .select({ count: count() })
       .from(booking)
-      .where(and(
-        inArray(booking.spaceid, subQuery),
-        eq(booking.zid, zid),
-        isPastBooking(currentTime)
-      ));
+      .where(and(inArray(booking.spaceid, subQuery), eq(booking.zid, zid), isPastBooking(currentTime)));
 
     const pastBookings = await db
       .select()
       .from(booking)
-      .where(and(
-        inArray(booking.spaceid, subQuery),
-        eq(booking.zid, zid),
-        isPastBooking(currentTime)
-      ))
+      .where(and(inArray(booking.spaceid, subQuery), eq(booking.zid, zid), isPastBooking(currentTime)))
       .orderBy(parsedQuery.sort == 'newest' ? desc(booking.starttime) : asc(booking.starttime))
       .limit(limit)
       .offset(offset);
 
     res.json({
       bookings: pastBookings.map(formatBookingDates),
-      total: totalBookings[0].count
+      total: totalBookings[0].count,
     });
   } catch (error) {
     res.status(500).json({ error: 'Failed to fetch past bookings' });
   }
 }
 
-export async function rangeOfBookings(
-  req: TypedGETRequest,
-  res: TypedResponse<{ bookings: Booking[] }>,
-) {
+export async function rangeOfBookings(req: TypedGETRequest, res: TypedResponse<{ bookings: Booking[] }>) {
   try {
     const parsedQuery = typia.http.isQuery<IDatetimeRange>(new URLSearchParams(req.query));
     if (!parsedQuery) {
-      res.status(400).json({ error: "Invalid input" });
+      res.status(400).json({ error: 'Invalid input' });
       return;
     }
 
@@ -192,8 +164,8 @@ export async function rangeOfBookings(
           lte(booking.starttime, datetimeEnd),
           gte(booking.endtime, datetimeStart),
           eq(booking.zid, zid),
-          ne(booking.currentstatus, "deleted")
-        )
+          ne(booking.currentstatus, 'deleted'),
+        ),
       );
 
     res.json({ bookings: currentBookings.map(formatBookingDates) });

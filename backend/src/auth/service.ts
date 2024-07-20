@@ -5,10 +5,7 @@ import { eq } from 'drizzle-orm';
 
 import { AUTH_SECRET } from '../../config';
 import { db } from '../index';
-import {
-  TokenPayload,
-  UserGroup
-} from '../types';
+import { TokenPayload, UserGroup } from '../types';
 
 // Helpers for validating user and password
 export function validateLogin(zid: number, zpass: string): boolean {
@@ -19,10 +16,7 @@ export function validateLogin(zid: number, zpass: string): boolean {
 // Helpers for managing permissions
 export async function getUserGroup(zid: number): Promise<UserGroup | undefined> {
   // TODO: Integrate with UNSW db
-  const res = await db
-    .select({ group: person.usergrp })
-    .from(person)
-    .where(eq(person.zid, zid));
+  const res = await db.select({ group: person.usergrp }).from(person).where(eq(person.zid, zid));
 
   return res?.[0]?.group;
 }

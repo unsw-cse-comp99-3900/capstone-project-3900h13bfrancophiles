@@ -4,23 +4,23 @@ import { bookingstatusenum } from '../drizzle/schema';
 import { tags } from 'typia';
 
 // Order matters - lowest to highest
-export const USER_GROUPS = ["other", "hdr", "csestaff", "admin"] as const;
-export type UserGroup =  typeof USER_GROUPS[number];
+export const USER_GROUPS = ['other', 'hdr', 'csestaff', 'admin'] as const;
+export type UserGroup = (typeof USER_GROUPS)[number];
 
 /**
  * Payload stored with JWT auth tokens
  */
 export interface TokenPayload {
-  id: string,
-  user: number, // zid
-  group: UserGroup,
+  id: string;
+  user: number; // zid
+  group: UserGroup;
 }
 
 // Voodoo shit to allow adding tokens to Requests
 declare global {
   namespace Express {
     interface Request {
-      token: TokenPayload
+      token: TokenPayload;
     }
   }
 }
@@ -34,9 +34,9 @@ type Empty = Record<string, never>;
  * P is the type of the path params (req.params)
  */
 export interface TypedRequest<B = Empty, P = Empty> extends Request<P> {
-  body: B,
-  params: P,
-  token: TokenPayload,
+  body: B;
+  params: P;
+  token: TokenPayload;
 }
 
 /*
@@ -45,7 +45,7 @@ export interface TypedRequest<B = Empty, P = Empty> extends Request<P> {
  * P is the type of the path params (req.params)
  */
 export interface TypedGETRequest<P = Empty> extends TypedRequest<Empty, P> {
-  query: Record<string, string>,
+  query: Record<string, string>;
 }
 
 /*
@@ -60,15 +60,15 @@ export interface TypedResponse<T = Empty> extends Response {
  * Booking typed response
  */
 export type Booking = {
-  id: number,
-  zid: number,
-  starttime: string,
-  endtime: string,
-  spaceid: string,
-  currentstatus: BookingStatus,
-  description: string,
-  checkintime: string | null,
-  checkouttime: string | null
+  id: number;
+  zid: number;
+  starttime: string;
+  endtime: string;
+  spaceid: string;
+  currentstatus: BookingStatus;
+  description: string;
+  checkintime: string | null;
+  checkouttime: string | null;
 };
 
 export interface BookingEditRequest {
@@ -85,28 +85,28 @@ export type AnonymousBooking = Omit<Booking, 'description'>;
  * Room typed response
  */
 export type Room = {
-  id: string,
-  name: string,
-  type: string,
-  capacity: number,
-  roomnumber: string
+  id: string;
+  name: string;
+  type: string;
+  capacity: number;
+  roomnumber: string;
 };
 
 export type Desk = {
-  id: string,
-  name: string,
-  floor: string,
-  room: string,
-  desknumber: number
+  id: string;
+  name: string;
+  floor: string;
+  room: string;
+  desknumber: number;
 };
 
 export type Space = Room | Desk;
 
-export type SpaceType = "room" | "desk";
+export type SpaceType = 'room' | 'desk';
 
 export interface IDatetimeRange {
-  datetimeStart: string & tags.Format<'date-time'>
-  datetimeEnd: string & tags.Format<'date-time'>
+  datetimeStart: string & tags.Format<'date-time'>;
+  datetimeEnd: string & tags.Format<'date-time'>;
 }
 
 export interface BookingDetailsRequest {
@@ -116,12 +116,12 @@ export interface BookingDetailsRequest {
   description: string;
 }
 
-export type BookingStatus = typeof bookingstatusenum.enumValues[number];
+export type BookingStatus = (typeof bookingstatusenum.enumValues)[number];
 
 export interface EmailRecipient {
   name: string;
   email: string & tags.Format<'email'>;
-};
+}
 
 export interface EmailContents {
   subject: string;
@@ -136,6 +136,6 @@ export type User = {
   school: string;
   faculty: string;
   role: string | null;
-  usergrp: "other" | "hdr" | "csestaff" | "admin";
+  usergrp: 'other' | 'hdr' | 'csestaff' | 'admin';
   image: string | null;
-}
+};

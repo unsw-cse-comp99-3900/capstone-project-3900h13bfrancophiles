@@ -1,7 +1,6 @@
-
 export const API_URL = `http://localhost:${process.env.PORT || 2000}`;
 
-export const BASE_TIME = new Date("2024-07-01T12:00:00+10:00");
+export const BASE_TIME = new Date('2024-07-01T12:00:00+10:00');
 
 export const ADMINS = [
   {
@@ -12,7 +11,7 @@ export const ADMINS = [
     school: 'CSE',
     faculty: 'ENG',
     role: 'Professional',
-    usergrp: 'admin'
+    usergrp: 'admin',
   },
   {
     zid: 2222222,
@@ -22,7 +21,7 @@ export const ADMINS = [
     school: 'CSE',
     faculty: 'ENG',
     role: 'Professional',
-    usergrp: 'admin'
+    usergrp: 'admin',
   },
 ];
 
@@ -35,7 +34,7 @@ export const STAFF = [
     school: 'CSE',
     faculty: 'ENG',
     role: 'Academic',
-    usergrp: 'csestaff'
+    usergrp: 'csestaff',
   },
   {
     zid: 4444444,
@@ -45,7 +44,7 @@ export const STAFF = [
     school: 'CSE',
     faculty: 'ENG',
     role: 'Academic',
-    usergrp: 'csestaff'
+    usergrp: 'csestaff',
   },
 ];
 
@@ -58,7 +57,7 @@ export const HDR = [
     school: 'CSE',
     faculty: 'ENG',
     role: 'PhD',
-    usergrp: 'hdr'
+    usergrp: 'hdr',
   },
   {
     zid: 6666666,
@@ -68,7 +67,7 @@ export const HDR = [
     school: 'CSE',
     faculty: 'ENG',
     role: 'MRes',
-    usergrp: 'hdr'
+    usergrp: 'hdr',
   },
 ];
 
@@ -81,7 +80,7 @@ export const OTHER = [
     school: 'CSE',
     faculty: 'ENG',
     role: null,
-    usergrp: 'other'
+    usergrp: 'other',
   },
   {
     zid: 8888888,
@@ -91,7 +90,7 @@ export const OTHER = [
     school: 'MECH',
     faculty: 'ENG',
     role: null,
-    usergrp: 'other'
+    usergrp: 'other',
   },
 ];
 
@@ -103,7 +102,7 @@ export const ROOM = [
     minbookgrp: 'admin',
     capacity: 5,
     roomnumber: '111',
-    type: 'Meeting Room'
+    type: 'Meeting Room',
   },
   {
     id: 'K-K17-222',
@@ -112,7 +111,7 @@ export const ROOM = [
     minbookgrp: 'csestaff',
     capacity: 100,
     roomnumber: '222',
-    type: 'Seminar Room'
+    type: 'Seminar Room',
   },
 ];
 
@@ -124,7 +123,7 @@ export const DESK = [
     minbookgrp: 'hdr',
     floor: 'K17L3',
     room: '333',
-    desknumber: 1
+    desknumber: 1,
   },
   {
     id: 'K-K17-444-1',
@@ -133,6 +132,6 @@ export const DESK = [
     minbookgrp: 'admin',
     floor: 'K17L4',
     room: '444',
-    desknumber: 1
+    desknumber: 1,
   },
 ];
