@@ -14,18 +14,18 @@ import FormControl from '@mui/joy/FormControl';
 import FormLabel from '@mui/joy/FormLabel';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFnsV3';
-import { DatePicker, DatePickerProps } from '@mui/x-date-pickers/DatePicker';
 import {
-  unstable_useDateField as useDateField,
-  UseDateFieldProps,
-} from '@mui/x-date-pickers/DateField';
+  unstable_useTimeField as useTimeField,
+  UseTimeFieldProps
+} from '@mui/x-date-pickers/TimeField';
 import { useClearableField } from '@mui/x-date-pickers/hooks';
 import {
   BaseSingleInputFieldProps,
-  DateValidationError,
+  TimeValidationError,
   FieldSection,
 } from '@mui/x-date-pickers/models';
 import { theme as joyTheme } from '@/app/ThemeRegistry';
+import { TimePicker, TimePickerProps } from '@mui/x-date-pickers';
 
 interface JoyFieldProps extends InputProps {
   label?: React.ReactNode;
@@ -96,21 +96,21 @@ const JoyField = React.forwardRef(
   },
 ) as JoyFieldComponent;
 
-interface JoyDateFieldProps
-  extends UseDateFieldProps<Date, false>,
+interface JoyTimeFieldProps
+  extends UseTimeFieldProps<Date, false>,
     BaseSingleInputFieldProps<
       Date | null,
       Date,
       FieldSection,
       false,
-      DateValidationError
+      TimeValidationError
     > {}
 
-const JoyDateField = React.forwardRef(
-  (props: JoyDateFieldProps, ref: React.Ref<HTMLDivElement>) => {
+const JoyTimeField = React.forwardRef(
+  (props: JoyTimeFieldProps, ref: React.Ref<HTMLDivElement>) => {
     const { slots, slotProps, ...textFieldProps } = props;
 
-    const fieldResponse = useDateField<Date, false, typeof textFieldProps>({
+    const fieldResponse = useTimeField<Date, false, typeof textFieldProps>({
       ...textFieldProps,
       enableAccessibleFieldDOMStructure: false,
     });
@@ -126,13 +126,13 @@ const JoyDateField = React.forwardRef(
   },
 );
 
-const JoyDatePicker = React.forwardRef(
-  (props: DatePickerProps<Date, false>, ref: React.Ref<HTMLDivElement>) => {
+const JoyTimePicker = React.forwardRef(
+  (props: TimePickerProps<Date>, ref: React.Ref<HTMLDivElement>) => {
     return (
-      <DatePicker
+      <TimePicker
         ref={ref}
         {...props}
-        slots={{ ...props.slots, field: JoyDateField }}
+        slots={{ ...props.slots, field: JoyTimeField }}
         slotProps={{
           ...props.slotProps,
           field: {
@@ -168,7 +168,7 @@ export default function JoyV6Field() {
       <CssVarsProvider theme={{ [THEME_ID]: joyTheme }}>
         <SyncThemeMode mode={materialTheme.palette.mode} />
         <LocalizationProvider dateAdapter={AdapterDateFns}>
-          <JoyDatePicker
+          <JoyTimePicker
             slotProps={{
               field: { clearable: true },
             }}
