@@ -7,7 +7,7 @@ import DialogTitle from '@mui/joy/DialogTitle';
 import Stack from '@mui/joy/Stack';
 import { Alert, Box, IconButton, ModalOverflow, Typography } from '@mui/joy';
 import { format } from 'date-fns';
-import { Booking, SpaceOption } from '@/types';
+import { Booking, SpaceOption, TimeRange } from '@/types';
 import BookingForm from '@/components/BookingModal/BookingForm';
 import BookingConfirmation from '@/components/BookingModal/BookingConfirmation';
 import ModalCalendar from './ModalCalendar';
@@ -50,13 +50,18 @@ const BookingModal: React.FC<BookingModalProps> = ({
   const [space, setSpace] = React.useState<SpaceOption | null>(initialSpace ?? null);
   React.useEffect(() => {
     setSpace(initialSpace!)
-  }, [initialSpace])
+  }, [initialSpace]);
+
+  const [blockedTimes, setBlockedTimes] = React.useState<TimeRange[]>([]);
+  React.useEffect(() => {
+    setBlockedTimes([]);
+  }, [space]);
 
   const {
     date, start, end,
     dateInputProps, startTimePickerProps, endTimePickerProps,
     startError, endError
-  } = useTimeRange({ date: initialDate, start: initialStart, end: initialEnd });
+  } = useTimeRange({ date: initialDate, start: initialStart, end: initialEnd, blockedTimes });
   const [desc, setDesc] = React.useState<string>(initialDesc ?? "");
 
   const onModalClose = () => {
@@ -138,6 +143,7 @@ const BookingModal: React.FC<BookingModalProps> = ({
                   end={end}
                   editing={editing ?? false}
                   editedBooking={editedBooking ?? undefined}
+                  setBlockedTimes={setBlockedTimes}
                 />
                 : <Box alignSelf={"center"}>Select a space you would like to book!</Box>
               }

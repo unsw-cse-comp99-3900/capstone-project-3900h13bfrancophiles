@@ -15,6 +15,7 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 import { theme } from '@/app/ThemeRegistry';
 import * as jwt from 'jsonwebtoken';
 import { getCookie } from 'cookies-next';
+import { TimeRange } from '@/types';
 
 interface ModalCalendarProps {
   space: string | undefined,
@@ -22,7 +23,8 @@ interface ModalCalendarProps {
   start: Date,
   end: Date,
   editing?: boolean
-  editedBooking?: number
+  editedBooking?: number,
+  setBlockedTimes: (val: TimeRange[]) => void;
 }
 
 interface MyEvent extends Event {
@@ -67,10 +69,26 @@ const eventStyleGetter = (event: MyEvent) => {
   return { style: { backgroundColor: color } }
 }
 
-export default function ModalCalendar({ space, date, start, end, editing, editedBooking }: ModalCalendarProps) {
+export default function ModalCalendar({
+  space,
+  date,
+  start,
+  end,
+  editing,
+  editedBooking,
+  setBlockedTimes
+}: ModalCalendarProps) {
   const isMobile : Boolean = useMediaQuery(theme.breakpoints.down("sm")) ?? false;
 
   const { bookings, isLoading } = useAvailabilities(space!)
+  React.useEffect(() => {
+    if (bookings) {
+      setBlockedTimes(bookings.map(booking => ({
+        start: new Date(booking.starttime),
+        end: new Date(booking.endtime),
+      })));
+    }
+  }, [bookings])
 
   if (isLoading) return <Loading page=""/>
   const events : MyEvent[] = bookings!

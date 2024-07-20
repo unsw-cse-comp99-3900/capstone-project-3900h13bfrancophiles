@@ -19,12 +19,13 @@ import {
 import React from 'react';
 import { InputProps } from '@mui/joy/Input';
 import { JoyTimePickerProps } from '@/components/JoyTimePicker';
-import { TimeValidationError } from '@mui/x-date-pickers/models';
+import { TimeRange } from '@/types';
 
-type InitialValues = {
+type UseTimeRangeOptions = {
   date?: Date;
   start?: Date;
   end?: Date;
+  blockedTimes?: TimeRange[];
 }
 
 /**
@@ -41,19 +42,19 @@ type InitialValues = {
  *   which will make it update the values and follow rules
  * - Optionally, extract the handleXChange functions to manually set states
  */
-export default function useTimeRange(initialValues: InitialValues = {}) {
+export default function useTimeRange(options: UseTimeRangeOptions = {}) {
   const now = roundToNearestMinutes(new Date(), { nearestTo: 15, roundingMethod: "ceil" });
   const today = startOfDay(now);
   const weekFromToday = addWeeks(today, 1);
 
   const [date, setDate] = React.useState(
-    startOfDay(initialValues.date ?? now)
+    startOfDay(options.date ?? now)
   );
   const [start, setStart] = React.useState<Date>(
-    initialValues.start ?? now
+    options.start ?? now
   );
   const [end, setEnd] = React.useState<Date>(
-    initialValues.end ?? min([addHours(now, 1), startOfTomorrow()])
+    options.end ?? min([addHours(now, 1), startOfTomorrow()])
   );
 
   const handleDateChange = (newDate: Date) => {
@@ -101,8 +102,17 @@ export default function useTimeRange(initialValues: InitialValues = {}) {
     }
   }
 
+  const [blockedTimes, setBlockedTimes] = React.useState<TimeRange[]>([]);
+  React.useEffect(() => {
+    setBlockedTimes(options.blockedTimes?.sort(cmpTimeRange) ?? [])
+  }, [options.blockedTimes]);
+
   // Start must be greater than now, and start of day
   const shouldDisableStartTime = (time: Date) => {
+    for (const { start, end } of blockedTimes) {
+      if (!isBefore(time, start) && isBefore(time, end)) return true;
+    }
+
     return isBefore(time, now) || isBefore(time, date);
   }
 
@@ -121,6 +131,13 @@ export default function useTimeRange(initialValues: InitialValues = {}) {
   // End time can always be midnight, but must be at least start + 15m
   const shouldDisableEndTime = (time: Date) => {
     if (time.getHours() == 0 && time.getMinutes() == 0) return false;
+
+    for (const blocked of blockedTimes) {
+      if (isBefore(start, blocked.start)) {
+        if (isBefore(blocked.start, time)) return true;
+        break;
+      }
+    }
 
     const adjustedEnd = new Date(start);
     adjustedEnd.setHours(time.getHours(), time.getMinutes());
@@ -154,4 +171,8 @@ export default function useTimeRange(initialValues: InitialValues = {}) {
     startError,
     endError,
   }
+}
+
+function cmpTimeRange(a: TimeRange, b: TimeRange) {
+  return a.start.getTime() - b.start.getTime();
 }
