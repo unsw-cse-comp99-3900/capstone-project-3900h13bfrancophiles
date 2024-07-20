@@ -232,7 +232,7 @@ export default function Rooms() {
               <FormLabel>Start</FormLabel>
               <JoyTimePicker
                 {...startTimePickerProps}
-                label="Start"
+                size="sm"
                 sx={{ borderBottomRightRadius: 0, borderTopRightRadius: 0, borderRight: 0, width: 115, pl: 0 }}
               />
             </FormControl>
@@ -240,7 +240,7 @@ export default function Rooms() {
               <FormLabel>End</FormLabel>
               <JoyTimePicker
                 {...endTimePickerProps}
-                label="End"
+                size="sm"
                 sx={{ borderBottomLeftRadius: 0, borderTopLeftRadius: 0, width: 115, pl: 0 }}
               />
             </FormControl>
