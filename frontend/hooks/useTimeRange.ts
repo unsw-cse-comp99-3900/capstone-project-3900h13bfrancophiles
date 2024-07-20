@@ -19,6 +19,7 @@ import {
 import React from 'react';
 import { InputProps } from '@mui/joy/Input';
 import { JoyTimePickerProps } from '@/components/JoyTimePicker';
+import { TimeValidationError } from '@mui/x-date-pickers/models';
 
 type InitialValues = {
   date?: Date;
@@ -82,6 +83,9 @@ export default function useTimeRange(initialValues: InitialValues = {}) {
     }
   }
 
+  const [startError, setStartError] = React.useState(false);
+  const [endError, setEndError] = React.useState<boolean>(false);
+
   const dateInputProps: InputProps = {
     type: "date",
     value: format(date, 'yyyy-MM-dd'),
@@ -107,6 +111,9 @@ export default function useTimeRange(initialValues: InitialValues = {}) {
     onChange: (newStart, ctx) => {
       if (newStart && !ctx.validationError) handleStartChange(newStart, date);
     },
+    onError: (error) => {
+      setStartError(error !== null);
+    },
     shouldDisableTime: shouldDisableStartTime,
     minutesStep: 15,
   }
@@ -125,6 +132,9 @@ export default function useTimeRange(initialValues: InitialValues = {}) {
     onChange: (newEnd, ctx) => {
       if (newEnd && !ctx.validationError) handleEndChange(newEnd, start);
     },
+    onError: (error) => {
+      setEndError(error !== null);
+    },
     shouldDisableTime: shouldDisableEndTime,
     minutesStep: 15,
     referenceDate: date,
@@ -141,5 +151,7 @@ export default function useTimeRange(initialValues: InitialValues = {}) {
     dateInputProps,
     startTimePickerProps,
     endTimePickerProps,
+    startError,
+    endError,
   }
 }

@@ -27,7 +27,7 @@ interface BookingFormProps {
   endTimePickerProps: JoyTimePickerProps,
   desc: string;
   setDesc: React.Dispatch<React.SetStateAction<string>>;
-  onSubmit: () => void;
+  onSubmit: React.FormEventHandler;
 }
 
 const BookingForm: React.FC<BookingFormProps> = ({

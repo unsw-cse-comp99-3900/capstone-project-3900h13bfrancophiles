@@ -54,7 +54,8 @@ const BookingModal: React.FC<BookingModalProps> = ({
 
   const {
     date, start, end,
-    dateInputProps, startTimePickerProps, endTimePickerProps
+    dateInputProps, startTimePickerProps, endTimePickerProps,
+    startError, endError
   } = useTimeRange({ date: initialDate, start: initialStart, end: initialEnd });
   const [desc, setDesc] = React.useState<string>(initialDesc ?? "");
 
@@ -71,7 +72,7 @@ const BookingModal: React.FC<BookingModalProps> = ({
       if (!space) {
         setError("Please select a space");
         setState('form');
-        return
+        return;
       }
       const res = editing ?
         await editBooking(editedBooking!, start.toISOString(), end.toISOString(), space.id, desc)
@@ -118,7 +119,11 @@ const BookingModal: React.FC<BookingModalProps> = ({
               endTimePickerProps={endTimePickerProps}
               desc={desc}
               setDesc={setDesc}
-              onSubmit={() => setState('confirm')}
+              onSubmit={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                if (!startError && !endError) setState('confirm')
+              }}
             />
             <Stack direction="column" width={{ xs: 250, sm: 300 }} spacing={1}>
               <Typography level="body-md" textAlign="center" fontWeight={500}>
