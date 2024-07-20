@@ -102,7 +102,7 @@ export default function ModalCalendar({ space, date, start, end }: ModalCalendar
         events={events}
         slotGroupPropGetter={() => ({ style: { minHeight: "50px" } })}
         eventPropGetter={eventStyleGetter}
-        dayPropGetter={() => ({ style: { backgroundColor: "none" } })}
+        dayPropGetter={() => ({ style: { backgroundColor: "#fbfcfe" } })}
         components={{
             event: CustomEvent
         }}
