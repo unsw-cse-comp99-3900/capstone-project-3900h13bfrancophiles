@@ -46,7 +46,6 @@ export async function singleSpaceDetails(
   res: TypedResponse<{ space: Space, type: SpaceType }>,
 ) {
   try {
-    // TODO: Maybe find a way to distinguish between room/desk?
     // Try get it as a room
     const roomRes = await db
       .select({
