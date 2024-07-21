@@ -28,6 +28,7 @@ interface BookingFormProps {
   desc: string;
   setDesc: React.Dispatch<React.SetStateAction<string>>;
   onSubmit: React.FormEventHandler;
+  disableSubmit?: boolean;
 }
 
 const BookingForm: React.FC<BookingFormProps> = ({
@@ -36,7 +37,8 @@ const BookingForm: React.FC<BookingFormProps> = ({
   startTimePickerProps,
   endTimePickerProps,
   desc, setDesc,
-  onSubmit
+  onSubmit,
+  disableSubmit
 }) => {
   return (
     <form onSubmit={onSubmit}>
@@ -68,7 +70,7 @@ const BookingForm: React.FC<BookingFormProps> = ({
             slotProps={{ textarea: { maxLength: 250 } }}
           />
         </FormControl>
-        <Button type="submit">Submit</Button>
+        <Button disabled={disableSubmit} type="submit">Submit</Button>
       </Stack>
     </form>
   );

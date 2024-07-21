@@ -83,10 +83,13 @@ export default function ModalCalendar({
   const { bookings, isLoading } = useAvailabilities(space!)
   React.useEffect(() => {
     if (bookings) {
-      setBlockedTimes(bookings.map(booking => ({
-        start: new Date(booking.starttime),
-        end: new Date(booking.endtime),
-      })));
+      setBlockedTimes(bookings
+        .filter(booking => booking.id !== editedBooking)
+        .map(booking => ({
+          start: new Date(booking.starttime),
+          end: new Date(booking.endtime),
+        })
+      ));
     }
   }, [bookings])
 

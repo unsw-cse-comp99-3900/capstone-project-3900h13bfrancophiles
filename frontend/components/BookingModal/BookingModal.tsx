@@ -124,11 +124,8 @@ const BookingModal: React.FC<BookingModalProps> = ({
               endTimePickerProps={endTimePickerProps}
               desc={desc}
               setDesc={setDesc}
-              onSubmit={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                if (!startError && !endError) setState('confirm')
-              }}
+              onSubmit={() => setState('confirm')}
+              disableSubmit={startError || endError}
             />
             <Stack direction="column" width={{ xs: 250, sm: 300 }} spacing={1}>
               <Typography level="body-md" textAlign="center" fontWeight={500}>
