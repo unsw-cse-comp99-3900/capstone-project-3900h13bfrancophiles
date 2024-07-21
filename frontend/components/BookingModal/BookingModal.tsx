@@ -7,7 +7,7 @@ import DialogTitle from '@mui/joy/DialogTitle';
 import Stack from '@mui/joy/Stack';
 import { Alert, Box, IconButton, ModalOverflow, Typography } from '@mui/joy';
 import { format } from 'date-fns';
-import { Booking, SpaceOption } from '@/types';
+import { Booking, SpaceOption, TimeRange } from '@/types';
 import BookingForm from '@/components/BookingModal/BookingForm';
 import BookingConfirmation from '@/components/BookingModal/BookingConfirmation';
 import ModalCalendar from './ModalCalendar';
@@ -50,12 +50,18 @@ const BookingModal: React.FC<BookingModalProps> = ({
   const [space, setSpace] = React.useState<SpaceOption | null>(initialSpace ?? null);
   React.useEffect(() => {
     setSpace(initialSpace!)
-  }, [initialSpace])
+  }, [initialSpace]);
+
+  const [blockedTimes, setBlockedTimes] = React.useState<TimeRange[]>([]);
+  React.useEffect(() => {
+    setBlockedTimes([]);
+  }, [space]);
 
   const {
     date, start, end,
-    dateInputProps, startInputProps, endInputProps
-  } = useTimeRange({ date: initialDate, start: initialStart, end: initialEnd });
+    dateInputProps, startTimePickerProps, endTimePickerProps,
+    startError, endError
+  } = useTimeRange({ date: initialDate, start: initialStart, end: initialEnd, blockedTimes });
   const [desc, setDesc] = React.useState<string>(initialDesc ?? "");
 
   const onModalClose = () => {
@@ -71,7 +77,7 @@ const BookingModal: React.FC<BookingModalProps> = ({
       if (!space) {
         setError("Please select a space");
         setState('form');
-        return
+        return;
       }
       const res = editing ?
         await editBooking(editedBooking!, start.toISOString(), end.toISOString(), space.id, desc)
@@ -114,11 +120,12 @@ const BookingModal: React.FC<BookingModalProps> = ({
               space={space}
               setSpace={setSpace}
               dateInputProps={dateInputProps}
-              startInputProps={startInputProps}
-              endInputProps={endInputProps}
+              startTimePickerProps={startTimePickerProps}
+              endTimePickerProps={endTimePickerProps}
               desc={desc}
               setDesc={setDesc}
               onSubmit={() => setState('confirm')}
+              disableSubmit={startError || endError}
             />
             <Stack direction="column" width={{ xs: 250, sm: 300 }} spacing={1}>
               <Typography level="body-md" textAlign="center" fontWeight={500}>
@@ -133,6 +140,7 @@ const BookingModal: React.FC<BookingModalProps> = ({
                   end={end}
                   editing={editing ?? false}
                   editedBooking={editedBooking ?? undefined}
+                  setBlockedTimes={setBlockedTimes}
                 />
                 : <Box alignSelf={"center"}>Select a space you would like to book!</Box>
               }

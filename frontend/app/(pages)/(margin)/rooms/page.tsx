@@ -25,6 +25,7 @@ import Loading from "@/components/Loading";
 import Error from "@/components/Error";
 import useTimeRange from '@/hooks/useTimeRange';
 import BookingModal from '@/components/BookingModal/BookingModal';
+import JoyTimePicker from "@/components/JoyTimePicker";
 
 interface FilterOption {
   value: string;
@@ -142,7 +143,7 @@ export default function Rooms() {
   });
   const {
     date, start, end,
-    dateInputProps, startInputProps, endInputProps
+    dateInputProps, startTimePickerProps, endTimePickerProps,
   } = useTimeRange();
   const [selectedRoom, setSelectedRoom] = React.useState<Room>();
 
@@ -227,20 +228,20 @@ export default function Rooms() {
             <Input size="sm" {...dateInputProps} />
           </FormControl>
           <Stack direction="row">
-            <FormControl>
+            <FormControl size="sm">
               <FormLabel>Start</FormLabel>
-              <Input
+              <JoyTimePicker
+                {...startTimePickerProps}
                 size="sm"
-                sx={{ borderBottomRightRadius: 0, borderTopRightRadius: 0, width: 115 }}
-                {...startInputProps}
+                sx={{ borderBottomRightRadius: 0, borderTopRightRadius: 0, borderRight: 0, width: 115, pl: 0 }}
               />
             </FormControl>
-            <FormControl>
+            <FormControl size="sm">
               <FormLabel>End</FormLabel>
-              <Input
+              <JoyTimePicker
+                {...endTimePickerProps}
                 size="sm"
-                sx={{ borderBottomLeftRadius: 0, borderTopLeftRadius: 0, borderLeft: 'none', width: 115 }}
-                {...endInputProps}
+                sx={{ borderBottomLeftRadius: 0, borderTopLeftRadius: 0, width: 115, pl: 0 }}
               />
             </FormControl>
           </Stack>

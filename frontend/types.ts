@@ -60,3 +60,8 @@ export type Status =
 export type StatusResponse = {
   [spaceId: string]: Status;
 };
+
+export type TimeRange = {
+  start: Date;
+  end: Date;
+};

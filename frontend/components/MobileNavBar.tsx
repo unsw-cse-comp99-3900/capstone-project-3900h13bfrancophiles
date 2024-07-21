@@ -45,7 +45,7 @@ const NavBar = () => {
           </NextLink>
           <IconButton
             variant="plain"
-            sx={{ color: "#fff" }}
+            color="neutral"
             onClick={() => setOpen(true)}
           >
             <MenuIcon sx={{ fontSize: "2.2rem" }} />

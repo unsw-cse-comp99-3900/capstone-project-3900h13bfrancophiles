@@ -2,18 +2,33 @@
 
 import FloorPlanViewer from "@/components/FloorPlanViewer";
 import BookingModal from "@/components/BookingModal/BookingModal";
-import { Tab, TabList, TabPanel, Tabs, Stack, Input, Button, Box, Sheet, Avatar, Typography, Link } from "@mui/joy";
+import {
+  Tab,
+  TabList,
+  TabPanel,
+  Tabs,
+  Stack,
+  Input,
+  Button,
+  Box,
+  Sheet,
+  Avatar,
+  Typography,
+  Link,
+  FormControl
+} from "@mui/joy";
 import { deskData } from '@/app/data';
 import * as React from 'react';
 import { UserData } from "@/types";
 import useTimeRange from "@/hooks/useTimeRange";
 import NextLink from "next/link"
 import useSpaceStatus from '@/hooks/useSpaceStatus';
+import JoyTimePicker from '@/components/JoyTimePicker';
 
 export default function desks() {
   const {
     date, start, end,
-    dateInputProps, startInputProps, endInputProps
+    dateInputProps, startTimePickerProps, endTimePickerProps
   } = useTimeRange();
 
   const getInitials = (name: string) => {
@@ -61,20 +76,13 @@ export default function desks() {
           <Typography level="h4">
             Search for available desks:
           </Typography>
-          <Stack direction="row" gap={2} flexWrap="wrap" sx={{ marginTop: 1, marginBottom: 1 }}>
-            <Input
-              sx={{ width: { xs: "100%", sm: "auto" } }}
-              {...dateInputProps}
-            />
-            <Stack direction="row" spacing={1} width={{ xs: "100%", sm: "auto" }}>
-              <Input
-                sx={{ width: "50%" }}
-                {...startInputProps}
-              />
-              <Input
-                sx={{ width: "50%" }}
-                {...endInputProps}
-              />
+          <Stack direction={{ xs: "column", sm: "row" }} spacing={2} sx={{ mt: 1, mb: 1 }}>
+            <FormControl sx={{ xs: "100%", sm: 150 }}>
+              <Input {...dateInputProps} />
+            </FormControl>
+            <Stack direction="row" spacing={2} width={{ xs: "100%", sm: 270 }}>
+              <JoyTimePicker {...startTimePickerProps} />
+              <JoyTimePicker {...endTimePickerProps} />
             </Stack>
           </Stack>
           <Button sx={{ display: available && selectedDesk ? "block" : "none", marginTop: 1, width: "100%" }} onClick={() => setOpen(true)}>

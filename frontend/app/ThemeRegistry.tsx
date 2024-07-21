@@ -1,8 +1,11 @@
 'use client';
 
 import React from 'react';
-import {CssVarsProvider, extendTheme} from '@mui/joy/styles';
+import { Experimental_CssVarsProvider as MaterialCssVarsProvider, } from '@mui/material/styles';
+import { CssVarsProvider as JoyCssVarsProvider, extendTheme, THEME_ID } from '@mui/joy/styles';
 import CssBaseline from '@mui/joy/CssBaseline';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFnsV3';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 
 declare module '@mui/joy/styles' {
   interface TypographySystemOverrides {
@@ -13,6 +16,23 @@ declare module '@mui/joy/styles' {
 type ThemeRegistryProps = {
   children: React.ReactNode;
 };
+
+// This implementation is suggested by JoyUI for working with App router
+// https://mui.com/joy-ui/integrations/next-js-app-router/
+export default function ThemeRegistry({
+  children
+}: ThemeRegistryProps) {
+  return (
+    <MaterialCssVarsProvider>
+      <JoyCssVarsProvider theme={{ [THEME_ID]: theme }}>
+        <CssBaseline />
+        <LocalizationProvider dateAdapter={AdapterDateFns}>
+          {children}
+        </LocalizationProvider>
+      </JoyCssVarsProvider>
+    </MaterialCssVarsProvider>
+  );
+}
 
 // default font family is Inter
 export const theme = extendTheme({
@@ -27,6 +47,7 @@ export const theme = extendTheme({
     },
     h3: {
       color: '#33373D',
+
     },
     body: {
       color: '#33373D',
@@ -45,17 +66,3 @@ export const theme = extendTheme({
     },
   },
 });
-
-// This implementation is suggested by JoyUI for working with App router
-// https://mui.com/joy-ui/integrations/next-js-app-router/
-export default function ThemeRegistry({
-  children
-}: ThemeRegistryProps) {
-
-  return (
-    <CssVarsProvider theme={theme}>
-      <CssBaseline />
-      {children}
-    </CssVarsProvider>
-  );
-}

@@ -1,7 +1,7 @@
-import { dateFnsLocalizer, DateRange } from 'react-big-calendar'
+import { DateLocalizer, DateRange } from 'react-big-calendar'
 import 'react-big-calendar/lib/css/react-big-calendar.css'
 import Box, { BoxProps } from "@mui/joy/Box";
-import { styled } from "@mui/material/styles";
+import { styled } from "@mui/joy/styles";
 
 export interface Event {
   zid: number,
@@ -12,17 +12,17 @@ export interface Event {
 export const StyledCalendarContainer = styled(Box)<BoxProps>(
   ({ theme }) => ({
     "& .rbc-time-slot, & .rbc-day-slot, & .rbc-timeslot-group": {
-      borderColor: `${theme.palette.background.paper} !important`,
+      borderColor: `${theme.palette.neutral.outlinedHoverBorder} !important`,
     },
     "& .rbc-allday-cell": {
       display: "none",
     },
     "& .rbc-time-view .rbc-header": {
-      borderColor: theme.palette.background.paper,
+      borderColor: theme.palette.neutral.outlinedHoverBorder,
       borderBottom: "none",
     },
     "& .rbc-events-container": {
-      borderColor: theme.palette.background.paper,
+      borderColor: theme.palette.neutral.outlinedHoverBorder,
       margin: "1px !important",
     },
     "& .rbc-header": {
@@ -33,7 +33,7 @@ export const StyledCalendarContainer = styled(Box)<BoxProps>(
       fontWeight: 500,
     },
     "& .rbc-time-view": {
-      borderColor: theme.palette.background.paper,
+      borderColor: theme.palette.neutral.outlinedHoverBorder,
       boxShadow:
         "0px 2px 1px -1px rgba(0,0,0,0.2), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 1px 3px 0px rgba(0,0,0,0.12)",
       border: "none",
@@ -53,7 +53,7 @@ export const StyledCalendarContainer = styled(Box)<BoxProps>(
 export const formatTime = (
   date: Date,
   culture: string | undefined,
-  localizer?: dateFnsLocalizer
+  localizer?: DateLocalizer
 ) => {
   if (!localizer) {
     throw new Error("No date localizer");
@@ -70,7 +70,7 @@ export const formatTime = (
 export const formatTimeRange = (
   { start, end }: DateRange,
   culture: string | undefined,
-  localizer?: dateFnsLocalizer
+  localizer?: DateLocalizer
 ) => {
   return (
     formatTime(start, culture, localizer) +
