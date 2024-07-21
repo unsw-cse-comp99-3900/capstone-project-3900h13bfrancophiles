@@ -146,10 +146,18 @@ describe("/bookings/create", () => {
   });
 
   test("Failure - booking across midnight", async () => {
+    // Assumes that the base time is 12PM (which it is)
     let res = await api.createBooking(
-      token, DESK[0].id, "2024-07-18T11:30:00+11:00", "2024-07-19T00:30:00+11:00", "fun times"
+      token, DESK[0].id, minutesFromBase(11 * 60), minutesFromBase(13 * 60), "fun times"
     );
     expect(res.status).toStrictEqual(400);
+  });
+
+  test("Success - booking until midnight", async () => {
+    let res = await api.createBooking(
+      token, DESK[0].id, minutesFromBase(11 * 60), minutesFromBase(12 * 60), "fun times"
+    );
+    expect(res.status).toStrictEqual(200);
   });
 
   test("Failure - booking far in the future", async () => {
