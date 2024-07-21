@@ -1,9 +1,9 @@
 
 import * as React from "react";
-import { Box, Stack, Typography, Button } from "@mui/joy";
+import { Stack, Typography, Button, Grid, Item } from "@mui/joy";
 import useSpace from '@/hooks/useSpace';
 import useAvailabilities from "@/hooks/useAvailabilities";
-import { Space, Room, Desk, SpaceType } from "@/types";
+import { Room, Desk } from "@/types";
 import Loading from "@/components/Loading";
 import AvailabilityCalendar from "@/components/AvailabilityCalendar";
 import BookingModal from "@/components/BookingModal/BookingModal"
@@ -48,8 +48,10 @@ const AvailabilitiesPage : React.FC<AvailabilitesPageProps> = ({
       <Stack>
         <Stack
           justifyContent="space-between"
-          alignItems="center"
-          direction="row"
+          alignItems={{xs: "", sm: "center"}}
+          direction={{xs: "column", sm: "row"}}
+          mb={{xs: 3, sm: 0}}
+          gap={3}
         >
           <Typography level="h1">
             {spaceType === "room" ? `${room!.type} ${room!.name}` : `${desk!.name}`}
@@ -58,45 +60,70 @@ const AvailabilitiesPage : React.FC<AvailabilitesPageProps> = ({
             color="success"
             variant="solid"
             onClick={() => {setOpenModal(true)}}
+            sx={{
+              height: 40,
+              minWidth: {sm: 130},
+              marginTop: {xs: -4, sm: 0}
+            }}
           >
             Book Now
           </Button>
         </Stack>
-        {spaceType === "room" ?
-          <Stack
-            alignItems="center"
-            direction="row"
-            flexWrap="wrap"
-            gap={5}
-            borderRadius="sm"
-            mb={3}
-          >
-            <Box>
-              <Typography level="h4" sx={{ color: "gray" }}>
-                Room ID
-              </Typography>
-              <Typography level="h3">
-                {room?.id}
-              </Typography>
-            </Box>
-            <Box>
-              <Typography level="h4" sx={{ color: "gray" }}>
-                Usage
-              </Typography>
-              <Typography level="h3">
-                {room?.type}
-              </Typography>
-            </Box>
-            <Box>
-              <Typography level="h4" sx={{ color: "gray" }}>
-                Capacity
-              </Typography>
-              <Typography level="h3">
-                {room?.capacity}
-              </Typography>
-            </Box>
-          </Stack>
-          : null
+        {spaceType === "room" &&
+          <>
+            <Stack
+              direction="row"
+              justifyContent="flex-start"
+              gap={5}
+              borderRadius="sm"
+              mb={3}
+            >
+              <Stack>
+                <Typography level="h4" sx={{ color: "gray" }}>
+                  Room ID
+                </Typography>
+                <Typography level="h3">
+                  {room?.id}
+                </Typography>
+              </Stack>
+              <Stack>
+                <Typography level="h4" sx={{ color: "gray" }}>
+                  Usage
+                </Typography>
+                <Typography level="h3">
+                  {room?.type}
+                </Typography>
+              </Stack>
+              <Stack>
+                <Typography level="h4" sx={{ color: "gray" }}>
+                  Capacity
+                </Typography>
+                <Typography level="h3">
+                  {room?.capacity}
+                </Typography>
+              </Stack>
+            </Stack>
+            <Grid>
+              <Grid xs={6}>
+                <Item>hi </Item>
+              </Grid>
+              <Grid xs={6}>
+                hi
+              </Grid>
+              <Grid xs={6}>
+                hi
+              </Grid>
+              <Grid xs={6}>
+                hi
+              </Grid>
+              <Grid xs={6}>
+                hi
+              </Grid>
+              <Grid xs={6}>
+                hi
+              </Grid>
+            </Grid>
+          </>
         }
         <AvailabilityCalendar
           bookings={bookings ?? []}
