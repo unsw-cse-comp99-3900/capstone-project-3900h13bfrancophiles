@@ -7,8 +7,8 @@ import { useClearableField } from '@mui/x-date-pickers/hooks';
 import { BaseSingleInputFieldProps, FieldSection, TimeValidationError, } from '@mui/x-date-pickers/models';
 import { DesktopTimePicker, DesktopTimePickerProps, PickersActionBarProps } from '@mui/x-date-pickers';
 import { AccessTime } from '@mui/icons-material';
-import { Button, DialogActions } from '@mui/joy';
-import { startOfDay } from 'date-fns';
+import { Button, DialogActions, ToggleButtonGroup } from '@mui/joy';
+import { addMinutes, startOfDay } from 'date-fns';
 
 interface JoyFieldProps extends InputProps {
   label?: React.ReactNode;
@@ -113,21 +113,36 @@ const JoyTimePicker = React.forwardRef(
   (props: JoyTimePickerProps, ref: React.Ref<HTMLDivElement>) => {
     const [isOpen, setOpen] = React.useState(false);
 
-    const selectMidnight = () => props.onChange?.(
-      startOfDay(props.referenceDate ?? new Date()),
-      { validationError: null }
-    );
+    const handleToggleMidnight = () => {
+      if (props.value?.getHours() === 0 && props.value?.getMinutes() === 0) {
+        props.onChange?.(
+          addMinutes(props.value, -15),
+          { validationError: null }
+        );
+      } else {
+        props.onChange?.(
+          startOfDay(props.referenceDate ?? new Date()),
+          { validationError: null }
+        );
+      }
+
+    }
 
     const renderActionBar = (actionBarProps: PickersActionBarProps) => {
       return props.showMidnightButton && (
         <DialogActions className={actionBarProps.className}>
-          <Button
+          <ToggleButtonGroup
             variant="plain"
-            sx={{ borderRadius: "0px 0px 4px 4px" }}
-            onClick={selectMidnight}
+            color="primary"
+            sx={{ borderRadius: "0px 0px 4px 4px", width: "100%" }}
+            onClick={handleToggleMidnight}
+            value={
+              props.value?.getHours() === 0 && props.value?.getMinutes() === 0
+                ? ['midnight'] : []
+            }
           >
-            Midnight
-          </Button>
+            <Button value="midnight" fullWidth>Midnight</Button>
+          </ToggleButtonGroup>
         </DialogActions>
       )
     }
