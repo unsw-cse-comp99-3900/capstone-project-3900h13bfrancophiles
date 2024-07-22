@@ -31,7 +31,7 @@ const activeStyle = {
 
 const inactiveStyle = {
   "&:hover": {
-    transform: "scale(1.1)",
+    transform: "scale(1.2)",
     boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
     zIndex: 6,
   }
@@ -128,7 +128,7 @@ const DeskIcon = ({ id, x, y, selectedDesk, setSelectedDesk, setSelectedUser, se
             height: "var(--size-var)",
             width: "var(--size-var)",
             "&:hover": {
-              transform: "scale(1.1)",
+              transform: selectedDesk === id ? "scale(1.2)" : "",
             },
             transition: 'transform 0.1s'
           }}
