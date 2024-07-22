@@ -1,8 +1,8 @@
 import api from './helpers/api';
 import { ADMINS } from './helpers/constants';
 
-describe("/auth/logout", () => {
-  test("Success", async () => {
+describe('/auth/logout', () => {
+  test('Success', async () => {
     let res = await api.login(`z${ADMINS[0].zid}`, `z${ADMINS[0].zid}`);
     const token = res.json.token;
 
@@ -15,8 +15,8 @@ describe("/auth/logout", () => {
     expect(res.status).toStrictEqual(401);
   });
 
-  test("Error - invalid token", async () => {
-    const res = await api.logout("NOT A REAL TOKEN");
+  test('Error - invalid token', async () => {
+    const res = await api.logout('NOT A REAL TOKEN');
     expect(res.status).toStrictEqual(401);
   });
 });
