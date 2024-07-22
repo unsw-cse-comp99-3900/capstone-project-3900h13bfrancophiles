@@ -65,7 +65,7 @@ interface MenuDrawerProps {
 const MenuDrawer: React.FC<MenuDrawerProps> = ({ open, setOpen }) => {
   return (
     <Drawer anchor="right" open={open} onClose={() => setOpen(false)}>
-      <Link component={NextLink} href="/frontend/public" mx="auto" my={2}>
+      <Link component={NextLink} href="/" mx="auto" my={2}>
         <AspectRatio
           variant="plain"
           ratio="15/4"
