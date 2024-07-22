@@ -8,7 +8,8 @@ import NextLink from "next/link";
 import { navData } from "@/app/data";
 import LogoutButton from "@/components/LogoutButton";
 import {getCookie} from "cookies-next";
-import * as jwt from "jsonwebtoken";
+import { decodeJwt } from 'jose';
+import { TokenPayload } from '@/types';
 
 interface NavProps {
   title: string;
@@ -53,8 +54,8 @@ export default function NavBar() {
     const token = getCookie('token');
 
     if (token) {
-      const decoded = jwt.decode(`${token}`) as jwt.JwtPayload;
-      if (decoded.group === "admin") {
+      const tokenPayload = decodeJwt<TokenPayload>(`${getCookie('token')}`);
+      if (tokenPayload.group === "admin") {
         setAdminNavBar(true)
       }
     }

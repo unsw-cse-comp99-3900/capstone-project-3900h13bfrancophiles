@@ -23,7 +23,6 @@
     "date-fns": "^3.6.0",
     "dotenv": "^16.4.5",
     "jose": "^5.6.3",
-    "jsonwebtoken": "^9.0.2",
     "next": "14.2.3",
     "react": "^18",
     "react-big-calendar": "^1.13.0",
@@ -35,7 +34,6 @@
   },
   "devDependencies": {
     "@types/date-fns": "^2.6.0",
-    "@types/jsonwebtoken": "^9.0.6",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-big-calendar": "^1.8.9",
