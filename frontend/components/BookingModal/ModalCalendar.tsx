@@ -16,6 +16,7 @@ import { theme } from '@/app/ThemeRegistry';
 import * as jwt from 'jsonwebtoken';
 import { getCookie } from 'cookies-next';
 import { TimeRange } from '@/types';
+import { useRef } from 'react';
 
 interface ModalCalendarProps {
   space: string | undefined,
@@ -32,6 +33,7 @@ interface MyEvent extends Event {
   new?: boolean
   edited?: boolean
   old?: boolean
+  ref?: React.RefObject<HTMLDivElement>;
 }
 
 const CustomEvent : React.FC<EventProps<MyEvent>> = ({event}) => {
@@ -41,7 +43,7 @@ const CustomEvent : React.FC<EventProps<MyEvent>> = ({event}) => {
   if (event.edited) adjective = "New"
   if (event.old) adjective = "Old"
   return (
-    <Box>
+    <Box ref={event.ref}>
       {adjective ? `${adjective} Booking` : (isLoading || error ? "..." : user!.fullname) }
     </Box>
   )
@@ -93,6 +95,21 @@ export default function ModalCalendar({
     }
   }, [bookings])
 
+  // Scroll the calendar when start time changes
+  const newBookingEventRef = useRef<HTMLDivElement>(null);
+  React.useEffect(() => {
+    const calendarEl = newBookingEventRef.current?.closest<HTMLDivElement>(".rbc-time-content");
+    const eventEl = newBookingEventRef.current?.closest<HTMLDivElement>(".rbc-event");
+    if (!calendarEl || !eventEl) return;
+
+    const calendarHeight = calendarEl.getBoundingClientRect().height;
+    calendarEl.scrollTo({
+      behavior: "smooth",
+      top: eventEl.offsetTop - calendarHeight / 5,
+      left: 0,
+    })
+  }, [start]);
+
   if (isLoading) return <Loading page=""/>
   const events : MyEvent[] = bookings!
     .map((b) =>
@@ -121,7 +138,8 @@ export default function ModalCalendar({
     // color: overlaps ? theme.palette.warning.main : theme.palette.primary.main,
     color: overlaps ? "#C70039" : "green",
     new: !editing,
-    edited: editing
+    edited: editing,
+    ref: newBookingEventRef,
   })
 
   return (
