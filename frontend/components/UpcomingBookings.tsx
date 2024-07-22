@@ -2,38 +2,20 @@
 import * as React from "react";
 import {
   Box,
-  Button,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  Divider,
   FormControl,
   FormLabel,
   IconButton,
-  Modal,
-  ModalDialog,
   Option,
   Select,
   Sheet,
-  Skeleton,
   Stack,
   Table,
   Typography,
-  Link,
   CircularProgress,
 } from "@mui/joy";
 import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
-import WarningRoundedIcon from "@mui/icons-material/WarningRounded";
-import DeleteIcon from "@mui/icons-material/Delete";
-import EditIcon from "@mui/icons-material/Edit";
-import { format } from "date-fns";
-import BookingStatusPill from "@/components/BookingStatusPill";
 import useUpcomingBookings from "@/hooks/useUpcomingBookings";
-import useSpace from "@/hooks/useSpace";
-import { deleteBooking } from "@/api";
-import BookingModal from "./BookingModal/BookingModal";
-import NextLink from "next/link";
 
 import { NoBookingsRow } from "@/components/NoBookingsRow";
 import { Booking } from "@/types";
@@ -146,7 +128,7 @@ export default function UpcomingBookings() {
         >
           <thead>
             <tr>
-              <th style={{ width: 100, padding: "12px 6px" }}>ID</th>
+              <th style={{ width: 50, padding: "12px 6px" }}>ID</th>
               <th style={{ width: 100, padding: "12px 6px" }}>Status</th>
               <th style={{ width: 140, padding: "12px 6px" }}>Time</th>
               <th style={{ width: 140, padding: "12px 6px" }}>Location</th>
