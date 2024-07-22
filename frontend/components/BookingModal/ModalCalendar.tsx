@@ -93,7 +93,7 @@ export default function ModalCalendar({
         })
       ));
     }
-  }, [bookings])
+  }, [bookings, editedBooking, setBlockedTimes])
 
   // Scroll the calendar when start time changes
   const newBookingEventRef = useRef<HTMLDivElement>(null);
