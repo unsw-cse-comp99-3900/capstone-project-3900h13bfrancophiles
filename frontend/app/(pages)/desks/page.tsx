@@ -88,8 +88,8 @@ export default function Desks() {
                 <Input {...dateInputProps} />
               </FormControl>
               <Stack direction="row" spacing={2} width={{ xs: "100%", sm: 270 }}>
-                <JoyTimePicker {...startTimePickerProps} />
-                <JoyTimePicker {...endTimePickerProps} />
+                <JoyTimePicker sx={{ pl: 0 }} {...startTimePickerProps} />
+                <JoyTimePicker sx={{ pl: 0 }} {...endTimePickerProps} />
               </Stack>
             </Stack>
           </Stack>
