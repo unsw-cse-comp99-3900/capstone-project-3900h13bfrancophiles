@@ -13,10 +13,10 @@ import Loading from "../Loading";
 import { roundToNearestMinutes } from 'date-fns';
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { theme } from '@/app/ThemeRegistry';
-import * as jwt from 'jsonwebtoken';
 import { getCookie } from 'cookies-next';
-import { TimeRange } from '@/types';
+import { TimeRange, TokenPayload } from '@/types';
 import { useRef } from 'react';
+import { decodeJwt } from 'jose';
 
 interface ModalCalendarProps {
   space: string | undefined,
@@ -93,7 +93,7 @@ export default function ModalCalendar({
         })
       ));
     }
-  }, [bookings])
+  }, [bookings, editedBooking, setBlockedTimes])
 
   // Scroll the calendar when start time changes
   const newBookingEventRef = useRef<HTMLDivElement>(null);
@@ -130,9 +130,9 @@ export default function ModalCalendar({
     if (new Date(b.starttime) < end && new Date(b.endtime) > start) overlaps = true;
   })
 
-  const token = jwt.decode(`${getCookie('token')}`) as jwt.JwtPayload;
+  const tokenPayload = decodeJwt<TokenPayload>(`${getCookie('token')}`);
   events.push({
-    zid: token.user,
+    zid: tokenPayload.user,
     start: roundToNearestMinutes(start, { nearestTo: 15 }),
     end: roundToNearestMinutes(end, { nearestTo: 15 }),
     // color: overlaps ? theme.palette.warning.main : theme.palette.primary.main,

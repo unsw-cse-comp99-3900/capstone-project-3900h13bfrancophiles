@@ -26,10 +26,10 @@ type JoyFieldComponent = ((
   props: JoyFieldProps & React.RefAttributes<HTMLDivElement>,
 ) => React.JSX.Element) & { propTypes?: any };
 
-const JoyField = React.forwardRef((
+const JoyField = React.forwardRef(function JoyField(
   props: JoyFieldProps,
   ref: React.Ref<HTMLDivElement>
-) => {
+) {
   const {
     // Should be ignored
     enableAccessibleFieldDOMStructure,
@@ -84,8 +84,10 @@ interface JoyTimeFieldProps
     > {
 }
 
-const JoyTimeField = React.forwardRef(
-  (props: JoyTimeFieldProps, ref: React.Ref<HTMLDivElement>) => {
+const JoyTimeField = React.forwardRef(function JoyTimeField(
+  props: JoyTimeFieldProps,
+  ref: React.Ref<HTMLDivElement>
+) {
     const { slots, slotProps, ...textFieldProps } = props;
 
     const fieldResponse = useTimeField<Date, false, typeof textFieldProps>({
@@ -109,8 +111,10 @@ export interface JoyTimePickerProps extends DesktopTimePickerProps<Date> {
   size?: "sm" | "md" | "lg",
 }
 
-const JoyTimePicker = React.forwardRef(
-  (props: JoyTimePickerProps, ref: React.Ref<HTMLDivElement>) => {
+const JoyTimePicker = React.forwardRef(function JoyTimePicker(
+  props: JoyTimePickerProps,
+  ref: React.Ref<HTMLDivElement>
+) {
     const [isOpen, setOpen] = React.useState(false);
 
     const handleToggleMidnight = () => {
