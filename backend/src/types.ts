@@ -96,8 +96,6 @@ export type Desk = {
   id: string;
   name: string;
   floor: string;
-  room: string;
-  desknumber: number;
   xcoord: number;
   ycoord: number;
 };

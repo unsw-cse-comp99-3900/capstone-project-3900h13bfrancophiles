@@ -20,8 +20,6 @@ export const space = pgTable("space", {
 export const hotdesk = pgTable("hotdesk", {
 	id: text("id").primaryKey().notNull().references(() => space.id, { onDelete: "cascade" } ),
 	floor: text("floor").notNull(),
-	room: text("room").notNull(),
-	desknumber: integer("desknumber").notNull(),
 	xcoord: integer("xcoord").notNull(),
 	ycoord: integer("ycoord").notNull(),
 });

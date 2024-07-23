@@ -56,8 +56,6 @@ export async function singleSpaceDetails(
         id: hotdesk.id,
         name: space.name,
         floor: hotdesk.floor,
-        room: hotdesk.room,
-        desknumber: hotdesk.desknumber,
         xcoord: hotdesk.xcoord,
         ycoord: hotdesk.ycoord
       })

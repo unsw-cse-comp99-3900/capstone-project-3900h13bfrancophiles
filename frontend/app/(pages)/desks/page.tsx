@@ -27,7 +27,7 @@ import useSpaceStatus from '@/hooks/useSpaceStatus';
 import JoyTimePicker from '@/components/JoyTimePicker';
 import useDesks from '@/hooks/useDesks';
 
-const floors = ["K17L2", "K17L3", "K17L4", "K17L5"];
+const floors = ["K17 L2", "K17 L3", "K17 L4", "K17 L5"];
 
 export default function Desks() {
   const {
@@ -145,7 +145,7 @@ export default function Desks() {
       </Stack>
       <Tabs
         aria-label="level select"
-        defaultValue={"K17L2"}
+        defaultValue={"K17 L2"}
         sx={{ height: "calc(100vh - 60px)" }}
       >
         {floors.map((floor, index) => (

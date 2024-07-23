@@ -24,8 +24,6 @@ export type Desk = {
   id: string;
   name: string;
   floor: string;
-  room: string;
-  desknumber: number;
 };
 
 export type Space = Room | Desk;
