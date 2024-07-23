@@ -61,6 +61,13 @@ export type StatusResponse = {
   [spaceId: string]: Status;
 };
 
+export type DeskPosition = {
+  id: string,
+  floor: string,
+  xcoord: number,
+  ycoord: number
+}
+
 export type TimeRange = {
   start: Date;
   end: Date;

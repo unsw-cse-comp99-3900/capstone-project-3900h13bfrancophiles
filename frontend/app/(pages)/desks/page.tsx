@@ -17,13 +17,15 @@ import {
   Link,
   FormControl
 } from "@mui/joy";
-import { deskData } from '@/app/data';
 import * as React from 'react';
 import { UserData } from "@/types";
 import useTimeRange from "@/hooks/useTimeRange";
 import NextLink from "next/link"
 import useSpaceStatus from '@/hooks/useSpaceStatus';
 import JoyTimePicker from '@/components/JoyTimePicker';
+import useDesks from '@/hooks/useDesks';
+
+const floors = ["K17L2", "K17L3", "K17L4", "K17L5"];
 
 export default function desks() {
   const {
@@ -44,6 +46,7 @@ export default function desks() {
   const [deskName, setDeskName] = React.useState("");
   const [open, setOpen] = React.useState(false);
 
+  const { desks } = useDesks();
   const { statusResponse } = useSpaceStatus(start.toISOString(), end.toISOString());
 
   React.useEffect(() => {
@@ -122,12 +125,12 @@ export default function desks() {
         defaultValue={"K17L2"}
         sx={{ height: "calc(100vh - 60px)" }}
       >
-        {deskData.map((level, index) => (
+        {floors.map((floor, index) => (
           <TabPanel
             key={index}
             variant="plain"
             color="neutral"
-            value={level.level}
+            value={floor}
             sx={{
               height: "calc(100% - 45px)",
               padding: 0
@@ -139,21 +142,22 @@ export default function desks() {
               setSelectedUser={setUser}
               setAvailable={setAvailable}
               setDeskName={setDeskName}
-              level={level.level}
+              floor={floor}
+              desks={desks?.filter((desk) => desk.floor === floor) || []}
               statuses={statusResponse || {}}
             />
           </TabPanel>
         ))}
         <TabList underlinePlacement="top" sx={{ height: 45 }}>
-          {deskData.map((level, index) => (
+          {floors.map((floor, index) => (
             <Tab
               key={index}
               variant="plain"
               color="neutral"
               indicatorPlacement="top"
-              value={level.level}
+              value={floor}
             >
-              {level.level}
+              {floor}
             </Tab>
           ))}
         </TabList>
