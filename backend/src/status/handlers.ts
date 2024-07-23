@@ -3,45 +3,31 @@ import { and, gt, lt } from 'drizzle-orm';
 import typia from 'typia';
 
 import { db } from '../index';
-import {
-  Booking,
-  IDatetimeRange,
-  TypedGETRequest,
-  TypedResponse
-} from '../types';
+import { Booking, IDatetimeRange, TypedGETRequest, TypedResponse } from '../types';
 import { formatBookingDates } from '../utils';
 
-type Status = { status: "Available" }
-            | { status: "Unavailable", booking: Booking };
+type Status = { status: 'Available' } | { status: 'Unavailable'; booking: Booking };
 
 type StatusResponse = {
   [spaceId: string]: Status;
-}
+};
 
-export async function spaceStatus(
-  req: TypedGETRequest,
-  res: TypedResponse<StatusResponse>,
-) {
+export async function spaceStatus(req: TypedGETRequest, res: TypedResponse<StatusResponse>) {
   try {
     const parsedQuery = typia.http.isQuery<IDatetimeRange>(new URLSearchParams(req.query));
     if (!parsedQuery) {
-      res.status(400).json({ error: "Invalid input" });
+      res.status(400).json({ error: 'Invalid input' });
       return;
     }
     const datetimeStart = parsedQuery.datetimeStart;
     const datetimeEnd = parsedQuery.datetimeEnd;
 
-    const spaceIds = await db
-      .select({ id: space.id })
-      .from(space);
+    const spaceIds = await db.select({ id: space.id }).from(space);
 
     const overlappingBookings = await db
       .select()
       .from(booking)
-      .where(and(
-        lt(booking.starttime, datetimeEnd),
-        gt(booking.endtime, datetimeStart),
-      ))
+      .where(and(lt(booking.starttime, datetimeEnd), gt(booking.endtime, datetimeStart)))
       .orderBy(booking.starttime);
 
     // Mark all spaces with bookings as unavailable
@@ -49,15 +35,15 @@ export async function spaceStatus(
     for (const booking of overlappingBookings) {
       if (booking.spaceid in result) continue;
       result[booking.spaceid] = {
-        status: "Unavailable",
-        booking: formatBookingDates(booking)
+        status: 'Unavailable',
+        booking: formatBookingDates(booking),
       };
     }
 
     // Mark the remaining as available
     for (const { id } of spaceIds) {
       if (id in result) continue;
-      result[id] = { status: "Available" };
+      result[id] = { status: 'Available' };
     }
 
     res.json(result);

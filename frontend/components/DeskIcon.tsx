@@ -4,9 +4,8 @@ import React from 'react';
 import { KeepScale } from 'react-zoom-pan-pinch';
 import { Box, Avatar } from '@mui/joy';
 import { Status, UserData } from '@/types';
-import useUser from '@/hooks/useUser';
 import useSpace from '@/hooks/useSpace';
-import {getInitials} from "@/components/PendingBookings";
+import UserAvatar from './UserAvatar';
 
 interface DeskIconProps {
   id: string,
@@ -25,11 +24,6 @@ interface PinProps {
   on: boolean
 }
 
-const anonymousUser: UserData = {
-  name: "anonymous",
-  image: null,
-}
-
 const activeStyle = {
   transform: "scale(0.8) translate(0%, -70%)",
   zIndex: 5,
@@ -37,7 +31,7 @@ const activeStyle = {
 
 const inactiveStyle = {
   "&:hover": {
-    transform: "scale(1.1)",
+    transform: "scale(1.2)",
     boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
     zIndex: 6,
   }
@@ -94,9 +88,6 @@ const Pin = ({ color, on }: PinProps) => {
 
 const DeskIcon = ({ id, x, y, selectedDesk, setSelectedDesk, setSelectedUser, setAvailable, setDeskName, status }: DeskIconProps) => {
   const { space } = useSpace(id);
-  const { user } = useUser(status && status.status === "Unavailable" ? status.booking.zid : 1)
-
-  const userData = user ? { name: user.fullname, image: user.image } : anonymousUser;
   const deskName = space ? space.name : "Desk";
 
   const handleClick = () => {
@@ -108,7 +99,6 @@ const DeskIcon = ({ id, x, y, selectedDesk, setSelectedDesk, setSelectedUser, se
     } else {
       setAvailable(status?.status === "Available");
       setSelectedDesk(id);
-      setSelectedUser(userData);
       setDeskName(deskName);
     }
   }
@@ -138,29 +128,32 @@ const DeskIcon = ({ id, x, y, selectedDesk, setSelectedDesk, setSelectedUser, se
             height: "var(--size-var)",
             width: "var(--size-var)",
             "&:hover": {
-              transform: "scale(1.1)",
+              transform: selectedDesk === id ? "scale(1.2)" : "",
             },
             transition: 'transform 0.1s'
           }}
         >
           <Pin color={status.status === "Available" ? "#207920" : "#0B6BCB"} on={selectedDesk === id ? true : false} />
-          <Avatar
-            variant="solid"
-            size='sm'
-            color={status.status === "Available" ? "success" : "primary"}
-            src={
-              status.status === "Available" ? "DeskIcon1.svg" :
-                userData && userData.name !== "anonymous" ? `data:image/jpeg;base64,${userData.image}` :
-                  "/defaultUser.svg"
-            }
-            sx={{
-              ...deskStyle,
-              ...(selectedDesk === id ? activeStyle : inactiveStyle),
-              transition: "transform 0.1s, box-shadow 0.1s",
-            }}
-          >
-            {getInitials(userData.name)}
-          </Avatar>
+          {status && status.status === "Unavailable" &&
+            <UserAvatar
+              zid={status.booking.zid}
+              selected={selectedDesk === id}
+              setSelectedUser={setSelectedUser}
+            />
+          }
+          {status && status.status === "Available" &&
+            <Avatar
+              variant="solid"
+              size='sm'
+              color={"success"}
+              src={"DeskIcon1.svg"}
+              sx={{
+                ...deskStyle,
+                ...(selectedDesk === id ? activeStyle : inactiveStyle),
+                transition: "transform 0.1s, box-shadow 0.1s",
+              }}
+            />
+          }
         </Box>
       </KeepScale>
     </Box>

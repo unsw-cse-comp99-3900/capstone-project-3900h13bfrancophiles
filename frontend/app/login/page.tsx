@@ -43,6 +43,7 @@ export default function Login() {
       const { token } = await login(zid, zpass);
       setCookie("token", token, { maxAge: 60 * 60 * 24 });
       router.push('/');
+      router.refresh(); // reloads navbar
     } catch (e: any) {
       setError(`${e}`);
     }

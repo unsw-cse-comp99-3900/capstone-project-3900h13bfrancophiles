@@ -60,3 +60,19 @@ export type Status =
 export type StatusResponse = {
   [spaceId: string]: Status;
 };
+
+export type TimeRange = {
+  start: Date;
+  end: Date;
+};
+
+export const USER_GROUPS = ['other', 'hdr', 'csestaff', 'admin'] as const;
+export type UserGroup = typeof USER_GROUPS[number];
+
+export interface TokenPayload {
+  id: string;
+  user: number; // zid
+  group: UserGroup;
+}
+
+export type NavData = { text: string, href: string };

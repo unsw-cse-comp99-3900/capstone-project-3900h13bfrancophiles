@@ -3,12 +3,11 @@
 import { AspectRatio, Sheet, Stack, Typography } from "@mui/joy";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import React, {useEffect, useState} from "react";
+import React from "react";
 import NextLink from "next/link";
-import { navData } from "@/app/data";
 import LogoutButton from "@/components/LogoutButton";
-import {getCookie} from "cookies-next";
-import * as jwt from "jsonwebtoken";
+import { NavData } from '@/types';
+
 
 interface NavProps {
   title: string;
@@ -46,20 +45,7 @@ function NavItem({ title, navigateTo }: NavProps) {
   );
 }
 
-export default function NavBar() {
-  const [adminNavBar, setAdminNavBar] = useState(false);
-
-  useEffect(() => {
-    const token = getCookie('token');
-
-    if (token) {
-      const decoded = jwt.decode(`${token}`) as jwt.JwtPayload;
-      if (decoded.group === "admin") {
-        setAdminNavBar(true)
-      }
-    }
-  }, []);
-
+export default function NavBar({ navItems } : { navItems: NavData[] }) {
   return (
     <Sheet
       sx={{ zIndex: 2, boxShadow: "md", height: 60, display: { xs: "none", sm: "flex" } }}
@@ -90,12 +76,9 @@ export default function NavBar() {
           justifyContent="space-between"
         >
           <Stack direction="row" alignItems="center" height="100%">
-            {navData.map(({ text, href }, idx) => (
-              <NavItem title={text} navigateTo={href} key={idx} />
+            {navItems.map(({ text, href }) => (
+              <NavItem title={text} navigateTo={href} key={href} />
             ))}
-            {adminNavBar ? (
-              <NavItem title="Admin" navigateTo='/admin' />
-            ) : null}
           </Stack>
           <LogoutButton />
         </Stack>
