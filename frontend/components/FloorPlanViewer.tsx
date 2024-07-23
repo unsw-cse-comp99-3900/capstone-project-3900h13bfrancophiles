@@ -27,7 +27,7 @@ const FloorPlanViewer = ({ selectedDesk, setSelectedDesk, setSelectedUser, setAv
     <Box sx={{ height: "100%", position: "relative", "--size-var": { xs: "500px", sm: "1000px", md: "1500px" } }}>
       <TransformWrapper
         maxScale={3}
-        minScale={1}
+        minScale={0.75}
         wheel={{ step: 0.015, smoothStep: 0.015 }}
         disablePadding
         centerOnInit
