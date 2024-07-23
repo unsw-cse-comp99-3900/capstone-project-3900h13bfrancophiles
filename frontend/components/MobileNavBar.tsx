@@ -16,10 +16,10 @@ import Image from "next/image";
 import NextLink from "next/link";
 import React from "react";
 import { Menu as MenuIcon } from "@mui/icons-material";
-import { navData } from "@/app/data";
 import LogoutButton from "@/components/LogoutButton";
+import { NavData } from '@/types';
 
-const NavBar = () => {
+const NavBar = ({ navItems } : { navItems: NavData[] }) => {
   const [open, setOpen] = React.useState(false);
 
   return (
@@ -52,7 +52,7 @@ const NavBar = () => {
           </IconButton>
         </Stack>
       </Sheet>
-      <MenuDrawer open={open} setOpen={setOpen} />
+      <MenuDrawer open={open} setOpen={setOpen} navItems={navItems} />
     </>
   );
 };
@@ -60,9 +60,14 @@ const NavBar = () => {
 interface MenuDrawerProps {
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  navItems: NavData[];
 }
 
-const MenuDrawer: React.FC<MenuDrawerProps> = ({ open, setOpen }) => {
+const MenuDrawer: React.FC<MenuDrawerProps> = ({
+  open,
+  setOpen,
+  navItems,
+}) => {
   return (
     <Drawer anchor="right" open={open} onClose={() => setOpen(false)}>
       <Link component={NextLink} href="/" mx="auto" my={2}>
@@ -85,16 +90,15 @@ const MenuDrawer: React.FC<MenuDrawerProps> = ({ open, setOpen }) => {
           "& > div": { justifyContent: "center" },
         }}
       >
-        {navData.map(({ text, href }, idx) => (
+        {navItems.map(({ text, href }) => (
           <ListItemButton
-            key={idx}
+            key={href}
             onClick={() => setOpen(false)}
             sx={{ "&:hover": { bgcolor: "#f0f4fc" } }}
           >
             <Link
               component={NextLink}
               href={href}
-              key={idx}
               underline="none"
               sx={{ color: "inherit", fontSize: "inherit" }}
             >
