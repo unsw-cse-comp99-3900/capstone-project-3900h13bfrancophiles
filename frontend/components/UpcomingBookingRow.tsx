@@ -75,7 +75,7 @@ export default function UpcomingBookingRow({
     <>
       <tr>
         <td>
-          <Typography level="body-sm">{row.id}</Typography>
+          <Typography level="body-sm">#{row.id}</Typography>
         </td>
         <td>
           <BookingStatusPill status={row.currentstatus} />

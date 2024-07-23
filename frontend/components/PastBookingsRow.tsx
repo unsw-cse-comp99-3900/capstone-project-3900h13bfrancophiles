@@ -17,7 +17,7 @@ export default function PastBookingsRow({ row }: PastBookingRowProps) {
   return (
     <tr>
       <td>
-        <Typography level="body-sm">{row.id}</Typography>
+        <Typography level="body-sm">#{row.id}</Typography>
       </td>
       <td>
         <Typography level="body-sm">
