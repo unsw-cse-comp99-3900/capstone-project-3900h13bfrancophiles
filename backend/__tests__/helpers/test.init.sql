@@ -25,6 +25,6 @@ INSERT INTO room(id, capacity, roomnumber, type)
 VALUES ('K-K17-111', 5, '111', 'Meeting Room'),
        ('K-K17-222', 100, '222', 'Seminar Room');
 
-INSERT INTO hotdesk(id, floor, room, desknumber)
-VALUES ('K-K17-333-1', 'K17L3', '333', 1),
-       ('K-K17-444-1', 'K17L4', '444', 1);
+INSERT INTO hotdesk(id, floor, room, desknumber, xcoord, ycoord)
+VALUES ('K-K17-333-1', 'K17L3', '333', 1, 30, 30),
+       ('K-K17-444-1', 'K17L4', '444', 1, 40, 40);

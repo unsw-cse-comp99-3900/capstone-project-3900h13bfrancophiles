@@ -68,6 +68,7 @@ INSERT INTO space (id, name, minReqGrp, minBookGrp) VALUES
 ('K-K17-201-33', 'K17 201 Desk 33', 'hdr', 'hdr'),
 ('K-K17-201-34', 'K17 201 Desk 34', 'hdr', 'hdr'),
 ('K-K17-201-35', 'K17 201 Desk 35', 'hdr', 'hdr'),
+
 ('K-K17-217-1', 'K17 217 Desk 1', 'hdr', 'hdr'),
 ('K-K17-217-2', 'K17 217 Desk 2', 'hdr', 'hdr'),
 ('K-K17-217-3', 'K17 217 Desk 3', 'hdr', 'hdr'),
@@ -86,6 +87,7 @@ INSERT INTO space (id, name, minReqGrp, minBookGrp) VALUES
 ('K-K17-217-16', 'K17 217 Desk 16', 'hdr', 'hdr'),
 ('K-K17-217-17', 'K17 217 Desk 17', 'hdr', 'hdr'),
 ('K-K17-217-18', 'K17 217 Desk 18', 'hdr', 'hdr'),
+
 ('K-K17-301-11', 'K17 301 Desk 11', 'hdr', 'hdr'),
 ('K-K17-301-12', 'K17 301 Desk 12', 'hdr', 'hdr'),
 ('K-K17-301-13', 'K17 301 Desk 13', 'hdr', 'hdr'),
@@ -130,6 +132,7 @@ INSERT INTO hotdesk (id, floor, room, deskNumber, xCoord, yCoord) VALUES
 ('K-K17-201-33', 'K17L2', '201', 33, 78, 730),
 ('K-K17-201-34', 'K17L2', '201', 34, 78, 770),
 ('K-K17-201-35', 'K17L2', '201', 35, 152, 770),
+
 ('K-K17-217-1', 'K17L2', '217', 1, 525, 688),
 ('K-K17-217-2', 'K17L2', '217', 2, 525, 717),
 ('K-K17-217-3', 'K17L2', '217', 3, 525, 746),
@@ -148,6 +151,7 @@ INSERT INTO hotdesk (id, floor, room, deskNumber, xCoord, yCoord) VALUES
 ('K-K17-217-16', 'K17L2', '217', 16, 700, 746),
 ('K-K17-217-17', 'K17L2', '217', 17, 700, 717),
 ('K-K17-217-18', 'K17L2', '217', 18, 700, 688),
+
 ('K-K17-301-11', 'K17L3', '301', 11, 259, 380),
 ('K-K17-301-12', 'K17L3', '301', 12, 259, 339),
 ('K-K17-301-13', 'K17L3', '301', 13, 259, 298),
