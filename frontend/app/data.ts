@@ -1,10 +1,4 @@
 
-export const navData = [
-  { text: 'Dashboard', href: '/dashboard' },
-  { text: 'Rooms', href: '/rooms' },
-  { text: 'Desks', href: '/desks' },
-];
-
 export const deskData = [
   {
     level: "K17L2",

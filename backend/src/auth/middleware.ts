@@ -1,14 +1,12 @@
 // Authentication and authorisation middleware
 import { Request, Response, NextFunction } from 'express';
-import * as jwt from 'jsonwebtoken';
 import typia from 'typia';
 
-import { tokenIsActive } from './service';
-import { AUTH_SECRET } from '../../config';
+import { invalidateToken, tokenIdIsActive, verifyToken } from './service';
 import { TokenPayload, UserGroup, USER_GROUPS } from '../types';
 
 // Middleware implementation
-export function validateToken(req: Request, res: Response, next: NextFunction) {
+export async function validateToken(req: Request, res: Response, next: NextFunction) {
   if (!req.headers.authorization) {
     res.status(401).json({ error: 'No token provided' });
     return;
@@ -24,14 +22,13 @@ export function validateToken(req: Request, res: Response, next: NextFunction) {
   }
 
   try {
-    const decoded = jwt.verify(token, AUTH_SECRET) as jwt.JwtPayload;
-    const payload = { id: decoded.id, user: decoded.user, group: decoded.group };
+    const payload = await verifyToken(token);
     if (!typia.is<TokenPayload>(payload)) {
       res.status(401).json({ error: 'Invalid token payload' });
       return;
     }
 
-    if (!tokenIsActive(payload.id)) {
+    if (!tokenIdIsActive(payload.id)) {
       res.status(401).json({ error: 'Token expired or invalidated' });
       return;
     }
@@ -39,7 +36,8 @@ export function validateToken(req: Request, res: Response, next: NextFunction) {
     req.token = payload;
     next();
   } catch (e: any) {
-    if (e instanceof jwt.TokenExpiredError) {
+    if (e?.code === 'ERR_JWT_EXPIRED') {
+      invalidateToken(token);
       res.status(401).json({ error: 'Token expired' });
     } else {
       res.status(401).json({ error: 'Invalid token' });
