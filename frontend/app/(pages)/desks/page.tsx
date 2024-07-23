@@ -19,7 +19,6 @@ import {
   IconButton
 } from "@mui/joy";
 import CloseIcon from '@mui/icons-material/Close';
-import { deskData } from '@/app/data';
 import * as React from 'react';
 import { UserData } from "@/types";
 import useTimeRange from "@/hooks/useTimeRange";
