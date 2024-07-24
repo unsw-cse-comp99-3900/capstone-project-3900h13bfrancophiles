@@ -39,7 +39,7 @@ const AvailabilitiesPage : React.FC<AvailabilitesPageProps> = ({
 
 
   useEffect(() => {
-    const token = getCookie('token', { cookies });
+    const token = getCookie('token');
     if (token) {
       const tokenPayload = decodeJwt<TokenPayload>(`${token}`);
       if (hasMinimumAuthority( tokenPayload.group, minReqGrp === undefined ? "admin" : minReqGrp)) {
@@ -78,7 +78,7 @@ const AvailabilitiesPage : React.FC<AvailabilitesPageProps> = ({
             {spaceType === "room" ? `${room!.type} ${room!.name}` : `${desk!.name}`}
           </Typography>
           <Tooltip title={bookable ? "" : "You do not have permission to book this space"} variant="solid">
-            <div>
+            <Box>
               <Button
                 color="success"
                 variant="solid"
@@ -87,7 +87,7 @@ const AvailabilitiesPage : React.FC<AvailabilitesPageProps> = ({
               >
                 Book Now
               </Button>
-            </div>
+            </Box>
 
           </Tooltip>
         </Stack>

@@ -51,7 +51,7 @@ const RoomCard: React.FC<RoomCardProps> = ({
 
 
   useEffect(() => {
-    const token = getCookie('token', { cookies });
+    const token = getCookie('token');
     if (token) {
       const tokenPayload = decodeJwt<TokenPayload>(`${token}`);
       if (hasMinimumAuthority( tokenPayload.group, minReqGrp === undefined ? "admin" : minReqGrp)) {
