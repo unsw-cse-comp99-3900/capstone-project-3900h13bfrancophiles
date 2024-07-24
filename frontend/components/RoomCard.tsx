@@ -28,7 +28,7 @@ interface RoomCardProps {
 
 
 const RoomCard: React.FC<RoomCardProps> = ({ room, handleBook, datetimeStart, datetimeEnd }) => {
-  const { statusResponse, isLoading, error } = useSpaceStatus(datetimeStart, datetimeEnd);
+  const { statusResponse, error } = useSpaceStatus(datetimeStart, datetimeEnd);
 
   let availability = "";
   const { canBook } = useRoomCanBook(room.id)

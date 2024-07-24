@@ -37,7 +37,7 @@ export default function UpcomingBookings() {
     setPage(newPage);
   };
 
-  const handleChangeRowsPerPage = (event: any, newValue: number | null) => {
+  const handleChangeRowsPerPage = (event: unknown, newValue: number | null) => {
     setRowsPerPage(parseInt(newValue!.toString(), 10));
     setPage(0);
   };
@@ -46,7 +46,7 @@ export default function UpcomingBookings() {
     return `${from}–${to} of ${count}`;
   }
 
-  const handleChangeFilter = (event: any, newValue: string | null) => {
+  const handleChangeFilter = (event: unknown, newValue: string | null) => {
     if (newValue !== null) {
       setFilter(newValue);
     }
@@ -121,7 +121,7 @@ export default function UpcomingBookings() {
             </tr>
           </thead>
           <tbody>
-            {!!upcomingBookings?.length ? (
+            {upcomingBookings?.length ? (
               upcomingBookings
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((row) => <UpcomingBookingRow key={row.id} row={row} mutate={mutate} />)

@@ -59,6 +59,7 @@ function CurrentBookingCard({ booking }: CurrentBookingCardProps) {
     );
 
   const [isCheckingInOrOut, setIsCheckingInOrOut] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [checkInOrOutError, setCheckInOrOutError] = useState<string | null>(null);
   const [checkedIn, setCheckedIn] = useState<boolean>(booking.currentstatus === "checkedin");
   const [isConfirmationOpen, setIsConfirmationOpen] = useState(false);
