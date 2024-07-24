@@ -1,6 +1,6 @@
-import Typography from '@mui/joy/Typography';
-import * as React from 'react';
-import { CircularProgress, Stack } from '@mui/joy';
+import Typography from "@mui/joy/Typography";
+import * as React from "react";
+import { CircularProgress, Stack } from "@mui/joy";
 
 interface NoBookingsRowProps {
   bookingType: string;
@@ -8,18 +8,24 @@ interface NoBookingsRowProps {
   isLoading?: boolean;
 }
 
-export function NoBookingsRow({ bookingType, colSpan, isLoading }: NoBookingsRowProps) {
-  return <tr>
-    <td colSpan={colSpan}>
-      {
-        isLoading
-          ? <Stack width="100%" alignItems="center" p={0.5}>
+export function NoBookingsRow({
+  bookingType,
+  colSpan,
+  isLoading,
+}: NoBookingsRowProps) {
+  return (
+    <tr>
+      <td colSpan={colSpan}>
+        {isLoading ? (
+          <Stack width="100%" alignItems="center" p={0.5}>
             <CircularProgress />
           </Stack>
-          : <Typography level="body-sm" textAlign='center'>
+        ) : (
+          <Typography level="body-sm" textAlign="center">
             No {bookingType} Bookings
           </Typography>
-      }
-    </td>
-  </tr>
+        )}
+      </td>
+    </tr>
+  );
 }
