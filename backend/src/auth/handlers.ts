@@ -1,6 +1,6 @@
 import typia from 'typia';
 
-import { createToken, getUserGroup, invalidateToken, validateLogin } from './service';
+import { createToken, getUserGroup, invalidateTokenById, validateLogin } from './service';
 import { TypedRequest, TypedResponse } from '../types';
 
 const ZID_REGEX = /z(\d{7})/;
@@ -31,12 +31,11 @@ export async function login(req: TypedRequest<LoginRequest>, res: TypedResponse<
     return;
   }
 
-  const token = createToken(zid, group);
+  const token = await createToken(zid, group);
   res.json({ token });
 }
 
 export function logout(req: TypedRequest, res: TypedResponse) {
-  const tokenId = req.token.id;
-  invalidateToken(tokenId);
+  invalidateTokenById(req.token.id);
   res.json({});
 }
