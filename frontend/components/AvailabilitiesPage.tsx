@@ -1,6 +1,6 @@
 
 import * as React from "react";
-import { Box, Stack, Typography, Button } from "@mui/joy";
+import {Box, Stack, Typography, Button, Tooltip} from "@mui/joy";
 import useSpace from '@/hooks/useSpace';
 import useAvailabilities from "@/hooks/useAvailabilities";
 import { Space, Room, Desk, SpaceType } from "@/types";
@@ -8,6 +8,11 @@ import Loading from "@/components/Loading";
 import AvailabilityCalendar from "@/components/AvailabilityCalendar";
 import BookingModal from "@/components/BookingModal/BookingModal"
 import Error from "@/components/Error";
+import useRoomMinReq from "@/hooks/useRoomMinReq";
+import {useEffect, useState} from "react";
+import {getCookie} from "cookies-next";
+import * as jwt from "jsonwebtoken";
+import {hasMinimumAuthority} from "@/components/RoomCard";
 
 interface AvailabilitesPageProps {
   spaceId: string;
@@ -26,6 +31,23 @@ const AvailabilitiesPage : React.FC<AvailabilitesPageProps> = ({
   const desk = space as Desk;
 
   const [openModal, setOpenModal] = React.useState<boolean>(false);
+
+  const { minReqGrp } = useRoomMinReq(spaceId)
+
+  const [bookable, setBookable] = useState(false);
+
+
+  useEffect(() => {
+    const token = getCookie('token');
+
+    if (token) {
+      const decoded = jwt.decode(`${token}`) as jwt.JwtPayload;
+      if (hasMinimumAuthority( decoded.group, minReqGrp === undefined ? "admin" : minReqGrp)) {
+        setBookable(true)
+      }
+    }
+  }, [minReqGrp]);
+
 
   if (spaceType !== spaceOutput.type || spaceOutput.error)
     return <Error
@@ -54,13 +76,19 @@ const AvailabilitiesPage : React.FC<AvailabilitesPageProps> = ({
           <Typography level="h1">
             {spaceType === "room" ? `${room!.type} ${room!.name}` : `${desk!.name}`}
           </Typography>
-          <Button
-            color="success"
-            variant="solid"
-            onClick={() => {setOpenModal(true)}}
-          >
-            Book Now
-          </Button>
+          <Tooltip title={bookable ? "" : "You do not have permission to book this space"} variant="solid">
+            <div>
+              <Button
+                color="success"
+                variant="solid"
+                disabled={!bookable}
+                onClick={() => {setOpenModal(true)}}
+              >
+                Book Now
+              </Button>
+            </div>
+
+          </Tooltip>
         </Stack>
         {spaceType === "room" ?
           <Stack

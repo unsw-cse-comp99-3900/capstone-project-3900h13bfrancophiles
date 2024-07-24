@@ -13,7 +13,7 @@ import { login, logout } from './auth/handlers';
 import { authoriseAtLeast, validateToken } from './auth/middleware';
 import { currentBookings, pastBookings, rangeOfBookings, upcomingBookings } from './booking/fetchBookings';
 import { checkInBooking, checkOutBooking, deleteBooking, createBooking, editBooking } from './booking/manageBookings';
-import { allSpaces, roomDetails, singleSpaceDetails, spaceAvailabilities } from './spaces/handlers';
+import {allSpaces, roomDetails, roomMinReq, singleSpaceDetails, spaceAvailabilities} from './spaces/handlers';
 import { spaceStatus } from './status/handlers';
 import { userDetails } from './user/handlers';
 
@@ -58,6 +58,7 @@ app.get('/spaces/:spaceId', validateToken, singleSpaceDetails);
 app.get('/rooms', validateToken, roomDetails);
 app.get('/status', validateToken, spaceStatus);
 app.get('/availabilities/:spaceId', validateToken, spaceAvailabilities);
+app.get('/minReqGrp/:spaceId', validateToken, roomMinReq);
 
 app.get('/admin/bookings/pending', validateToken, authoriseAtLeast('admin'), pendingBookings);
 app.put('/admin/bookings/approve', validateToken, authoriseAtLeast('admin'), approveBooking);

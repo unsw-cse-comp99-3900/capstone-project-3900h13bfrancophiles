@@ -65,3 +65,6 @@ export type TimeRange = {
   start: Date;
   end: Date;
 };
+
+export const USER_GROUPS = ['other', 'hdr', 'csestaff', 'admin'] as const;
+export type UserGroup = (typeof USER_GROUPS)[number];
