@@ -29,14 +29,9 @@ export interface UpcomingBookingRowProps {
   mutate: () => void;
 }
 
-export default function UpcomingBookingRow({
-  row,
-  mutate,
-}: UpcomingBookingRowProps) {
+export default function UpcomingBookingRow({ row, mutate }: UpcomingBookingRowProps) {
   const { space, type, isLoading } = useSpace(row.spaceid);
-  const [bookingToDelete, setBookingToDelete] = React.useState<number | null>(
-    null
-  );
+  const [bookingToDelete, setBookingToDelete] = React.useState<number | null>(null);
   const [modalOpen, setModalOpen] = React.useState(false);
   const [editModalOpen, setEditModalOpen] = React.useState(false);
 
@@ -89,11 +84,7 @@ export default function UpcomingBookingRow({
         <td>
           <Skeleton loading={isLoading}>
             <Link
-              href={
-                type === "room"
-                  ? `/rooms/${row.spaceid}`
-                  : `/desks/${row.spaceid}`
-              }
+              href={type === "room" ? `/rooms/${row.spaceid}` : `/desks/${row.spaceid}`}
               level="body-sm"
               component={NextLink}
             >
@@ -106,18 +97,10 @@ export default function UpcomingBookingRow({
         </td>
         <td>
           <Stack direction="row" justifyContent="flex-end" px={1}>
-            <IconButton
-              variant="plain"
-              color="neutral"
-              onClick={() => handleOpenEditModal()}
-            >
+            <IconButton variant="plain" color="neutral" onClick={() => handleOpenEditModal()}>
               <EditIcon />
             </IconButton>
-            <IconButton
-              variant="plain"
-              color="danger"
-              onClick={() => handleOpenModal(row.id)}
-            >
+            <IconButton variant="plain" color="danger" onClick={() => handleOpenModal(row.id)}>
               <DeleteIcon />
             </IconButton>
           </Stack>
@@ -130,9 +113,7 @@ export default function UpcomingBookingRow({
             Confirmation
           </DialogTitle>
           <Divider />
-          <DialogContent>
-            Are you sure you want to delete this booking?
-          </DialogContent>
+          <DialogContent>Are you sure you want to delete this booking?</DialogContent>
           <DialogActions>
             <Button variant="solid" color="danger" onClick={handleDelete}>
               Delete Booking
@@ -146,11 +127,7 @@ export default function UpcomingBookingRow({
       <BookingModal
         open={editModalOpen}
         onClose={() => handleCloseEditModal()}
-        space={
-          space
-            ? { id: space!.id, name: space!.name, isRoom: type === "room" }
-            : undefined
-        }
+        space={space ? { id: space!.id, name: space!.name, isRoom: type === "room" } : undefined}
         date={new Date(row.starttime)}
         start={new Date(row.starttime)}
         end={new Date(row.endtime)}

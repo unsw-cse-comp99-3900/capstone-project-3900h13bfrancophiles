@@ -21,12 +21,7 @@ export default function PastBookings() {
   const [filter, setFilter] = React.useState("all");
 
   const [sort, setSort] = React.useState("newest");
-  const { pastBookings, total, isLoading } = usePastBookings(
-    page + 1,
-    rowsPerPage,
-    filter,
-    sort
-  );
+  const { pastBookings, total, isLoading } = usePastBookings(page + 1, rowsPerPage, filter, sort);
 
   const handleChangePage = (newPage: number) => {
     setPage(newPage);
@@ -64,11 +59,7 @@ export default function PastBookings() {
       <Stack direction="row" width="100%" my={1} spacing={1}>
         <Box width="150px">
           Space
-          <Select
-            defaultValue="all"
-            placeholder="All"
-            onChange={handleChangeFilter}
-          >
+          <Select defaultValue="all" placeholder="All" onChange={handleChangeFilter}>
             <Option value="all">All</Option>
             <Option value="rooms">Rooms</Option>
             <Option value="desks">Desks</Option>
@@ -76,11 +67,7 @@ export default function PastBookings() {
         </Box>
         <Box width="150px">
           Sort
-          <Select
-            defaultValue="newest"
-            placeholder="Newest"
-            onChange={handleChangeSort}
-          >
+          <Select defaultValue="newest" placeholder="Newest" onChange={handleChangeSort}>
             <Option value="newest">Newest</Option>
             <Option value="oldest">Oldest</Option>
           </Select>
@@ -102,11 +89,9 @@ export default function PastBookings() {
           stickyHeader
           hoverRow={!!pastBookings?.length}
           sx={{
-            "--TableCell-headBackground":
-              "var(--joy-palette-background-level1)",
+            "--TableCell-headBackground": "var(--joy-palette-background-level1)",
             "--Table-headerUnderlineThickness": "1px",
-            "--TableRow-hoverBackground":
-              "var(--joy-palette-background-level1)",
+            "--TableRow-hoverBackground": "var(--joy-palette-background-level1)",
             "--TableCell-paddingY": "4px",
             "--TableCell-paddingX": "8px",
           }}
@@ -121,15 +106,9 @@ export default function PastBookings() {
           </thead>
           <tbody>
             {!!pastBookings?.length ? (
-              pastBookings.map((row) => (
-                <PastBookingsRow key={row.id} row={row} />
-              ))
+              pastBookings.map((row) => <PastBookingsRow key={row.id} row={row} />)
             ) : (
-              <NoBookingsRow
-                bookingType="Past"
-                colSpan={numColumns}
-                isLoading={isLoading}
-              />
+              <NoBookingsRow bookingType="Past" colSpan={numColumns} isLoading={isLoading} />
             )}
           </tbody>
           <tfoot>
@@ -145,11 +124,7 @@ export default function PastBookings() {
                 >
                   <FormControl orientation="horizontal" size="sm">
                     <FormLabel>Rows per page:</FormLabel>
-                    <Select
-                      onChange={handleChangeRowsPerPage}
-                      placeholder="5"
-                      value={rowsPerPage}
-                    >
+                    <Select onChange={handleChangeRowsPerPage} placeholder="5" value={rowsPerPage}>
                       <Option value={5}>5</Option>
                       <Option value={10}>10</Option>
                       <Option value={25}>25</Option>
@@ -159,7 +134,7 @@ export default function PastBookings() {
                     {labelDisplayedRows(
                       pastBookings ? page * rowsPerPage + 1 : 0,
                       getLabelDisplayedRowsTo(),
-                      total ?? 0
+                      total ?? 0,
                     )}
                   </Typography>
                   <Box sx={{ display: "flex", gap: 1 }}>
@@ -177,9 +152,7 @@ export default function PastBookings() {
                       size="sm"
                       color="neutral"
                       variant="outlined"
-                      disabled={
-                        page >= Math.ceil((total ?? 0) / rowsPerPage) - 1
-                      }
+                      disabled={page >= Math.ceil((total ?? 0) / rowsPerPage) - 1}
                       onClick={() => handleChangePage(page + 1)}
                       sx={{ bgcolor: "background.surface" }}
                     >

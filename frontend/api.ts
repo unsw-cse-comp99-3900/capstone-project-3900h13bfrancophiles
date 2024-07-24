@@ -1,8 +1,8 @@
-import { BACKEND_URL } from '@/config';
-import { deleteCookie, getCookie } from 'cookies-next';
-import { Booking } from '@/types';
+import { BACKEND_URL } from "@/config";
+import { deleteCookie, getCookie } from "cookies-next";
+import { Booking } from "@/types";
 
-type HTTPMethod = 'GET' | 'POST' | 'PUT' | 'DELETE';
+type HTTPMethod = "GET" | "POST" | "PUT" | "DELETE";
 
 // Helpers
 
@@ -13,23 +13,22 @@ const apiCall = <T>(
   route: string,
   method: HTTPMethod,
   params: object,
-  headers: object = {}
+  headers: object = {},
 ): Promise<T> => {
   // Initialise fetch options
   const options: RequestInit = {
     method,
     headers: {
-      'Content-Type': 'application/json',
-      ...headers
+      "Content-Type": "application/json",
+      ...headers,
     },
   };
 
-  if (method === 'GET' ) {
+  if (method === "GET") {
     // If GET, params go in URL
     if (Object.keys(params).length !== 0) {
-      route += '?' + new URLSearchParams(params as Record<string, string>);
+      route += "?" + new URLSearchParams(params as Record<string, string>);
     }
-
   } else {
     // Otherwise go in body
     options.body = JSON.stringify(params);
@@ -37,7 +36,7 @@ const apiCall = <T>(
 
   return new Promise((resolve, reject) => {
     fetch(BACKEND_URL + route, options)
-      .then(response => {
+      .then((response) => {
         if (response.status === 401) {
           // Remove token and force reload, so you're redirected to login page
           deleteCookie("token");
@@ -45,31 +44,27 @@ const apiCall = <T>(
         }
         return response.json();
       })
-      .then(json => {
+      .then((json) => {
         if (json.error) throw new Error(json.error);
         resolve(json);
       })
-      .catch(err => reject(err));
+      .catch((err) => reject(err));
   });
-}
+};
 
 // apiCall but pass the token
 const authApiCall = <T>(
   route: string,
   method: HTTPMethod,
   params: object,
-  headers: object = {}
+  headers: object = {},
 ): Promise<T> => {
   const token = getCookie("token");
-  return apiCall(
-    route,
-    method,
-    params,
-    {
-      ...headers,
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    });
-}
+  return apiCall(route, method, params, {
+    ...headers,
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+  });
+};
 
 /**
  * For use with SWR - takes URL of a GET request
@@ -79,25 +74,22 @@ export function swrFetcher<T>(url: string) {
 }
 
 // Routes - see Backend API for description
-export const login = (
-  zid: string,
-  zpass: string
-): Promise<{ token: string }> => {
-  return apiCall('/auth/login', 'POST', { zid, zpass });
-}
+export const login = (zid: string, zpass: string): Promise<{ token: string }> => {
+  return apiCall("/auth/login", "POST", { zid, zpass });
+};
 
 export const logout = (): Promise<{}> => {
-  return authApiCall('/auth/logout', 'POST', {});
-}
+  return authApiCall("/auth/logout", "POST", {});
+};
 
 export const createBooking = (
   spaceid: string,
   starttime: string,
   endtime: string,
-  description: string
+  description: string,
 ): Promise<{ booking: Booking }> => {
-  return authApiCall('/bookings/create', 'POST', { spaceid, starttime, endtime, description });
-}
+  return authApiCall("/bookings/create", "POST", { spaceid, starttime, endtime, description });
+};
 
 export const editBooking = (
   id: number,
@@ -106,25 +98,25 @@ export const editBooking = (
   spaceid: string,
   description: string,
 ): Promise<{ booking: Booking }> => {
-  return authApiCall('/bookings/edit', 'PUT', { id, starttime, endtime, spaceid, description });
-}
+  return authApiCall("/bookings/edit", "PUT", { id, starttime, endtime, spaceid, description });
+};
 
 export const deleteBooking = (id: number): Promise<{}> => {
-  return authApiCall('/bookings/delete', 'DELETE', { id });
-}
+  return authApiCall("/bookings/delete", "DELETE", { id });
+};
 
 export const checkIn = (id: number): Promise<{}> => {
-  return authApiCall('/bookings/checkin', 'POST', { id });
-}
+  return authApiCall("/bookings/checkin", "POST", { id });
+};
 
 export const checkOut = (id: number): Promise<{}> => {
-  return authApiCall('/bookings/checkout', 'POST', { id });
-}
+  return authApiCall("/bookings/checkout", "POST", { id });
+};
 
 export const approveBooking = (id: number): Promise<{}> => {
-  return authApiCall('/admin/bookings/approve', 'PUT', { id });
-}
+  return authApiCall("/admin/bookings/approve", "PUT", { id });
+};
 
 export const declineBooking = (id: number): Promise<{}> => {
-  return authApiCall('/admin/bookings/decline', 'PUT', { id });
-}
+  return authApiCall("/admin/bookings/decline", "PUT", { id });
+};

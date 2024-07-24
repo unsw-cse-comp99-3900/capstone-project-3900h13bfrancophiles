@@ -28,10 +28,7 @@ export interface UpcomingBookingRowProps {
 export default function UpcomingBookings() {
   const [sort, setSort] = React.useState("soonest");
   const [filter, setFilter] = React.useState("all");
-  const { upcomingBookings, isLoading, mutate } = useUpcomingBookings(
-    filter,
-    sort
-  ); // Get mutate function from hook
+  const { upcomingBookings, isLoading, mutate } = useUpcomingBookings(filter, sort); // Get mutate function from hook
 
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
@@ -55,10 +52,7 @@ export default function UpcomingBookings() {
     }
   };
 
-  const handleChangeSort = (
-    event: React.SyntheticEvent | null,
-    newValue: string | null
-  ) => {
+  const handleChangeSort = (event: React.SyntheticEvent | null, newValue: string | null) => {
     if (newValue !== null) {
       setSort(newValue);
     }
@@ -79,11 +73,7 @@ export default function UpcomingBookings() {
       <Stack direction="row" width="100%" my={1} spacing={1}>
         <Box width="150px">
           Space
-          <Select
-            defaultValue="all"
-            placeholder="All"
-            onChange={handleChangeFilter}
-          >
+          <Select defaultValue="all" placeholder="All" onChange={handleChangeFilter}>
             <Option value="all">All</Option>
             <Option value="rooms">Rooms</Option>
             <Option value="desks">Desks</Option>
@@ -91,11 +81,7 @@ export default function UpcomingBookings() {
         </Box>
         <Box width="150px">
           Sort
-          <Select
-            defaultValue="soonest"
-            placeholder="Soonest"
-            onChange={handleChangeSort}
-          >
+          <Select defaultValue="soonest" placeholder="Soonest" onChange={handleChangeSort}>
             <Option value="soonest">Soonest</Option>
             <Option value="latest">Latest</Option>
           </Select>
@@ -117,11 +103,9 @@ export default function UpcomingBookings() {
           stickyHeader
           hoverRow={!!upcomingBookings?.length}
           sx={{
-            "--TableCell-headBackground":
-              "var(--joy-palette-background-level1)",
+            "--TableCell-headBackground": "var(--joy-palette-background-level1)",
             "--Table-headerUnderlineThickness": "1px",
-            "--TableRow-hoverBackground":
-              "var(--joy-palette-background-level1)",
+            "--TableRow-hoverBackground": "var(--joy-palette-background-level1)",
             "--TableCell-paddingY": "4px",
             "--TableCell-paddingX": "8px",
           }}
@@ -140,15 +124,9 @@ export default function UpcomingBookings() {
             {!!upcomingBookings?.length ? (
               upcomingBookings
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                .map((row) => (
-                  <UpcomingBookingRow key={row.id} row={row} mutate={mutate} />
-                ))
+                .map((row) => <UpcomingBookingRow key={row.id} row={row} mutate={mutate} />)
             ) : (
-              <NoBookingsRow
-                bookingType="Upcoming"
-                colSpan={numColumns}
-                isLoading={isLoading}
-              />
+              <NoBookingsRow bookingType="Upcoming" colSpan={numColumns} isLoading={isLoading} />
             )}
           </tbody>
           <tfoot>
@@ -164,11 +142,7 @@ export default function UpcomingBookings() {
                 >
                   <FormControl orientation="horizontal" size="sm">
                     <FormLabel>Rows per page:</FormLabel>
-                    <Select
-                      onChange={handleChangeRowsPerPage}
-                      placeholder="5"
-                      value={rowsPerPage}
-                    >
+                    <Select onChange={handleChangeRowsPerPage} placeholder="5" value={rowsPerPage}>
                       <Option value={5}>5</Option>
                       <Option value={10}>10</Option>
                       <Option value={25}>25</Option>
@@ -178,7 +152,7 @@ export default function UpcomingBookings() {
                     {labelDisplayedRows(
                       upcomingBookings ? page * rowsPerPage + 1 : 0,
                       getLabelDisplayedRowsTo(),
-                      upcomingBookings?.length ?? 0
+                      upcomingBookings?.length ?? 0,
                     )}
                   </Typography>
                   <Box sx={{ display: "flex", gap: 1 }}>
@@ -197,11 +171,7 @@ export default function UpcomingBookings() {
                       color="neutral"
                       variant="outlined"
                       disabled={
-                        page >=
-                        Math.ceil(
-                          (upcomingBookings?.length ?? 0) / rowsPerPage
-                        ) -
-                          1
+                        page >= Math.ceil((upcomingBookings?.length ?? 0) / rowsPerPage) - 1
                       }
                       onClick={() => handleChangePage(page + 1)}
                       sx={{ bgcolor: "background.surface" }}
