@@ -3,7 +3,7 @@ import * as React from "react";
 import {Box, Stack, Typography, Button, Tooltip} from "@mui/joy";
 import useSpace from '@/hooks/useSpace';
 import useAvailabilities from "@/hooks/useAvailabilities";
-import { Space, Room, Desk, SpaceType } from "@/types";
+import {Room, Desk, TokenPayload} from "@/types";
 import Loading from "@/components/Loading";
 import AvailabilityCalendar from "@/components/AvailabilityCalendar";
 import BookingModal from "@/components/BookingModal/BookingModal"
@@ -11,8 +11,9 @@ import Error from "@/components/Error";
 import useRoomMinReq from "@/hooks/useRoomMinReq";
 import {useEffect, useState} from "react";
 import {getCookie} from "cookies-next";
-import * as jwt from "jsonwebtoken";
 import {hasMinimumAuthority} from "@/components/RoomCard";
+import {cookies} from "next/headers";
+import {decodeJwt} from "jose";
 
 interface AvailabilitesPageProps {
   spaceId: string;
@@ -38,15 +39,15 @@ const AvailabilitiesPage : React.FC<AvailabilitesPageProps> = ({
 
 
   useEffect(() => {
-    const token = getCookie('token');
-
+    const token = getCookie('token', { cookies });
     if (token) {
-      const decoded = jwt.decode(`${token}`) as jwt.JwtPayload;
-      if (hasMinimumAuthority( decoded.group, minReqGrp === undefined ? "admin" : minReqGrp)) {
+      const tokenPayload = decodeJwt<TokenPayload>(`${token}`);
+      if (hasMinimumAuthority( tokenPayload.group, minReqGrp === undefined ? "admin" : minReqGrp)) {
         setBookable(true)
       }
     }
   }, [minReqGrp]);
+
 
 
   if (spaceType !== spaceOutput.type || spaceOutput.error)

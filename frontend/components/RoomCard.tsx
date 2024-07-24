@@ -14,13 +14,14 @@ import PeopleIcon from "@mui/icons-material/People";
 import MeetingRoomOutlinedIcon from "@mui/icons-material/MeetingRoomOutlined";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCalendarPlus } from "@fortawesome/free-regular-svg-icons";
-import {Room, USER_GROUPS, UserGroup} from "@/types";
+import {Room, TokenPayload, USER_GROUPS, UserGroup} from "@/types";
 import useSpaceStatus from "@/hooks/useSpaceStatus";
 import NextLink from 'next/link'
 import {useEffect, useState} from "react";
 import {getCookie} from "cookies-next";
-import * as jwt from "jsonwebtoken";
 import useRoomMinReq from "@/hooks/useRoomMinReq";
+import {cookies} from "next/headers";
+import {decodeJwt} from "jose";
 
 
 
@@ -44,18 +45,16 @@ const RoomCard: React.FC<RoomCardProps> = ({
   datetimeStart,
   datetimeEnd,
 }) => {
-  const { minReqGrp,isLoading: minReqGrpIsLoading, error: minReqGrpError } = useRoomMinReq(room.id)
+  const { minReqGrp } = useRoomMinReq(room.id)
 
-  console.log('minreqgrp: ', minReqGrp);
   const [bookable, setBookable] = useState(false);
 
 
   useEffect(() => {
-    const token = getCookie('token');
-
+    const token = getCookie('token', { cookies });
     if (token) {
-      const decoded = jwt.decode(`${token}`) as jwt.JwtPayload;
-      if (hasMinimumAuthority( decoded.group, minReqGrp === undefined ? "admin" : minReqGrp)) {
+      const tokenPayload = decodeJwt<TokenPayload>(`${token}`);
+      if (hasMinimumAuthority( tokenPayload.group, minReqGrp === undefined ? "admin" : minReqGrp)) {
         setBookable(true)
       }
     }
