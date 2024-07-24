@@ -128,7 +128,7 @@ export default function UpcomingBookings() {
         >
           <thead>
             <tr>
-              <th style={{ width: 50, padding: "12px 6px" }}>ID</th>
+              <th style={{ width: 50, padding: "12px 6px" }}>Reference No.</th>
               <th style={{ width: 100, padding: "12px 6px" }}>Status</th>
               <th style={{ width: 140, padding: "12px 6px" }}>Time</th>
               <th style={{ width: 140, padding: "12px 6px" }}>Location</th>
