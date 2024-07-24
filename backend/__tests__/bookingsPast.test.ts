@@ -11,11 +11,12 @@ describe('/bookings/past', () => {
     const booking = res.json.booking;
 
     // Fast-forward to after the booking
-    await mockCurrentTime(minutesFromBase(70));
-    res = await api.pastBookings(token);
+    await mockCurrentTime(minutesFromBase(80));
+    res = await api.pastBookings(token, 1, 5, 'all', 'newest');
     expect(res.status).toStrictEqual(200);
     expect(res.json).toEqual({
       bookings: [booking],
+      total: 1,
     });
   });
 });
