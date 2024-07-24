@@ -49,6 +49,10 @@ function upcomingBookings(token: string) {
   return apiCall('/bookings/upcoming', 'GET', undefined, token);
 }
 
+function pastBookings(token: string) {
+  return apiCall('/bookings/past', 'GET', undefined, token);
+}
+
 export default {
   login,
   logout,
@@ -56,4 +60,5 @@ export default {
   deleteBooking,
   currentBookings,
   upcomingBookings,
+  pastBookings,
 };
