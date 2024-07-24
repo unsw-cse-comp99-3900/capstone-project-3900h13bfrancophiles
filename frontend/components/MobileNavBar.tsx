@@ -17,9 +17,9 @@ import NextLink from "next/link";
 import React from "react";
 import { Menu as MenuIcon } from "@mui/icons-material";
 import LogoutButton from "@/components/LogoutButton";
-import { NavData } from '@/types';
+import { NavData } from "@/types";
 
-const NavBar = ({ navItems } : { navItems: NavData[] }) => {
+const NavBar = ({ navItems }: { navItems: NavData[] }) => {
   const [open, setOpen] = React.useState(false);
 
   return (
@@ -34,20 +34,11 @@ const NavBar = ({ navItems } : { navItems: NavData[] }) => {
           alignItems="center"
         >
           <NextLink href="/">
-            <AspectRatio
-              variant="plain"
-              ratio="15/12"
-              objectFit="contain"
-              sx={{ width: 60 }}
-            >
+            <AspectRatio variant="plain" ratio="15/12" objectFit="contain" sx={{ width: 60 }}>
               <Image fill src="/roomalloclogo.svg" alt="logo" />
             </AspectRatio>
           </NextLink>
-          <IconButton
-            variant="plain"
-            color="neutral"
-            onClick={() => setOpen(true)}
-          >
+          <IconButton variant="plain" color="neutral" onClick={() => setOpen(true)}>
             <MenuIcon sx={{ fontSize: "2.2rem" }} />
           </IconButton>
         </Stack>
@@ -63,20 +54,11 @@ interface MenuDrawerProps {
   navItems: NavData[];
 }
 
-const MenuDrawer: React.FC<MenuDrawerProps> = ({
-  open,
-  setOpen,
-  navItems,
-}) => {
+const MenuDrawer: React.FC<MenuDrawerProps> = ({ open, setOpen, navItems }) => {
   return (
     <Drawer anchor="right" open={open} onClose={() => setOpen(false)}>
       <Link component={NextLink} href="/" mx="auto" my={2}>
-        <AspectRatio
-          variant="plain"
-          ratio="15/4"
-          objectFit="contain"
-          sx={{ width: 200 }}
-        >
+        <AspectRatio variant="plain" ratio="15/4" objectFit="contain" sx={{ width: 200 }}>
           <Image fill src="/roomalloclogo.svg" alt="logo" />
         </AspectRatio>
       </Link>
@@ -111,12 +93,7 @@ const MenuDrawer: React.FC<MenuDrawerProps> = ({
       </List>
       <Divider />
       <Stack mx="auto" my={2}>
-        <AspectRatio
-          variant="plain"
-          ratio="15/15"
-          objectFit="contain"
-          sx={{ width: 35 }}
-        >
+        <AspectRatio variant="plain" ratio="15/15" objectFit="contain" sx={{ width: 35 }}>
           <LogoutButton />
         </AspectRatio>
       </Stack>

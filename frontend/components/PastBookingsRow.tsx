@@ -28,11 +28,7 @@ export default function PastBookingsRow({ row }: PastBookingRowProps) {
       <td>
         <Skeleton loading={isLoading}>
           <Link
-            href={
-              type === "room"
-                ? `/rooms/${row.spaceid}`
-                : `/desks/${row.spaceid}`
-            }
+            href={type === "room" ? `/rooms/${row.spaceid}` : `/desks/${row.spaceid}`}
             level="body-sm"
             component={NextLink}
           >
