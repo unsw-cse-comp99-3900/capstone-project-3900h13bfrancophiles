@@ -104,7 +104,7 @@ const RoomCard: React.FC<RoomCardProps> = ({
               </Typography>
             </Link>
             <Tooltip title={bookable ? "" : "You do not have permission to book this space"} variant="solid">
-              <div>
+              <div style={{ zIndex: '1' }}>
                 <IconButton disabled={!bookable} onClick={() => handleBook(room)}>
                   <FontAwesomeIcon fontSize="24px" icon={faCalendarPlus} />
                 </IconButton>
