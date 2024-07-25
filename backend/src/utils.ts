@@ -13,8 +13,8 @@ import { AnonymousBooking, Booking, BookingStatus, USER_GROUPS, UserGroup } from
  * time.
  */
 export function formatBookingDates(booking: Booking) {
-  booking.starttime = new Date(booking.starttime + "Z").toISOString();
-  booking.endtime = new Date(booking.endtime + "Z").toISOString();
+  booking.starttime = new Date(booking.starttime + 'Z').toISOString();
+  booking.endtime = new Date(booking.endtime + 'Z').toISOString();
   return booking;
 }
 
