@@ -45,6 +45,7 @@ const BookingModal: React.FC<BookingModalProps> = ({
   const [state, setState] = React.useState<ModalState>("form");
   const [error, setError] = React.useState<string>();
   const [booking, setBooking] = React.useState<Booking>();
+  const [isLoading, setIsLoading] = React.useState(false);
 
   // Form state
   const [space, setSpace] = React.useState<SpaceOption | null>(initialSpace ?? null);
@@ -84,9 +85,11 @@ const BookingModal: React.FC<BookingModalProps> = ({
         setState("form");
         return;
       }
+      setIsLoading(true);
       const res = editing
         ? await editBooking(editedBooking!, start.toISOString(), end.toISOString(), space.id, desc)
         : await createBooking(space.id, start.toISOString(), end.toISOString(), desc);
+      setIsLoading(false);
       setBooking(res.booking);
       setState("submitted");
     } catch (e: any) {
@@ -167,6 +170,7 @@ const BookingModal: React.FC<BookingModalProps> = ({
               handleSubmit={onSubmit}
               handleBack={() => setState("form")}
               handleClose={onModalClose}
+              isLoading={isLoading}
             />
           )
         );
