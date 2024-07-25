@@ -34,8 +34,8 @@ export async function createToken(user: number, group: UserGroup) {
   const iat = Math.floor((await now()).getTime() / 1000);
   const exp = iat + EXPIRY_TIME_MS / 1000;
 
-  const token = await new SignJWT({...payload})
-    .setProtectedHeader({alg: 'HS256', typ: 'JWT'})
+  const token = await new SignJWT({ ...payload })
+    .setProtectedHeader({ alg: 'HS256', typ: 'JWT' })
     .setExpirationTime(exp)
     .setIssuedAt(iat)
     .sign(ENCODED_SECRET);
@@ -48,12 +48,12 @@ export async function verifyToken(token: string): Promise<TokenPayload> {
   const { payload } = await jwtVerify<TokenPayload>(token, ENCODED_SECRET, {
     currentDate: await now(),
   });
-  return { id: payload.id, user: payload.user, group: payload.group }
+  return { id: payload.id, user: payload.user, group: payload.group };
 }
 
 export function decodeToken(token: string): TokenPayload {
   const payload = decodeJwt<TokenPayload>(token);
-  return { id: payload.id, user: payload.user, group: payload.group }
+  return { id: payload.id, user: payload.user, group: payload.group };
 }
 
 export function invalidateToken(token: string) {

@@ -13,7 +13,14 @@ import { login, logout } from './auth/handlers';
 import { authoriseAtLeast, validateToken } from './auth/middleware';
 import { currentBookings, pastBookings, rangeOfBookings, upcomingBookings } from './booking/fetchBookings';
 import { checkInBooking, checkOutBooking, deleteBooking, createBooking, editBooking } from './booking/manageBookings';
-import { allSpaces, roomDetails, singleSpaceDetails, spaceAvailabilities, roomCanBook, deskPositions } from './spaces/handlers';
+import {
+  allSpaces,
+  roomDetails,
+  singleSpaceDetails,
+  spaceAvailabilities,
+  roomCanBook,
+  deskPositions,
+} from './spaces/handlers';
 import { spaceStatus } from './status/handlers';
 import { userDetails } from './user/handlers';
 
