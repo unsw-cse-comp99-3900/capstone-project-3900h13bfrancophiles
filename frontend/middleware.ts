@@ -19,7 +19,6 @@ export async function middleware(req: NextRequest) {
     group = undefined;
   }
 
-
   if (req.nextUrl.pathname === "/login") {
     // Send through to site if authenticated
     if (isAuthenticated) {
@@ -33,7 +32,7 @@ export async function middleware(req: NextRequest) {
 
     if (req.nextUrl.pathname === "/admin") {
       // Redirect to dashboard if user is not admin
-      if (group == "admin") {
+      if (group !== "admin") {
         return NextResponse.redirect(new URL("/dashboard", req.url));
       }
     }
