@@ -42,6 +42,12 @@ const AvailabilitiesPage : React.FC<AvailabilitesPageProps> = ({
 
   if (spaceLoading) return <Loading page="" />;
 
+  const subheadings = {
+    "Room ID": room?.id,
+    "Usage": room?.type,
+    "Capacity": room?.capacity
+  }
+
   return (
     <>
       <BookingModal
@@ -91,32 +97,22 @@ const AvailabilitiesPage : React.FC<AvailabilitesPageProps> = ({
               mb={3}
               sx={{ display: {xs: "none", sm: "flex"}}}
             >
-              <Stack>
-                <Typography level="h4" sx={{ color: "gray" }}>
-                  Room ID
-                </Typography>
-                <Typography level="h3">
-                  {room?.id}
-                </Typography>
-              </Stack>
-              <Stack>
-                <Typography level="h4" sx={{ color: "gray" }}>
-                  Usage
-                </Typography>
-                <Typography level="h3">
-                  {room?.type}
-                </Typography>
-              </Stack>
-              <Stack>
-                <Typography level="h4" sx={{ color: "gray" }}>
-                  Capacity
-                </Typography>
-                <Typography level="h3">
-                  {room?.capacity}
-                </Typography>
-              </Stack>
+              {
+                Object.entries(subheadings).map(([heading, value]) => {
+                  return (
+                    <Stack>
+                      <Typography level="h4" sx={{ color: "gray" }}>
+                        {heading}
+                      </Typography>
+                      <Typography level="h3">
+                        {value}
+                      </Typography>
+                    </Stack>
+                  )
+                })
+              }
             </Stack>
-            {/* dislplay for mobile */}
+            {/* display for mobile */}
             <Grid
               container
               spacing={1}
@@ -126,36 +122,24 @@ const AvailabilitiesPage : React.FC<AvailabilitesPageProps> = ({
               }}
               mb={2}
             >
-              <Grid xs={4}>
-                <Typography level="h4" sx={{ color: "gray" }}>
-                  Room ID
-                </Typography>
-              </Grid>
-              <Grid xs={8}>
-                <Typography level="h3">
-                  {room?.id}
-                </Typography>
-              </Grid>
-              <Grid xs={4}>
-                <Typography level="h4" sx={{ color: "gray" }}>
-                  Usage
-                </Typography>
-              </Grid>
-              <Grid xs={8}>
-                <Typography level="h3">
-                  {room?.type}
-                </Typography>
-              </Grid>
-              <Grid xs={4}>
-                <Typography level="h4" sx={{ color: "gray" }}>
-                  Capacity
-                </Typography>
-              </Grid>
-              <Grid xs={8}>
-                <Typography level="h3">
-                  {room?.capacity}
-                </Typography>
-              </Grid>
+              {
+                Object.entries(subheadings).map(([heading, value]) => {
+                  return (
+                    <>
+                      <Grid xs={4}>
+                        <Typography level="h4" sx={{ color: "gray" }}>
+                          {heading}
+                        </Typography>
+                      </Grid>
+                      <Grid xs={8}>
+                        <Typography level="h3">
+                          {value}
+                        </Typography>
+                      </Grid>
+                    </>
+                  )
+                })
+              }
             </Grid>
           </>
         }
