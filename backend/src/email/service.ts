@@ -1,5 +1,5 @@
-import { eq } from 'drizzle-orm';
-import { person } from '../../drizzle/schema';
+import { eq, and, isNotNull } from 'drizzle-orm';
+import { person, config } from '../../drizzle/schema';
 
 import { db, emailTransporter } from '../index';
 import { fillEmailTemplate } from './template';
@@ -8,6 +8,26 @@ import { Booking, EmailContents, EmailRecipient } from '../types';
 // For testing
 const EMAIL_SENDER = '"Wilma 👻" <wilma44@ethereal.email>';
 const EMAIL_PASS = 'GWCxu8xEeJAwGAMGzF';
+
+export async function emailsEnabledGlobally(): Promise<boolean> {
+  try {
+    const result = await db
+      .select({ value: config.value})
+      .from(config)
+      .where(and(eq(config.key, 'global-email'), isNotNull(config.value)))
+      .limit(1);
+
+    if (result.length !== 1) {
+      throw new Error('Config global-email not found in database!');
+    }
+
+    const value = (result[0]?.value ?? '').toLowerCase() === 'true';
+
+    return value;
+  } catch (e: any) {
+    throw new Error(`Error fetching global-email config: ${e}`);
+  }
+}
 
 export async function getEmailRecipient(zid: number): Promise<EmailRecipient> {
   const res = await db
@@ -26,7 +46,14 @@ export async function getEmailRecipient(zid: number): Promise<EmailRecipient> {
   return res[0];
 }
 
-export async function sendBookingEmail(zid: number, booking: Booking, template: EmailContents) {
+export async function sendBookingEmail(zid: number, booking: Booking, template: EmailContents): Promise<boolean> {
+  // Check that email sending is enabled globally
+  if (!emailsEnabledGlobally()) {
+    return false;
+  }
+
+  // Check if recipient has this email setting type turned off
+
   const emailRecipient = await getEmailRecipient(zid);
 
   const emailContent = {
@@ -48,4 +75,6 @@ export async function sendBookingEmail(zid: number, booking: Booking, template: 
     text: email.text,
     html: email.html,
   });
+
+  return true;
 }
