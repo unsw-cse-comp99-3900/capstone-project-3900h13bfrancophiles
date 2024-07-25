@@ -3,6 +3,9 @@ import { Booking, TypedGETRequest, TypedRequest, TypedResponse } from '../types'
 import { db } from '../index';
 import { booking } from '../../drizzle/schema';
 import { and, asc, count, desc, eq, gt, lt } from 'drizzle-orm';
+
+import { sendBookingEmail } from '../email/service';
+import { BOOKING_DECLINE, BOOKING_APPROVE } from '../email/template';
 import { formatBookingDates, now } from '../utils';
 
 interface PendingBookingsRequest {
@@ -87,13 +90,17 @@ export async function approveBooking(req: TypedRequest<{ id: number }>, res: Typ
         )
         .returning();
 
-      // Notify users about declined bookings
-      for (const declinedBooking of declinedBookings) {
-        // TODO: Send email to each user about their declined booking
+      // Notify users about declined overlapping bookings
+      const formattedDeclinedBookings = declinedBookings.map(formatBookingDates);
+      for (const declinedBooking of formattedDeclinedBookings) {
+        await sendBookingEmail(req.token.user, declinedBooking, BOOKING_DECLINE);
       }
+
+      const formattedBooking = formatBookingDates(updatedBookingDetails);
+      await sendBookingEmail(req.token.user, formattedBooking, BOOKING_APPROVE);
+
     });
 
-    // TODO: Send email to user that booking has been approved
     res.status(200).json({ message: 'Booking approved and overlapping bookings declined' });
   } catch (error) {
     res.status(500).json({ error: 'Internal server error' });
