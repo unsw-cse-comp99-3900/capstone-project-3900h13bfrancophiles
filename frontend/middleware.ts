@@ -36,6 +36,23 @@ export async function middleware(req: NextRequest) {
         return NextResponse.redirect(new URL("/dashboard", req.url));
       }
     }
+
+    if (req.nextUrl.pathname === "/desks") {
+      // Redirect to dashboard if user is Other
+      const token = getCookie("token", { req, res });
+
+      let canBookDesks;
+      try {
+        const { payload } = await jwtVerify(`${token}`, ENCODED_SECRET);
+        canBookDesks = payload.group !== "other";
+      } catch (e: any) {
+        canBookDesks = false;
+      }
+
+      if (!canBookDesks) {
+        return NextResponse.redirect(new URL("/dashboard", req.url));
+      }
+    }
   }
 
   return res;
