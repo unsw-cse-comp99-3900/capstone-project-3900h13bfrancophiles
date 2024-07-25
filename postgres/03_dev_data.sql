@@ -71,7 +71,7 @@ INSERT INTO person VALUES (
   'CSE',
   'ENG',
   'Academic',
-  'hdr',
+  'other',
   null
 );
 
@@ -108,7 +108,6 @@ INSERT INTO booking (zId, startTime, endTime, spaceId, currentStatus, descriptio
     (7654321, '2024-08-22T03:00', '2024-08-22T05:00', 'K-K17-201-1', 'confirmed', 'doing research'),
     (7654321, '2024-08-23T03:00', '2024-08-23T05:00', 'K-K17-201-3', 'confirmed', 'studying'),
     (7654321, '2024-08-24T03:00', '2024-08-24T05:00', 'K-K17-201-2', 'confirmed', 'doing research');
-
 
 
 -- Reenable triggers for prod
