@@ -1,22 +1,14 @@
 "use client";
 
 import * as React from "react";
-import {
-  Card,
-  CardContent,
-  CardOverflow,
-  IconButton,
-  Stack,
-  Typography,
-  Link
-} from "@mui/joy";
+import { Card, CardContent, CardOverflow, IconButton, Stack, Typography, Link } from "@mui/joy";
 import PeopleIcon from "@mui/icons-material/People";
 import MeetingRoomOutlinedIcon from "@mui/icons-material/MeetingRoomOutlined";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCalendarPlus } from "@fortawesome/free-regular-svg-icons";
 import { Room } from "@/types";
 import useSpaceStatus from "@/hooks/useSpaceStatus";
-import NextLink from 'next/link'
+import NextLink from "next/link";
 
 interface RoomCardProps {
   room: Room;
@@ -25,16 +17,8 @@ interface RoomCardProps {
   datetimeEnd: string;
 }
 
-const RoomCard: React.FC<RoomCardProps> = ({
-  room,
-  handleBook,
-  datetimeStart,
-  datetimeEnd,
-}) => {
-  const { statusResponse, isLoading, error } = useSpaceStatus(
-    datetimeStart,
-    datetimeEnd
-  );
+const RoomCard: React.FC<RoomCardProps> = ({ room, handleBook, datetimeStart, datetimeEnd }) => {
+  const { statusResponse, isLoading, error } = useSpaceStatus(datetimeStart, datetimeEnd);
 
   let availability = "";
 
@@ -53,23 +37,14 @@ const RoomCard: React.FC<RoomCardProps> = ({
         boxShadow: "lg",
         "&:hover": {
           transform: "scale(1.05)",
-          transition: "all .2s ease-in-out;"
-        }
+          transition: "all .2s ease-in-out;",
+        },
       }}
     >
       <CardContent>
         <Stack spacing={"10px"}>
-          <Stack
-            justifyContent="space-between"
-            alignItems="center"
-            sx={{ flexDirection: "row" }}
-          >
-            <Link
-              overlay
-              href={`/rooms/${room.id}`}
-              underline="none"
-              component={NextLink}
-            >
+          <Stack justifyContent="space-between" alignItems="center" sx={{ flexDirection: "row" }}>
+            <Link overlay href={`/rooms/${room.id}`} underline="none" component={NextLink}>
               <Typography level="title-lg" sx={{ mt: 1, fontWeight: "xl" }}>
                 {room.name}
               </Typography>
@@ -78,10 +53,7 @@ const RoomCard: React.FC<RoomCardProps> = ({
               <FontAwesomeIcon fontSize="24px" icon={faCalendarPlus} />
             </IconButton>
           </Stack>
-          <Typography
-            level="body-sm"
-            startDecorator={<MeetingRoomOutlinedIcon />}
-          >
+          <Typography level="body-sm" startDecorator={<MeetingRoomOutlinedIcon />}>
             {room.type}
           </Typography>
           <Typography level="body-sm" startDecorator={<PeopleIcon />}>
@@ -95,8 +67,8 @@ const RoomCard: React.FC<RoomCardProps> = ({
           availability === "Available"
             ? "success"
             : availability === "Unavailable"
-            ? "danger"
-            : "neutral"
+              ? "danger"
+              : "neutral"
         }
         sx={{ padding: "8px", alignItems: "center", flexWrap: "wrap" }}
       >

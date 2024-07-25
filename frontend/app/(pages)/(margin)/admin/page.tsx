@@ -1,5 +1,5 @@
 import PendingBookings from "@/components/PendingBookings";
-import {Stack, Typography} from "@mui/joy";
+import { Stack, Typography } from "@mui/joy";
 import Box from "@mui/joy/Box";
 
 export default function Admin() {
@@ -8,8 +8,8 @@ export default function Admin() {
       <Box>
         <Typography level="h1">Admin Dashboard</Typography>
         <Typography level="h2">Booking Requests</Typography>
-        <PendingBookings/>
+        <PendingBookings />
       </Box>
     </Stack>
-  )
+  );
 }

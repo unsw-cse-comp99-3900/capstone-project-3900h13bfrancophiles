@@ -42,22 +42,14 @@ export interface PendingBookingRowProps {
   sort: string;
 }
 
-function PendingBookingsRow({
-  row,
-  page,
-  rowsPerPage,
-  sort,
-}: PendingBookingRowProps) {
+function PendingBookingsRow({ row, page, rowsPerPage, sort }: PendingBookingRowProps) {
   const { space, isLoading: spaceIsLoading } = useSpace(row.spaceid);
   const { user, isLoading: userIsLoading } = useUser(row.zid);
 
   const [isConfirmationOpen, setIsConfirmationOpen] = React.useState(false);
-  const [isApprovingOrDeclining, setIsApprovingOrDeclining] =
-    React.useState(false);
+  const [isApprovingOrDeclining, setIsApprovingOrDeclining] = React.useState(false);
   const [approving, setApproving] = React.useState(false);
-  const [approveDeclineError, setApproveDeclineError] = React.useState<
-    string | null
-  >(null);
+  const [approveDeclineError, setApproveDeclineError] = React.useState<string | null>(null);
 
   const handleApproveDecline = async () => {
     setIsApprovingOrDeclining(true);
@@ -65,11 +57,7 @@ function PendingBookingsRow({
       // approve booking
       try {
         await approveBooking(row.id);
-        await mutate(
-          `/admin/bookings/pending?page=${
-            page + 1
-          }&limit=${rowsPerPage}&sort=${sort}`
-        );
+        await mutate(`/admin/bookings/pending?page=${page + 1}&limit=${rowsPerPage}&sort=${sort}`);
       } catch (error) {
         if (error instanceof Error) {
           setApproveDeclineError(error.message);
@@ -86,11 +74,7 @@ function PendingBookingsRow({
       // Decline booking
       try {
         await declineBooking(row.id);
-        await mutate(
-          `/admin/bookings/pending?page=${
-            page + 1
-          }&limit=${rowsPerPage}&sort=${sort}`
-        );
+        await mutate(`/admin/bookings/pending?page=${page + 1}&limit=${rowsPerPage}&sort=${sort}`);
       } catch (error) {
         if (error instanceof Error) {
           setApproveDeclineError(error.message);
@@ -123,9 +107,7 @@ function PendingBookingsRow({
           <Skeleton loading={userIsLoading}>
             <Stack direction="row" alignItems="center" gap={2}>
               <Avatar color="primary">
-                {user?.fullname === undefined
-                  ? ""
-                  : getInitials(user?.fullname)}
+                {user?.fullname === undefined ? "" : getInitials(user?.fullname)}
               </Avatar>
               <Stack direction="column">
                 <Typography level="body-sm" fontWeight="lg">
@@ -164,10 +146,7 @@ function PendingBookingsRow({
           </Stack>
         </td>
       </tr>
-      <Modal
-        open={isConfirmationOpen}
-        onClose={() => setIsConfirmationOpen(false)}
-      >
+      <Modal open={isConfirmationOpen} onClose={() => setIsConfirmationOpen(false)}>
         <ModalDialog variant="outlined" role="alertdialog">
           <DialogTitle>
             {approving
@@ -177,9 +156,7 @@ function PendingBookingsRow({
           <Divider />
           <DialogContent>
             Are you sure you want to{" "}
-            {approving
-              ? "approve this booking request "
-              : "decline this booking request"}
+            {approving ? "approve this booking request " : "decline this booking request"}
             ?
             <br />
             {/* TODO: Show the overlapping bookings and display how many there are */}
@@ -194,11 +171,7 @@ function PendingBookingsRow({
             >
               {approving ? "Approve" : "Decline"}
             </Button>
-            <Button
-              variant="plain"
-              color="neutral"
-              onClick={() => setIsConfirmationOpen(false)}
-            >
+            <Button variant="plain" color="neutral" onClick={() => setIsConfirmationOpen(false)}>
               Cancel
             </Button>
           </DialogActions>
@@ -218,11 +191,7 @@ export default function PendingBookings() {
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
   const [sort, setSort] = React.useState("soonest");
-  const { pendingBookings, total, isLoading } = usePendingBookings(
-    page + 1,
-    rowsPerPage,
-    sort
-  );
+  const { pendingBookings, total, isLoading } = usePendingBookings(page + 1, rowsPerPage, sort);
 
   const handleChangePage = (newPage: number) => {
     setPage(newPage);
@@ -254,11 +223,7 @@ export default function PendingBookings() {
       <Stack direction="row" width="100%" my={1} spacing={1}>
         <Box width="150px">
           Sort
-          <Select
-            defaultValue="soonest"
-            placeholder="Soonest"
-            onChange={handleChangeSort}
-          >
+          <Select defaultValue="soonest" placeholder="Soonest" onChange={handleChangeSort}>
             <Option value="soonest">Soonest</Option>
             <Option value="latest">Latest</Option>
           </Select>
@@ -280,11 +245,9 @@ export default function PendingBookings() {
           stickyHeader
           hoverRow={!!pendingBookings?.length}
           sx={{
-            "--TableCell-headBackground":
-              "var(--joy-palette-background-level1)",
+            "--TableCell-headBackground": "var(--joy-palette-background-level1)",
             "--Table-headerUnderlineThickness": "1px",
-            "--TableRow-hoverBackground":
-              "var(--joy-palette-background-level1)",
+            "--TableRow-hoverBackground": "var(--joy-palette-background-level1)",
             "--TableCell-paddingY": "4px",
             "--TableCell-paddingX": "8px",
           }}
@@ -299,7 +262,7 @@ export default function PendingBookings() {
             </tr>
           </thead>
           <tbody>
-            {!!pendingBookings?.length ? (
+            {pendingBookings?.length ? (
               pendingBookings.map((row) => (
                 <PendingBookingsRow
                   key={row.id}
@@ -310,11 +273,7 @@ export default function PendingBookings() {
                 />
               ))
             ) : (
-              <NoBookingsRow
-                bookingType="Pending"
-                colSpan={numColumns}
-                isLoading={isLoading}
-              />
+              <NoBookingsRow bookingType="Pending" colSpan={numColumns} isLoading={isLoading} />
             )}
           </tbody>
           <tfoot>
@@ -330,11 +289,7 @@ export default function PendingBookings() {
                 >
                   <FormControl orientation="horizontal" size="sm">
                     <FormLabel>Rows per page:</FormLabel>
-                    <Select
-                      onChange={handleChangeRowsPerPage}
-                      placeholder="5"
-                      value={rowsPerPage}
-                    >
+                    <Select onChange={handleChangeRowsPerPage} placeholder="5" value={rowsPerPage}>
                       <Option value={5}>5</Option>
                       <Option value={10}>10</Option>
                       <Option value={25}>25</Option>
@@ -344,7 +299,7 @@ export default function PendingBookings() {
                     {labelDisplayedRows(
                       pendingBookings ? page * rowsPerPage + 1 : 0,
                       getLabelDisplayedRowsTo(),
-                      total ?? 0
+                      total ?? 0,
                     )}
                   </Typography>
                   <Box sx={{ display: "flex", gap: 1 }}>
@@ -362,9 +317,7 @@ export default function PendingBookings() {
                       size="sm"
                       color="neutral"
                       variant="outlined"
-                      disabled={
-                        page >= Math.ceil((total ?? 0) / rowsPerPage) - 1
-                      }
+                      disabled={page >= Math.ceil((total ?? 0) / rowsPerPage) - 1}
                       onClick={() => handleChangePage(page + 1)}
                       sx={{ bgcolor: "background.surface" }}
                     >

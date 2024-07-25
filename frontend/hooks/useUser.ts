@@ -1,6 +1,6 @@
-import useSWR from 'swr';
-import { swrFetcher } from '@/api';
-import {BookingUser} from '@/types';
+import useSWR from "swr";
+import { swrFetcher } from "@/api";
+import { BookingUser } from "@/types";
 
 /**
  * Hook to fetch user details given zid
