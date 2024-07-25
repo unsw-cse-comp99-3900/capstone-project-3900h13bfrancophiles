@@ -10,7 +10,7 @@ export default function Admin() {
         <Typography level="h1">Admin Dashboard</Typography>
         <Typography level="h2" gutterBottom>Generate Report</Typography>
         <ReportGenerationForm />
-        <Typography level="h2" mt={3}>Booking Requests</Typography>
+        <Typography level="h2" mt={5}>Booking Requests</Typography>
         <PendingBookings />
       </Box>
     </Stack>
