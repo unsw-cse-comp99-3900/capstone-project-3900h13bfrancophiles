@@ -192,14 +192,11 @@ export async function deleteBooking(req: TypedRequest<{ id: number }>, res: Type
         .returning();
 
       formattedBooking = formatBookingDates(res[0]);
+      sendBookingEmail(req.token.user, formattedBooking, BOOKING_DELETE);
     } catch (e: any) {
       res.status(400).json({ error: `${e}` });
       return;
     }
-
-    sendBookingEmail(req.token.user, formattedBooking, BOOKING_DELETE);
-
-    // TODO: trigger admin reapproval if newStatus is pending
 
     res.json({ booking: formattedBooking });
   } catch (error) {
