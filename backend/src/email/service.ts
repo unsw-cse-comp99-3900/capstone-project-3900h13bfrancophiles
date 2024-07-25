@@ -14,11 +14,11 @@ export async function emailsEnabledGlobally(): Promise<boolean> {
     const result = await db
       .select({ value: config.value})
       .from(config)
-      .where(and(eq(config.key, 'global-email'), isNotNull(config.value)))
+      .where(eq(config.key, 'global-email'))
       .limit(1);
 
     if (result.length !== 1) {
-      throw new Error('Config global-email not found in database!');
+      return false;
     }
 
     const value = (result[0]?.value ?? '').toLowerCase() === 'true';
@@ -48,7 +48,8 @@ export async function getEmailRecipient(zid: number): Promise<EmailRecipient> {
 
 export async function sendBookingEmail(zid: number, booking: Booking, template: EmailContents): Promise<boolean> {
   // Check that email sending is enabled globally
-  if (!emailsEnabledGlobally()) {
+  const sendEmail = await emailsEnabledGlobally();
+  if (!sendEmail) {
     return false;
   }
 
