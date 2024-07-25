@@ -38,14 +38,14 @@ interface Option {
 const options: Option[] = [
   { text: "All Desks", value: "all", type: "desk" },
   { text: "All Rooms", value: "all", type: "room" },
-  { text: "K17 201-B", value: "K-K17-201B", type: "room", level: "K17 L2" },
-  { text: "K17 201 Desks", value: "K-K17-201", type: "desk", level: "K17 L2" },
-  { text: "K17 217 Desks", value: "K-K17-217", type: "desk", level: "K17 L2" },
-  { text: "K17 401 K", value: "K-K17-401K", type: "room", level: "K17 L4" },
-  { text: "K17 402", value: "K-K17-402", type: "room", level: "K17 L4" },
-  { text: "K17 403", value: "K-K17-403", type: "room", level: "K17 L4" },
-  { text: "K17 401 Desks", value: "K-K17-401", type: "desk", level: "K17 L4" },
-  { text: "K17 412 Desks", value: "K-K17-412", type: "desk", level: "K17 L4" },
+  { text: "K17 Room 201-B", value: "K-K17-201B", type: "room", level: "K17 L2" },
+  { text: "K17 Room 201 Desks", value: "K-K17-201", type: "desk", level: "K17 L2" },
+  { text: "K17 Room 217 Desks", value: "K-K17-217", type: "desk", level: "K17 L2" },
+  { text: "K17 Room 401 K", value: "K-K17-401K", type: "room", level: "K17 L4" },
+  { text: "K17 Room 402", value: "K-K17-402", type: "room", level: "K17 L4" },
+  { text: "K17 Room 403", value: "K-K17-403", type: "room", level: "K17 L4" },
+  { text: "K17 Room 401 Desks", value: "K-K17-401", type: "desk", level: "K17 L4" },
+  { text: "K17 Room 412 Desks", value: "K-K17-412", type: "desk", level: "K17 L4" },
 ];
 
 interface ReportType {
