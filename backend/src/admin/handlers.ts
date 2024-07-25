@@ -93,11 +93,11 @@ export async function approveBooking(req: TypedRequest<{ id: number }>, res: Typ
       // Notify users about declined overlapping bookings
       const formattedDeclinedBookings = declinedBookings.map(formatBookingDates);
       for (const declinedBooking of formattedDeclinedBookings) {
-        sendBookingEmail(req.token.user, declinedBooking, BOOKING_DECLINE);
+        await sendBookingEmail(req.token.user, declinedBooking, BOOKING_DECLINE);
       }
 
       const formattedBooking = formatBookingDates(updatedBookingDetails);
-      sendBookingEmail(req.token.user, formattedBooking, BOOKING_APPROVE);
+      await sendBookingEmail(req.token.user, formattedBooking, BOOKING_APPROVE);
 
     });
 
