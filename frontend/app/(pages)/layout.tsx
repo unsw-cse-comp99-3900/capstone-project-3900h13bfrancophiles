@@ -22,13 +22,13 @@ export default function Layout({
   const token = getCookie("token", { cookies });
   if (token) {
     const tokenPayload = decodeJwt<TokenPayload>(`${token}`);
-    if (tokenPayload.group === "admin") {
-      navItems.push({ text: "Admin", href: "/admin" });
-    }
-
     // HDR and above can book desks, Other cannot
     if (tokenPayload.group !== "other") {
       navItems.push({ text: "Desks", href: "/desks" });
+    }
+
+    if (tokenPayload.group === "admin") {
+      navItems.push({ text: "Admin", href: "/admin" });
     }
   }
 
