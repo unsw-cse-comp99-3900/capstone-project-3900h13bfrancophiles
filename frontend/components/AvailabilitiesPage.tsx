@@ -1,12 +1,13 @@
 import * as React from "react";
-import { Box, Stack, Typography, Button } from "@mui/joy";
+import {Box, Stack, Typography, Button, Tooltip} from "@mui/joy";
 import useSpace from "@/hooks/useSpace";
 import useAvailabilities from "@/hooks/useAvailabilities";
-import { Space, Room, Desk, SpaceType } from "@/types";
+import {Room, Desk} from "@/types";
 import Loading from "@/components/Loading";
 import AvailabilityCalendar from "@/components/AvailabilityCalendar";
 import BookingModal from "@/components/BookingModal/BookingModal";
 import Error from "@/components/Error";
+import useRoomCanBook from "@/hooks/useRoomCanBook";
 
 interface AvailabilitesPageProps {
   spaceId: string;
@@ -22,6 +23,7 @@ const AvailabilitiesPage: React.FC<AvailabilitesPageProps> = ({ spaceId, spaceTy
   const desk = space as Desk;
 
   const [openModal, setOpenModal] = React.useState<boolean>(false);
+  const { canBook } = useRoomCanBook(spaceId)
 
   if (spaceType !== spaceOutput.type || spaceOutput.error)
     return <Error page={`${spaceType}s/${spaceId}`} message={`${spaceType} ID not found`} />;
@@ -45,15 +47,18 @@ const AvailabilitiesPage: React.FC<AvailabilitesPageProps> = ({ spaceId, spaceTy
           <Typography level="h1">
             {spaceType === "room" ? `${room!.type} ${room!.name}` : `${desk!.name}`}
           </Typography>
-          <Button
-            color="success"
-            variant="solid"
-            onClick={() => {
-              setOpenModal(true);
-            }}
-          >
-            Book Now
-          </Button>
+          <Tooltip title={canBook ? "" : "You do not have permission to book this space"} variant="solid">
+            <Box>
+              <Button
+                color="success"
+                variant="solid"
+                disabled={!canBook}
+                onClick={() => {setOpenModal(true)}}
+              >
+                Book Now
+              </Button>
+            </Box>
+          </Tooltip>
         </Stack>
         {spaceType === "room" ? (
           <Stack

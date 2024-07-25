@@ -88,8 +88,8 @@ INSERT INTO booking (zId, startTime, endTime, spaceId, currentStatus, descriptio
     (1234567, '2024-01-14T13:30', '2024-01-014T14:30', 'K-K17-B01', 'confirmed', 'meeting'),
 
     -- Admin upcoming room bookings
-    (1234567, '2024-07-25T10:30', '2024-07-25T11:30', 'K-K17-B01', 'confirmed', 'class'),
-    (1234567, '2024-07-25T11:30', '2024-07-25T12:30', 'K-K17-B01', 'confirmed', 'studying'),
+    (1234567, '2024-08-25T10:30', '2024-07-25T11:30', 'K-K17-B01', 'confirmed', 'class'),
+    (1234567, '2024-08-25T11:30', '2024-07-25T12:30', 'K-K17-B01', 'confirmed', 'studying'),
 
     -- Admin upcoming desk bookings
     (1234567, '2024-07-25T03:00', '2024-07-25T05:00', 'K-K17-301-11', 'confirmed', 'studying'),
@@ -108,18 +108,6 @@ INSERT INTO booking (zId, startTime, endTime, spaceId, currentStatus, descriptio
     (7654321, '2024-08-22T03:00', '2024-08-22T05:00', 'K-K17-201-1', 'confirmed', 'doing research'),
     (7654321, '2024-08-23T03:00', '2024-08-23T05:00', 'K-K17-201-3', 'confirmed', 'studying'),
     (7654321, '2024-08-24T03:00', '2024-08-24T05:00', 'K-K17-201-2', 'confirmed', 'doing research'),
-
-    --------------------------------------------------------------------------------------------
-    -- DEMO BOOKINGS
-    -- Current bookings- monday 10am - 4pm SYD time
-    (1234567, '2024-07-23T00:00', '2024-07-23T06:00', 'K-K17-201-2', 'confirmed', 'current desk booking demo'),
-    (7654321, '2024-07-23T00:00', '2024-07-23T06:00', 'K-J17-504', 'confirmed', 'current booking demo'),
-    (7654322, '2024-07-23T00:00', '2024-07-23T06:00', 'K-K17-201-3', 'confirmed', 'current desk booking demo'),
-    (7654333, '2024-07-23T00:00', '2024-07-23T06:00', 'K-K17-301-15', 'confirmed', 'current desk booking demo'),
-    (7654444, '2024-07-23T00:00', '2024-07-23T06:00', 'K-K17-301-16', 'confirmed', 'current desk booking demo'),
-    (7655555, '2024-07-23T00:00', '2024-07-23T06:00', 'K-K17-301-12', 'confirmed', 'current desk booking demo'),
-    (7666666, '2024-07-23T00:00', '2024-07-23T06:00', 'K-K17-201-4', 'confirmed', 'current desk booking demo');
-
 
 
 
