@@ -1,8 +1,17 @@
-import { eq, and, asc, gt, sql } from 'drizzle-orm';
+import { eq, and, asc, sql } from 'drizzle-orm';
 import { hotdesk, room, space, booking } from '../../drizzle/schema';
 
 import { db } from '../index';
-import {TypedGETRequest, TypedResponse, Room, Space, AnonymousBooking, SpaceType, UserGroup} from '../types';
+import {
+  TypedGETRequest,
+  TypedResponse,
+  Room,
+  Space,
+  AnonymousBooking,
+  SpaceType,
+  UserGroup,
+  USER_GROUPS
+} from '../types';
 import { anonymiseBooking, formatBookingDates, now } from '../utils';
 
 export async function roomDetails(req: TypedGETRequest, res: TypedResponse<{ rooms: Room[] }>) {
@@ -120,9 +129,9 @@ export async function spaceAvailabilities(
 
 type RoomMinReqGrpReq = { spaceId: string };
 
-export async function roomMinReq(
+export async function roomCanBook(
   req: TypedGETRequest<RoomMinReqGrpReq>,
-  res: TypedResponse<{ minReqGrp: UserGroup }>,
+  res: TypedResponse<{ canBook: boolean }>,
 ) {
   try {
 
@@ -134,7 +143,7 @@ export async function roomMinReq(
       .where(eq(space.id, req.params.spaceId));
 
     if (roomRes.length) {
-      res.json({ minReqGrp: roomRes[0].minreqgrp });
+      res.json({ canBook: hasMinimumAuthority(req.token.group, roomRes[0].minreqgrp) });
       return;
     }
 
@@ -142,4 +151,12 @@ export async function roomMinReq(
   } catch (error) {
     res.status(500).json({ error: 'Failed to fetch rooms' });
   }
+}
+
+
+export function hasMinimumAuthority(userGrp: UserGroup, minReqGrp: UserGroup): boolean {
+  const userGrpIndex = USER_GROUPS.indexOf(userGrp);
+  const minReqGrpIndex = USER_GROUPS.indexOf(minReqGrp);
+
+  return userGrpIndex >= minReqGrpIndex;
 }

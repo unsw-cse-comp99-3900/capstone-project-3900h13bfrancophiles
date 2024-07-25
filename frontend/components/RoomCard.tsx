@@ -14,23 +14,10 @@ import PeopleIcon from "@mui/icons-material/People";
 import MeetingRoomOutlinedIcon from "@mui/icons-material/MeetingRoomOutlined";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCalendarPlus } from "@fortawesome/free-regular-svg-icons";
-import {Room, TokenPayload, USER_GROUPS, UserGroup} from "@/types";
+import {Room} from "@/types";
 import useSpaceStatus from "@/hooks/useSpaceStatus";
 import NextLink from 'next/link'
-import {useEffect, useState} from "react";
-import {getCookie} from "cookies-next";
-import useRoomMinReq from "@/hooks/useRoomMinReq";
-import {cookies} from "next/headers";
-import {decodeJwt} from "jose";
-
-
-
-export function hasMinimumAuthority(userGrp: UserGroup, minReqGrp: UserGroup): boolean {
-  const userGrpIndex = USER_GROUPS.indexOf(userGrp);
-  const minReqGrpIndex = USER_GROUPS.indexOf(minReqGrp);
-
-  return userGrpIndex >= minReqGrpIndex;
-}
+import useRoomCanBook from "@/hooks/useRoomCanBook";
 
 interface RoomCardProps {
   room: Room;
@@ -45,20 +32,9 @@ const RoomCard: React.FC<RoomCardProps> = ({
   datetimeStart,
   datetimeEnd,
 }) => {
-  const { minReqGrp } = useRoomMinReq(room.id)
+  const { canBook } = useRoomCanBook(room.id)
 
-  const [bookable, setBookable] = useState(false);
-
-
-  useEffect(() => {
-    const token = getCookie('token');
-    if (token) {
-      const tokenPayload = decodeJwt<TokenPayload>(`${token}`);
-      if (hasMinimumAuthority( tokenPayload.group, minReqGrp === undefined ? "admin" : minReqGrp)) {
-        setBookable(true)
-      }
-    }
-  }, [minReqGrp]);
+  console.log(canBook)
 
   const { statusResponse, isLoading, error } = useSpaceStatus(
     datetimeStart,
@@ -103,9 +79,9 @@ const RoomCard: React.FC<RoomCardProps> = ({
                 {room.name}
               </Typography>
             </Link>
-            <Tooltip title={bookable ? "" : "You do not have permission to book this space"} variant="solid">
+            <Tooltip title={canBook ? "" : "You do not have permission to book this space"} variant="solid">
               <div style={{ zIndex: '1' }}>
-                <IconButton disabled={!bookable} onClick={() => handleBook(room)}>
+                <IconButton disabled={!canBook} onClick={() => handleBook(room)}>
                   <FontAwesomeIcon fontSize="24px" icon={faCalendarPlus} />
                 </IconButton>
               </div>

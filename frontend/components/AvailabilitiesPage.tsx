@@ -3,17 +3,12 @@ import * as React from "react";
 import {Box, Stack, Typography, Button, Tooltip} from "@mui/joy";
 import useSpace from '@/hooks/useSpace';
 import useAvailabilities from "@/hooks/useAvailabilities";
-import {Room, Desk, TokenPayload} from "@/types";
+import {Room, Desk} from "@/types";
 import Loading from "@/components/Loading";
 import AvailabilityCalendar from "@/components/AvailabilityCalendar";
 import BookingModal from "@/components/BookingModal/BookingModal"
 import Error from "@/components/Error";
-import useRoomMinReq from "@/hooks/useRoomMinReq";
-import {useEffect, useState} from "react";
-import {getCookie} from "cookies-next";
-import {hasMinimumAuthority} from "@/components/RoomCard";
-import {cookies} from "next/headers";
-import {decodeJwt} from "jose";
+import useRoomCanBook from "@/hooks/useRoomCanBook";
 
 interface AvailabilitesPageProps {
   spaceId: string;
@@ -32,23 +27,7 @@ const AvailabilitiesPage : React.FC<AvailabilitesPageProps> = ({
   const desk = space as Desk;
 
   const [openModal, setOpenModal] = React.useState<boolean>(false);
-
-  const { minReqGrp } = useRoomMinReq(spaceId)
-
-  const [bookable, setBookable] = useState(false);
-
-
-  useEffect(() => {
-    const token = getCookie('token');
-    if (token) {
-      const tokenPayload = decodeJwt<TokenPayload>(`${token}`);
-      if (hasMinimumAuthority( tokenPayload.group, minReqGrp === undefined ? "admin" : minReqGrp)) {
-        setBookable(true)
-      }
-    }
-  }, [minReqGrp]);
-
-
+  const { canBook } = useRoomCanBook(spaceId)
 
   if (spaceType !== spaceOutput.type || spaceOutput.error)
     return <Error
@@ -77,12 +56,12 @@ const AvailabilitiesPage : React.FC<AvailabilitesPageProps> = ({
           <Typography level="h1">
             {spaceType === "room" ? `${room!.type} ${room!.name}` : `${desk!.name}`}
           </Typography>
-          <Tooltip title={bookable ? "" : "You do not have permission to book this space"} variant="solid">
+          <Tooltip title={canBook ? "" : "You do not have permission to book this space"} variant="solid">
             <Box>
               <Button
                 color="success"
                 variant="solid"
-                disabled={!bookable}
+                disabled={!canBook}
                 onClick={() => {setOpenModal(true)}}
               >
                 Book Now
