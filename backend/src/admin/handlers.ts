@@ -124,7 +124,8 @@ export async function declineBooking(req: TypedRequest<{ id: number }>, res: Typ
       throw new Error('Booking modified during operation');
     }
 
-    // TODO: Send email to user that booking has been declined
+    const formattedBooking = formatBookingDates(updatedBooking[0]);
+    sendBookingEmail(req.token.user, formattedBooking, BOOKING_DECLINE);
     res.status(200).json({ message: 'Booking declined' });
   } catch (error) {
     res.status(500).json({ error: 'Internal server error' });
