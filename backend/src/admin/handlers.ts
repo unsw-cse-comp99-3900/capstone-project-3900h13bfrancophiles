@@ -125,7 +125,7 @@ export async function declineBooking(req: TypedRequest<{ id: number }>, res: Typ
     }
 
     const formattedBooking = formatBookingDates(updatedBooking[0]);
-    sendBookingEmail(req.token.user, formattedBooking, BOOKING_DECLINE);
+    await sendBookingEmail(req.token.user, formattedBooking, BOOKING_DECLINE);
     res.status(200).json({ message: 'Booking declined' });
   } catch (error) {
     res.status(500).json({ error: 'Internal server error' });
