@@ -24,8 +24,6 @@ export type Desk = {
   id: string;
   name: string;
   floor: string;
-  room: string;
-  desknumber: number;
 };
 
 export type Space = Room | Desk;
@@ -58,6 +56,13 @@ export type Status = { status: "Available" } | { status: "Unavailable"; booking:
 export type StatusResponse = {
   [spaceId: string]: Status;
 };
+
+export type DeskPosition = {
+  id: string,
+  floor: string,
+  xcoord: number,
+  ycoord: number
+}
 
 export type TimeRange = {
   start: Date;
