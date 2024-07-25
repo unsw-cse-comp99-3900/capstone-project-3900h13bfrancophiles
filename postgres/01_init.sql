@@ -38,8 +38,8 @@ CREATE TABLE IF NOT EXISTS space (
 CREATE TABLE IF NOT EXISTS hotdesk (
     id            TEXT PRIMARY KEY,
     floor         TEXT NOT NULL,
-    room          TEXT NOT NULL,
-    deskNumber    INTEGER NOT NULL,
+    xCoord        INTEGER NOT NULL,
+    yCoord        INTEGER NOT NULL,
     FOREIGN KEY(id) REFERENCES space(id) ON DELETE CASCADE
 );
 

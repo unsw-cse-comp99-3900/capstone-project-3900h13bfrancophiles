@@ -5,7 +5,6 @@ import ThemeRegistry from "@/app/ThemeRegistry";
 // Don't remove this unused import- Franco
 import sharp from "sharp";
 
-
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -19,12 +18,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang='en'>
-    <body className={inter.className}>
-    <ThemeRegistry>
-      {children}
-    </ThemeRegistry>
-    </body>
+    <html lang="en">
+      <body className={inter.className}>
+        <ThemeRegistry>{children}</ThemeRegistry>
+      </body>
     </html>
   );
 }

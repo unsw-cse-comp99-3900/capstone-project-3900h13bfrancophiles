@@ -1,12 +1,11 @@
-
 import * as React from "react";
 import {Box, Stack, Typography, Button, Tooltip} from "@mui/joy";
-import useSpace from '@/hooks/useSpace';
+import useSpace from "@/hooks/useSpace";
 import useAvailabilities from "@/hooks/useAvailabilities";
 import {Room, Desk} from "@/types";
 import Loading from "@/components/Loading";
 import AvailabilityCalendar from "@/components/AvailabilityCalendar";
-import BookingModal from "@/components/BookingModal/BookingModal"
+import BookingModal from "@/components/BookingModal/BookingModal";
 import Error from "@/components/Error";
 import useRoomCanBook from "@/hooks/useRoomCanBook";
 
@@ -15,10 +14,7 @@ interface AvailabilitesPageProps {
   spaceType: string;
 }
 
-const AvailabilitiesPage : React.FC<AvailabilitesPageProps> = ({
-  spaceId,
-  spaceType,
-}) => {
+const AvailabilitiesPage: React.FC<AvailabilitesPageProps> = ({ spaceId, spaceType }) => {
   const spaceOutput = useSpace(spaceId);
   const space = spaceOutput.space;
   const spaceLoading = spaceOutput.isLoading;
@@ -30,12 +26,9 @@ const AvailabilitiesPage : React.FC<AvailabilitesPageProps> = ({
   const { canBook } = useRoomCanBook(spaceId)
 
   if (spaceType !== spaceOutput.type || spaceOutput.error)
-    return <Error
-      page={`${spaceType}s/${spaceId}`}
-      message={`${spaceType} ID not found`}
-    />
+    return <Error page={`${spaceType}s/${spaceId}`} message={`${spaceType} ID not found`} />;
 
-  if (spaceLoading) return <Loading page=""/>
+  if (spaceLoading) return <Loading page="" />;
 
   return (
     <>
@@ -45,14 +38,12 @@ const AvailabilitiesPage : React.FC<AvailabilitesPageProps> = ({
           setOpenModal(false);
           mutate();
         }}
-        space={space ? { id: space?.id, name: space?.name, isRoom: spaceType === "room" } : undefined}
+        space={
+          space ? { id: space?.id, name: space?.name, isRoom: spaceType === "room" } : undefined
+        }
       />
       <Stack>
-        <Stack
-          justifyContent="space-between"
-          alignItems="center"
-          direction="row"
-        >
+        <Stack justifyContent="space-between" alignItems="center" direction="row">
           <Typography level="h1">
             {spaceType === "room" ? `${room!.type} ${room!.name}` : `${desk!.name}`}
           </Typography>
@@ -67,10 +58,9 @@ const AvailabilitiesPage : React.FC<AvailabilitesPageProps> = ({
                 Book Now
               </Button>
             </Box>
-
           </Tooltip>
         </Stack>
-        {spaceType === "room" ?
+        {spaceType === "room" ? (
           <Stack
             alignItems="center"
             direction="row"
@@ -83,35 +73,26 @@ const AvailabilitiesPage : React.FC<AvailabilitesPageProps> = ({
               <Typography level="h4" sx={{ color: "gray" }}>
                 Room ID
               </Typography>
-              <Typography level="h3">
-                {room?.id}
-              </Typography>
+              <Typography level="h3">{room?.id}</Typography>
             </Box>
             <Box>
               <Typography level="h4" sx={{ color: "gray" }}>
                 Usage
               </Typography>
-              <Typography level="h3">
-                {room?.type}
-              </Typography>
+              <Typography level="h3">{room?.type}</Typography>
             </Box>
             <Box>
               <Typography level="h4" sx={{ color: "gray" }}>
                 Capacity
               </Typography>
-              <Typography level="h3">
-                {room?.capacity}
-              </Typography>
+              <Typography level="h3">{room?.capacity}</Typography>
             </Box>
           </Stack>
-          : null
-        }
-        <AvailabilityCalendar
-          bookings={bookings ?? []}
-        />
+        ) : null}
+        <AvailabilityCalendar bookings={bookings ?? []} />
       </Stack>
     </>
   );
-}
+};
 
-export default AvailabilitiesPage
+export default AvailabilitiesPage;

@@ -1,6 +1,6 @@
-import useSWR from 'swr';
-import { swrFetcher } from '@/api';
-import { Room } from '@/types';
+import useSWR from "swr";
+import { swrFetcher } from "@/api";
+import { Room } from "@/types";
 
 /**
  * Hook to fetch all room details

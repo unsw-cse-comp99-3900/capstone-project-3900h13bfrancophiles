@@ -1,6 +1,6 @@
-import useSWR from 'swr';
-import { swrFetcher } from '@/api';
-import { SpaceOption } from '@/types';
+import useSWR from "swr";
+import { swrFetcher } from "@/api";
+import { SpaceOption } from "@/types";
 
 /**
  * Hook to fetch all spaces

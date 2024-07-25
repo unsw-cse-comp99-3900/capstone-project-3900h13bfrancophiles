@@ -65,8 +65,8 @@ export async function singleSpaceDetails(
         id: hotdesk.id,
         name: space.name,
         floor: hotdesk.floor,
-        room: hotdesk.room,
-        desknumber: hotdesk.desknumber,
+        xcoord: hotdesk.xcoord,
+        ycoord: hotdesk.ycoord
       })
       .from(hotdesk)
       .innerJoin(space, eq(space.id, hotdesk.id))
@@ -127,10 +127,10 @@ export async function spaceAvailabilities(
 }
 
 
-type RoomMinReqGrpReq = { spaceId: string };
+type canBookReq = { spaceId: string };
 
 export async function roomCanBook(
-  req: TypedGETRequest<RoomMinReqGrpReq>,
+  req: TypedGETRequest<canBookReq>,
   res: TypedResponse<{ canBook: boolean }>,
 ) {
   try {
@@ -159,4 +159,20 @@ export function hasMinimumAuthority(userGrp: UserGroup, minReqGrp: UserGroup): b
   const minReqGrpIndex = USER_GROUPS.indexOf(minReqGrp);
 
   return userGrpIndex >= minReqGrpIndex;
+}
+
+export async function deskPositions(
+  req: TypedGETRequest,
+  res: TypedResponse<{ desks: { id: string; floor: string; xcoord: number, ycoord: number }[] }>,
+) {
+  const desks = await db
+    .select({
+      id: hotdesk.id,
+      floor: hotdesk.floor,
+      xcoord: hotdesk.xcoord,
+      ycoord: hotdesk.ycoord
+    })
+    .from(hotdesk);
+
+  res.json({ desks });
 }

@@ -22,7 +22,7 @@ import useCurrentBookings from "@/hooks/useCurrentBookings";
 import { format } from "date-fns";
 import { useState } from "react";
 import { checkIn, checkOut } from "@/api";
-import { mutate } from 'swr';
+import { mutate } from "swr";
 import ConstructionIcon from "@mui/icons-material/Construction";
 import MailIcon from "@mui/icons-material/Mail";
 
@@ -51,19 +51,16 @@ function CurrentBookingCard({ booking }: CurrentBookingCardProps) {
   const { space, isLoading } = useSpace(booking.spaceid);
 
   // Mutate both current and past bookings (goes to past on check out)
-  const mutateCurrentPast = () => mutate(
-    key => typeof key === 'string' && (
-      key.startsWith("/bookings/current") || key.startsWith("/bookings/past")
-    )
-  );
+  const mutateCurrentPast = () =>
+    mutate(
+      (key) =>
+        typeof key === "string" &&
+        (key.startsWith("/bookings/current") || key.startsWith("/bookings/past")),
+    );
 
   const [isCheckingInOrOut, setIsCheckingInOrOut] = useState(false);
-  const [checkInOrOutError, setCheckInOrOutError] = useState<string | null>(
-    null
-  );
-  const [checkedIn, setCheckedIn] = useState<boolean>(
-    booking.currentstatus === "checkedin"
-  );
+  const [checkInOrOutError, setCheckInOrOutError] = useState<string | null>(null);
+  const [checkedIn, setCheckedIn] = useState<boolean>(booking.currentstatus === "checkedin");
   const [isConfirmationOpen, setIsConfirmationOpen] = useState(false);
 
   const [contactOpen, setContactOpen] = useState(false);
@@ -164,10 +161,7 @@ function CurrentBookingCard({ booking }: CurrentBookingCardProps) {
           </Stack>
         </CardContent>
       </Card>
-      <Modal
-        open={isConfirmationOpen}
-        onClose={() => setIsConfirmationOpen(false)}
-      >
+      <Modal open={isConfirmationOpen} onClose={() => setIsConfirmationOpen(false)}>
         <ModalDialog variant="outlined" role="alertdialog">
           <DialogTitle>
             {checkedIn ? "Check Out Confirmation" : "Check In Confirmation "}
@@ -184,11 +178,7 @@ function CurrentBookingCard({ booking }: CurrentBookingCardProps) {
             >
               {checkedIn ? "Check Out" : "Check In"}
             </Button>
-            <Button
-              variant="plain"
-              color="neutral"
-              onClick={() => setIsConfirmationOpen(false)}
-            >
+            <Button variant="plain" color="neutral" onClick={() => setIsConfirmationOpen(false)}>
               Cancel
             </Button>
           </DialogActions>
@@ -202,10 +192,7 @@ function CurrentBookingCard({ booking }: CurrentBookingCardProps) {
           </DialogTitle>
           <Divider />
           <DialogContent>
-            <Input
-              startDecorator={<MailIcon />}
-              placeholder="Type in here..."
-            />
+            <Input startDecorator={<MailIcon />} placeholder="Type in here..." />
           </DialogContent>
           <DialogActions>
             <Button
@@ -216,11 +203,7 @@ function CurrentBookingCard({ booking }: CurrentBookingCardProps) {
             >
               Message
             </Button>
-            <Button
-              variant="plain"
-              color="neutral"
-              onClick={() => setContactOpen(false)}
-            >
+            <Button variant="plain" color="neutral" onClick={() => setContactOpen(false)}>
               Cancel
             </Button>
           </DialogActions>
