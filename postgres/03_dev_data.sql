@@ -88,8 +88,8 @@ INSERT INTO booking (zId, startTime, endTime, spaceId, currentStatus, descriptio
     (1234567, '2024-01-14T13:30', '2024-01-014T14:30', 'K-K17-B01', 'confirmed', 'meeting'),
 
     -- Admin upcoming room bookings
-    (1234567, '2024-08-25T10:30', '2024-07-25T11:30', 'K-K17-B01', 'confirmed', 'class'),
-    (1234567, '2024-08-25T11:30', '2024-07-25T12:30', 'K-K17-B01', 'confirmed', 'studying'),
+    (1234567, '2024-08-25T10:30', '2024-08-25T11:30', 'K-K17-B01', 'confirmed', 'class'),
+    (1234567, '2024-08-25T11:30', '2024-08-25T12:30', 'K-K17-B01', 'confirmed', 'studying'),
 
     -- Admin upcoming desk bookings
     (1234567, '2024-07-25T03:00', '2024-07-25T05:00', 'K-K17-301-11', 'confirmed', 'studying'),
@@ -107,7 +107,7 @@ INSERT INTO booking (zId, startTime, endTime, spaceId, currentStatus, descriptio
     (7654321, '2024-08-21T03:00', '2024-08-21T05:00', 'K-K17-201-1', 'confirmed', 'studying'),
     (7654321, '2024-08-22T03:00', '2024-08-22T05:00', 'K-K17-201-1', 'confirmed', 'doing research'),
     (7654321, '2024-08-23T03:00', '2024-08-23T05:00', 'K-K17-201-3', 'confirmed', 'studying'),
-    (7654321, '2024-08-24T03:00', '2024-08-24T05:00', 'K-K17-201-2', 'confirmed', 'doing research'),
+    (7654321, '2024-08-24T03:00', '2024-08-24T05:00', 'K-K17-201-2', 'confirmed', 'doing research');
 
 
 

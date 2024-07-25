@@ -1,5 +1,5 @@
 import api from './helpers/api';
-import {ADMINS, DESK, ROOM} from './helpers/constants';
+import { ADMINS, DESK, ROOM } from './helpers/constants';
 import { minutesFromBase, mockCurrentTime } from './helpers/helpers';
 
 describe('/bookings/past', () => {
@@ -26,8 +26,6 @@ describe('/bookings/past', () => {
 
     res1 = await api.createBooking(token, ROOM[0].id, minutesFromBase(15), minutesFromBase(75), 'fun times');
     const booking1 = res1.json.booking;
-
-
 
     let res2 = await api.createBooking(token, ROOM[1].id, minutesFromBase(30), minutesFromBase(90), 'fun times2');
     const booking2 = res2.json.booking;
@@ -59,8 +57,6 @@ describe('/bookings/past', () => {
     res1 = await api.createBooking(token, ROOM[0].id, minutesFromBase(15), minutesFromBase(75), 'fun times');
     const booking1 = res1.json.booking;
 
-
-
     let res2 = await api.createBooking(token, DESK[0].id, minutesFromBase(15), minutesFromBase(75), 'fun times2');
     const booking2 = res2.json.booking;
 
@@ -90,20 +86,19 @@ describe('/bookings/past', () => {
 
     res1 = await api.createBooking(token, ROOM[0].id, minutesFromBase(15), minutesFromBase(30), 'fun times');
     const booking1 = res1.json.booking;
-    let res2 = await api.createBooking(token, DESK[0].id, minutesFromBase(30), minutesFromBase(45), 'fun times2');
+    const res2 = await api.createBooking(token, DESK[0].id, minutesFromBase(30), minutesFromBase(45), 'fun times2');
     const booking2 = res2.json.booking;
-    let res3 = await api.createBooking(token, ROOM[0].id, minutesFromBase(45), minutesFromBase(60), 'fun times2');
+    const res3 = await api.createBooking(token, ROOM[0].id, minutesFromBase(45), minutesFromBase(60), 'fun times2');
     const booking3 = res3.json.booking;
-    let res4 = await api.createBooking(token, ROOM[0].id, minutesFromBase(60), minutesFromBase(75), 'fun times2');
+    const res4 = await api.createBooking(token, ROOM[0].id, minutesFromBase(60), minutesFromBase(75), 'fun times2');
     const booking4 = res4.json.booking;
-    let res5 = await api.createBooking(token, ROOM[0].id, minutesFromBase(75), minutesFromBase(90), 'fun times2');
+    const res5 = await api.createBooking(token, ROOM[0].id, minutesFromBase(75), minutesFromBase(90), 'fun times2');
     const booking5 = res5.json.booking;
-    let res6 = await api.createBooking(token, DESK[0].id, minutesFromBase(90), minutesFromBase(105), 'fun times2');
+    const res6 = await api.createBooking(token, DESK[0].id, minutesFromBase(90), minutesFromBase(105), 'fun times2');
     const booking6 = res6.json.booking;
 
     // Fast-forward to after the booking
     await mockCurrentTime(minutesFromBase(105));
-
 
     // Limit 5 per page --------
     // Sort newest - page 1
@@ -147,4 +142,3 @@ describe('/bookings/past', () => {
     });
   });
 });
-
