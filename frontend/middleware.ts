@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getCookie, hasCookie } from "cookies-next";
+import { getCookie } from "cookies-next";
 import { AUTH_SECRET } from "@/config";
 import { jwtVerify } from "jose";
 
