@@ -17,7 +17,6 @@ export default function Layout({
   const navItems: NavData[] = [
     { text: "Dashboard", href: "/dashboard" },
     { text: "Rooms", href: "/rooms" },
-    { text: "Desks", href: "/desks" },
   ];
 
   const token = getCookie("token", { cookies });
@@ -25,6 +24,11 @@ export default function Layout({
     const tokenPayload = decodeJwt<TokenPayload>(`${token}`);
     if (tokenPayload.group === "admin") {
       navItems.push({ text: "Admin", href: "/admin" });
+    }
+
+    // HDR and above can book desks, Other cannot
+    if (tokenPayload.group !== "other") {
+      navItems.push({ text: "Desks", href: "/desks" });
     }
   }
 
