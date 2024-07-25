@@ -1,8 +1,17 @@
-import { eq, and, asc, gt, sql } from 'drizzle-orm';
+import { eq, and, asc, sql } from 'drizzle-orm';
 import { hotdesk, room, space, booking } from '../../drizzle/schema';
 
 import { db } from '../index';
-import { TypedGETRequest, TypedResponse, Room, Space, AnonymousBooking, SpaceType } from '../types';
+import {
+  TypedGETRequest,
+  TypedResponse,
+  Room,
+  Space,
+  AnonymousBooking,
+  SpaceType,
+  UserGroup,
+  USER_GROUPS
+} from '../types';
 import { anonymiseBooking, formatBookingDates, now } from '../utils';
 
 export async function roomDetails(req: TypedGETRequest, res: TypedResponse<{ rooms: Room[] }>) {
@@ -115,6 +124,41 @@ export async function spaceAvailabilities(
   } catch (error) {
     res.status(500).json({ error: 'Failed to fetch rooms' });
   }
+}
+
+
+type canBookReq = { spaceId: string };
+
+export async function roomCanBook(
+  req: TypedGETRequest<canBookReq>,
+  res: TypedResponse<{ canBook: boolean }>,
+) {
+  try {
+
+    const roomRes = await db
+      .select({
+        minreqgrp: space.minreqgrp
+      })
+      .from(space)
+      .where(eq(space.id, req.params.spaceId));
+
+    if (roomRes.length) {
+      res.json({ canBook: hasMinimumAuthority(req.token.group, roomRes[0].minreqgrp) });
+      return;
+    }
+
+    res.status(404).json({ error: `No room found with id "${req.params.spaceId}"` });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch rooms' });
+  }
+}
+
+
+export function hasMinimumAuthority(userGrp: UserGroup, minReqGrp: UserGroup): boolean {
+  const userGrpIndex = USER_GROUPS.indexOf(userGrp);
+  const minReqGrpIndex = USER_GROUPS.indexOf(minReqGrp);
+
+  return userGrpIndex >= minReqGrpIndex;
 }
 
 export async function deskPositions(
