@@ -1,25 +1,11 @@
-import { eq, and, asc, gt, sql } from "drizzle-orm"
+import { eq, and, asc, gt, sql } from 'drizzle-orm';
 import { hotdesk, room, space, booking } from '../../drizzle/schema';
 
-import { db } from '../index'
-import {
-  TypedGETRequest,
-  TypedResponse,
-  Room,
-  Space,
-  AnonymousBooking,
-  SpaceType
-} from '../types';
-import {
-  anonymiseBooking,
-  formatBookingDates,
-  now
-} from '../utils';
+import { db } from '../index';
+import { TypedGETRequest, TypedResponse, Room, Space, AnonymousBooking, SpaceType } from '../types';
+import { anonymiseBooking, formatBookingDates, now } from '../utils';
 
-export async function roomDetails(
-  req: TypedGETRequest,
-  res: TypedResponse<{ rooms: Room[] }>,
-) {
+export async function roomDetails(req: TypedGETRequest, res: TypedResponse<{ rooms: Room[] }>) {
   try {
     const rooms = await db
       .select({
@@ -43,7 +29,7 @@ type SingleSpaceRequest = { spaceId: string };
 
 export async function singleSpaceDetails(
   req: TypedGETRequest<SingleSpaceRequest>,
-  res: TypedResponse<{ space: Space, type: SpaceType }>,
+  res: TypedResponse<{ space: Space; type: SpaceType }>,
 ) {
   try {
     // Try get it as a room
@@ -60,7 +46,7 @@ export async function singleSpaceDetails(
       .where(eq(room.id, req.params.spaceId));
 
     if (roomRes.length) {
-      res.json({ space: roomRes[0], type: "room" });
+      res.json({ space: roomRes[0], type: 'room' });
       return;
     }
 
@@ -71,14 +57,14 @@ export async function singleSpaceDetails(
         name: space.name,
         floor: hotdesk.floor,
         room: hotdesk.room,
-        desknumber: hotdesk.desknumber
+        desknumber: hotdesk.desknumber,
       })
       .from(hotdesk)
       .innerJoin(space, eq(space.id, hotdesk.id))
       .where(eq(hotdesk.id, req.params.spaceId));
 
     if (deskRes.length) {
-      res.json({ space: deskRes[0], type: "desk" });
+      res.json({ space: deskRes[0], type: 'desk' });
       return;
     }
 
@@ -90,7 +76,7 @@ export async function singleSpaceDetails(
 
 export async function allSpaces(
   req: TypedGETRequest,
-  res: TypedResponse<{ spaces: { id: string, name: string, isRoom: boolean }[] }>,
+  res: TypedResponse<{ spaces: { id: string; name: string; isRoom: boolean }[] }>,
 ) {
   const subquery = db.select({ data: room.id }).from(room);
   const spaces = await db
@@ -111,34 +97,21 @@ export async function spaceAvailabilities(
   try {
     const currentTime = (await now()).toISOString();
 
-    const spaceExists = await db
-      .select()
-      .from(space)
-      .where(
-        eq(space.id, req.params.spaceId),
-      )
+    const spaceExists = await db.select().from(space).where(eq(space.id, req.params.spaceId));
 
     if (spaceExists.length == 0) {
-      res.status(404).json({ error: "Space ID does not exist" });
+      res.status(404).json({ error: 'Space ID does not exist' });
       return;
     }
 
     const existingBookings = await db
       .select()
       .from(booking)
-      .where(
-        and(
-          eq(booking.spaceid, req.params.spaceId),
-          eq(booking.currentstatus, "confirmed")
-        )
-      )
-      .orderBy(
-        asc(booking.starttime)
-      )
+      .where(and(eq(booking.spaceid, req.params.spaceId), eq(booking.currentstatus, 'confirmed')))
+      .orderBy(asc(booking.starttime));
 
     res.json({ bookings: existingBookings.map(formatBookingDates).map(anonymiseBooking) });
-    return
-
+    return;
   } catch (error) {
     res.status(500).json({ error: 'Failed to fetch rooms' });
   }

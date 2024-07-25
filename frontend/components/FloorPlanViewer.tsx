@@ -1,12 +1,12 @@
-'use client';
+"use client";
 
-import React from 'react';
+import React from "react";
 import { TransformComponent, TransformWrapper } from "react-zoom-pan-pinch";
-import { Box } from '@mui/joy';
-import Image from 'next/image';
-import { deskData } from '@/app/data';
-import DeskIcon from './DeskIcon';
-import { StatusResponse, UserData } from '@/types';
+import { Box } from "@mui/joy";
+import Image from "next/image";
+import { deskData } from "@/app/data";
+import DeskIcon from "./DeskIcon";
+import { StatusResponse, UserData } from "@/types";
 
 interface FloorPlanViewerProps {
   selectedDesk: string;
@@ -19,17 +19,31 @@ interface FloorPlanViewerProps {
 }
 
 const coordToPercent = (x: number) => {
-  return x / 10
-}
+  return x / 10;
+};
 
-const FloorPlanViewer = ({ level, selectedDesk, setSelectedDesk, setSelectedUser, setAvailable, setDeskName, statuses }: FloorPlanViewerProps) => {
-  const desks = deskData.find(data => data.level === level)?.desks ?? [];
+const FloorPlanViewer = ({
+  level,
+  selectedDesk,
+  setSelectedDesk,
+  setSelectedUser,
+  setAvailable,
+  setDeskName,
+  statuses,
+}: FloorPlanViewerProps) => {
+  const desks = deskData.find((data) => data.level === level)?.desks ?? [];
 
   return (
-    <Box sx={{ height: "100%", position: "relative", "--size-var": { xs: "500px", sm: "1000px", md: "1500px" } }}>
+    <Box
+      sx={{
+        height: "100%",
+        position: "relative",
+        "--size-var": { xs: "500px", sm: "1000px", md: "1500px" },
+      }}
+    >
       <TransformWrapper
         maxScale={3}
-        minScale={1}
+        minScale={0.75}
         wheel={{ step: 0.015, smoothStep: 0.015 }}
         disablePadding
         centerOnInit
@@ -37,9 +51,18 @@ const FloorPlanViewer = ({ level, selectedDesk, setSelectedDesk, setSelectedUser
       >
         <TransformComponent
           wrapperStyle={{ width: "100%", height: "100%", position: "relative" }}
-          contentStyle={{ width: "var(--size-var)", height: "var(--size-var)", position: "relative" }}
+          contentStyle={{
+            width: "var(--size-var)",
+            height: "var(--size-var)",
+            position: "relative",
+          }}
         >
-          <Image src={`/${level}.svg`} fill alt={`${level} floorplan`} style={{ position: "absolute" }} />
+          <Image
+            src={`/${level}.svg`}
+            fill
+            alt={`${level} floorplan`}
+            style={{ position: "absolute" }}
+          />
           {desks.map((desk, index) => (
             <DeskIcon
               key={index}
@@ -51,8 +74,7 @@ const FloorPlanViewer = ({ level, selectedDesk, setSelectedDesk, setSelectedUser
               setSelectedUser={setSelectedUser}
               setAvailable={setAvailable}
               setDeskName={setDeskName}
-              status={statuses[desk.id]
-              }
+              status={statuses[desk.id]}
             />
           ))}
         </TransformComponent>

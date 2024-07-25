@@ -13,8 +13,8 @@ import { AnonymousBooking, Booking, BookingStatus, USER_GROUPS, UserGroup } from
  * time.
  */
 export function formatBookingDates(booking: Booking) {
-  booking.starttime += 'Z';
-  booking.endtime += 'Z';
+  booking.starttime = new Date(booking.starttime + "Z").toISOString();
+  booking.endtime = new Date(booking.endtime + "Z").toISOString();
   return booking;
 }
 
@@ -35,7 +35,7 @@ export function withinDateRange(current: Date, start: Date, end: Date, bufferMin
  */
 export async function initialBookingStatus(
   userGroup: UserGroup,
-  spaceId: string
+  spaceId: string,
 ): Promise<BookingStatus | null | undefined> {
   const res = await db
     .select({ minReqGrp: space.minreqgrp, minBookGrp: space.minbookgrp })
@@ -49,9 +49,9 @@ export async function initialBookingStatus(
   if (userGrpIdx < minReqIdx) {
     return null;
   } else if (userGrpIdx < minBookIdx) {
-    return "pending";
+    return 'pending';
   } else {
-    return "confirmed";
+    return 'confirmed';
   }
 }
 
@@ -64,7 +64,7 @@ export function anonymiseBooking(booking: Booking): AnonymousBooking {
     spaceid: booking.spaceid,
     currentstatus: booking.currentstatus,
     checkintime: booking.checkintime,
-    checkouttime: booking.checkouttime
+    checkouttime: booking.checkouttime,
   };
 }
 
@@ -73,10 +73,7 @@ export function anonymiseBooking(booking: Booking): AnonymousBooking {
  */
 export async function now(): Promise<Date> {
   if (process.env.NODE_ENV === 'test') {
-    const res = await db
-      .select({ currentTime: config.value })
-      .from(config)
-      .where(eq(config.key, "current_timestamp"));
+    const res = await db.select({ currentTime: config.value }).from(config).where(eq(config.key, 'current_timestamp'));
 
     const currentTime = res?.[0].currentTime;
     return currentTime ? new Date(currentTime) : new Date();

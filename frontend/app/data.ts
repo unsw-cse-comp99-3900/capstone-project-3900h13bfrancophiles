@@ -1,14 +1,7 @@
-
-export const navData = [
-  { text: 'Dashboard', href: '/dashboard' },
-  { text: 'Rooms', href: '/rooms' },
-  { text: 'Desks', href: '/desks' },
-];
-
 export const deskData = [
   {
     level: "K17L2",
-    desks:[
+    desks: [
       // 201
       { id: "K-K17-201-1", x: 245, y: 690 },
       { id: "K-K17-201-2", x: 245, y: 730 },
@@ -83,14 +76,14 @@ export const deskData = [
       { id: "K-K17-301-14", x: 213, y: 380 },
       { id: "K-K17-301-15", x: 213, y: 339 },
       { id: "K-K17-301-16", x: 213, y: 298 },
-    ]
+    ],
   },
   {
     level: "K17L4",
-    desks: []
+    desks: [],
   },
   {
     level: "K17L5",
-    desks: []
-  }
+    desks: [],
+  },
 ];

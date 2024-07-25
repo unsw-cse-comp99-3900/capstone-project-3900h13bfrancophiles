@@ -1,4 +1,3 @@
-
 import * as React from "react";
 import { Stack, Typography, Button, Grid, Sheet } from "@mui/joy";
 import useSpace from '@/hooks/useSpace';
@@ -6,7 +5,7 @@ import useAvailabilities from "@/hooks/useAvailabilities";
 import { Room, Desk } from "@/types";
 import Loading from "@/components/Loading";
 import AvailabilityCalendar from "@/components/AvailabilityCalendar";
-import BookingModal from "@/components/BookingModal/BookingModal"
+import BookingModal from "@/components/BookingModal/BookingModal";
 import Error from "@/components/Error";
 import { styled } from '@mui/joy/styles';
 
@@ -39,12 +38,9 @@ const AvailabilitiesPage : React.FC<AvailabilitesPageProps> = ({
   const [openModal, setOpenModal] = React.useState<boolean>(false);
 
   if (spaceType !== spaceOutput.type || spaceOutput.error)
-    return <Error
-      page={`${spaceType}s/${spaceId}`}
-      message={`${spaceType} ID not found`}
-    />
+    return <Error page={`${spaceType}s/${spaceId}`} message={`${spaceType} ID not found`} />;
 
-  if (spaceLoading) return <Loading page=""/>
+  if (spaceLoading) return <Loading page="" />;
 
   return (
     <>
@@ -54,7 +50,9 @@ const AvailabilitiesPage : React.FC<AvailabilitesPageProps> = ({
           setOpenModal(false);
           mutate();
         }}
-        space={space ? { id: space?.id, name: space?.name, isRoom: spaceType === "room" } : undefined}
+        space={
+          space ? { id: space?.id, name: space?.name, isRoom: spaceType === "room" } : undefined
+        }
       />
       <Stack>
         <Stack
@@ -70,7 +68,9 @@ const AvailabilitiesPage : React.FC<AvailabilitesPageProps> = ({
           <Button
             color="success"
             variant="solid"
-            onClick={() => {setOpenModal(true)}}
+            onClick={() => {
+              setOpenModal(true)
+            }}
             sx={{
               height: 40,
               minWidth: {sm: 130},
@@ -165,6 +165,6 @@ const AvailabilitiesPage : React.FC<AvailabilitesPageProps> = ({
       </Stack>
     </>
   );
-}
+};
 
-export default AvailabilitiesPage
+export default AvailabilitiesPage;

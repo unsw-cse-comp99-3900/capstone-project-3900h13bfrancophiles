@@ -7,24 +7,26 @@ import {
   format,
   getHours,
   getMinutes,
-  isEqual,
+  isBefore,
   max,
   min,
-  parse,
   roundToNearestMinutes,
   setHours,
   setMinutes,
   startOfDay,
-  startOfTomorrow
-} from 'date-fns';
-import React from 'react';
-import { InputProps } from '@mui/joy/Input';
+  startOfTomorrow,
+} from "date-fns";
+import React from "react";
+import { InputProps } from "@mui/joy/Input";
+import { JoyTimePickerProps } from "@/components/JoyTimePicker";
+import { TimeRange } from "@/types";
 
-type InitialValues = {
+type UseTimeRangeOptions = {
   date?: Date;
   start?: Date;
   end?: Date;
-}
+  blockedTimes?: TimeRange[];
+};
 
 /**
  * Hook for creating date, start and end time state variables/inputs that
@@ -40,19 +42,15 @@ type InitialValues = {
  *   which will make it update the values and follow rules
  * - Optionally, extract the handleXChange functions to manually set states
  */
-export default function useTimeRange(initialValues: InitialValues = {}) {
+export default function useTimeRange(options: UseTimeRangeOptions = {}) {
   const now = roundToNearestMinutes(new Date(), { nearestTo: 15, roundingMethod: "ceil" });
   const today = startOfDay(now);
   const weekFromToday = addWeeks(today, 1);
 
-  const [date, setDate] = React.useState(
-    startOfDay(initialValues.date ?? now)
-  );
-  const [start, setStart] = React.useState<Date>(
-    initialValues.start ?? now
-  );
+  const [date, setDate] = React.useState(startOfDay(options.date ?? now));
+  const [start, setStart] = React.useState<Date>(options.start ?? now);
   const [end, setEnd] = React.useState<Date>(
-    initialValues.end ?? min([addHours(now, 1), startOfTomorrow()])
+    options.end ?? min([addHours(now, 1), startOfTomorrow()]),
   );
 
   const handleDateChange = (newDate: Date) => {
@@ -60,72 +58,101 @@ export default function useTimeRange(initialValues: InitialValues = {}) {
     setDate(startOfDate);
     const newStart = setHours(setMinutes(newDate, getMinutes(start)), getHours(start));
     handleStartChange(newStart, startOfDate);
-  }
+  };
 
   const handleStartChange = (newStart: Date, date: Date) => {
     const startTime = max([newStart, now, date]);
     const limitedStart = min([startTime, setHours(setMinutes(date, 45), 23)]);
     const changeInTime = differenceInMinutes(limitedStart, start);
-
     setStart(limitedStart);
-    handleEndChange(addMinutes(end, changeInTime), date, limitedStart);
-  }
 
-  const handleEndChange = (newEnd: Date, date: Date, start: Date) => {
-    const limitedEnd = min([newEnd, addDays(date, 1)]);
-    const minEnd = addMinutes(start, 15);
-    setEnd(max([minEnd, limitedEnd]));
-  }
+    const shiftedEnd = min([addMinutes(end, changeInTime), addDays(date, 1)]);
+    handleEndChange(shiftedEnd, limitedStart);
+  };
+
+  const handleEndChange = (newEnd: Date, start: Date) => {
+    if (newEnd.getHours() == 0 && newEnd.getMinutes() == 0) {
+      setEnd(addDays(date, 1));
+    } else {
+      const adjustedEnd = new Date(start);
+      adjustedEnd.setHours(newEnd.getHours(), newEnd.getMinutes());
+      setEnd(adjustedEnd);
+    }
+  };
+
+  const [startError, setStartError] = React.useState(false);
+  const [endError, setEndError] = React.useState<boolean>(false);
 
   const dateInputProps: InputProps = {
     type: "date",
-    value: format(date, 'yyyy-MM-dd'),
+    value: format(date, "yyyy-MM-dd"),
     onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
       if (!e.target.value.match(/\d{4}-\d{2}-\d{2}/)) return;
       handleDateChange(new Date(e.target.value));
     },
     slotProps: {
       input: {
-        min: format(today, 'yyyy-MM-dd'),
-        max: format(weekFromToday, 'yyyy-MM-dd'),
-      }
-    }
-  }
-
-  const startInputProps: InputProps = {
-    type: "time",
-    value: format(start, 'HH:mm'),
-    onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
-      if (!e.target.value.match(/\d{2}:\d{2}/)) return;
-      handleStartChange(parse(e.target.value, 'HH:mm', date), date);
+        min: format(today, "yyyy-MM-dd"),
+        max: format(weekFromToday, "yyyy-MM-dd"),
+      },
     },
-    onBlur: () => handleStartChange(roundToInterval(start), date),
-    slotProps: {
-      input: {
-        min: isEqual(startOfDay(now), date) ? format(now, 'HH:mm') : '00:00',
-        max: '23:45',
-        step: 15 * 60,
-      }
-    }
-  }
+  };
 
-  const endInputProps: InputProps = {
-    type: "time",
-    value: format(end, 'HH:mm'),
-    onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
-      if (!e.target.value.match(/\d{2}:\d{2}/)) return;
-      handleEndChange(parse(e.target.value, 'HH:mm', date), date, start);
+  const [blockedTimes, setBlockedTimes] = React.useState<TimeRange[]>([]);
+  React.useEffect(() => {
+    setBlockedTimes(options.blockedTimes?.sort(cmpTimeRange) ?? []);
+  }, [options.blockedTimes]);
+
+  // Start must be greater than now, and start of day
+  const shouldDisableStartTime = (time: Date) => {
+    for (const { start, end } of blockedTimes) {
+      if (!isBefore(time, start) && isBefore(time, end)) return true;
+    }
+
+    return isBefore(time, now) || isBefore(time, date);
+  };
+
+  const startTimePickerProps: JoyTimePickerProps = {
+    value: start,
+    onChange: (newStart, ctx) => {
+      if (newStart && !ctx.validationError) handleStartChange(newStart, date);
     },
-    onBlur: () => handleEndChange(roundToInterval(end), date, start),
-    slotProps: {
-      input: {
-        min: (format(end, 'HH:mm') !== '00:00')
-          ? format(start, 'HH:mm')
-          : undefined,
-        step: 15 * 60,
+    onError: (error) => {
+      setStartError(error !== null);
+    },
+    shouldDisableTime: shouldDisableStartTime,
+    minutesStep: 15,
+  };
+
+  // End time can always be midnight, but must be at least start + 15m
+  const shouldDisableEndTime = (time: Date) => {
+    if (time.getHours() == 0 && time.getMinutes() == 0) return false;
+
+    for (const blocked of blockedTimes) {
+      if (isBefore(start, blocked.start)) {
+        if (isBefore(blocked.start, time)) return true;
+        break;
       }
     }
-  }
+
+    const adjustedEnd = new Date(start);
+    adjustedEnd.setHours(time.getHours(), time.getMinutes());
+    return isBefore(adjustedEnd, addMinutes(start, 15));
+  };
+
+  const endTimePickerProps: JoyTimePickerProps = {
+    value: end,
+    onChange: (newEnd, ctx) => {
+      if (newEnd && !ctx.validationError) handleEndChange(newEnd, start);
+    },
+    onError: (error) => {
+      setEndError(error !== null);
+    },
+    shouldDisableTime: shouldDisableEndTime,
+    minutesStep: 15,
+    referenceDate: date,
+    showMidnightButton: true,
+  };
 
   return {
     date,
@@ -133,13 +160,15 @@ export default function useTimeRange(initialValues: InitialValues = {}) {
     end,
     handleDateChange,
     handleStartChange,
-    handleEndChange,
+    handleEndChange: setEnd,
     dateInputProps,
-    startInputProps,
-    endInputProps,
-  }
+    startTimePickerProps,
+    endTimePickerProps,
+    startError,
+    endError,
+  };
 }
 
-function roundToInterval(date: Date): Date {
-  return date && roundToNearestMinutes(date, { nearestTo: 15 })
+function cmpTimeRange(a: TimeRange, b: TimeRange) {
+  return a.start.getTime() - b.start.getTime();
 }

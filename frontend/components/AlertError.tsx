@@ -23,20 +23,14 @@ export default function AlertError(props: ErrorProps) {
           variant="soft"
           color="danger"
           endDecorator={
-            <IconButton
-              variant="soft"
-              color="danger"
-              onClick={() => setDisplay(false)}
-            >
+            <IconButton variant="soft" color="danger" onClick={() => setDisplay(false)}>
               <CloseRoundedIcon />
             </IconButton>
           }
         >
           <div>
             <div>Error</div>
-            <Typography level="body-sm" >
-              {props.message}
-            </Typography>
+            <Typography level="body-sm">{props.message}</Typography>
           </div>
         </Alert>
       )}

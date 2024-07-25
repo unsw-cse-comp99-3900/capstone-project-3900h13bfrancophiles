@@ -1,47 +1,41 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { KeepScale } from 'react-zoom-pan-pinch';
-import { Box, Avatar } from '@mui/joy';
-import { Status, UserData } from '@/types';
-import useUser from '@/hooks/useUser';
-import useSpace from '@/hooks/useSpace';
-import {getInitials} from "@/components/PendingBookings";
+import React from "react";
+import { KeepScale } from "react-zoom-pan-pinch";
+import { Box, Avatar } from "@mui/joy";
+import { Status, UserData } from "@/types";
+import useSpace from "@/hooks/useSpace";
+import UserAvatar from "./UserAvatar";
 
 interface DeskIconProps {
-  id: string,
-  x: number,
-  y: number,
-  selectedDesk: string,
-  setSelectedDesk: React.Dispatch<React.SetStateAction<string>>,
-  setSelectedUser: React.Dispatch<React.SetStateAction<UserData | null>>,
-  setAvailable: React.Dispatch<React.SetStateAction<boolean>>,
-  setDeskName: React.Dispatch<React.SetStateAction<string>>,
+  id: string;
+  x: number;
+  y: number;
+  selectedDesk: string;
+  setSelectedDesk: React.Dispatch<React.SetStateAction<string>>;
+  setSelectedUser: React.Dispatch<React.SetStateAction<UserData | null>>;
+  setAvailable: React.Dispatch<React.SetStateAction<boolean>>;
+  setDeskName: React.Dispatch<React.SetStateAction<string>>;
   status: Status | undefined;
 }
 
 interface PinProps {
-  color: string,
-  on: boolean
-}
-
-const anonymousUser: UserData = {
-  name: "anonymous",
-  image: null,
+  color: string;
+  on: boolean;
 }
 
 const activeStyle = {
   transform: "scale(0.8) translate(0%, -70%)",
   zIndex: 5,
-}
+};
 
 const inactiveStyle = {
   "&:hover": {
-    transform: "scale(1.1)",
+    transform: "scale(1.2)",
     boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
     zIndex: 6,
-  }
-}
+  },
+};
 
 const deskStyle = {
   height: "var(--size-var)",
@@ -53,7 +47,9 @@ const deskStyle = {
 
 const Pin = ({ color, on }: PinProps) => {
   return (
-    <Box sx={{ ...deskStyle, pointerEvents: on ? "auto" : "none", transform: "translate(0%, -55%)" }}  >
+    <Box
+      sx={{ ...deskStyle, pointerEvents: on ? "auto" : "none", transform: "translate(0%, -55%)" }}
+    >
       <svg
         version="1.1"
         xmlns="http://www.w3.org/2000/svg"
@@ -63,9 +59,9 @@ const Pin = ({ color, on }: PinProps) => {
         viewBox="0 0 50 64.1"
         xmlSpace="preserve"
         style={{
-          transition: 'transform 0.1s, box-shadow 0.2s',
-          transform: on ? 'scale(1)' : 'scale(0)',
-          overflow: "visible"
+          transition: "transform 0.1s, box-shadow 0.2s",
+          transform: on ? "scale(1)" : "scale(0)",
+          overflow: "visible",
         }}
       >
         <defs>
@@ -91,12 +87,18 @@ const Pin = ({ color, on }: PinProps) => {
   );
 };
 
-
-const DeskIcon = ({ id, x, y, selectedDesk, setSelectedDesk, setSelectedUser, setAvailable, setDeskName, status }: DeskIconProps) => {
+const DeskIcon = ({
+  id,
+  x,
+  y,
+  selectedDesk,
+  setSelectedDesk,
+  setSelectedUser,
+  setAvailable,
+  setDeskName,
+  status,
+}: DeskIconProps) => {
   const { space } = useSpace(id);
-  const { user } = useUser(status && status.status === "Unavailable" ? status.booking.zid : 1)
-
-  const userData = user ? { name: user.fullname, image: user.image } : anonymousUser;
   const deskName = space ? space.name : "Desk";
 
   const handleClick = () => {
@@ -108,10 +110,9 @@ const DeskIcon = ({ id, x, y, selectedDesk, setSelectedDesk, setSelectedUser, se
     } else {
       setAvailable(status?.status === "Available");
       setSelectedDesk(id);
-      setSelectedUser(userData);
       setDeskName(deskName);
     }
-  }
+  };
 
   if (!status) return <></>;
 
@@ -125,42 +126,50 @@ const DeskIcon = ({ id, x, y, selectedDesk, setSelectedDesk, setSelectedUser, se
         transform: "translate(-50%, -50%)",
         zIndex: selectedDesk === id ? 3 : 2,
         "&:hover": {
-          zIndex: 4
+          zIndex: 4,
         },
         left: `${x}%`,
-        top: `${y}%`
+        top: `${y}%`,
       }}
     >
-      <KeepScale style={{ height: "var(--size-var)", width: "var(--size-var)", overflow: "visible" }}>
+      <KeepScale
+        style={{ height: "var(--size-var)", width: "var(--size-var)", overflow: "visible" }}
+      >
         <Box
           onClick={() => handleClick()}
           sx={{
             height: "var(--size-var)",
             width: "var(--size-var)",
             "&:hover": {
-              transform: "scale(1.1)",
+              transform: selectedDesk === id ? "scale(1.2)" : "",
             },
-            transition: 'transform 0.1s'
+            transition: "transform 0.1s",
           }}
         >
-          <Pin color={status.status === "Available" ? "#207920" : "#0B6BCB"} on={selectedDesk === id ? true : false} />
-          <Avatar
-            variant="solid"
-            size='sm'
-            color={status.status === "Available" ? "success" : "primary"}
-            src={
-              status.status === "Available" ? "DeskIcon1.svg" :
-                userData && userData.name !== "anonymous" ? `data:image/jpeg;base64,${userData.image}` :
-                  "/defaultUser.svg"
-            }
-            sx={{
-              ...deskStyle,
-              ...(selectedDesk === id ? activeStyle : inactiveStyle),
-              transition: "transform 0.1s, box-shadow 0.1s",
-            }}
-          >
-            {getInitials(userData.name)}
-          </Avatar>
+          <Pin
+            color={status.status === "Available" ? "#207920" : "#0B6BCB"}
+            on={selectedDesk === id ? true : false}
+          />
+          {status && status.status === "Unavailable" && (
+            <UserAvatar
+              zid={status.booking.zid}
+              selected={selectedDesk === id}
+              setSelectedUser={setSelectedUser}
+            />
+          )}
+          {status && status.status === "Available" && (
+            <Avatar
+              variant="solid"
+              size="sm"
+              color={"success"}
+              src={"DeskIcon1.svg"}
+              sx={{
+                ...deskStyle,
+                ...(selectedDesk === id ? activeStyle : inactiveStyle),
+                transition: "transform 0.1s, box-shadow 0.1s",
+              }}
+            />
+          )}
         </Box>
       </KeepScale>
     </Box>

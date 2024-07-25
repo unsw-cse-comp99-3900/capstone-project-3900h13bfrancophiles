@@ -23,8 +23,9 @@ import useRoomDetails from "@/hooks/useRoomDetails";
 import { Room } from "@/types";
 import Loading from "@/components/Loading";
 import Error from "@/components/Error";
-import useTimeRange from '@/hooks/useTimeRange';
-import BookingModal from '@/components/BookingModal/BookingModal';
+import useTimeRange from "@/hooks/useTimeRange";
+import BookingModal from "@/components/BookingModal/BookingModal";
+import JoyTimePicker from "@/components/JoyTimePicker";
 
 interface FilterOption {
   value: string;
@@ -42,7 +43,7 @@ interface FilterControlProps {
   value: string;
   onChange: (
     event: React.MouseEvent | React.KeyboardEvent | React.FocusEvent | null,
-    value: string | null
+    value: string | null,
   ) => void;
 }
 
@@ -56,7 +57,7 @@ interface CapacitySliderProps {
 
 const renderFilters = (
   tempFilters: Filters,
-  setTempFilters: React.Dispatch<React.SetStateAction<Filters>>
+  setTempFilters: React.Dispatch<React.SetStateAction<Filters>>,
 ) => (
   <React.Fragment>
     <FilterControl
@@ -90,12 +91,7 @@ const renderFilters = (
   </React.Fragment>
 );
 
-const FilterControl: React.FC<FilterControlProps> = ({
-  label,
-  options,
-  value,
-  onChange,
-}) => (
+const FilterControl: React.FC<FilterControlProps> = ({ label, options, value, onChange }) => (
   <FormControl size="sm">
     <FormLabel>{label}</FormLabel>
     <Select size="sm" value={value} onChange={onChange}>
@@ -108,13 +104,7 @@ const FilterControl: React.FC<FilterControlProps> = ({
   </FormControl>
 );
 
-const CapacitySlider: React.FC<CapacitySliderProps> = ({
-  label,
-  min,
-  max,
-  value,
-  onChange,
-}) => (
+const CapacitySlider: React.FC<CapacitySliderProps> = ({ label, min, max, value, onChange }) => (
   <FormControl size="sm">
     <FormLabel>{label}</FormLabel>
     <Slider
@@ -140,17 +130,15 @@ export default function Rooms() {
     type: "all",
     capacity: 1,
   });
-  const {
-    date, start, end,
-    dateInputProps, startInputProps, endInputProps
-  } = useTimeRange();
+  const { date, start, end, dateInputProps, startTimePickerProps, endTimePickerProps } =
+    useTimeRange();
   const [selectedRoom, setSelectedRoom] = React.useState<Room>();
 
   const { roomsData = [], isLoading, error } = useRoomDetails();
   const [isFiltered, setIsFiltered] = React.useState<boolean>(false);
 
   if (isLoading) return <Loading page="Rooms" />;
-  if (error) return <Error page="Rooms" message="Error loading rooms"/>;
+  if (error) return <Error page="Rooms" message="Error loading rooms" />;
 
   const toggleFilters = () => {
     setFiltersOpen(!filtersOpen);
@@ -162,10 +150,7 @@ export default function Rooms() {
 
   const applyFilters = () => {
     setFilters(tempFilters);
-    if (
-      tempFilters.type !== "all" ||
-      tempFilters.capacity !== 1
-    ) {
+    if (tempFilters.type !== "all" || tempFilters.capacity !== 1) {
       setIsFiltered(true);
     } else {
       setIsFiltered(false);
@@ -176,34 +161,35 @@ export default function Rooms() {
   const filterRooms = (roomsData: Room[]) => {
     return roomsData.filter((room) => {
       const matchesType =
-        filters.type === "all" ||
-        room.type.toLowerCase().replace(" ", "-") === filters.type;
+        filters.type === "all" || room.type.toLowerCase().replace(" ", "-") === filters.type;
       const matchesCapacity = room.capacity >= filters.capacity;
-      const matchesSearchQuery = room.name
-        .toLowerCase()
-        .includes(searchQuery.toLowerCase());
+      const matchesSearchQuery = room.name.toLowerCase().includes(searchQuery.toLowerCase());
       return matchesType && matchesCapacity && matchesSearchQuery;
     });
   };
 
-  const sortedRooms = [...roomsData].sort((a, b) =>
-    a.name.localeCompare(b.name)
-  );
-  const displayedRooms = filterRooms(
-    sort ? sortedRooms : sortedRooms.reverse()
-  );
+  const sortedRooms = [...roomsData].sort((a, b) => a.name.localeCompare(b.name));
+  const displayedRooms = filterRooms(sort ? sortedRooms : sortedRooms.reverse());
 
   return (
     <>
-      {!!selectedRoom && <BookingModal
-        open={!!selectedRoom}
-        onClose={() => setSelectedRoom(undefined)}
-        space={selectedRoom ? { id: selectedRoom.id, name: selectedRoom.name, isRoom: true } : undefined}
-        date={date}
-        start={start}
-        end={end}
-      />}
-      <Typography level="h1" mb={0}>Rooms</Typography>
+      {!!selectedRoom && (
+        <BookingModal
+          open={!!selectedRoom}
+          onClose={() => setSelectedRoom(undefined)}
+          space={
+            selectedRoom
+              ? { id: selectedRoom.id, name: selectedRoom.name, isRoom: true }
+              : undefined
+          }
+          date={date}
+          start={start}
+          end={end}
+        />
+      )}
+      <Typography level="h1" mb={0}>
+        Rooms
+      </Typography>
       <Stack
         className="SearchAndFilters"
         alignItems="flex-end"
@@ -221,26 +207,32 @@ export default function Rooms() {
             onChange={(event) => setSearchQuery(event.target.value)}
           />
         </FormControl>
-        <Stack direction="row" gap={2} flexWrap="wrap" alignItems="flex-end" >
+        <Stack direction="row" gap={2} flexWrap="wrap" alignItems="flex-end">
           <FormControl>
             <FormLabel>Date</FormLabel>
             <Input size="sm" {...dateInputProps} />
           </FormControl>
           <Stack direction="row">
-            <FormControl>
+            <FormControl size="sm">
               <FormLabel>Start</FormLabel>
-              <Input
+              <JoyTimePicker
+                {...startTimePickerProps}
                 size="sm"
-                sx={{ borderBottomRightRadius: 0, borderTopRightRadius: 0, width: 115 }}
-                {...startInputProps}
+                sx={{
+                  borderBottomRightRadius: 0,
+                  borderTopRightRadius: 0,
+                  borderRight: 0,
+                  width: 115,
+                  pl: 0,
+                }}
               />
             </FormControl>
-            <FormControl>
+            <FormControl size="sm">
               <FormLabel>End</FormLabel>
-              <Input
+              <JoyTimePicker
+                {...endTimePickerProps}
                 size="sm"
-                sx={{ borderBottomLeftRadius: 0, borderTopLeftRadius: 0, borderLeft: 'none', width: 115 }}
-                {...endInputProps}
+                sx={{ borderBottomLeftRadius: 0, borderTopLeftRadius: 0, width: 115, pl: 0 }}
               />
             </FormControl>
           </Stack>
@@ -269,11 +261,7 @@ export default function Rooms() {
         </Stack>
       </Stack>
 
-      <Modal
-        open={filtersOpen}
-        onClose={toggleFilters}
-        style={{ backdropFilter: "blur(1px)" }}
-      >
+      <Modal open={filtersOpen} onClose={toggleFilters} style={{ backdropFilter: "blur(1px)" }}>
         <ModalDialog
           aria-labelledby="filter-modal-title"
           aria-describedby="filter-modal-description"
@@ -286,11 +274,7 @@ export default function Rooms() {
           <h2 id="modal-title">Filter Rooms</h2>
           {renderFilters(tempFilters, setTempFilters)}
           <Box sx={{ mt: 2, display: "flex", justifyContent: "space-between" }}>
-            <Button
-              variant="outlined"
-              color="neutral"
-              onClick={() => setFiltersOpen(false)}
-            >
+            <Button variant="outlined" color="neutral" onClick={() => setFiltersOpen(false)}>
               Cancel
             </Button>
             <Button variant="outlined" color="primary" onClick={applyFilters}>
@@ -308,7 +292,13 @@ export default function Rooms() {
         sx={{ gridGap: 30 }}
       >
         {displayedRooms.map((room) => (
-          <RoomCard key={room.id} room={room} handleBook={setSelectedRoom} datetimeStart={start.toISOString()} datetimeEnd={end.toISOString()} />
+          <RoomCard
+            key={room.id}
+            room={room}
+            handleBook={setSelectedRoom}
+            datetimeStart={start.toISOString()}
+            datetimeEnd={end.toISOString()}
+          />
         ))}
       </Box>
     </>

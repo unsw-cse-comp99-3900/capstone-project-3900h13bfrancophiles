@@ -10,7 +10,7 @@ export type Booking = {
   checkouttime: string | null;
 };
 
-export type AnonymousBooking = Omit<Booking, 'description'>;
+export type AnonymousBooking = Omit<Booking, "description">;
 
 export type Room = {
   id: string;
@@ -30,11 +30,11 @@ export type Desk = {
 
 export type Space = Room | Desk;
 
-export type SpaceType = "room" | "desk"
+export type SpaceType = "room" | "desk";
 
-export type User = null | { name: string, image: string }
+export type User = null | { name: string; image: string };
 
-export type BookingUser =   {
+export type BookingUser = {
   zid: number;
   email: string;
   fullname: string;
@@ -44,19 +44,33 @@ export type BookingUser =   {
   role: string | null;
   usergrp: "other" | "hdr" | "csestaff" | "admin";
   image: string | null;
-}
+};
 
 export type UserData = {
   name: string;
   image: string | null;
-}
+};
 
 export type SpaceOption = { name: string; id: string; isRoom: boolean };
 
-export type Status =
-  | { status: "Available" }
-  | { status: "Unavailable"; booking: Booking };
+export type Status = { status: "Available" } | { status: "Unavailable"; booking: Booking };
 
 export type StatusResponse = {
   [spaceId: string]: Status;
 };
+
+export type TimeRange = {
+  start: Date;
+  end: Date;
+};
+
+export const USER_GROUPS = ["other", "hdr", "csestaff", "admin"] as const;
+export type UserGroup = (typeof USER_GROUPS)[number];
+
+export interface TokenPayload {
+  id: string;
+  user: number; // zid
+  group: UserGroup;
+}
+
+export type NavData = { text: string; href: string };

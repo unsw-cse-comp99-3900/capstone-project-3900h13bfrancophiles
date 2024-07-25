@@ -16,10 +16,10 @@ import Image from "next/image";
 import NextLink from "next/link";
 import React from "react";
 import { Menu as MenuIcon } from "@mui/icons-material";
-import { navData } from "@/app/data";
 import LogoutButton from "@/components/LogoutButton";
+import { NavData } from "@/types";
 
-const NavBar = () => {
+const NavBar = ({ navItems }: { navItems: NavData[] }) => {
   const [open, setOpen] = React.useState(false);
 
   return (
@@ -34,25 +34,16 @@ const NavBar = () => {
           alignItems="center"
         >
           <NextLink href="/">
-            <AspectRatio
-              variant="plain"
-              ratio="15/12"
-              objectFit="contain"
-              sx={{ width: 60 }}
-            >
+            <AspectRatio variant="plain" ratio="15/12" objectFit="contain" sx={{ width: 60 }}>
               <Image fill src="/roomalloclogo.svg" alt="logo" />
             </AspectRatio>
           </NextLink>
-          <IconButton
-            variant="plain"
-            sx={{ color: "#fff" }}
-            onClick={() => setOpen(true)}
-          >
+          <IconButton variant="plain" color="neutral" onClick={() => setOpen(true)}>
             <MenuIcon sx={{ fontSize: "2.2rem" }} />
           </IconButton>
         </Stack>
       </Sheet>
-      <MenuDrawer open={open} setOpen={setOpen} />
+      <MenuDrawer open={open} setOpen={setOpen} navItems={navItems} />
     </>
   );
 };
@@ -60,18 +51,14 @@ const NavBar = () => {
 interface MenuDrawerProps {
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  navItems: NavData[];
 }
 
-const MenuDrawer: React.FC<MenuDrawerProps> = ({ open, setOpen }) => {
+const MenuDrawer: React.FC<MenuDrawerProps> = ({ open, setOpen, navItems }) => {
   return (
     <Drawer anchor="right" open={open} onClose={() => setOpen(false)}>
-      <Link component={NextLink} href="/frontend/public" mx="auto" my={2}>
-        <AspectRatio
-          variant="plain"
-          ratio="15/4"
-          objectFit="contain"
-          sx={{ width: 200 }}
-        >
+      <Link component={NextLink} href="/" mx="auto" my={2}>
+        <AspectRatio variant="plain" ratio="15/4" objectFit="contain" sx={{ width: 200 }}>
           <Image fill src="/roomalloclogo.svg" alt="logo" />
         </AspectRatio>
       </Link>
@@ -85,16 +72,15 @@ const MenuDrawer: React.FC<MenuDrawerProps> = ({ open, setOpen }) => {
           "& > div": { justifyContent: "center" },
         }}
       >
-        {navData.map(({ text, href }, idx) => (
+        {navItems.map(({ text, href }) => (
           <ListItemButton
-            key={idx}
+            key={href}
             onClick={() => setOpen(false)}
             sx={{ "&:hover": { bgcolor: "#f0f4fc" } }}
           >
             <Link
               component={NextLink}
               href={href}
-              key={idx}
               underline="none"
               sx={{ color: "inherit", fontSize: "inherit" }}
             >
@@ -107,12 +93,7 @@ const MenuDrawer: React.FC<MenuDrawerProps> = ({ open, setOpen }) => {
       </List>
       <Divider />
       <Stack mx="auto" my={2}>
-        <AspectRatio
-          variant="plain"
-          ratio="15/15"
-          objectFit="contain"
-          sx={{ width: 35 }}
-        >
+        <AspectRatio variant="plain" ratio="15/15" objectFit="contain" sx={{ width: 35 }}>
           <LogoutButton />
         </AspectRatio>
       </Stack>
