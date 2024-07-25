@@ -22,7 +22,7 @@ jobs:
       - name: Configure node toolchain
         uses: actions/setup-node@v4
         with:
-            node-version: latest
+            node-version: v22.4.0
       - name: Install dependencies
         run: yarn --frozen-lockfile
         working-directory: backend

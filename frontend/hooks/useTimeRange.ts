@@ -14,19 +14,19 @@ import {
   setHours,
   setMinutes,
   startOfDay,
-  startOfTomorrow
-} from 'date-fns';
-import React from 'react';
-import { InputProps } from '@mui/joy/Input';
-import { JoyTimePickerProps } from '@/components/JoyTimePicker';
-import { TimeRange } from '@/types';
+  startOfTomorrow,
+} from "date-fns";
+import React from "react";
+import { InputProps } from "@mui/joy/Input";
+import { JoyTimePickerProps } from "@/components/JoyTimePicker";
+import { TimeRange } from "@/types";
 
 type UseTimeRangeOptions = {
   date?: Date;
   start?: Date;
   end?: Date;
   blockedTimes?: TimeRange[];
-}
+};
 
 /**
  * Hook for creating date, start and end time state variables/inputs that
@@ -47,14 +47,10 @@ export default function useTimeRange(options: UseTimeRangeOptions = {}) {
   const today = startOfDay(now);
   const weekFromToday = addWeeks(today, 1);
 
-  const [date, setDate] = React.useState(
-    startOfDay(options.date ?? now)
-  );
-  const [start, setStart] = React.useState<Date>(
-    options.start ?? now
-  );
+  const [date, setDate] = React.useState(startOfDay(options.date ?? now));
+  const [start, setStart] = React.useState<Date>(options.start ?? now);
   const [end, setEnd] = React.useState<Date>(
-    options.end ?? min([addHours(now, 1), startOfTomorrow()])
+    options.end ?? min([addHours(now, 1), startOfTomorrow()]),
   );
 
   const handleDateChange = (newDate: Date) => {
@@ -62,7 +58,7 @@ export default function useTimeRange(options: UseTimeRangeOptions = {}) {
     setDate(startOfDate);
     const newStart = setHours(setMinutes(newDate, getMinutes(start)), getHours(start));
     handleStartChange(newStart, startOfDate);
-  }
+  };
 
   const handleStartChange = (newStart: Date, date: Date) => {
     const startTime = max([newStart, now, date]);
@@ -72,7 +68,7 @@ export default function useTimeRange(options: UseTimeRangeOptions = {}) {
 
     const shiftedEnd = min([addMinutes(end, changeInTime), addDays(date, 1)]);
     handleEndChange(shiftedEnd, limitedStart);
-  }
+  };
 
   const handleEndChange = (newEnd: Date, start: Date) => {
     if (newEnd.getHours() == 0 && newEnd.getMinutes() == 0) {
@@ -82,29 +78,29 @@ export default function useTimeRange(options: UseTimeRangeOptions = {}) {
       adjustedEnd.setHours(newEnd.getHours(), newEnd.getMinutes());
       setEnd(adjustedEnd);
     }
-  }
+  };
 
   const [startError, setStartError] = React.useState(false);
   const [endError, setEndError] = React.useState<boolean>(false);
 
   const dateInputProps: InputProps = {
     type: "date",
-    value: format(date, 'yyyy-MM-dd'),
+    value: format(date, "yyyy-MM-dd"),
     onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
       if (!e.target.value.match(/\d{4}-\d{2}-\d{2}/)) return;
       handleDateChange(new Date(e.target.value));
     },
     slotProps: {
       input: {
-        min: format(today, 'yyyy-MM-dd'),
-        max: format(weekFromToday, 'yyyy-MM-dd'),
-      }
-    }
-  }
+        min: format(today, "yyyy-MM-dd"),
+        max: format(weekFromToday, "yyyy-MM-dd"),
+      },
+    },
+  };
 
   const [blockedTimes, setBlockedTimes] = React.useState<TimeRange[]>([]);
   React.useEffect(() => {
-    setBlockedTimes(options.blockedTimes?.sort(cmpTimeRange) ?? [])
+    setBlockedTimes(options.blockedTimes?.sort(cmpTimeRange) ?? []);
   }, [options.blockedTimes]);
 
   // Start must be greater than now, and start of day
@@ -114,7 +110,7 @@ export default function useTimeRange(options: UseTimeRangeOptions = {}) {
     }
 
     return isBefore(time, now) || isBefore(time, date);
-  }
+  };
 
   const startTimePickerProps: JoyTimePickerProps = {
     value: start,
@@ -126,7 +122,7 @@ export default function useTimeRange(options: UseTimeRangeOptions = {}) {
     },
     shouldDisableTime: shouldDisableStartTime,
     minutesStep: 15,
-  }
+  };
 
   // End time can always be midnight, but must be at least start + 15m
   const shouldDisableEndTime = (time: Date) => {
@@ -142,7 +138,7 @@ export default function useTimeRange(options: UseTimeRangeOptions = {}) {
     const adjustedEnd = new Date(start);
     adjustedEnd.setHours(time.getHours(), time.getMinutes());
     return isBefore(adjustedEnd, addMinutes(start, 15));
-  }
+  };
 
   const endTimePickerProps: JoyTimePickerProps = {
     value: end,
@@ -156,7 +152,7 @@ export default function useTimeRange(options: UseTimeRangeOptions = {}) {
     minutesStep: 15,
     referenceDate: date,
     showMidnightButton: true,
-  }
+  };
 
   return {
     date,
@@ -170,7 +166,7 @@ export default function useTimeRange(options: UseTimeRangeOptions = {}) {
     endTimePickerProps,
     startError,
     endError,
-  }
+  };
 }
 
 function cmpTimeRange(a: TimeRange, b: TimeRange) {

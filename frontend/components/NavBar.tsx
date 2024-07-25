@@ -6,8 +6,7 @@ import { usePathname } from "next/navigation";
 import React from "react";
 import NextLink from "next/link";
 import LogoutButton from "@/components/LogoutButton";
-import { NavData } from '@/types';
-
+import { NavData } from "@/types";
 
 interface NavProps {
   title: string;
@@ -21,49 +20,29 @@ function NavItem({ title, navigateTo }: NavProps) {
     <Stack
       component={NextLink}
       href={navigateTo}
-      sx={theme => ({
+      sx={(theme) => ({
         alignContent: "center",
         width: "100%",
         height: "100%",
         textDecoration: "none",
-        borderBottom: activePage === navigateTo
-          ? `4px solid ${theme.vars.palette.neutral[500]}`
-          : "none",
+        borderBottom:
+          activePage === navigateTo ? `4px solid ${theme.vars.palette.neutral[500]}` : "none",
         "&:hover": { bgcolor: `${theme.vars.palette.neutral.plainHoverBg}` },
       })}
     >
-      <Typography
-        level="h3"
-        fontSize={16}
-        margin="auto"
-        px={5}
-        sx={{ textAlign: "center" }}
-      >
+      <Typography level="h3" fontSize={16} margin="auto" px={5} sx={{ textAlign: "center" }}>
         {title}
       </Typography>
     </Stack>
   );
 }
 
-export default function NavBar({ navItems } : { navItems: NavData[] }) {
+export default function NavBar({ navItems }: { navItems: NavData[] }) {
   return (
-    <Sheet
-      sx={{ zIndex: 2, boxShadow: "md", height: 60, display: { xs: "none", sm: "flex" } }}
-    >
-      <Stack
-        width="100%"
-        height="100%"
-        direction="row"
-        alignItems="center"
-        px={2}
-      >
+    <Sheet sx={{ zIndex: 2, boxShadow: "md", height: 60, display: { xs: "none", sm: "flex" } }}>
+      <Stack width="100%" height="100%" direction="row" alignItems="center" px={2}>
         <NextLink href="/">
-          <AspectRatio
-            variant="plain"
-            ratio="15/12"
-            objectFit="contain"
-            sx={{ width: 60 }}
-          >
+          <AspectRatio variant="plain" ratio="15/12" objectFit="contain" sx={{ width: 60 }}>
             <Image fill src="/roomalloclogo.svg" alt="logo" />
           </AspectRatio>
         </NextLink>
