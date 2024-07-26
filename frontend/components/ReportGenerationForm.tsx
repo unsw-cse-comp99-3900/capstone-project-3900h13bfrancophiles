@@ -121,6 +121,24 @@ export function ReportGenerationForm() {
     }
   };
 
+  const handleSubmit = async () => {
+    const res = await fetch("http://localhost:2000/admin/reports/generate", { method: "POST" });
+
+    const blob = await res.blob();
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+
+    // Extract filename
+    const header = res.headers.get('Content-Disposition');
+    const parts = header!.split(';');
+    const quotedFilename = parts[1].split('=')[1];
+    a.download = quotedFilename.substring(1, quotedFilename.length - 1);
+
+    a.click();
+    window.URL.revokeObjectURL(url);
+  }
+
   return (
     <Stack
       direction={{ xs: "column", lg: "row" }}
@@ -204,6 +222,7 @@ export function ReportGenerationForm() {
           mt: "20px !important",
           flexShrink: 0,
         }}
+        onClick={handleSubmit}
       >
         Download Report
       </Button>

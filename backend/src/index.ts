@@ -23,6 +23,7 @@ import {
 } from './spaces/handlers';
 import { spaceStatus } from './status/handlers';
 import { userDetails } from './user/handlers';
+import { generateReport } from "./reports/handlers";
 
 const pool = new Pool({
   connectionString: DATABASE_URL,
@@ -72,6 +73,8 @@ app.get('/admin/bookings/pending', validateToken, authoriseAtLeast('admin'), pen
 app.put('/admin/bookings/approve', validateToken, authoriseAtLeast('admin'), approveBooking);
 app.put('/admin/bookings/decline', validateToken, authoriseAtLeast('admin'), declineBooking);
 app.get('/admin/bookings/overlapping', validateToken, authoriseAtLeast('admin'), overlappingBookings);
+
+app.post('/admin/reports/generate', generateReport);
 
 app.get('/users/:zid', validateToken, userDetails);
 
