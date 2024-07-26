@@ -105,7 +105,7 @@ export default function PastBookings() {
             </tr>
           </thead>
           <tbody>
-            {!!pastBookings?.length ? (
+            {pastBookings?.length ? (
               pastBookings.map((row) => <PastBookingsRow key={row.id} row={row} />)
             ) : (
               <NoBookingsRow bookingType="Past" colSpan={numColumns} isLoading={isLoading} />

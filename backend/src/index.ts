@@ -32,6 +32,7 @@ export const db = drizzle(pool);
 export const emailTransporter = nodemailer.createTransport({
   host: 'smtp.ethereal.email',
   port: 587,
+  pool: true,
   auth: {
     user: 'wilma44@ethereal.email',
     pass: 'GWCxu8xEeJAwGAMGzF',

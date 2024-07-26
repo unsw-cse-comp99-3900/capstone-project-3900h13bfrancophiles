@@ -121,7 +121,7 @@ export default function UpcomingBookings() {
             </tr>
           </thead>
           <tbody>
-            {!!upcomingBookings?.length ? (
+            {upcomingBookings?.length ? (
               upcomingBookings
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((row) => <UpcomingBookingRow key={row.id} row={row} mutate={mutate} />)
