@@ -1,9 +1,10 @@
+import { generateBookingSpreadsheet } from "./bookingGenerators";
 
-type ReportGenerator = (
+export type ReportGenerator = (
   startDate: Date,
   endDate: Date,
   spaces: string[],
-) => Buffer;
+) => Promise<Buffer>;
 
 type ReportType = {
   key: string;
@@ -18,14 +19,14 @@ export const REPORT_TYPES: Record<string, ReportType> = {
     key: "booking",
     name: "Booking Information",
     formats: {
-
+      xlsx: generateBookingSpreadsheet,
     }
   },
   checkin: {
     key: "checkin",
     name: "Booking & Check-in Information",
     formats: {
-
+      xlsx: generateBookingSpreadsheet,
     }
   }
 };

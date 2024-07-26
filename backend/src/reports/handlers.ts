@@ -35,15 +35,15 @@ export async function generateReport(
 
   const startDate = new Date(req.body.startDate);
   const endDate = new Date(req.body.endDate);
+  endDate.setDate(endDate.getDate() + 1);
+
   const fileData = reportType.formats[req.body.format](
-    new Date(req.body.startDate),
-    new Date(req.body.endDate),
+    startDate,
+    endDate,
     await toSpaceIds(req.body.spaces),
   );
 
-  res.attachment(
-    `${reportType.name} - (${startDate.toLocaleDateString()} - ${endDate.toLocaleDateString()})`
-  );
+  res.attachment(`${reportType.name}.${req.body.format}`);
   res.header("Access-Control-Expose-Headers", "Content-Disposition");
   res.send(fileData);
 }
