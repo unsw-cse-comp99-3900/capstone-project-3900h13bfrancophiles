@@ -17,7 +17,7 @@ const AvailabilitiesPage: React.FC<AvailabilitesPageProps> = ({ spaceId, spaceTy
   const spaceOutput = useSpace(spaceId);
   const space = spaceOutput.space;
   const spaceLoading = spaceOutput.isLoading;
-  const { bookings, mutate } = useAvailabilities(spaceId);
+  const { mutate } = useAvailabilities(spaceId);
   const room = space as Room;
   const desk = space as Desk;
 
@@ -84,7 +84,7 @@ const AvailabilitiesPage: React.FC<AvailabilitesPageProps> = ({ spaceId, spaceTy
             </Box>
           </Stack>
         ) : null}
-        <AvailabilityCalendar bookings={bookings ?? []} />
+        <AvailabilityCalendar spaceId={spaceId} />
       </Stack>
     </>
   );

@@ -10,9 +10,11 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 import { Stack, ButtonGroup, Button, ToggleButtonGroup, Typography } from "@mui/joy";
 import useUser from "@/hooks/useUser";
 import { Event, StyledCalendarContainer, formatTime, formatTimeRange } from "@/utils/calendar";
+import useAvailabilities from "@/hooks/useAvailabilities";
+import Loading from "./Loading";
 
 interface AvailabilityCalendarProps {
-  bookings: AnonymousBooking[];
+  spaceId: string;
 }
 
 const CustomToolBar: React.FC<ToolbarProps> = ({ view, onNavigate, onView, date }) => {
@@ -52,20 +54,25 @@ const CustomEvent: React.FC<EventProps<Event>> = ({ event }) => {
   return <>{isLoading || error ? "..." : user!.fullname}</>;
 };
 
-export default function AvailabilityCalendar({ bookings }: AvailabilityCalendarProps) {
+export default function AvailabilityCalendar({ spaceId }: AvailabilityCalendarProps) {
   const [date, setDate] = React.useState<Date>(new Date());
   const [view, setView] = React.useState<View>("week");
-  const events: Event[] = bookings.map((b) => {
+  const { bookings, isLoading } = useAvailabilities(spaceId);
+
+  const isMobile: boolean = useMediaQuery(theme.breakpoints.down("md")) ?? false;
+  React.useEffect(() => {
+    setView(isMobile ? "day" : "week");
+  }, [isMobile]);
+
+  if (isLoading) return <Loading page=""/>
+
+  const events: Event[] = bookings!.map((b) => {
     return {
       zid: b.zid,
       start: new Date(b.starttime),
       end: new Date(b.endtime),
     };
   });
-  const isMobile: boolean = useMediaQuery(theme.breakpoints.down("md")) ?? false;
-  React.useEffect(() => {
-    setView(isMobile ? "day" : "week");
-  }, [isMobile]);
 
   const handleDateChange = (newDate: Date | null) => {
     setDate(newDate ?? new Date());

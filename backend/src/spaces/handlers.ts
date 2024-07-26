@@ -1,9 +1,11 @@
-import { eq, and, asc, gt, sql } from 'drizzle-orm';
+import { eq, and, asc, gt, sql, or, lte, gte } from 'drizzle-orm';
 import { hotdesk, room, space, booking } from '../../drizzle/schema';
 
 import { db } from '../index';
-import { TypedGETRequest, TypedResponse, Room, Space, AnonymousBooking, SpaceType } from '../types';
+import { TypedGETRequest, TypedResponse, Room, Space, AnonymousBooking, SpaceType, IDatetimeRange } from '../types';
 import { anonymiseBooking, formatBookingDates, now } from '../utils';
+import typia from 'typia';
+import { date } from 'drizzle-orm/mysql-core';
 
 export async function roomDetails(req: TypedGETRequest, res: TypedResponse<{ rooms: Room[] }>) {
   try {
@@ -96,8 +98,23 @@ export async function spaceAvailabilities(
 ) {
   try {
     const currentTime = (await now()).toISOString();
+    const parsedQuery = typia.http.isQuery<IDatetimeRange>(new URLSearchParams(req.query));
+    // if (!parsedQuery) {
+    //   res.status(400).json({ error: 'Invalid input' });
+    //   return;
+    // }
 
-    const spaceExists = await db.select().from(space).where(eq(space.id, req.params.spaceId));
+    const oneWeekFromNow = new Date(currentTime);
+    oneWeekFromNow.setDate(oneWeekFromNow.getDate() + 7);
+    const datetimeStart = parsedQuery ? parsedQuery.datetimeStart : new Date("01/01/2024").toISOString();
+    const datetimeEnd = parsedQuery ? parsedQuery.datetimeEnd : oneWeekFromNow.toISOString();
+
+    const spaceExists = await db
+      .select()
+      .from(space)
+      .where(
+        eq(space.id, req.params.spaceId)
+      );
 
     if (spaceExists.length == 0) {
       res.status(404).json({ error: 'Space ID does not exist' });
@@ -107,7 +124,17 @@ export async function spaceAvailabilities(
     const existingBookings = await db
       .select()
       .from(booking)
-      .where(and(eq(booking.spaceid, req.params.spaceId), eq(booking.currentstatus, 'confirmed')))
+      .where(
+        and(
+          eq(booking.spaceid, req.params.spaceId),
+          lte(booking.starttime, datetimeEnd),
+          gte(booking.endtime, datetimeStart),
+          or(
+            eq(booking.currentstatus, 'confirmed'),
+            eq(booking.currentstatus, 'checkedin')
+          ),
+        )
+      )
       .orderBy(asc(booking.starttime));
 
     res.json({ bookings: existingBookings.map(formatBookingDates).map(anonymiseBooking) });
