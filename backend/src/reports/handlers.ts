@@ -1,14 +1,60 @@
 import { TypedRequest, TypedResponse } from "../types";
-import * as fs from "fs";
+import { REPORT_TYPES } from "./index";
+import typia from "typia";
+import { db } from "../index";
+import { space } from "../../drizzle/schema";
+import { sql } from "drizzle-orm";
 
 interface GenerateReportRequest {
+  type: string;
   spaces: string[];
+  format: string;
+  startDate: string & typia.tags.Format<"date-time">;
+  endDate: string & typia.tags.Format<"date-time">;
 }
 
-export function generateReport(req: TypedRequest<GenerateReportRequest>, res: TypedResponse) {
-  const data: Buffer = fs.readFileSync(".prettierrc");
+export async function generateReport(
+  req: TypedRequest<GenerateReportRequest>,
+  res: TypedResponse
+) {
+  if (!typia.is<GenerateReportRequest>(req.body)) {
+    res.status(400).send("Invalid input");
+    return;
+  }
 
-  res.attachment("file.json");
+  if (!(req.body.type in REPORT_TYPES)) {
+    res.status(404).send("No such report type");
+    return;
+  }
+  const reportType = REPORT_TYPES[req.body.type];
+
+  if (!(req.body.format in reportType.formats)) {
+    res.status(400).send("Unsupported file format for this report type");
+    return;
+  }
+
+  const startDate = new Date(req.body.startDate);
+  const endDate = new Date(req.body.endDate);
+  const fileData = reportType.formats[req.body.format](
+    new Date(req.body.startDate),
+    new Date(req.body.endDate),
+    await toSpaceIds(req.body.spaces),
+  );
+
+  res.attachment(
+    `${reportType.name} - (${startDate.toLocaleDateString()} - ${endDate.toLocaleDateString()})`
+  );
   res.header("Access-Control-Expose-Headers", "Content-Disposition");
-  res.send(data);
+  res.send(fileData);
+}
+
+// Convert a list of spaces to individual space IDs
+// This is mostly to convert from desk room IDs to desks
+async function toSpaceIds(spaces: string[]) {
+  const res = await db
+    .select({ id: space.id })
+    .from(space)
+    .where(sql`${space.id} ~* ^(${spaces.join("|")})`);
+
+  return res.map(res => res.id);
 }
