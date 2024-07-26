@@ -158,7 +158,8 @@ INSERT INTO hotdesk (id, floor, xCoord, yCoord) VALUES
 ('K-K17-301-15', 'K17 L3', 213, 339),
 ('K-K17-301-16', 'K17 L3', 213, 298);
 
-
+-- Insert default configuration options
+INSERT INTO config (key, value) VALUES ('global-email', 'false'); -- Disables email sending globally
 
 -- temporary person, should be populated with the given spreadsheet
 -- this is in data rather than dev_data since it's unusable without people

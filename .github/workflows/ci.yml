@@ -33,6 +33,7 @@ jobs:
           PORT: 2001
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/3900-test
       - name: Archive server log
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: server-log
