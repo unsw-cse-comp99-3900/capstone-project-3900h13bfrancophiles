@@ -1,13 +1,16 @@
 import * as React from "react";
-import { Stack, Typography, Button, Grid, Sheet } from "@mui/joy";
-import useSpace from '@/hooks/useSpace';
+
+import {Stack, Typography, Button, Tooltip, Grid, Sheet} from "@mui/joy";
+import useSpace from "@/hooks/useSpace";
 import useAvailabilities from "@/hooks/useAvailabilities";
-import { Room, Desk } from "@/types";
+import {Room, Desk} from "@/types";
 import Loading from "@/components/Loading";
 import AvailabilityCalendar from "@/components/AvailabilityCalendar";
 import BookingModal from "@/components/BookingModal/BookingModal";
 import Error from "@/components/Error";
+
 import { styled } from '@mui/joy/styles';
+import useRoomCanBook from "@/hooks/useRoomCanBook";
 
 interface AvailabilitesPageProps {
   spaceId: string;
@@ -36,6 +39,7 @@ const AvailabilitiesPage : React.FC<AvailabilitesPageProps> = ({
   const desk = space as Desk;
 
   const [openModal, setOpenModal] = React.useState<boolean>(false);
+  const { canBook } = useRoomCanBook(spaceId)
 
   if (spaceType !== spaceOutput.type || spaceOutput.error)
     return <Error page={`${spaceType}s/${spaceId}`} message={`${spaceType} ID not found`} />;
@@ -85,6 +89,18 @@ const AvailabilitiesPage : React.FC<AvailabilitesPageProps> = ({
           >
             Book Now
           </Button>
+          <Tooltip title={canBook ? "" : "You do not have permission to book this space"} variant="solid">
+            <Box>
+              <Button
+                color="success"
+                variant="solid"
+                disabled={!canBook}
+                onClick={() => {setOpenModal(true)}}
+              >
+                Book Now
+              </Button>
+            </Box>
+          </Tooltip>
         </Stack>
         {spaceType === "room" &&
           <>

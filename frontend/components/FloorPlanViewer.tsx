@@ -2,11 +2,10 @@
 
 import React from "react";
 import { TransformComponent, TransformWrapper } from "react-zoom-pan-pinch";
-import { Box } from "@mui/joy";
-import Image from "next/image";
-import { deskData } from "@/app/data";
-import DeskIcon from "./DeskIcon";
-import { StatusResponse, UserData } from "@/types";
+import { Box } from '@mui/joy';
+import Image from 'next/image';
+import DeskIcon from './DeskIcon';
+import { StatusResponse, UserData, DeskPosition } from '@/types';
 
 interface FloorPlanViewerProps {
   selectedDesk: string;
@@ -14,7 +13,8 @@ interface FloorPlanViewerProps {
   setSelectedUser: React.Dispatch<React.SetStateAction<UserData | null>>;
   setAvailable: React.Dispatch<React.SetStateAction<boolean>>;
   setDeskName: React.Dispatch<React.SetStateAction<string>>;
-  level: string;
+  floor: string;
+  desks: DeskPosition[];
   statuses: StatusResponse;
 }
 
@@ -23,16 +23,14 @@ const coordToPercent = (x: number) => {
 };
 
 const FloorPlanViewer = ({
-  level,
   selectedDesk,
   setSelectedDesk,
   setSelectedUser,
   setAvailable,
   setDeskName,
-  statuses,
-}: FloorPlanViewerProps) => {
-  const desks = deskData.find((data) => data.level === level)?.desks ?? [];
-
+  floor,
+  desks,
+  statuses }: FloorPlanViewerProps) => {
   return (
     <Box
       sx={{
@@ -57,18 +55,13 @@ const FloorPlanViewer = ({
             position: "relative",
           }}
         >
-          <Image
-            src={`/${level}.svg`}
-            fill
-            alt={`${level} floorplan`}
-            style={{ position: "absolute" }}
-          />
+          <Image src={`/${floor}.svg`} fill alt={`${floor} floorplan`} style={{ position: "absolute" }} />
           {desks.map((desk, index) => (
             <DeskIcon
               key={index}
               id={desk.id}
-              x={coordToPercent(desk.x)}
-              y={coordToPercent(desk.y)}
+              x={coordToPercent(desk.xcoord)}
+              y={coordToPercent(desk.ycoord)}
               selectedDesk={selectedDesk}
               setSelectedDesk={setSelectedDesk}
               setSelectedUser={setSelectedUser}

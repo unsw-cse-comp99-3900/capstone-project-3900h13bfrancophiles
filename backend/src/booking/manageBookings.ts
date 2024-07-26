@@ -157,12 +157,11 @@ export async function createBooking(
       .returning();
 
     createdBooking = formatBookingDates(res[0]);
+    await sendBookingEmail(req.token.user, createdBooking, BOOKING_REQUEST);
   } catch (e: any) {
     res.status(400).json({ error: `${e}` });
     return;
   }
-
-  sendBookingEmail(req.token.user, createdBooking, BOOKING_REQUEST);
 
   res.json({ booking: createdBooking });
 }
@@ -192,14 +191,11 @@ export async function deleteBooking(req: TypedRequest<{ id: number }>, res: Type
         .returning();
 
       formattedBooking = formatBookingDates(res[0]);
+      await sendBookingEmail(req.token.user, formattedBooking, BOOKING_DELETE);
     } catch (e: any) {
       res.status(400).json({ error: `${e}` });
       return;
     }
-
-    sendBookingEmail(req.token.user, formattedBooking, BOOKING_DELETE);
-
-    // TODO: trigger admin reapproval if newStatus is pending
 
     res.json({ booking: formattedBooking });
   } catch (error) {
@@ -256,13 +252,12 @@ export async function editBooking(req: TypedRequest<BookingEditRequest>, res: Ty
         .returning();
 
       formattedBooking = formatBookingDates(res[0]);
+      // TODO: This email should show the old details, and the new details too...
+      await sendBookingEmail(req.token.user, formattedBooking, BOOKING_EDIT);
     } catch (e: any) {
       res.status(400).json({ error: `${e}` });
       return;
     }
-
-    // TODO: This email should show the old details, and the new details too...
-    sendBookingEmail(req.token.user, formattedBooking, BOOKING_EDIT);
 
     // TODO: trigger admin reapproval if newStatus is pending
 

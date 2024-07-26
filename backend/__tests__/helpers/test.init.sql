@@ -3,6 +3,9 @@
 -- bookings (and nothing else) will be created by the tests
 -- if u change any of this data, make sure to change the constants.ts file
 
+-- Insert default configuration options
+INSERT INTO config (key, value) VALUES ('global-email', 'false'); -- Disables email sending globally
+
 -- 2 ppl for each user level
 INSERT INTO person(zid, email, fullname, title, school, faculty, role, usergrp)
 VALUES (1111111, 'admin1@email.com', 'Admin One', 'Mr', 'CSE', 'ENG', 'Professional', 'admin'),
@@ -25,6 +28,6 @@ INSERT INTO room(id, capacity, roomnumber, type)
 VALUES ('K-K17-111', 5, '111', 'Meeting Room'),
        ('K-K17-222', 100, '222', 'Seminar Room');
 
-INSERT INTO hotdesk(id, floor, room, desknumber)
-VALUES ('K-K17-333-1', 'K17L3', '333', 1),
-       ('K-K17-444-1', 'K17L4', '444', 1);
+INSERT INTO hotdesk(id, floor, xcoord, ycoord)
+VALUES ('K-K17-333-1', 'K17 L3', 30, 30),
+       ('K-K17-444-1', 'K17 L4', 40, 40);
