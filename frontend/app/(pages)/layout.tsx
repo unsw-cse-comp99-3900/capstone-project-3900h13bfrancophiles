@@ -17,12 +17,16 @@ export default function Layout({
   const navItems: NavData[] = [
     { text: "Dashboard", href: "/dashboard" },
     { text: "Rooms", href: "/rooms" },
-    { text: "Desks", href: "/desks" },
   ];
 
   const token = getCookie("token", { cookies });
   if (token) {
     const tokenPayload = decodeJwt<TokenPayload>(`${token}`);
+    // HDR and above can book desks, Other cannot
+    if (tokenPayload.group !== "other") {
+      navItems.push({ text: "Desks", href: "/desks" });
+    }
+
     if (tokenPayload.group === "admin") {
       navItems.push({ text: "Admin", href: "/admin" });
     }

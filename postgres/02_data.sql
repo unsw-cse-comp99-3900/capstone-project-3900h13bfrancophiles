@@ -2,17 +2,17 @@
 INSERT INTO space (id, name, minReqGrp, minBookGrp) VALUES
     ('K-K17-B01', 'K17 CSE Basement', 'csestaff', 'admin'),
     ('K-K17-B02', 'K17 CSE Basement Board Room', 'csestaff', 'admin'),
-    ('K-K17-G01', 'K17 G01', 'hdr', 'admin'),
-    ('K-K17-G02', 'K17 G02', 'hdr', 'admin'),
-    ('K-K17-103', 'K17 103', 'csestaff', 'admin'),
-    ('K-K17-113', 'K17 113', 'csestaff', 'admin'),
-    ('K-K17-201B', 'K17 201-B', 'csestaff', 'admin'),
-    ('K-K17-302', 'K17 302', 'csestaff', 'admin'),
-    ('K-K17-401K', 'K17 401 K', 'csestaff', 'admin'),
-    ('K-K17-402', 'K17 402', 'hdr', 'admin'),
-    ('K-K17-403', 'K17 403', 'hdr', 'admin'),
-    ('K-K17-501M', 'K17 501M', 'csestaff', 'admin'),
-    ('K-K17-508', 'K17 508', 'csestaff', 'admin'),
+    ('K-K17-G01', 'K17 Room G01', 'hdr', 'admin'),
+    ('K-K17-G02', 'K17 Room G02', 'hdr', 'admin'),
+    ('K-K17-103', 'K17 Room 103', 'csestaff', 'admin'),
+    ('K-K17-113', 'K17 Room 113', 'csestaff', 'admin'),
+    ('K-K17-201B', 'K17 Room 201-B', 'csestaff', 'admin'),
+    ('K-K17-302', 'K17 Room 302', 'csestaff', 'admin'),
+    ('K-K17-401K', 'K17 Room 401 K', 'csestaff', 'admin'),
+    ('K-K17-402', 'K17 Room 402', 'hdr', 'admin'),
+    ('K-K17-403', 'K17 Room 403', 'hdr', 'admin'),
+    ('K-K17-501M', 'K17 Room 501M', 'csestaff', 'admin'),
+    ('K-K17-508', 'K17 Room 508', 'csestaff', 'admin'),
     ('K-J17-504', 'J17 Design Next Studio', 'csestaff', 'admin');
 
 INSERT INTO room (id, capacity, roomNumber, type) VALUES
