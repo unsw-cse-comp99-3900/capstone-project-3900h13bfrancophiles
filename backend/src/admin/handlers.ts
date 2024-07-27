@@ -54,7 +54,7 @@ export async function pendingBookings(
   }
 }
 
-export async function approveBooking(req: TypedRequest<{ id: number }>, res: TypedResponse<{}>) {
+export async function approveBooking(req: TypedRequest<{ id: number }>, res: TypedResponse<object>) {
   try {
     if (!typia.is<{ id: number }>(req.body)) {
       res.status(400).json({ error: 'Invalid input' });
@@ -106,7 +106,7 @@ export async function approveBooking(req: TypedRequest<{ id: number }>, res: Typ
   }
 }
 
-export async function declineBooking(req: TypedRequest<{ id: number }>, res: TypedResponse<{}>) {
+export async function declineBooking(req: TypedRequest<{ id: number }>, res: TypedResponse<object>) {
   try {
     if (!typia.is<{ id: number }>(req.body)) {
       res.status(400).json({ error: 'Invalid input' });
@@ -131,18 +131,16 @@ export async function declineBooking(req: TypedRequest<{ id: number }>, res: Typ
   }
 }
 
-export async function overlappingBookings(
-  req: TypedRequest<{ id: number }>,
-  res: TypedResponse<{ bookings: Booking[] }>,
-) {
+export async function overlappingBookings(req: TypedGETRequest, res: TypedResponse<{ bookings: Booking[] }>) {
   try {
-    if (!typia.is<{ id: number }>(req.body)) {
-      res.status(400).json({ error: 'Invalid input' });
+    const bookingId = Number(req.params.bookingId);
+    if (isNaN(bookingId)) {
+      res.status(400).json({ error: 'Invalid booking ID' });
       return;
     }
 
     await db.transaction(async (trx) => {
-      const updatedBooking = await trx.select().from(booking).where(eq(booking.id, req.body.id));
+      const updatedBooking = await trx.select().from(booking).where(eq(booking.id, bookingId));
 
       if (updatedBooking.length != 1) {
         throw new Error('Booking ID does not exist');

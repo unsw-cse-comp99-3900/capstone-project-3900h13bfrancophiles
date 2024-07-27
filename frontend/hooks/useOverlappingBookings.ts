@@ -11,5 +11,5 @@ export default function useOverlappingBookings(bookingId: number) {
     swrFetcher,
   );
 
-  return { bookings: data?.bookings, isLoading, error };
+  return { overlappingBookings: data?.bookings, isLoading, error };
 }

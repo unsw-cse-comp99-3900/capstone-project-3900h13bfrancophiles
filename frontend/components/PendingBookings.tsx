@@ -30,6 +30,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import Avatar from "@mui/joy/Avatar";
 import useUser from "@/hooks/useUser";
 import useOverlappingBookings from "@/hooks/useOverlappingBookings";
+import OverlappingBookings from "@/components/OverlappingBookings";
 
 import { NoBookingsRow } from "@/components/NoBookingsRow";
 import { Booking } from "@/types";
@@ -53,9 +54,9 @@ function PendingBookingsRow({ row, page, rowsPerPage, sort }: PendingBookingRowP
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [approveDeclineError, setApproveDeclineError] = React.useState<string | null>(null);
 
-  const { bookings } = useOverlappingBookings(row.id);
+  const { overlappingBookings } = useOverlappingBookings(row.id);
 
-  console.log(bookings);
+  console.log(overlappingBookings);
   const handleApproveDecline = async () => {
     setIsApprovingOrDeclining(true);
     if (approving) {
@@ -98,6 +99,9 @@ function PendingBookingsRow({ row, page, rowsPerPage, sort }: PendingBookingRowP
     <>
       <tr>
         <td>
+          <Typography level="body-sm">#{row.id}</Typography>
+        </td>
+        <td>
           <Typography level="body-sm">
             {format(new Date(row.starttime), "dd/MM/yy H:mm")} -{" "}
             {format(new Date(row.endtime), "H:mm")}
@@ -118,7 +122,7 @@ function PendingBookingsRow({ row, page, rowsPerPage, sort }: PendingBookingRowP
                 <Typography level="body-sm" fontWeight="lg">
                   {user?.fullname}
                 </Typography>
-                <Typography level="body-sm">{user?.email}</Typography>
+                <Typography level="body-sm">z{user?.zid}</Typography>
               </Stack>
             </Stack>
           </Skeleton>
@@ -160,13 +164,24 @@ function PendingBookingsRow({ row, page, rowsPerPage, sort }: PendingBookingRowP
           </DialogTitle>
           <Divider />
           <DialogContent>
-            Are you sure you want to{" "}
-            {approving ? "approve this booking request " : "decline this booking request"}
-            ?
-            <br />
-            {/* TODO: Show the overlapping bookings and display how many there are */}
-            {approving &&
-              "Approving this booking will automatically decline any overlapping bookings."}
+            {approving ? (
+              <Stack gap={3}>
+                <Typography>Are you sure you want to approve this booking request?</Typography>
+                <Box>
+                  {approving && OverlappingBookings.length > 0 && overlappingBookings && (
+                    <Stack gap={1}>
+                      <Typography>
+                        Approving this booking will automatically decline the following overlapping
+                        bookings:
+                      </Typography>
+                      <OverlappingBookings overlappingBookings={overlappingBookings} />
+                    </Stack>
+                  )}
+                </Box>
+              </Stack>
+            ) : (
+              <Typography>Are you sure you want to decline this booking request?</Typography>
+            )}
           </DialogContent>
           <DialogActions>
             <Button
@@ -221,7 +236,7 @@ export default function PendingBookings() {
     return Math.min(total ?? 0, (page + 1) * rowsPerPage);
   };
 
-  const numColumns = 5;
+  const numColumns = 6;
 
   return (
     <Stack>
@@ -259,6 +274,7 @@ export default function PendingBookings() {
         >
           <thead>
             <tr>
+              <th style={{ width: 60, padding: "12px 6px" }}>Reference No.</th>
               <th style={{ width: 100, padding: "12px 6px" }}>Time</th>
               <th style={{ width: 80, padding: "12px 6px" }}>Location</th>
               <th style={{ width: 140, padding: "12px 6px" }}>User</th>
