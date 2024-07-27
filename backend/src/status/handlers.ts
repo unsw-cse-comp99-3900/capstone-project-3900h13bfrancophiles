@@ -1,5 +1,5 @@
 import { booking, space } from '../../drizzle/schema';
-import { and, gt, lt } from 'drizzle-orm';
+import { and, gt, inArray, lt } from "drizzle-orm";
 import typia from 'typia';
 
 import { db } from '../index';
@@ -27,7 +27,11 @@ export async function spaceStatus(req: TypedGETRequest, res: TypedResponse<Statu
     const overlappingBookings = await db
       .select()
       .from(booking)
-      .where(and(lt(booking.starttime, datetimeEnd), gt(booking.endtime, datetimeStart)))
+      .where(and(
+        lt(booking.starttime, datetimeEnd),
+        gt(booking.endtime, datetimeStart),
+        inArray(booking.currentstatus, ["confirmed", "checkedin"]),
+      ))
       .orderBy(booking.starttime);
 
     // Mark all spaces with bookings as unavailable
