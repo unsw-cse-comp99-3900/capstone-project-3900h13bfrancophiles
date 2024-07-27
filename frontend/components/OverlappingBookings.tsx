@@ -85,7 +85,7 @@ export default function OverlappingBookings({
           <thead>
             <tr>
               <th style={{ width: 60, padding: "12px 6px" }}>Reference No.</th>
-              <th style={{ width: 100, padding: "12px 6px" }}>Time</th>
+              <th style={{ width: 140, padding: "12px 6px" }}>Time</th>
               <th style={{ width: 140, padding: "12px 6px" }}>User</th>
               <th style={{ width: 140, padding: "12px 6px" }}>Description</th>
             </tr>

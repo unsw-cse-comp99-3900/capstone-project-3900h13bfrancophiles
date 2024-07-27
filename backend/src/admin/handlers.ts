@@ -82,6 +82,7 @@ export async function approveBooking(req: TypedRequest<{ id: number }>, res: Typ
           and(
             eq(booking.currentstatus, 'pending'),
             eq(booking.spaceid, updatedBookingDetails.spaceid),
+            ne(booking.id, updatedBookingDetails.id),
             and(
               lt(booking.starttime, updatedBookingDetails.endtime),
               gt(booking.endtime, updatedBookingDetails.starttime),

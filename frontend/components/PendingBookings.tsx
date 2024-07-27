@@ -16,6 +16,7 @@ import {
   DialogContent,
   DialogTitle,
   Divider,
+  Link,
   Modal,
   ModalDialog,
   Sheet,
@@ -29,6 +30,7 @@ import CheckIcon from "@mui/icons-material/Check";
 import CloseIcon from "@mui/icons-material/Close";
 import Avatar from "@mui/joy/Avatar";
 import useUser from "@/hooks/useUser";
+import NextLink from "next/link";
 import useOverlappingBookings from "@/hooks/useOverlappingBookings";
 import OverlappingBookings from "@/components/OverlappingBookings";
 
@@ -45,7 +47,7 @@ export interface PendingBookingRowProps {
 }
 
 function PendingBookingsRow({ row, page, rowsPerPage, sort }: PendingBookingRowProps) {
-  const { space, isLoading: spaceIsLoading } = useSpace(row.spaceid);
+  const { space, type, isLoading: spaceIsLoading } = useSpace(row.spaceid);
   const { user, isLoading: userIsLoading } = useUser(row.zid);
 
   const [isConfirmationOpen, setIsConfirmationOpen] = React.useState(false);
@@ -56,7 +58,8 @@ function PendingBookingsRow({ row, page, rowsPerPage, sort }: PendingBookingRowP
 
   const { overlappingBookings } = useOverlappingBookings(row.id);
 
-  console.log(overlappingBookings);
+  const countOverlapping = overlappingBookings ? overlappingBookings.length : 0;
+
   const handleApproveDecline = async () => {
     setIsApprovingOrDeclining(true);
     if (approving) {
@@ -95,6 +98,8 @@ function PendingBookingsRow({ row, page, rowsPerPage, sort }: PendingBookingRowP
     }
   };
 
+  console.log(overlappingBookings);
+
   return (
     <>
       <tr>
@@ -109,7 +114,13 @@ function PendingBookingsRow({ row, page, rowsPerPage, sort }: PendingBookingRowP
         </td>
         <td>
           <Skeleton loading={spaceIsLoading}>
-            <Typography level="body-sm">{space?.name}</Typography>
+            <Link
+              href={type === "room" ? `/rooms/${row.spaceid}` : `/desks/${row.spaceid}`}
+              level="body-sm"
+              component={NextLink}
+            >
+              {space?.name}
+            </Link>{" "}
           </Skeleton>
         </td>
         <td>
@@ -167,7 +178,7 @@ function PendingBookingsRow({ row, page, rowsPerPage, sort }: PendingBookingRowP
             {approving ? (
               <Stack gap={3}>
                 <Typography>Are you sure you want to approve this booking request?</Typography>
-                {approving && OverlappingBookings.length > 0 && overlappingBookings && (
+                {countOverlapping > 0 && overlappingBookings && (
                   <Stack gap={1}>
                     <Typography>
                       Approving this booking will automatically decline the following overlapping

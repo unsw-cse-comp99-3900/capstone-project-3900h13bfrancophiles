@@ -104,48 +104,23 @@ INSERT INTO booking (zId, startTime, endTime, spaceId, currentStatus, descriptio
     (7654321, '2024-08-05T04:30', '2024-08-05T05:30', 'K-K17-402', 'declined', 'workshop'),
 
     -- HDR upcoming desk bookings
-    (7654321, '2024-08-02T03:00', '2024-08-02T05:00', 'K-K17-201-2', 'confirmed', 'studying'),
-    (7654321, '2024-08-03T03:00', '2024-08-03T05:00', 'K-K17-201-3', 'confirmed', 'doing research'),
-    (7654321, '2024-08-04T03:00', '2024-08-04T05:00', 'K-K17-201-1', 'confirmed', 'studying'),
-    (7654321, '2024-08-05T03:00', '2024-08-05T05:00', 'K-K17-201-1', 'confirmed', 'doing research'),
-    (7654321, '2024-08-06T03:00', '2024-08-06T05:00', 'K-K17-201-3', 'confirmed', 'studying'),
-    (7654321, '2024-08-07T03:00', '2024-08-07T05:00', 'K-K17-201-2', 'confirmed', 'doing research'),
-
-    -- HDR past bookings
-    (7654321, '2024-07-02T04:30', '2024-07-02T05:30', 'K-K17-402', 'confirmed', 'meetings'),
-    (7654321, '2024-07-03T04:30', '2024-07-03T05:30', 'K-K17-402', 'confirmed', 'meeting'),
-    (7654321, '2024-07-04T04:30', '2024-07-04T05:30', 'K-K17-402', 'confirmed', 'assignment'),
-    (7654321, '2024-07-05T04:30', '2024-07-05T05:30', 'K-K17-402', 'confirmed', 'workshop'),
-
+    (7654321, '2024-08-19T03:00', '2024-08-19T05:00', 'K-K17-201-2', 'confirmed', 'studying'),
+    (7654321, '2024-08-20T03:00', '2024-08-20T05:00', 'K-K17-201-3', 'confirmed', 'doing research'),
+    (7654321, '2024-08-21T03:00', '2024-08-21T05:00', 'K-K17-201-1', 'confirmed', 'studying'),
+    (7654321, '2024-08-22T03:00', '2024-08-22T05:00', 'K-K17-201-1', 'confirmed', 'doing research'),
+    (7654321, '2024-08-23T03:00', '2024-08-23T05:00', 'K-K17-201-3', 'confirmed', 'studying'),
+    (7654321, '2024-08-24T03:00', '2024-08-24T05:00', 'K-K17-201-2', 'confirmed', 'doing research'),
 
     --------------------------------------------------------------------------------------------
-    -- Tuesday practice demo bookings:
-    -- Current bookings
-    (1234567, '2024-07-30T08:00', '2024-07-30T12:00', 'K-K17-201-2', 'confirmed', 'current desk booking-  practice'),
-    (7654321, '2024-07-30T08:00', '2024-07-30T12:00', 'K-K17-G02', 'confirmed', 'current booking- practice'),
-
-    -- desks
-    (7654322, '2024-07-30T08:00', '2024-07-30T12:00', 'K-K17-201-3', 'confirmed', 'current desk booking- practice'),
-    (7654333, '2024-07-30T08:00', '2024-07-30T12:00', 'K-K17-301-15', 'confirmed', 'current desk booking- practice'),
-    (7654444, '2024-07-30T08:00', '2024-07-30T12:00', 'K-K17-301-16', 'confirmed', 'current desk booking- practice'),
-    (7655555, '2024-07-30T08:00', '2024-07-30T12:00', 'K-K17-301-12', 'confirmed', 'current desk booking- practice'),
-    (7666666, '2024-07-30T08:00', '2024-07-30T12:00', 'K-K17-201-4', 'confirmed', 'current desk booking- practice'),
-
     -- DEMO BOOKINGS
-    -- Current bookings- 1/8 thursday 11am - 4pm SYD time
-    (1234567, '2024-08-01T01:00', '2024-08-01T06:00', 'K-K17-201-2', 'confirmed', 'current desk booking demo'),
-    (7654321, '2024-08-01T01:00', '2024-08-01T06:00', 'K-K17-G02', 'confirmed', 'current booking demo'),
-    -- desks
-    (7654322, '2024-08-01T01:00', '2024-08-01T06:00', 'K-K17-201-3', 'confirmed', 'current desk booking demo'),
-    (7654333, '2024-08-01T01:00', '2024-08-01T06:00', 'K-K17-301-15', 'confirmed', 'current desk booking demo'),
-    (7654444, '2024-08-01T01:00', '2024-08-01T06:00', 'K-K17-301-16', 'confirmed', 'current desk booking demo'),
-    (7655555, '2024-08-01T01:00', '2024-08-01T06:00', 'K-K17-301-12', 'confirmed', 'current desk booking demo'),
-    (7666666, '2024-08-01T01:00', '2024-08-01T06:00', 'K-K17-201-4', 'confirmed', 'current desk booking demo'),
-
-    -- Overlapping bookings requests for admin demo
-    (7654321, '2024-08-06T08:00', '2024-08-06T12:00', 'K-K17-403', 'pending', 'overlapping booking 1'),
-    (7654322, '2024-08-06T08:00', '2024-08-06T12:00', 'K-K17-403', 'pending', 'overlapping booking 2'),
-    (7654333, '2024-08-06T08:00', '2024-08-06T12:00', 'K-K17-403', 'pending', 'overlapping booking 3');
+    -- Current bookings- monday 10am - 4pm SYD time
+    (1234567, '2024-07-26T09:30', '2024-07-26T12:30', 'K-K17-201-2', 'confirmed', 'current desk booking demo'),
+    (7654321, '2024-07-26T09:30', '2024-07-26T12:30', 'K-J17-504', 'confirmed', 'current booking demo'),
+    (7654322, '2024-07-26T09:30', '2024-07-26T12:30', 'K-K17-201-3', 'confirmed', 'current desk booking demo'),
+    (7654333, '2024-07-26T09:30', '2024-07-26T12:30', 'K-K17-301-15', 'confirmed', 'current desk booking demo'),
+    (7654444, '2024-07-26T09:30', '2024-07-26T12:30', 'K-K17-301-16', 'confirmed', 'current desk booking demo'),
+    (7655555, '2024-07-26T09:30', '2024-07-26T12:30', 'K-K17-301-12', 'confirmed', 'current desk booking demo'),
+    (7666666, '2024-07-26T09:30', '2024-07-26T12:30', 'K-K17-201-4', 'confirmed', 'current desk booking demo');
 
 -- Reenable triggers for prod
 ALTER TABLE booking ENABLE TRIGGER trg_chk_create_booking_start_future;
