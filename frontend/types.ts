@@ -79,3 +79,11 @@ export interface TokenPayload {
 }
 
 export type NavData = { text: string; href: string };
+
+export type ReportTypeReturn = {
+  types: {
+    type: string,
+    name: string,
+    formats: string[],
+  }[],
+}

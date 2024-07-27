@@ -26,6 +26,8 @@ import { useRef } from "react";
 import { AutocompleteRenderGetTagProps, AutocompleteRenderOptionState } from "@mui/joy/Autocomplete/AutocompleteProps";
 import { addDays, format, startOfToday } from "date-fns";
 import { useResizeObserver } from "usehooks-ts";
+import useReportTypes from "@/hooks/useReportTypes";
+import * as api from "@/api";
 
 interface Option {
   text: string;
@@ -51,17 +53,14 @@ const options: Option[] = [
 interface ReportType {
   type: string;
   name: string;
-  supportedFormats: string[];
+  formats: string[];
 }
 
-// TODO: Fetch from backend?
-const reportTypes: ReportType[] = [
-  { type: "booking", name: "Booking Information", supportedFormats: ["xlsx"] },
-  { type: "checkin", name: "Booking & Check-in Information", supportedFormats: ["xlsx"] },
-];
-
 export function ReportGenerationForm() {
+  const { types: reportTypes = [] } = useReportTypes();
   const [reportType, setReportType] = React.useState<ReportType>();
+
+  const [fileFormat, setFileFormat] = React.useState("xlsx");
 
   const today = startOfToday();
   const [startDate, setStartDate] = React.useState(addDays(today, -7));
@@ -122,7 +121,14 @@ export function ReportGenerationForm() {
   };
 
   const handleSubmit = async () => {
-    const res = await fetch("http://localhost:2000/admin/reports/generate", { method: "POST" });
+    if (!reportType) return;
+    const res = await api.generateReport(
+      reportType.type,
+      fileFormat,
+      startDate,
+      endDate,
+      spaces.map((option) => option.value),
+    );
 
     const blob = await res.blob();
     const url = window.URL.createObjectURL(blob);

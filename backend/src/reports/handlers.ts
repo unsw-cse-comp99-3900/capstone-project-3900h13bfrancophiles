@@ -3,7 +3,7 @@ import { REPORT_TYPES } from "./index";
 import typia from "typia";
 import { db } from "../index";
 import { space } from "../../drizzle/schema";
-import { sql } from "drizzle-orm";
+import { inArray } from "drizzle-orm";
 
 interface GenerateReportRequest {
   type: string;
@@ -18,18 +18,18 @@ export async function generateReport(
   res: TypedResponse
 ) {
   if (!typia.is<GenerateReportRequest>(req.body)) {
-    res.status(400).send("Invalid input");
+    res.status(400).json({ error: "Invalid input" });
     return;
   }
 
   if (!(req.body.type in REPORT_TYPES)) {
-    res.status(404).send("No such report type");
+    res.status(404).json({ error: "No such report type" });
     return;
   }
   const reportType = REPORT_TYPES[req.body.type];
 
   if (!(req.body.format in reportType.formats)) {
-    res.status(400).send("Unsupported file format for this report type");
+    res.status(400).json({ error: "Unsupported file format for this report type" });
     return;
   }
 
@@ -37,7 +37,7 @@ export async function generateReport(
   const endDate = new Date(req.body.endDate);
   endDate.setDate(endDate.getDate() + 1);
 
-  const fileData = reportType.formats[req.body.format](
+  const fileData = await reportType.formats[req.body.format](
     startDate,
     endDate,
     await toSpaceIds(req.body.spaces),
@@ -54,7 +54,28 @@ async function toSpaceIds(spaces: string[]) {
   const res = await db
     .select({ id: space.id })
     .from(space)
-    .where(sql`${space.id} ~* ^(${spaces.join("|")})`);
+    .where(inArray(space.id, spaces));
 
   return res.map(res => res.id);
+}
+
+type ReportTypeReturn = {
+  types: {
+    type: string,
+    name: string,
+    formats: string[],
+  }[],
+}
+
+export async function getReportTypes(
+  req: TypedRequest,
+  res: TypedResponse<ReportTypeReturn>,
+) {
+  const types = Object.values(REPORT_TYPES).map((reportType) => ({
+    type: reportType.key,
+    name: reportType.name,
+    formats: Object.keys(reportType.formats),
+  }));
+
+  res.json({ types });
 }

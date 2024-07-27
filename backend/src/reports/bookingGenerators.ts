@@ -21,5 +21,6 @@ export const generateBookingSpreadsheet: ReportGenerator = async (startDate, end
   return XLSX.write(workbook, {
     bookType: "xlsx",
     type: "buffer",
+    compression: true,
   });
 };
