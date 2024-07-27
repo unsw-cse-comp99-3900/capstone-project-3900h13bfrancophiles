@@ -2,7 +2,7 @@ import typia, { tags } from 'typia';
 import { Booking, TypedGETRequest, TypedRequest, TypedResponse } from '../types';
 import { db } from '../index';
 import { booking } from '../../drizzle/schema';
-import { and, asc, count, desc, eq, gt, lt } from 'drizzle-orm';
+import { and, asc, count, desc, eq, gt, lt, ne } from 'drizzle-orm';
 
 import { sendBookingEmail } from '../email/service';
 import { BOOKING_DECLINE, BOOKING_APPROVE } from '../email/template';
@@ -155,6 +155,7 @@ export async function overlappingBookings(req: TypedGETRequest, res: TypedRespon
           and(
             eq(booking.currentstatus, 'pending'),
             eq(booking.spaceid, updatedBookingDetails.spaceid),
+            ne(booking.id, updatedBookingDetails.id),
             and(
               lt(booking.starttime, updatedBookingDetails.endtime),
               gt(booking.endtime, updatedBookingDetails.starttime),
