@@ -67,6 +67,7 @@ function PendingBookingsRow({ row, page, rowsPerPage, sort }: PendingBookingRowP
       try {
         await approveBooking(row.id);
         await mutate(`/admin/bookings/pending?page=${page + 1}&limit=${rowsPerPage}&sort=${sort}`);
+        await mutate(`/admin/bookings/overlapping/${row.id}`);
       } catch (error) {
         if (error instanceof Error) {
           setApproveDeclineError(error.message);
@@ -84,6 +85,7 @@ function PendingBookingsRow({ row, page, rowsPerPage, sort }: PendingBookingRowP
       try {
         await declineBooking(row.id);
         await mutate(`/admin/bookings/pending?page=${page + 1}&limit=${rowsPerPage}&sort=${sort}`);
+        await mutate(`/admin/bookings/overlapping/${row.id}`);
       } catch (error) {
         if (error instanceof Error) {
           setApproveDeclineError(error.message);
@@ -97,8 +99,6 @@ function PendingBookingsRow({ row, page, rowsPerPage, sort }: PendingBookingRowP
       }
     }
   };
-
-  console.log(overlappingBookings);
 
   return (
     <>

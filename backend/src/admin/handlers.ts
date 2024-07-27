@@ -60,13 +60,8 @@ export async function approveBooking(req: TypedRequest<{ id: number }>, res: Typ
       res.status(400).json({ error: 'Invalid input' });
       return;
     }
-
     await db.transaction(async (trx) => {
-      const updatedBooking = await trx
-        .update(booking)
-        .set({ currentstatus: 'confirmed' })
-        .where(eq(booking.id, req.body.id))
-        .returning();
+      const updatedBooking = await trx.select().from(booking).where(eq(booking.id, req.body.id));
 
       if (updatedBooking.length != 1) {
         throw new Error('Booking ID does not exist');
@@ -97,10 +92,21 @@ export async function approveBooking(req: TypedRequest<{ id: number }>, res: Typ
         await sendBookingEmail(req.token.user, declinedBooking, BOOKING_DECLINE);
       }
 
-      const formattedBooking = formatBookingDates(updatedBookingDetails);
+      const approvedBooking = await trx
+        .update(booking)
+        .set({ currentstatus: 'confirmed' })
+        .where(eq(booking.id, req.body.id))
+        .returning();
+
+      if (updatedBooking.length != 1) {
+        throw new Error('Booking ID does not exist');
+      }
+
+      const approvedBookingDetails = approvedBooking[0];
+
+      const formattedBooking = formatBookingDates(approvedBookingDetails);
       await sendBookingEmail(req.token.user, formattedBooking, BOOKING_APPROVE);
     });
-
     res.status(200).json({ message: 'Booking approved and overlapping bookings declined' });
   } catch (error) {
     res.status(500).json({ error: 'Internal server error' });
@@ -165,7 +171,7 @@ export async function overlappingBookings(req: TypedGETRequest, res: TypedRespon
         );
 
       res.json({
-        bookings: overlapping,
+        bookings: overlapping.map(formatBookingDates),
       });
     });
   } catch (error) {
