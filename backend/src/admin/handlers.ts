@@ -98,7 +98,6 @@ export async function approveBooking(req: TypedRequest<{ id: number }>, res: Typ
 
       const formattedBooking = formatBookingDates(updatedBookingDetails);
       await sendBookingEmail(req.token.user, formattedBooking, BOOKING_APPROVE);
-
     });
 
     res.status(200).json({ message: 'Booking approved and overlapping bookings declined' });
