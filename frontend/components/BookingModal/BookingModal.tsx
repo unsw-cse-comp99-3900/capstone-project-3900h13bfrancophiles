@@ -92,7 +92,7 @@ const BookingModal: React.FC<BookingModalProps> = ({
       setIsLoading(false);
       setBooking(res.booking);
       setState("submitted");
-    } catch (e: any) {
+    } catch (e: unknown) {
       setError(`${e}`);
       setState("form");
     }
