@@ -29,6 +29,7 @@ import CheckIcon from "@mui/icons-material/Check";
 import CloseIcon from "@mui/icons-material/Close";
 import Avatar from "@mui/joy/Avatar";
 import useUser from "@/hooks/useUser";
+import useOverlappingBookings from "@/hooks/useOverlappingBookings";
 
 import { NoBookingsRow } from "@/components/NoBookingsRow";
 import { Booking } from "@/types";
@@ -52,6 +53,9 @@ function PendingBookingsRow({ row, page, rowsPerPage, sort }: PendingBookingRowP
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [approveDeclineError, setApproveDeclineError] = React.useState<string | null>(null);
 
+  const { bookings } = useOverlappingBookings(row.id);
+
+  console.log(bookings);
   const handleApproveDecline = async () => {
     setIsApprovingOrDeclining(true);
     if (approving) {
