@@ -49,6 +49,7 @@ function PendingBookingsRow({ row, page, rowsPerPage, sort }: PendingBookingRowP
   const [isConfirmationOpen, setIsConfirmationOpen] = React.useState(false);
   const [isApprovingOrDeclining, setIsApprovingOrDeclining] = React.useState(false);
   const [approving, setApproving] = React.useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [approveDeclineError, setApproveDeclineError] = React.useState<string | null>(null);
 
   const handleApproveDecline = async () => {
@@ -197,7 +198,7 @@ export default function PendingBookings() {
     setPage(newPage);
   };
 
-  const handleChangeRowsPerPage = (event: any, newValue: number | null) => {
+  const handleChangeRowsPerPage = (event: unknown, newValue: number | null) => {
     setRowsPerPage(parseInt(newValue!.toString(), 10));
     setPage(0);
   };
@@ -206,7 +207,7 @@ export default function PendingBookings() {
     return `${from}–${to} of ${count}`;
   }
 
-  const handleChangeSort = (event: any, newValue: string | null) => {
+  const handleChangeSort = (event: unknown, newValue: string | null) => {
     if (newValue !== null) {
       setSort(newValue);
     }

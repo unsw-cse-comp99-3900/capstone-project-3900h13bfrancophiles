@@ -2,10 +2,10 @@
 
 import React from "react";
 import { TransformComponent, TransformWrapper } from "react-zoom-pan-pinch";
-import { Box } from '@mui/joy';
-import Image from 'next/image';
-import DeskIcon from './DeskIcon';
-import { StatusResponse, UserData, DeskPosition } from '@/types';
+import { Box } from "@mui/joy";
+import Image from "next/image";
+import DeskIcon from "./DeskIcon";
+import { StatusResponse, UserData, DeskPosition } from "@/types";
 
 interface FloorPlanViewerProps {
   selectedDesk: string;
@@ -30,7 +30,8 @@ const FloorPlanViewer = ({
   setDeskName,
   floor,
   desks,
-  statuses }: FloorPlanViewerProps) => {
+  statuses,
+}: FloorPlanViewerProps) => {
   return (
     <Box
       sx={{
@@ -55,7 +56,12 @@ const FloorPlanViewer = ({
             position: "relative",
           }}
         >
-          <Image src={`/${floor}.svg`} fill alt={`${floor} floorplan`} style={{ position: "absolute" }} />
+          <Image
+            src={`/${floor}.svg`}
+            fill
+            alt={`${floor} floorplan`}
+            style={{ position: "absolute" }}
+          />
           {desks.map((desk, index) => (
             <DeskIcon
               key={index}

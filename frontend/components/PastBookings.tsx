@@ -27,7 +27,7 @@ export default function PastBookings() {
     setPage(newPage);
   };
 
-  const handleChangeRowsPerPage = (event: any, newValue: number | null) => {
+  const handleChangeRowsPerPage = (event: unknown, newValue: number | null) => {
     setRowsPerPage(parseInt(newValue!.toString(), 10));
     setPage(0);
   };
@@ -36,13 +36,13 @@ export default function PastBookings() {
     return `${from}–${to} of ${count}`;
   }
 
-  const handleChangeFilter = (event: any, newValue: string | null) => {
+  const handleChangeFilter = (event: unknown, newValue: string | null) => {
     if (newValue !== null) {
       setFilter(newValue);
     }
   };
 
-  const handleChangeSort = (event: any, newValue: string | null) => {
+  const handleChangeSort = (event: unknown, newValue: string | null) => {
     if (newValue !== null) {
       setSort(newValue);
     }
@@ -105,7 +105,7 @@ export default function PastBookings() {
             </tr>
           </thead>
           <tbody>
-            {!!pastBookings?.length ? (
+            {pastBookings?.length ? (
               pastBookings.map((row) => <PastBookingsRow key={row.id} row={row} />)
             ) : (
               <NoBookingsRow bookingType="Past" colSpan={numColumns} isLoading={isLoading} />

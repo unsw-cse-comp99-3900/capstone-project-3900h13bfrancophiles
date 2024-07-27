@@ -8,13 +8,14 @@ import {
   IconButton,
   Stack,
   Typography,
-  Link, Tooltip
+  Link,
+  Tooltip,
 } from "@mui/joy";
 import PeopleIcon from "@mui/icons-material/People";
 import MeetingRoomOutlinedIcon from "@mui/icons-material/MeetingRoomOutlined";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCalendarPlus } from "@fortawesome/free-regular-svg-icons";
-import {Room} from "@/types";
+import { Room } from "@/types";
 import useSpaceStatus from "@/hooks/useSpaceStatus";
 import useRoomCanBook from "@/hooks/useRoomCanBook";
 import NextLink from "next/link";
@@ -26,12 +27,11 @@ interface RoomCardProps {
   datetimeEnd: string;
 }
 
-
 const RoomCard: React.FC<RoomCardProps> = ({ room, handleBook, datetimeStart, datetimeEnd }) => {
-  const { statusResponse, isLoading, error } = useSpaceStatus(datetimeStart, datetimeEnd);
+  const { statusResponse, error } = useSpaceStatus(datetimeStart, datetimeEnd);
 
   let availability = "";
-  const { canBook } = useRoomCanBook(room.id)
+  const { canBook } = useRoomCanBook(room.id);
 
   if (error) {
     availability = "Error";
@@ -60,8 +60,11 @@ const RoomCard: React.FC<RoomCardProps> = ({ room, handleBook, datetimeStart, da
                 {room.name}
               </Typography>
             </Link>
-            <Tooltip title={canBook ? "" : "You do not have permission to book this space"} variant="solid">
-              <div style={{ zIndex: '1' }}>
+            <Tooltip
+              title={canBook ? "" : "You do not have permission to book this space"}
+              variant="solid"
+            >
+              <div style={{ zIndex: "1" }}>
                 <IconButton disabled={!canBook} onClick={() => handleBook(room)}>
                   <FontAwesomeIcon fontSize="24px" icon={faCalendarPlus} />
                 </IconButton>

@@ -23,7 +23,10 @@ import {
 import DownloadIcon from "@mui/icons-material/Download";
 import * as React from "react";
 import { useRef } from "react";
-import { AutocompleteRenderGetTagProps, AutocompleteRenderOptionState } from "@mui/joy/Autocomplete/AutocompleteProps";
+import {
+  AutocompleteRenderGetTagProps,
+  AutocompleteRenderOptionState,
+} from "@mui/joy/Autocomplete/AutocompleteProps";
 import { addDays, format, startOfToday } from "date-fns";
 import { useResizeObserver } from "usehooks-ts";
 import useReportTypes from "@/hooks/useReportTypes";
@@ -68,21 +71,21 @@ export function ReportGenerationForm() {
 
   const [spaces, setSpaces] = React.useState<Option[]>([]);
   const totals = {
-    room: options.filter(space => space.type === "room").length - 1,
-    desk: options.filter(space => space.type === "desk").length - 1,
+    room: options.filter((space) => space.type === "room").length - 1,
+    desk: options.filter((space) => space.type === "desk").length - 1,
   };
   const selected = {
-    room: spaces.filter(space => space.type === "room").length,
-    desk: spaces.filter(space => space.type === "desk").length,
+    room: spaces.filter((space) => space.type === "room").length,
+    desk: spaces.filter((space) => space.type === "desk").length,
   };
 
   const handleAllSwitch = (type: Option["type"]) => {
     if (totals[type] == selected[type]) {
-      setSpaces(spaces => spaces.filter(space => space.type !== type));
+      setSpaces((spaces) => spaces.filter((space) => space.type !== type));
     } else {
-      setSpaces(spaces => [
-        ...options.filter(space => space.type === type && space.value !== "all"),
-        ...spaces.filter(space => space.type !== type),
+      setSpaces((spaces) => [
+        ...options.filter((space) => space.type === type && space.value !== "all"),
+        ...spaces.filter((space) => space.type !== type),
       ]);
     }
   };
@@ -96,14 +99,23 @@ export function ReportGenerationForm() {
   const renderOption = (
     props: Omit<React.HTMLAttributes<HTMLLIElement>, "color">,
     option: Option,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     _state: AutocompleteRenderOptionState,
   ) => {
-    // @ts-ignore - key is passed in but the type doesn't include it for some reason
+    // @ts-expect-error - key is passed in but the type doesn't include it for some reason
+    // eslint-disable-next-line react/prop-types
     const { key, ...otherProps } = props;
 
     if (!option.level) {
       return (
-        <Stack key={option.text} direction="row" width="100%" justifyContent="space-between" p={1.5} py={1}>
+        <Stack
+          key={option.text}
+          direction="row"
+          width="100%"
+          justifyContent="space-between"
+          p={1.5}
+          py={1}
+        >
           <Typography>{option.text}</Typography>
           <Switch
             onChange={() => handleAllSwitch(option.type)}
@@ -240,20 +252,16 @@ export function ReportGenerationForm() {
 const renderGroup = (params: AutocompleteRenderGroupParams) => {
   return (
     <ListItem key={params.key} nested>
-      {params.group && (
-        <ListSubheader sticky>{params.group}</ListSubheader>
-      )}
+      {params.group && <ListSubheader sticky>{params.group}</ListSubheader>}
       <List>{params.children}</List>
     </ListItem>
   );
 };
 
 // Stolen from JoyUI Autocomplete source code
-const renderTags = (
-  tags: Option[],
-  getTagProps: AutocompleteRenderGetTagProps,
-) => (
+const renderTags = (tags: Option[], getTagProps: AutocompleteRenderGetTagProps) =>
   tags.map((item, index) => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { key, onClick, ...tagProps } = getTagProps({ index });
     return (
       <Chip
@@ -266,5 +274,4 @@ const renderTags = (
         {item.text}
       </Chip>
     );
-  })
-);
+  });

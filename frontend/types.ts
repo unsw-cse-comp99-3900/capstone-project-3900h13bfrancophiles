@@ -58,11 +58,11 @@ export type StatusResponse = {
 };
 
 export type DeskPosition = {
-  id: string,
-  floor: string,
-  xcoord: number,
-  ycoord: number
-}
+  id: string;
+  floor: string;
+  xcoord: number;
+  ycoord: number;
+};
 
 export type TimeRange = {
   start: Date;
