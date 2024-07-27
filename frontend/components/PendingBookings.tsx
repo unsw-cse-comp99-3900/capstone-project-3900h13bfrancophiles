@@ -167,17 +167,15 @@ function PendingBookingsRow({ row, page, rowsPerPage, sort }: PendingBookingRowP
             {approving ? (
               <Stack gap={3}>
                 <Typography>Are you sure you want to approve this booking request?</Typography>
-                <Box>
-                  {approving && OverlappingBookings.length > 0 && overlappingBookings && (
-                    <Stack gap={1}>
-                      <Typography>
-                        Approving this booking will automatically decline the following overlapping
-                        bookings:
-                      </Typography>
-                      <OverlappingBookings overlappingBookings={overlappingBookings} />
-                    </Stack>
-                  )}
-                </Box>
+                {approving && OverlappingBookings.length > 0 && overlappingBookings && (
+                  <Stack gap={1}>
+                    <Typography>
+                      Approving this booking will automatically decline the following overlapping
+                      bookings:
+                    </Typography>
+                    <OverlappingBookings overlappingBookings={overlappingBookings} />
+                  </Stack>
+                )}
               </Stack>
             ) : (
               <Typography>Are you sure you want to decline this booking request?</Typography>
