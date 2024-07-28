@@ -1,9 +1,9 @@
 import * as React from "react";
 
-import {Stack, Typography, Button, Tooltip, Grid, Sheet} from "@mui/joy";
+import { Box, Stack, Typography, Button, Tooltip, Grid, Sheet } from "@mui/joy";
 import useSpace from "@/hooks/useSpace";
 import useAvailabilities from "@/hooks/useAvailabilities";
-import {Room, Desk} from "@/types";
+import { Room, Desk } from "@/types";
 import Loading from "@/components/Loading";
 import AvailabilityCalendar from "@/components/AvailabilityCalendar";
 import BookingModal from "@/components/BookingModal/BookingModal";
@@ -39,7 +39,7 @@ const AvailabilitiesPage : React.FC<AvailabilitesPageProps> = ({
   const desk = space as Desk;
 
   const [openModal, setOpenModal] = React.useState<boolean>(false);
-  const { canBook } = useRoomCanBook(spaceId)
+  const { canBook } = useRoomCanBook(spaceId);
 
   if (spaceType !== spaceOutput.type || spaceOutput.error)
     return <Error page={`${spaceType}s/${spaceId}`} message={`${spaceType} ID not found`} />;
@@ -75,27 +75,26 @@ const AvailabilitiesPage : React.FC<AvailabilitesPageProps> = ({
           <Typography level="h1">
             {spaceType === "room" ? `${room!.type} ${room!.name}` : `${desk!.name}`}
           </Typography>
-          <Button
-            color="success"
+
+          <Tooltip
+            title={canBook ? "" : "You do not have permission to book this space"}
             variant="solid"
-            onClick={() => {
-              setOpenModal(true)
-            }}
             sx={{
-              height: 40,
-              minWidth: {sm: 130},
               marginTop: {xs: -4, sm: 0}
             }}
           >
-            Book Now
-          </Button>
-          <Tooltip title={canBook ? "" : "You do not have permission to book this space"} variant="solid">
             <Box>
               <Button
                 color="success"
                 variant="solid"
                 disabled={!canBook}
-                onClick={() => {setOpenModal(true)}}
+                onClick={() => {
+                  setOpenModal(true)
+                }}
+                sx={{
+                  height: 40,
+                  width: {xs: "100%", sm: 130},
+                }}
               >
                 Book Now
               </Button>

@@ -8,11 +8,7 @@ interface NoBookingsRowProps {
   isLoading?: boolean;
 }
 
-export function NoBookingsRow({
-  bookingType,
-  colSpan,
-  isLoading,
-}: NoBookingsRowProps) {
+export function NoBookingsRow({ bookingType, colSpan, isLoading }: NoBookingsRowProps) {
   return (
     <tr>
       <td colSpan={colSpan}>

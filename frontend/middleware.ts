@@ -9,7 +9,7 @@ export async function middleware(req: NextRequest) {
   const res = NextResponse.next();
   const token = getCookie("token", { req, res });
 
-  const isAuthenticated = !!token
+  const isAuthenticated = !!token;
 
   let group;
   try {

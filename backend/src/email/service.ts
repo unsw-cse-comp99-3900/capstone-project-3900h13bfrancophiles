@@ -11,11 +11,7 @@ const EMAIL_PASS = 'GWCxu8xEeJAwGAMGzF';
 
 export async function emailsEnabledGlobally(): Promise<boolean> {
   try {
-    const result = await db
-      .select({ value: config.value})
-      .from(config)
-      .where(eq(config.key, 'global-email'))
-      .limit(1);
+    const result = await db.select({ value: config.value }).from(config).where(eq(config.key, 'global-email')).limit(1);
 
     if (result.length !== 1) {
       return false;
