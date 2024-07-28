@@ -1,7 +1,7 @@
 import * as React from "react";
 
 import { Calendar, dateFnsLocalizer, EventProps } from "react-big-calendar";
-import { format, getDay, parse, startOfWeek } from "date-fns";
+import { endOfDay, format, getDay, parse, startOfDay, startOfWeek } from "date-fns";
 import { enAU } from "date-fns/locale";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import Box from "@mui/joy/Box";
@@ -82,7 +82,14 @@ export default function ModalCalendar({
 }: ModalCalendarProps) {
   const isMobile: boolean = useMediaQuery(theme.breakpoints.down("sm")) ?? false;
 
-  const { bookings, isLoading } = useAvailabilities(space!);
+  const [calendarStart, setCalendarStart] = React.useState<Date>(startOfDay(date));
+  const [calendarEnd, setCalendarEnd] = React.useState<Date>(endOfDay(date));
+  React.useEffect(() => {
+    setCalendarStart(startOfDay(date));
+    setCalendarEnd(endOfDay(date));
+  }, [date])
+
+  const { bookings, isLoading } = useAvailabilities(space!, calendarStart.toISOString(), calendarEnd.toISOString());
   React.useEffect(() => {
     if (bookings) {
       setBlockedTimes(
@@ -112,6 +119,7 @@ export default function ModalCalendar({
   }, [start]);
 
   if (isLoading) return <Loading page="" />;
+
   const events: MyEvent[] = bookings!.map((b) => {
     const old = b.id === editedBooking;
     return {

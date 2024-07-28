@@ -2,7 +2,7 @@ import * as React from "react";
 
 import { AnonymousBooking } from "@/types";
 import { Calendar, dateFnsLocalizer, ToolbarProps, EventProps, View } from "react-big-calendar";
-import { format, getDay, parse, startOfWeek, endOfWeek } from "date-fns";
+import { format, getDay, parse, startOfWeek, endOfWeek, startOfDay, endOfDay } from "date-fns";
 import { enAU } from "date-fns/locale";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import { theme } from "@/app/ThemeRegistry";
@@ -15,6 +15,10 @@ import Loading from "./Loading";
 
 interface AvailabilityCalendarProps {
   spaceId: string;
+  calendarStart: Date;
+  calendarEnd: Date;
+  setCalendarStart: React.Dispatch<React.SetStateAction<Date>>;
+  setCalendarEnd: React.Dispatch<React.SetStateAction<Date>>;
 }
 
 const CustomToolBar: React.FC<ToolbarProps> = ({ view, onNavigate, onView, date }) => {
@@ -54,15 +58,31 @@ const CustomEvent: React.FC<EventProps<Event>> = ({ event }) => {
   return <>{isLoading || error ? "..." : user!.fullname}</>;
 };
 
-export default function AvailabilityCalendar({ spaceId }: AvailabilityCalendarProps) {
+export default function AvailabilityCalendar({
+  spaceId,
+  calendarStart,
+  calendarEnd,
+  setCalendarStart,
+  setCalendarEnd
+}: AvailabilityCalendarProps) {
   const [date, setDate] = React.useState<Date>(new Date());
   const [view, setView] = React.useState<View>("week");
-  const { bookings, isLoading } = useAvailabilities(spaceId);
+  const { bookings, isLoading } = useAvailabilities(spaceId, calendarStart.toISOString(), calendarEnd.toISOString());
 
   const isMobile: boolean = useMediaQuery(theme.breakpoints.down("md")) ?? false;
   React.useEffect(() => {
     setView(isMobile ? "day" : "week");
   }, [isMobile]);
+
+  React.useEffect(() => {
+    if (view === "week") {
+      setCalendarStart(startOfWeek(date));
+      setCalendarEnd(endOfWeek(date));
+    } else {
+      setCalendarStart(startOfDay(date));
+      setCalendarEnd(endOfDay(date));
+    }
+  }, [date, view])
 
   if (isLoading) return <Loading page=""/>
 

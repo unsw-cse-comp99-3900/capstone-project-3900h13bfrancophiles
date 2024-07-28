@@ -99,10 +99,6 @@ export async function spaceAvailabilities(
   try {
     const currentTime = (await now()).toISOString();
     const parsedQuery = typia.http.isQuery<IDatetimeRange>(new URLSearchParams(req.query));
-    // if (!parsedQuery) {
-    //   res.status(400).json({ error: 'Invalid input' });
-    //   return;
-    // }
 
     const oneWeekFromNow = new Date(currentTime);
     oneWeekFromNow.setDate(oneWeekFromNow.getDate() + 7);
