@@ -26,7 +26,7 @@ interface JoyFieldProps extends InputProps {
   inputRef?: React.Ref<HTMLInputElement>;
   enableAccessibleFieldDOMStructure?: boolean;
   InputProps?: {
-    ref?: React.Ref<unknown>;
+    ref?: React.Ref<HTMLDivElement>;
     endAdornment?: React.ReactNode;
     startAdornment?: React.ReactNode;
   };
