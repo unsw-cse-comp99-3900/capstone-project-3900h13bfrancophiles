@@ -29,20 +29,7 @@ import { useResizeObserver } from "usehooks-ts";
 import useReportTypes from "@/hooks/useReportTypes";
 import * as api from "@/api";
 import { ReportSpace } from "@/types";
-
-// TODO: Fetch from backend
-const options: ReportSpace[] = [
-  { text: "All Desks", value: "all", type: "desk" },
-  { text: "All Rooms", value: "all", type: "room" },
-  { text: "K17 Room 201-B", value: "K-K17-201B", type: "room", level: "K17 L2" },
-  { text: "K17 Room 201 Desks", value: "K-K17-201", type: "desk", level: "K17 L2" },
-  { text: "K17 Room 217 Desks", value: "K-K17-217", type: "desk", level: "K17 L2" },
-  { text: "K17 Room 401 K", value: "K-K17-401K", type: "room", level: "K17 L4" },
-  { text: "K17 Room 402", value: "K-K17-402", type: "room", level: "K17 L4" },
-  { text: "K17 Room 403", value: "K-K17-403", type: "room", level: "K17 L4" },
-  { text: "K17 Room 401 Desks", value: "K-K17-401", type: "desk", level: "K17 L4" },
-  { text: "K17 Room 412 Desks", value: "K-K17-412", type: "desk", level: "K17 L4" },
-];
+import useReportSpaces from "@/hooks/useReportSpaces";
 
 interface ReportType {
   type: string;
@@ -53,6 +40,13 @@ interface ReportType {
 export function ReportGenerationForm() {
   const { types: reportTypes = [] } = useReportTypes();
   const [reportType, setReportType] = React.useState<ReportType>();
+
+  const { spaces: reportSpaces, isLoading } = useReportSpaces();
+  const options: ReportSpace[] = [
+    { text: "All Desks", value: "all", type: "desk" },
+    { text: "All Rooms", value: "all", type: "room" },
+    ...(reportSpaces ?? [])
+  ];
 
   const [fileFormat, setFileFormat] = React.useState("xlsx");
 
@@ -218,6 +212,7 @@ export function ReportGenerationForm() {
           renderOption={renderOption}
           renderTags={renderTags}
           value={spaces}
+          loading={isLoading}
           onChange={(_e, values) => setSpaces(values)}
           slotProps={{
             root: { ref: autocompleteRef },
@@ -258,7 +253,12 @@ const renderTags = (tags: ReportSpace[], getTagProps: AutocompleteRenderGetTagPr
       <Chip
         variant="soft"
         color="neutral"
-        endDecorator={<ChipDelete key={key} variant="soft" {...tagProps} />}
+        endDecorator={<ChipDelete
+          variant="soft"
+          key={key}
+          onDelete={onClick}
+          {...tagProps}
+        />}
         sx={{ minWidth: 0 }}
         key={key}
       >
