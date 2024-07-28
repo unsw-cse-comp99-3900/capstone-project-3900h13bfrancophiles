@@ -1,5 +1,15 @@
-import { pgTable, pgEnum, text, foreignKey, numeric, integer, serial, timestamp, varchar } from "drizzle-orm/pg-core"
-  import { sql } from "drizzle-orm"
+import { customType, pgTable, pgEnum, text, foreignKey, numeric, integer, serial, timestamp, varchar } from "drizzle-orm/pg-core"
+import { sql } from "drizzle-orm"
+
+const decimalNumber = customType<{ data: number }>({
+	dataType() {
+	  return 'decimal(7, 4)';
+	},
+	fromDriver(value) {
+	  return Number(value);
+	},
+  });
+
 
 export const bookingstatusenum = pgEnum("bookingstatusenum", ['pending', 'confirmed', 'declined', 'checkedin', 'completed', 'deleted'])
 export const usergroupenum = pgEnum("usergroupenum", ['other', 'hdr', 'csestaff', 'admin'])
@@ -21,8 +31,8 @@ export const space = pgTable("space", {
 export const hotdesk = pgTable("hotdesk", {
 	id: text("id").primaryKey().notNull().references(() => space.id, { onDelete: "cascade" } ),
 	floor: text("floor").notNull(),
-	xcoord: numeric("xcoord").notNull(),
-	ycoord: numeric("ycoord").notNull(),
+	xcoord: decimalNumber("xcoord").notNull(),
+	ycoord: decimalNumber("ycoord").notNull(),
 });
 
 export const room = pgTable("room", {
