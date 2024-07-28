@@ -6,7 +6,7 @@ import XLSX from "xlsx";
 import { formatBookingDates } from "../utils";
 
 export const generateBookingSpreadsheet: ReportGenerator = async (startDate, endDate, spaces) => {
-  const data = await db
+  const rows = await db
     .select()
     .from(booking)
     .innerJoin(person, eq(booking.zid, person.zid))
@@ -14,11 +14,11 @@ export const generateBookingSpreadsheet: ReportGenerator = async (startDate, end
     .where(and(
       gte(booking.starttime, startDate.toISOString()),
       lte(booking.endtime, endDate.toISOString()),
-      // inArray(booking.spaceid, spaces),
+      inArray(booking.spaceid, spaces),
     ))
     .orderBy(desc(booking.endtime));
 
-  let cleanedData: Record<string, string>[] = data
+  let cleanRows: Record<string, string>[] = rows
     .map((row) => {
       row.booking = formatBookingDates(row.booking);
       return row;
@@ -35,12 +35,12 @@ export const generateBookingSpreadsheet: ReportGenerator = async (startDate, end
       "User Affiliation": person.school + "/" + person.faculty,
     }));
 
-  const worksheet = XLSX.utils.json_to_sheet(cleanedData);
+  const worksheet = XLSX.utils.json_to_sheet(cleanRows);
 
   // Set column widths
-  if (cleanedData.length) {
-    worksheet["!cols"] = Object.keys(cleanedData[0]).map((key) => ({
-      wch: cleanedData.reduce((w, r) => Math.max(w, r[key].length), key.length) + 1
+  if (cleanRows.length) {
+    worksheet["!cols"] = Object.keys(cleanRows[0]).map((key) => ({
+      wch: Math.max(key.length, ...cleanRows.map((row) => row[key].length)) + 1
     }));
   }
 

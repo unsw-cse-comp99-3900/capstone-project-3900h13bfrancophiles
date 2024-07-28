@@ -87,3 +87,10 @@ export type ReportTypeReturn = {
     formats: string[],
   }[],
 }
+
+export interface ReportSpace {
+  text: string;
+  value: string;
+  type: "room" | "desk";
+  level?: string;
+}

@@ -23,24 +23,15 @@ import {
 import DownloadIcon from "@mui/icons-material/Download";
 import * as React from "react";
 import { useRef } from "react";
-import {
-  AutocompleteRenderGetTagProps,
-  AutocompleteRenderOptionState,
-} from "@mui/joy/Autocomplete/AutocompleteProps";
+import { AutocompleteRenderGetTagProps, AutocompleteRenderOptionState } from "@mui/joy/Autocomplete/AutocompleteProps";
 import { addDays, format, startOfToday } from "date-fns";
 import { useResizeObserver } from "usehooks-ts";
 import useReportTypes from "@/hooks/useReportTypes";
 import * as api from "@/api";
-
-interface Option {
-  text: string;
-  value: string;
-  type: "room" | "desk";
-  level?: string;
-}
+import { ReportSpace } from "@/types";
 
 // TODO: Fetch from backend
-const options: Option[] = [
+const options: ReportSpace[] = [
   { text: "All Desks", value: "all", type: "desk" },
   { text: "All Rooms", value: "all", type: "room" },
   { text: "K17 Room 201-B", value: "K-K17-201B", type: "room", level: "K17 L2" },
@@ -69,7 +60,7 @@ export function ReportGenerationForm() {
   const [startDate, setStartDate] = React.useState(addDays(today, -7));
   const [endDate, setEndDate] = React.useState(today);
 
-  const [spaces, setSpaces] = React.useState<Option[]>([]);
+  const [spaces, setSpaces] = React.useState<ReportSpace[]>([]);
   const totals = {
     room: options.filter((space) => space.type === "room").length - 1,
     desk: options.filter((space) => space.type === "desk").length - 1,
@@ -79,7 +70,7 @@ export function ReportGenerationForm() {
     desk: spaces.filter((space) => space.type === "desk").length,
   };
 
-  const handleAllSwitch = (type: Option["type"]) => {
+  const handleAllSwitch = (type: ReportSpace["type"]) => {
     if (totals[type] == selected[type]) {
       setSpaces((spaces) => spaces.filter((space) => space.type !== type));
     } else {
@@ -98,7 +89,7 @@ export function ReportGenerationForm() {
 
   const renderOption = (
     props: Omit<React.HTMLAttributes<HTMLLIElement>, "color">,
-    option: Option,
+    option: ReportSpace,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     _state: AutocompleteRenderOptionState,
   ) => {
@@ -259,7 +250,7 @@ const renderGroup = (params: AutocompleteRenderGroupParams) => {
 };
 
 // Stolen from JoyUI Autocomplete source code
-const renderTags = (tags: Option[], getTagProps: AutocompleteRenderGetTagProps) =>
+const renderTags = (tags: ReportSpace[], getTagProps: AutocompleteRenderGetTagProps) =>
   tags.map((item, index) => {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { key, onClick, ...tagProps } = getTagProps({ index });

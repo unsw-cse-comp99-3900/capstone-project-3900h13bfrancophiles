@@ -2,8 +2,8 @@ import { TypedRequest, TypedResponse } from "../types";
 import { REPORT_TYPES } from "./index";
 import typia from "typia";
 import { db } from "../index";
-import { space } from "../../drizzle/schema";
-import { inArray } from "drizzle-orm";
+import { hotdesk, room, space } from "../../drizzle/schema";
+import { eq, sql } from "drizzle-orm";
 
 interface GenerateReportRequest {
   type: string;
@@ -54,7 +54,7 @@ async function toSpaceIds(spaces: string[]) {
   const res = await db
     .select({ id: space.id })
     .from(space)
-    .where(inArray(space.id, spaces));
+    .where(sql`${space.id} ~* ${sql.raw("'^(" + spaces.join("|") + ")'")}`);
 
   return res.map(res => res.id);
 }
@@ -78,4 +78,84 @@ export async function getReportTypes(
   }));
 
   res.json({ types });
+}
+
+interface ReportSpace {
+  text: string;
+  value: string;
+  type: "room" | "desk";
+  level: string;
+}
+
+export async function getReportSpaces(
+  req: TypedRequest,
+  res: TypedResponse<{ spaces: ReportSpace[] }>,
+) {
+  const spaces: ReportSpace[] = [];
+
+  const roomData = await db
+    .select({ id: space.id, name: space.name })
+    .from(room)
+    .innerJoin(space, eq(room.id, space.id));
+
+  for (const room of roomData) {
+    const level = getLevel(room.id);
+    if (!level) continue;
+    spaces.push({
+      text: room.name,
+      value: room.id,
+      type: "room",
+      level,
+    })
+  }
+
+  const deskData = await db
+    .select({ id: space.id, name: space.name })
+    .from(hotdesk)
+    .innerJoin(space, eq(hotdesk.id, space.id));
+
+  for (const desk of deskData) {
+    const level = getLevel(desk.id);
+    if (!level) continue;
+    const [campus, bldg, roomNum, _deskNum] = desk.id.split("-");
+
+    const roomId = `${campus}-${bldg}-${roomNum}`;
+    if (spaces.find((space) => space.value === roomId)) continue;
+
+    spaces.push({
+      text: `${bldg} Room ${roomNum} Desks`,
+      value: roomId,
+      type: "desk",
+      level,
+    })
+  }
+
+  spaces.sort(compareSpace);
+  res.json({ spaces });
+}
+
+function getLevel(spaceId: string) {
+  const [_campus, bldg, roomNum] = spaceId.split("-");
+  const numMatch = roomNum.match(/^\d/);
+  if (numMatch) {
+    return bldg + " L" + numMatch[0];
+  }
+
+  const alphaMatch = roomNum.match(/^[A-Z]+/);
+  if (alphaMatch) {
+    return bldg + " " + alphaMatch[0];
+  }
+
+  console.warn(`Warning: could not determine level of ${spaceId}`);
+  return null;
+}
+
+function compareSpace(a: ReportSpace, b: ReportSpace): number {
+  let cmp = a.level.localeCompare(b.level);
+  if (cmp) return cmp;
+
+  cmp = b.type.localeCompare(a.type);
+  if (cmp) return cmp;
+
+  return a.text.localeCompare(b.text);
 }
