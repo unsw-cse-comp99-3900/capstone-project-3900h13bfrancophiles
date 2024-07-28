@@ -38,17 +38,23 @@ interface ReportType {
 }
 
 export function ReportGenerationForm() {
-  const { types: reportTypes = [] } = useReportTypes();
+  const { types: reportTypes = [], isLoading: typesIsLoading } = useReportTypes();
   const [reportType, setReportType] = React.useState<ReportType>();
+  React.useEffect(() => {
+    if (!reportType) setReportType(reportTypes[0]);
+  }, [reportTypes]);
 
-  const { spaces: reportSpaces, isLoading } = useReportSpaces();
+  const [fileFormat, setFileFormat] = React.useState<string>();
+  React.useEffect(() => {
+    if (!fileFormat && reportType) setFileFormat(reportType.formats[0]);
+  }, [reportType]);
+
+  const { spaces: reportSpaces, isLoading: spacesIsLoading } = useReportSpaces();
   const options: ReportSpace[] = [
     { text: "All Desks", value: "all", type: "desk" },
     { text: "All Rooms", value: "all", type: "room" },
     ...(reportSpaces ?? [])
   ];
-
-  const [fileFormat, setFileFormat] = React.useState("xlsx");
 
   const today = startOfToday();
   const [startDate, setStartDate] = React.useState(addDays(today, -7));
@@ -63,6 +69,10 @@ export function ReportGenerationForm() {
     room: spaces.filter((space) => space.type === "room").length,
     desk: spaces.filter((space) => space.type === "desk").length,
   };
+
+  const [spacesInteracted, setSpacesInteracted] = React.useState(false);
+  const spacesError = (spacesInteracted && spaces.length == 0)
+    ? "Select at least one space" : undefined;
 
   const handleAllSwitch = (type: ReportSpace["type"]) => {
     if (totals[type] == selected[type]) {
@@ -118,7 +128,8 @@ export function ReportGenerationForm() {
   };
 
   const handleSubmit = async () => {
-    if (!reportType) return;
+    setSpacesInteracted(true);
+    if (!reportType || !fileFormat || !spaces.length) return;
     const res = await api.generateReport(
       reportType.type,
       fileFormat,
@@ -202,6 +213,7 @@ export function ReportGenerationForm() {
         <FormLabel sx={{ marginBottom: "6px" }}>Spaces</FormLabel>
         <Autocomplete
           placeholder={spaces.length ? undefined : "Select spaces to include in report..."}
+          color={spacesError ? "danger" : "neutral"}
           multiple
           disableCloseOnSelect
           limitTags={width ? Math.floor((width - 80) / 150) : -1}
@@ -212,12 +224,18 @@ export function ReportGenerationForm() {
           renderOption={renderOption}
           renderTags={renderTags}
           value={spaces}
-          loading={isLoading}
+          loading={spacesIsLoading}
           onChange={(_e, values) => setSpaces(values)}
+          onBlur={() => setSpacesInteracted(true)}
           slotProps={{
             root: { ref: autocompleteRef },
           }}
         />
+        {spacesError && (
+          <Typography color="danger" level="body-xs" fontWeight={400} ml={0.5}>
+            {spacesError}
+          </Typography>
+        )}
       </Box>
       <Button
         endDecorator={<DownloadIcon />}
@@ -226,6 +244,7 @@ export function ReportGenerationForm() {
           mt: "20px !important",
           flexShrink: 0,
         }}
+        loading={spacesIsLoading || typesIsLoading}
         onClick={handleSubmit}
       >
         Download Report
