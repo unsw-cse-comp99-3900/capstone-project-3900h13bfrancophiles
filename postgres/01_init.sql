@@ -1,8 +1,65 @@
--- store configuration values that can be changed at runtime
+-- CONFIGURATION TABLE--
 CREATE TABLE IF NOT EXISTS config (
-    key     TEXT PRIMARY KEY,
-    value   TEXT
+    key             TEXT PRIMARY KEY,
+    value           TEXT NOT NULL,
+    description     TEXT NOT NULL
 );
+
+-- Insert default configuration options
+INSERT INTO config (key, value, description) VALUES
+    ('global-email', 'false', 'Enable or disable email sending at a global level, for all users.'),
+    ('booking-interval', '15', 'The size unit (and hour offset multiple) of bookings in minutes.'),
+    ('booking-future-limit', '14', 'The number of days in the future bookings can be made.');
+
+CREATE FUNCTION enforce_required_keys() RETURNS TRIGGER AS $$
+DECLARE
+    missing_key TEXT;
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM config WHERE key = 'global-email') THEN
+        missing_key := 'global-email';
+    ELSIF NOT EXISTS (SELECT 1 FROM config WHERE key = 'booking-interval') THEN
+        missing_key := 'booking-interval';
+    ELSIF NOT EXISTS (SELECT 1 FROM config WHERE key = 'booking-future-limit') THEN
+        missing_key := 'booking-future-limit';
+    END IF;
+
+    IF missing_key IS NOT NULL THEN
+        RAISE EXCEPTION 'Missing required configuration key: %', missing_key;
+    END IF;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER check_required_keys
+BEFORE INSERT OR UPDATE ON config
+FOR EACH ROW
+EXECUTE FUNCTION enforce_required_keys();
+
+CREATE OR REPLACE FUNCTION get_booking_interval() RETURNS INT AS $$
+DECLARE
+    booking_interval INT;
+BEGIN
+    SELECT value::INT INTO booking_interval
+    FROM config
+    WHERE key = 'booking-interval';
+
+    RETURN booking_interval;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION get_booking_future_limit() RETURNS INT AS $$
+DECLARE
+    booking_future_limit INT;
+BEGIN
+    SELECT value::INT INTO booking_future_limit
+    FROM config
+    WHERE key = 'booking-future-limit';
+
+    RETURN booking_future_limit;
+END;
+$$ LANGUAGE plpgsql;
+-- CONFIGURATION TABLE--
 
 CREATE OR REPLACE FUNCTION get_now() RETURNS TIMESTAMP AS $$
 SELECT COALESCE(
@@ -68,8 +125,8 @@ CREATE TABLE IF NOT EXISTS booking (
     FOREIGN KEY(zId) REFERENCES person(zId),
     FOREIGN KEY(spaceId) REFERENCES space(id),
     CONSTRAINT chk_start_lt_end CHECK (startTime < endTime),
-    CONSTRAINT chk_interval_length CHECK (EXTRACT(epoch FROM (endTime - startTime)) % 900 = 0),
-    CONSTRAINT chk_interval_bounds CHECK (EXTRACT(minute FROM startTime) % 15 = 0),
+    CONSTRAINT chk_interval_length CHECK (EXTRACT(epoch FROM (endTime - startTime)) % (get_booking_interval() * 60) = 0),
+    CONSTRAINT chk_interval_bounds CHECK (EXTRACT(minute FROM startTime) % get_booking_interval()  = 0),
     CONSTRAINT chk_same_day CHECK (
         date_trunc('day', startTime AT TIME ZONE 'UTC' AT TIME ZONE 'Australia/Sydney') =
         -- Minus 1 second so ending on midnight is okay
@@ -90,7 +147,7 @@ begin
               and b.currentStatus <> 'deleted'
               and b.id != new.id
     ) then
-        raise exception 'Overlapping booking found';
+        RAISE EXCEPTION 'Overlapping booking found';
     end if;
 
     return new;
@@ -103,7 +160,7 @@ on booking for each row execute procedure trg_chk_overlap();
 create function trg_chk_create_booking_start_future() returns trigger as $$
 begin
     if new.starttime <= get_now() then
-        raise exception 'Booking start time must be in the future';
+        RAISE EXCEPTION 'Booking start time must be in the future';
     end if;
 
     return new;
@@ -120,7 +177,7 @@ begin
             or new.endtime <> old.endtime
             or new.spaceid <> old.spaceid
             or new.description <> old.description then
-                raise exception 'Cannot edit booking details other than currentstatus, check-in, and check-out times after the booking has started';
+                RAISE EXCEPTION 'Cannot edit booking details other than currentstatus, check-in, and check-out times after the booking has started';
         end if;
     end if;
 
@@ -131,9 +188,10 @@ $$ language plpgsql;
 create function trg_chk_start_future_limit() returns trigger as $$
 declare
     today timestamp := date_trunc('day', get_now());
+    future_limit INT := get_booking_future_limit();
 begin
-    if new.starttime > today + interval '14 days' then
-        raise exception 'Booking start time cannot be more than 14 days in the future';
+    if new.starttime > today + (future_limit || ' days')::INTERVAL then
+        RAISE EXCEPTION 'Booking start time cannot be more than % days in the future', future_limit;
     end if;
 
     return new;

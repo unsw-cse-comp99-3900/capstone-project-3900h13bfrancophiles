@@ -8,7 +8,7 @@ import { DATABASE_URL, PORT } from '../config';
 import { Pool } from 'pg';
 import { drizzle } from 'drizzle-orm/node-postgres';
 
-import { approveBooking, declineBooking, pendingBookings, overlappingBookings } from './admin/handlers';
+import { approveBooking, declineBooking, pendingBookings, overlappingBookings, updateConfig } from './admin/handlers';
 import { login, logout } from './auth/handlers';
 import { authoriseAtLeast, validateToken } from './auth/middleware';
 import { currentBookings, pastBookings, rangeOfBookings, upcomingBookings } from './booking/fetchBookings';
@@ -73,6 +73,8 @@ app.get('/admin/bookings/pending', validateToken, authoriseAtLeast('admin'), pen
 app.put('/admin/bookings/approve', validateToken, authoriseAtLeast('admin'), approveBooking);
 app.put('/admin/bookings/decline', validateToken, authoriseAtLeast('admin'), declineBooking);
 app.get('/admin/bookings/overlapping', validateToken, authoriseAtLeast('admin'), overlappingBookings);
+
+app.put('/admin/config/update', validateToken, authoriseAtLeast('admin'), updateConfig);
 
 app.get('/users/:zid', validateToken, userDetails);
 

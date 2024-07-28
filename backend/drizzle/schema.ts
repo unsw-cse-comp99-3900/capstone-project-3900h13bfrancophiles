@@ -1,4 +1,4 @@
-import { pgTable, pgEnum, text, foreignKey, integer, serial, timestamp, varchar } from "drizzle-orm/pg-core"
+import { pgTable, pgEnum, text, foreignKey, numeric, integer, serial, timestamp, varchar } from "drizzle-orm/pg-core"
   import { sql } from "drizzle-orm"
 
 export const bookingstatusenum = pgEnum("bookingstatusenum", ['pending', 'confirmed', 'declined', 'checkedin', 'completed', 'deleted'])
@@ -7,7 +7,8 @@ export const usergroupenum = pgEnum("usergroupenum", ['other', 'hdr', 'csestaff'
 
 export const config = pgTable("config", {
 	key: text("key").primaryKey().notNull(),
-	value: text("value"),
+	value: text("value").notNull(),
+	description: text("description").notNull(),
 });
 
 export const space = pgTable("space", {
@@ -20,8 +21,8 @@ export const space = pgTable("space", {
 export const hotdesk = pgTable("hotdesk", {
 	id: text("id").primaryKey().notNull().references(() => space.id, { onDelete: "cascade" } ),
 	floor: text("floor").notNull(),
-	xcoord: integer("xcoord").notNull(),
-	ycoord: integer("ycoord").notNull(),
+	xcoord: numeric("xcoord").notNull(),
+	ycoord: numeric("ycoord").notNull(),
 });
 
 export const room = pgTable("room", {

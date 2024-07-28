@@ -1,7 +1,7 @@
 import typia, { tags } from 'typia';
 import { Booking, TypedGETRequest, TypedRequest, TypedResponse } from '../types';
 import { db } from '../index';
-import { booking } from '../../drizzle/schema';
+import { booking, config } from '../../drizzle/schema';
 import { and, asc, count, desc, eq, gt, lt } from 'drizzle-orm';
 
 import { sendBookingEmail } from '../email/service';
@@ -168,6 +168,49 @@ export async function overlappingBookings(
         bookings: overlapping,
       });
     });
+  } catch (error) {
+    res.status(500).json({ error: 'Internal server error' });
+  }
+}
+
+interface ConfigUpdateI {
+  globalEmail?: string & tags.Pattern<"^(true|false)$">;
+  bookingInterval?: number & tags.Minimum<1> & tags.Maximum<60>;
+  bookingFutureLimit?: number & tags.Minimum<0>;
+}
+
+export async function updateConfig(
+  req: TypedRequest<ConfigUpdateI>,
+  res: TypedResponse<{}>
+) {
+  try {
+    if (!typia.is<ConfigUpdateI>(req.body)) {
+      res.status(400).json({ error: 'Invalid input' });
+      return;
+    }
+
+    const updateConfigResults: Record<string, string> = {};
+    res.status(200);
+
+    const updatePromises = Object.entries(req.body).forEach(async ([configKey, newValue]) => {
+      try {
+        const configUpdateResult = await db
+          .update(config)
+          .set({
+            value: newValue,
+          })
+          .where(eq(config.key, configKey))
+          .returning();
+
+        updateConfigResults[configKey] = configUpdateResult[0].value;
+
+      } catch (e: any) {
+        res.status(400);
+        updateConfigResults[configKey] = `${e}`;
+      }
+    });
+
+    res.json({ results: updateConfigResults });
   } catch (error) {
     res.status(500).json({ error: 'Internal server error' });
   }

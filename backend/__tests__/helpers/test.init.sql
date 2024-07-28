@@ -3,9 +3,6 @@
 -- bookings (and nothing else) will be created by the tests
 -- if u change any of this data, make sure to change the constants.ts file
 
--- Insert default configuration options
-INSERT INTO config (key, value) VALUES ('global-email', 'false'); -- Disables email sending globally
-
 -- 2 ppl for each user level
 INSERT INTO person(zid, email, fullname, title, school, faculty, role, usergrp)
 VALUES (1111111, 'admin1@email.com', 'Admin One', 'Mr', 'CSE', 'ENG', 'Professional', 'admin'),
