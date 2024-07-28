@@ -44,9 +44,9 @@ export function ReportGenerationForm() {
     if (!reportType) setReportType(reportTypes[0]);
   }, [reportTypes]);
 
-  const [fileFormat, setFileFormat] = React.useState<string>();
+  const [fileFormat, setFileFormat] = React.useState<string | null>(null);
   React.useEffect(() => {
-    if (!fileFormat && reportType) setFileFormat(reportType.formats[0]);
+    if (reportType) setFileFormat(reportType.formats[0]);
   }, [reportType]);
 
   const { spaces: reportSpaces, isLoading: spacesIsLoading } = useReportSpaces();
@@ -162,19 +162,33 @@ export function ReportGenerationForm() {
       spacing={2}
     >
       <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
-        <FormControl sx={{ minWidth: 300, flexGrow: { xs: 1, sm: 0 } }}>
-          <FormLabel>Report Type</FormLabel>
-          <Select
-            placeholder="Select one..."
-            value={reportType?.type}
-            onChange={(_e, value) => {
-              setReportType(reportTypes.find((rt) => rt.type === value));
-            }}
-          >
-            <Option value="booking">Booking Information</Option>
-            <Option value="checkin">Booking & Check-in Information</Option>
-          </Select>
-        </FormControl>
+        <Stack direction="row" spacing={2}>
+          <FormControl sx={{ minWidth: 200, flexGrow: { xs: 1, sm: 0 } }}>
+            <FormLabel>Report Type</FormLabel>
+            <Select
+              placeholder="Select one..."
+              value={reportType?.type}
+              onChange={(_e, value) => {
+                setReportType(reportTypes.find((rt) => rt.type === value));
+              }}
+            >
+              {reportTypes && reportTypes.map((rt) => (
+                <Option key={rt.type} value={rt.type}>{rt.name}</Option>
+              ))}
+            </Select>
+          </FormControl>
+          <FormControl sx={{ minWidth: 70, flexGrow: { xs: 1, sm: 0 } }}>
+            <FormLabel>Format</FormLabel>
+            <Select
+              value={fileFormat}
+              onChange={(_e, value) => setFileFormat(value)}
+            >
+              {reportType && reportType.formats.map((format) => (
+                <Option key={format} value={format}>.{format}</Option>
+              ))}
+            </Select>
+          </FormControl>
+        </Stack>
         <Stack direction="row" spacing={2}>
           <FormControl>
             <FormLabel>Start Date</FormLabel>
