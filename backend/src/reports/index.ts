@@ -1,4 +1,4 @@
-import { generateBookingSpreadsheet } from "./bookingGenerators";
+import { generateBookingSpreadsheet, generateCheckinSpreadsheet } from "./bookingGenerators";
 
 export type ReportGenerator = (
   startDate: Date,
@@ -24,9 +24,9 @@ export const REPORT_TYPES: Record<string, ReportType> = {
   },
   checkin: {
     key: "checkin",
-    name: "Booking & Check-in Information",
+    name: "Check-in Information",
     formats: {
-      xlsx: generateBookingSpreadsheet,
+      xlsx: generateCheckinSpreadsheet,
     }
   }
 };
