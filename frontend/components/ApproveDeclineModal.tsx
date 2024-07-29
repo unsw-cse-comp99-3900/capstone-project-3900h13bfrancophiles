@@ -13,9 +13,9 @@ import {
 } from "@mui/joy";
 import { Booking } from "@/types";
 import { approveBooking, declineBooking } from "@/api";
-import { mutate } from "swr";
 import OverlappingBookings from "@/components/OverlappingBookings";
 import useOverlappingBookings from "@/hooks/useOverlappingBookings";
+import usePendingBookings from "@/hooks/usePendingBookings";
 
 interface ApproveDeclineModalProps {
   isOpen: boolean;
@@ -42,6 +42,8 @@ const ApproveDeclineModal: React.FC<ApproveDeclineModalProps> = ({
 
   const { overlappingBookings } = useOverlappingBookings(row.id);
   const countOverlapping = overlappingBookings ? overlappingBookings.length : 0;
+  const { mutate: mutatePendingBookings } = usePendingBookings(page + 1, rowsPerPage, sort);
+  const { mutate: mutateOverlappingBookings } = useOverlappingBookings(row.id);
 
   const handleApproveDecline = async () => {
     setIsApprovingOrDeclining(true);
@@ -51,8 +53,8 @@ const ApproveDeclineModal: React.FC<ApproveDeclineModalProps> = ({
       } else {
         await declineBooking(row.id);
       }
-      await mutate(`/admin/bookings/pending?page=${page + 1}&limit=${rowsPerPage}&sort=${sort}`);
-      await mutate(`/admin/bookings/overlapping/${row.id}`);
+      await mutatePendingBookings();
+      await mutateOverlappingBookings();
     } catch (error) {
       if (error instanceof Error) {
         setApproveDeclineError(error.message);

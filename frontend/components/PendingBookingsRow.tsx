@@ -1,4 +1,4 @@
-"use client";
+// PendingBookingsRow.tsx
 import * as React from "react";
 import Typography from "@mui/joy/Typography";
 import IconButton from "@mui/joy/IconButton";
@@ -21,12 +21,7 @@ export interface PendingBookingRowProps {
   sort: string;
 }
 
-export default function PendingBookingsRow({
-  row,
-  page,
-  rowsPerPage,
-  sort,
-}: PendingBookingRowProps) {
+function PendingBookingsRow({ row, page, rowsPerPage, sort }: PendingBookingRowProps) {
   const { space, type, isLoading: spaceIsLoading } = useSpace(row.spaceid);
   const { user, isLoading: userIsLoading } = useUser(row.zid);
 
@@ -101,16 +96,19 @@ export default function PendingBookingsRow({
           </Stack>
         </td>
       </tr>
-      <ApproveDeclineModal
-        isOpen={isConfirmationOpen}
-        onClose={() => setIsConfirmationOpen(false)}
-        approving={approving}
-        row={row}
-        page={page}
-        rowsPerPage={rowsPerPage}
-        sort={sort}
-        setApproveDeclineError={setApproveDeclineError}
-      />
+      {isConfirmationOpen && (
+        <ApproveDeclineModal
+          key={`${row.id}-${approving ? "approve" : "decline"}`}
+          isOpen={isConfirmationOpen}
+          onClose={() => setIsConfirmationOpen(false)}
+          approving={approving}
+          row={row}
+          page={page}
+          rowsPerPage={rowsPerPage}
+          sort={sort}
+          setApproveDeclineError={setApproveDeclineError}
+        />
+      )}
     </>
   );
 }
@@ -119,3 +117,5 @@ export function getInitials(fullname: string): string {
   const names = fullname.split(" ");
   return names[0][0] + names[names.length - 1][0];
 }
+
+export default PendingBookingsRow;
