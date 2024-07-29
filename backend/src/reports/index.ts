@@ -1,4 +1,5 @@
 import { generateBookingSpreadsheet, generateCheckinSpreadsheet } from "./bookingGenerators";
+import { generateOccupancyPdf } from "./occupancyGenerators";
 
 export type ReportGenerator = (
   startDate: Date,
@@ -28,5 +29,12 @@ export const REPORT_TYPES: Record<string, ReportType> = {
     formats: {
       xlsx: generateCheckinSpreadsheet,
     }
-  }
+  },
+  occupancy: {
+    key: "occupancy",
+    name: "Occupancy Data",
+    formats: {
+      pdf: generateOccupancyPdf,
+    }
+  },
 };

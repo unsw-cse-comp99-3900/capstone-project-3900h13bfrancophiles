@@ -14,6 +14,7 @@
     "format": "npx prettier --write ."
   },
   "dependencies": {
+    "@observablehq/plot": "^0.6.15",
     "@typescript-eslint/eslint-plugin": "^7.16.1",
     "@typescript-eslint/parser": "^7.16.1",
     "cors": "^2.8.5",
@@ -27,6 +28,7 @@
     "lodash": "^4.17.21",
     "morgan": "^1.10.0",
     "nodemailer": "^6.9.14",
+    "pdfkit": "^0.15.0",
     "pg": "^8.12.0",
     "postgres": "^3.4.4",
     "typia": "^6.1.1",
@@ -44,6 +46,7 @@
     "@types/morgan": "^1.9.9",
     "@types/node": "^20.14.2",
     "@types/nodemailer": "^6.4.15",
+    "@types/pdfkit": "^0.13.4",
     "@types/pg": "^8.11.6",
     "babel-jest": "^29.7.0",
     "drizzle-kit": "^0.22.7",
