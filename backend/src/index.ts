@@ -72,7 +72,7 @@ app.get('/desks', validateToken, deskPositions);
 app.get('/admin/bookings/pending', validateToken, authoriseAtLeast('admin'), pendingBookings);
 app.put('/admin/bookings/approve', validateToken, authoriseAtLeast('admin'), approveBooking);
 app.put('/admin/bookings/decline', validateToken, authoriseAtLeast('admin'), declineBooking);
-app.get('/admin/bookings/overlapping', validateToken, authoriseAtLeast('admin'), overlappingBookings);
+app.get('/admin/bookings/overlapping/:bookingId', validateToken, authoriseAtLeast('admin'), overlappingBookings);
 
 app.get('/users/:zid', validateToken, userDetails);
 

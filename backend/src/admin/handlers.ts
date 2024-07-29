@@ -2,7 +2,7 @@ import typia, { tags } from 'typia';
 import { Booking, TypedGETRequest, TypedRequest, TypedResponse } from '../types';
 import { db } from '../index';
 import { booking } from '../../drizzle/schema';
-import { and, asc, count, desc, eq, gt, lt } from 'drizzle-orm';
+import { and, asc, count, desc, eq, gt, lt, ne } from 'drizzle-orm';
 
 import { sendBookingEmail } from '../email/service';
 import { BOOKING_DECLINE, BOOKING_APPROVE } from '../email/template';
@@ -54,19 +54,14 @@ export async function pendingBookings(
   }
 }
 
-export async function approveBooking(req: TypedRequest<{ id: number }>, res: TypedResponse<{}>) {
+export async function approveBooking(req: TypedRequest<{ id: number }>, res: TypedResponse<object>) {
   try {
     if (!typia.is<{ id: number }>(req.body)) {
       res.status(400).json({ error: 'Invalid input' });
       return;
     }
-
     await db.transaction(async (trx) => {
-      const updatedBooking = await trx
-        .update(booking)
-        .set({ currentstatus: 'confirmed' })
-        .where(eq(booking.id, req.body.id))
-        .returning();
+      const updatedBooking = await trx.select().from(booking).where(eq(booking.id, req.body.id));
 
       if (updatedBooking.length != 1) {
         throw new Error('Booking ID does not exist');
@@ -82,6 +77,7 @@ export async function approveBooking(req: TypedRequest<{ id: number }>, res: Typ
           and(
             eq(booking.currentstatus, 'pending'),
             eq(booking.spaceid, updatedBookingDetails.spaceid),
+            ne(booking.id, updatedBookingDetails.id),
             and(
               lt(booking.starttime, updatedBookingDetails.endtime),
               gt(booking.endtime, updatedBookingDetails.starttime),
@@ -96,17 +92,28 @@ export async function approveBooking(req: TypedRequest<{ id: number }>, res: Typ
         await sendBookingEmail(req.token.user, declinedBooking, BOOKING_DECLINE);
       }
 
-      const formattedBooking = formatBookingDates(updatedBookingDetails);
+      const approvedBooking = await trx
+        .update(booking)
+        .set({ currentstatus: 'confirmed' })
+        .where(eq(booking.id, req.body.id))
+        .returning();
+
+      if (updatedBooking.length != 1) {
+        throw new Error('Booking ID does not exist');
+      }
+
+      const approvedBookingDetails = approvedBooking[0];
+
+      const formattedBooking = formatBookingDates(approvedBookingDetails);
       await sendBookingEmail(req.token.user, formattedBooking, BOOKING_APPROVE);
     });
-
     res.status(200).json({ message: 'Booking approved and overlapping bookings declined' });
   } catch (error) {
     res.status(500).json({ error: 'Internal server error' });
   }
 }
 
-export async function declineBooking(req: TypedRequest<{ id: number }>, res: TypedResponse<{}>) {
+export async function declineBooking(req: TypedRequest<{ id: number }>, res: TypedResponse<object>) {
   try {
     if (!typia.is<{ id: number }>(req.body)) {
       res.status(400).json({ error: 'Invalid input' });
@@ -131,18 +138,16 @@ export async function declineBooking(req: TypedRequest<{ id: number }>, res: Typ
   }
 }
 
-export async function overlappingBookings(
-  req: TypedRequest<{ id: number }>,
-  res: TypedResponse<{ bookings: Booking[] }>,
-) {
+export async function overlappingBookings(req: TypedGETRequest, res: TypedResponse<{ bookings: Booking[] }>) {
   try {
-    if (!typia.is<{ id: number }>(req.body)) {
-      res.status(400).json({ error: 'Invalid input' });
+    const bookingId = Number(req.params.bookingId);
+    if (isNaN(bookingId)) {
+      res.status(400).json({ error: 'Invalid booking ID' });
       return;
     }
 
     await db.transaction(async (trx) => {
-      const updatedBooking = await trx.select().from(booking).where(eq(booking.id, req.body.id));
+      const updatedBooking = await trx.select().from(booking).where(eq(booking.id, bookingId));
 
       if (updatedBooking.length != 1) {
         throw new Error('Booking ID does not exist');
@@ -157,6 +162,7 @@ export async function overlappingBookings(
           and(
             eq(booking.currentstatus, 'pending'),
             eq(booking.spaceid, updatedBookingDetails.spaceid),
+            ne(booking.id, updatedBookingDetails.id),
             and(
               lt(booking.starttime, updatedBookingDetails.endtime),
               gt(booking.endtime, updatedBookingDetails.starttime),
@@ -165,7 +171,7 @@ export async function overlappingBookings(
         );
 
       res.json({
-        bookings: overlapping,
+        bookings: overlapping.map(formatBookingDates),
       });
     });
   } catch (error) {
