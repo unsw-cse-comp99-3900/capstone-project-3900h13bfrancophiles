@@ -43,3 +43,15 @@ export const BOOKING_DELETE: EmailContents = {
   text: 'Hello {{name}},\n\nYour booking #{{bookingid}} has been deleted.\n\nDetails:\n-----------\nStart Time (Sydney): {{starttime}}\nEnd Time (Sydney): {{endtime}}\nSpace ID: {{spaceid}}\nStatus: {{currentstatus}}\n\nDescription:\n-----------\n{{description}}\n\nThank you.',
   html: 'templates/bookingDelete.html',
 };
+
+export const BOOKING_APPROVE: EmailContents = {
+  subject: 'Booking Approved: Booking ID {{bookingid}}',
+  text: 'Hello {{name}},\n\nYour booking #{{bookingid}} has been approved.\n\nDetails:\n-----------\nStart Time (Sydney): {{starttime}}\nEnd Time (Sydney): {{endtime}}\nSpace ID: {{spaceid}}\nStatus: {{currentstatus}}\n\nDescription:\n-----------\n{{description}}\n\nThank you.',
+  html: 'templates/bookingDelete.html',
+};
+
+export const BOOKING_DECLINE: EmailContents = {
+  subject: 'Booking Declined: Booking ID {{bookingid}}',
+  text: 'Hello {{name}},\n\nYour booking #{{bookingid}} has been declined.\n\nDetails:\n-----------\nStart Time (Sydney): {{starttime}}\nEnd Time (Sydney): {{endtime}}\nSpace ID: {{spaceid}}\nStatus: {{currentstatus}}\n\nDescription:\n-----------\n{{description}}\n\nThank you.',
+  html: 'templates/bookingDelete.html',
+};

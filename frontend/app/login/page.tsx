@@ -44,7 +44,7 @@ export default function Login() {
       setCookie("token", token, { maxAge: 60 * 60 * 24 });
       router.push("/");
       router.refresh(); // reloads navbar
-    } catch (e: any) {
+    } catch (e: unknown) {
       setError(`${e}`);
     }
   };

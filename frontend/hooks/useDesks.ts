@@ -1,6 +1,6 @@
-import useSWR from 'swr';
-import { swrFetcher } from '@/api';
-import { DeskPosition } from '@/types';
+import useSWR from "swr";
+import { swrFetcher } from "@/api";
+import { DeskPosition } from "@/types";
 
 /**
  * Hook to fetch all desk positions

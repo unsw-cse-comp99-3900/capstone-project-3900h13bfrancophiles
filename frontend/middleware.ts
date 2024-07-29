@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getCookie, hasCookie } from "cookies-next";
+import { getCookie } from "cookies-next";
 import { AUTH_SECRET } from "@/config";
 import { jwtVerify } from "jose";
 
@@ -7,7 +7,17 @@ const ENCODED_SECRET = new TextEncoder().encode(AUTH_SECRET);
 
 export async function middleware(req: NextRequest) {
   const res = NextResponse.next();
-  const isAuthenticated = hasCookie("token", { req, res });
+  const token = getCookie("token", { req, res });
+
+  const isAuthenticated = !!token;
+
+  let group;
+  try {
+    const { payload } = await jwtVerify(`${token}`, ENCODED_SECRET);
+    group = payload.group;
+  } catch (e: any) {
+    group = undefined;
+  }
 
   if (req.nextUrl.pathname === "/login") {
     // Send through to site if authenticated
@@ -22,17 +32,14 @@ export async function middleware(req: NextRequest) {
 
     if (req.nextUrl.pathname === "/admin") {
       // Redirect to dashboard if user is not admin
-      const token = getCookie("token", { req, res });
-
-      let isAdmin;
-      try {
-        const { payload } = await jwtVerify(`${token}`, ENCODED_SECRET);
-        isAdmin = payload.group === "admin";
-      } catch (e: any) {
-        isAdmin = false;
+      if (group !== "admin") {
+        return NextResponse.redirect(new URL("/dashboard", req.url));
       }
+    }
 
-      if (!isAdmin) {
+    if (req.nextUrl.pathname === "/desks") {
+      // Redirect to dashboard if user is Other
+      if (group === "other") {
         return NextResponse.redirect(new URL("/dashboard", req.url));
       }
     }

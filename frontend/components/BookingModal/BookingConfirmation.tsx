@@ -18,6 +18,7 @@ interface BookingConfirmationProps {
   handleSubmit: () => void;
   handleBack: () => void;
   handleClose: () => void;
+  isLoading?: boolean;
 }
 
 const BookingConfirmation: React.FC<BookingConfirmationProps> = ({
@@ -34,6 +35,7 @@ const BookingConfirmation: React.FC<BookingConfirmationProps> = ({
   handleSubmit,
   handleBack,
   handleClose,
+  isLoading,
 }) => {
   return (
     <>
@@ -68,7 +70,7 @@ const BookingConfirmation: React.FC<BookingConfirmationProps> = ({
           </Button>
         ) : (
           <>
-            <Button variant="solid" color="primary" onClick={handleSubmit}>
+            <Button variant="solid" color="primary" onClick={handleSubmit} loading={isLoading}>
               Confirm
             </Button>
             <Button variant="plain" color="neutral" onClick={handleBack}>

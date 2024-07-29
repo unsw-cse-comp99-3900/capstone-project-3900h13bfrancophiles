@@ -26,7 +26,7 @@ interface JoyFieldProps extends InputProps {
   inputRef?: React.Ref<HTMLInputElement>;
   enableAccessibleFieldDOMStructure?: boolean;
   InputProps?: {
-    ref?: React.Ref<any>;
+    ref?: React.Ref<unknown>;
     endAdornment?: React.ReactNode;
     startAdornment?: React.ReactNode;
   };
@@ -35,20 +35,22 @@ interface JoyFieldProps extends InputProps {
 
 type JoyFieldComponent = ((
   props: JoyFieldProps & React.RefAttributes<HTMLDivElement>,
-) => React.JSX.Element) & { propTypes?: any };
+) => React.JSX.Element) & { propTypes?: unknown };
 
 const JoyField = React.forwardRef(function JoyField(
   props: JoyFieldProps,
   ref: React.Ref<HTMLDivElement>,
 ) {
   const {
-    // Should be ignored
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     enableAccessibleFieldDOMStructure,
-
     disabled,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     id,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     label,
     InputProps: { ref: containerRef, startAdornment, endAdornment } = {},
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     formControlSx,
     endDecorator,
     startDecorator,
@@ -173,6 +175,7 @@ const JoyTimePicker = React.forwardRef(function JoyTimePicker(
           onClick: () => setOpen(true),
           readOnly: true,
           endDecorator: <AccessTime fontSize="small" />,
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } as any,
         digitalClockSectionItem: {
           sx: {

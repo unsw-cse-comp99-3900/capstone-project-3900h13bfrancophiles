@@ -49,6 +49,26 @@ function upcomingBookings(token: string) {
   return apiCall('/bookings/upcoming', 'GET', undefined, token);
 }
 
+function pastBookings(token: string, page: any, limit: any, type: any, sort: any) {
+  return apiCall(`/bookings/past?page=${page}&limit=${limit}&type=${type}&sort=${sort}`, 'GET', undefined, token);
+}
+
+function status(token: string, start: Date, end: Date) {
+  return apiCall(`/status?datetimeStart=${start.toISOString()}&datetimeEnd=${end.toISOString()}`, 'GET', undefined, token);
+}
+
+function declineBooking(token: string, id: any) {
+  return apiCall("/admin/bookings/decline", "PUT", { id }, token);
+}
+
+function checkinBooking(token: string, id: any) {
+  return apiCall("/bookings/checkin", "POST", { id }, token);
+}
+
+function spaces(token: string) {
+  return apiCall("/spaces", "GET", undefined, token);
+}
+
 export default {
   login,
   logout,
@@ -56,4 +76,9 @@ export default {
   deleteBooking,
   currentBookings,
   upcomingBookings,
+  pastBookings,
+  status,
+  declineBooking,
+  checkinBooking,
+  spaces,
 };

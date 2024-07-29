@@ -18,14 +18,14 @@ import {
   FormControl,
   IconButton,
 } from "@mui/joy";
-import CloseIcon from '@mui/icons-material/Close';
-import * as React from 'react';
+import CloseIcon from "@mui/icons-material/Close";
+import * as React from "react";
 import { UserData } from "@/types";
 import useTimeRange from "@/hooks/useTimeRange";
-import NextLink from "next/link"
-import useSpaceStatus from '@/hooks/useSpaceStatus';
-import JoyTimePicker from '@/components/JoyTimePicker';
-import useDesks from '@/hooks/useDesks';
+import NextLink from "next/link";
+import useSpaceStatus from "@/hooks/useSpaceStatus";
+import JoyTimePicker from "@/components/JoyTimePicker";
+import useDesks from "@/hooks/useDesks";
 
 const floors = ["K17 L2", "K17 L3", "K17 L4", "K17 L5"];
 
@@ -161,11 +161,7 @@ export default function Desks() {
           </Stack>
         </Sheet>
       </Stack>
-      <Tabs
-        aria-label="level select"
-        defaultValue={"K17 L2"}
-        sx={{ height: "calc(100vh - 60px)" }}
-      >
+      <Tabs aria-label="level select" defaultValue={"K17 L2"} sx={{ height: "calc(100vh - 60px)" }}>
         {floors.map((floor, index) => (
           <TabPanel
             key={index}
@@ -191,13 +187,7 @@ export default function Desks() {
         ))}
         <TabList underlinePlacement="top" sx={{ height: 45 }}>
           {floors.map((floor, index) => (
-            <Tab
-              key={index}
-              variant="plain"
-              color="neutral"
-              indicatorPlacement="top"
-              value={floor}
-            >
+            <Tab key={index} variant="plain" color="neutral" indicatorPlacement="top" value={floor}>
               {floor}
             </Tab>
           ))}
