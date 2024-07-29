@@ -95,8 +95,8 @@ CREATE TABLE IF NOT EXISTS space (
 CREATE TABLE IF NOT EXISTS hotdesk (
     id            TEXT PRIMARY KEY,
     floor         TEXT NOT NULL,
-    xCoord        DECIMAL NOT NULL,
-    yCoord        DECIMAL NOT NULL,
+    xCoord        REAL NOT NULL,
+    yCoord        REAL NOT NULL,
     FOREIGN KEY(id) REFERENCES space(id) ON DELETE CASCADE
 );
 
