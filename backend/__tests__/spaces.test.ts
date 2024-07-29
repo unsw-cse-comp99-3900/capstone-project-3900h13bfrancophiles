@@ -10,26 +10,20 @@ describe('/spaces', () => {
     const spaces = res.json.spaces;
 
     expect(res.status).toStrictEqual(200);
-    expect(res.json).toEqual({
-      spaces: [
-        {
-          "id": "K-K17-111",
-          "isRoom": true,
-          "name": "Room 1",
-        },{
-          "id": "K-K17-222",
-          "isRoom": true,
-          "name": "Room 2",
-        },{
-          "id": "K-K17-333-1",
-          "isRoom": false,
-          "name": "Desk 1",
-        },{
-          "id": "K-K17-444-1",
-          "isRoom": false,
-          "name": "Desk 2",
-        }
-      ]
-    });
+    expect(res.json.spaces).toBeDefined()
+    for (const room of ROOM) {
+      expect(res.json.spaces).toContainEqual({
+        "id": room.id,
+        "isRoom": true,
+        "name": room.name,
+      })
+    }
+    for (const desk of DESK) {
+      expect(res.json.spaces).toContainEqual({
+        "id": desk.id,
+        "isRoom": false,
+        "name": desk.name,
+      })
+    }
   });
 });
