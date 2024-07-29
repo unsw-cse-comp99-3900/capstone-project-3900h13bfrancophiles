@@ -45,10 +45,10 @@ const AvailabilitiesPage : React.FC<AvailabilitesPageProps> = ({
   const [openModal, setOpenModal] = React.useState<boolean>(false);
   const { canBook } = useRoomCanBook(spaceId);
 
+  if (spaceLoading) return <Loading page="" />;
+
   if (spaceType !== spaceOutput.type || spaceOutput.error)
     return <Error page={`${spaceType}s/${spaceId}`} message={`${spaceType} ID not found`} />;
-
-  if (spaceLoading) return <Loading page="" />;
 
   const subheadings = {
     "Room ID": room?.id,
