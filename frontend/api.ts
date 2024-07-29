@@ -114,9 +114,9 @@ export const checkOut = (id: number): Promise<object> => {
 };
 
 export const approveBooking = (id: number): Promise<object> => {
-  return authApiCall("/admin/bookings/approve", "PUT", { id });
+  return authApiCall("/admin/bookings/approve", "POST", { id });
 };
 
 export const declineBooking = (id: number): Promise<object> => {
-  return authApiCall("/admin/bookings/decline", "PUT", { id });
+  return authApiCall("/admin/bookings/decline", "POST", { id });
 };
