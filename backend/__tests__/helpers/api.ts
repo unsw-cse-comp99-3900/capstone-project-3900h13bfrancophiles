@@ -65,6 +65,10 @@ function checkinBooking(token: string, id: any) {
   return apiCall("/bookings/checkin", "POST", { id }, token);
 }
 
+function spaces(token: string) {
+  return apiCall("/spaces", "GET", undefined, token);
+}
+
 export default {
   login,
   logout,
@@ -76,4 +80,5 @@ export default {
   status,
   declineBooking,
   checkinBooking,
+  spaces,
 };
