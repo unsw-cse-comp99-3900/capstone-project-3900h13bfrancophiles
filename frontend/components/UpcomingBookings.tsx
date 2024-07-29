@@ -49,6 +49,7 @@ export default function UpcomingBookings() {
   const handleChangeFilter = (event: unknown, newValue: string | null) => {
     if (newValue !== null) {
       setFilter(newValue);
+      setPage(0);
     }
   };
 

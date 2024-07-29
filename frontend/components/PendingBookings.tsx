@@ -107,7 +107,7 @@ function PendingBookingsRow({ row, page, rowsPerPage, sort }: PendingBookingRowP
         <td>
           <Skeleton loading={userIsLoading}>
             <Stack direction="row" alignItems="center" gap={2}>
-              <Avatar color="primary">
+              <Avatar variant="solid" color="primary">
                 {user?.fullname === undefined ? "" : getInitials(user?.fullname)}
               </Avatar>
               <Stack direction="column">
