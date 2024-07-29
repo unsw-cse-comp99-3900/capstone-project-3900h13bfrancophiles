@@ -70,8 +70,8 @@ app.get('/bookable/:spaceId', validateToken, roomCanBook);
 app.get('/desks', validateToken, deskPositions);
 
 app.get('/admin/bookings/pending', validateToken, authoriseAtLeast('admin'), pendingBookings);
-app.post('/admin/bookings/approve', validateToken, authoriseAtLeast('admin'), approveBooking);
-app.post('/admin/bookings/decline', validateToken, authoriseAtLeast('admin'), declineBooking);
+app.put('/admin/bookings/approve', validateToken, authoriseAtLeast('admin'), approveBooking);
+app.put('/admin/bookings/decline', validateToken, authoriseAtLeast('admin'), declineBooking);
 app.get('/admin/bookings/overlapping/:bookingId', validateToken, authoriseAtLeast('admin'), overlappingBookings);
 
 app.get('/users/:zid', validateToken, userDetails);
