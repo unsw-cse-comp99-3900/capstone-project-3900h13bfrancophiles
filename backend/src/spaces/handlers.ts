@@ -10,6 +10,7 @@ import {
   SpaceType,
   UserGroup,
   USER_GROUPS,
+  IDatetimeRange,
 } from '../types';
 import { anonymiseBooking, formatBookingDates, now } from '../utils';
 import typia from 'typia';
