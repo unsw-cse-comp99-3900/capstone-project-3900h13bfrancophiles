@@ -141,6 +141,7 @@ export default function Desks() {
                 }
                 alt={user ? user.name : "user"}
                 sx={{
+                  fontSize: { xs: "14pt", sm: "20pt" },
                   height: { xs: "70px", sm: "100px" },
                   width: { xs: "70px", sm: "100px" },
                   margin: 1,
