@@ -13,10 +13,7 @@ interface GenerateReportRequest {
   endDate: string & typia.tags.Format<"date-time">;
 }
 
-export async function generateReport(
-  req: TypedRequest<GenerateReportRequest>,
-  res: TypedResponse
-) {
+export async function generateReport(req: TypedRequest<GenerateReportRequest>, res: TypedResponse) {
   if (!typia.is<GenerateReportRequest>(req.body)) {
     res.status(400).json({ error: "Invalid input" });
     return;
@@ -56,21 +53,18 @@ async function toSpaceIds(spaces: string[]) {
     .from(space)
     .where(sql`${space.id} ~* ${sql.raw("'^(" + spaces.join("|") + ")'")}`);
 
-  return res.map(res => res.id);
+  return res.map((res) => res.id);
 }
 
 type ReportTypeReturn = {
   types: {
-    type: string,
-    name: string,
-    formats: string[],
-  }[],
-}
+    type: string;
+    name: string;
+    formats: string[];
+  }[];
+};
 
-export async function getReportTypes(
-  req: TypedRequest,
-  res: TypedResponse<ReportTypeReturn>,
-) {
+export async function getReportTypes(req: TypedRequest, res: TypedResponse<ReportTypeReturn>) {
   const types = Object.values(REPORT_TYPES).map((reportType) => ({
     type: reportType.key,
     name: reportType.name,
@@ -106,7 +100,7 @@ export async function getReportSpaces(
       value: room.id,
       type: "room",
       level,
-    })
+    });
   }
 
   const deskData = await db
@@ -117,7 +111,7 @@ export async function getReportSpaces(
   for (const desk of deskData) {
     const level = getLevel(desk.id);
     if (!level) continue;
-    const [campus, bldg, roomNum, _deskNum] = desk.id.split("-");
+    const [campus, bldg, roomNum] = desk.id.split("-");
 
     const roomId = `${campus}-${bldg}-${roomNum}`;
     if (spaces.find((space) => space.value === roomId)) continue;
@@ -127,7 +121,7 @@ export async function getReportSpaces(
       value: roomId,
       type: "desk",
       level,
-    })
+    });
   }
 
   spaces.sort(compareSpace);
@@ -135,6 +129,7 @@ export async function getReportSpaces(
 }
 
 function getLevel(spaceId: string) {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [_campus, bldg, roomNum] = spaceId.split("-");
   const numMatch = roomNum.match(/^\d/);
   if (numMatch) {

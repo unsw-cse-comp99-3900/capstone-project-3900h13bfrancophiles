@@ -1,8 +1,8 @@
-import api from './helpers/api';
+import api from "./helpers/api";
 import { ADMINS, DESK, ROOM } from "./helpers/constants";
 
-describe('/admin/reports/spaces', () => {
-  test('Success', async () => {
+describe("/admin/reports/spaces", () => {
+  test("Success", async () => {
     let res = await api.login(`z${ADMINS[0].zid}`, `z${ADMINS[0].zid}`);
     const token = res.json.token;
 
@@ -33,7 +33,7 @@ describe('/admin/reports/spaces', () => {
           type: "room",
           level: ROOM[0].floor,
         },
-      ]
-    })
+      ],
+    });
   });
 });

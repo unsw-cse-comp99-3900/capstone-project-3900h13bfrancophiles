@@ -16,29 +16,37 @@ const generateSpreadsheet = async (
     .from(booking)
     .innerJoin(person, eq(booking.zid, person.zid))
     .innerJoin(space, eq(booking.spaceid, space.id))
-    .where(and(
-      gte(booking.starttime, startDate.toISOString()),
-      lte(booking.endtime, endDate.toISOString()),
-      inArray(booking.currentstatus, ["confirmed", "checkedin", "completed"]),
-      inArray(booking.spaceid, spaces),
-    ))
+    .where(
+      and(
+        gte(booking.starttime, startDate.toISOString()),
+        lte(booking.endtime, endDate.toISOString()),
+        inArray(booking.currentstatus, ["confirmed", "checkedin", "completed"]),
+        inArray(booking.spaceid, spaces),
+      ),
+    )
     .orderBy(desc(booking.endtime));
 
-  let cleanRows: Record<string, string>[] = rows
+  const cleanRows: Record<string, string>[] = rows
     .map((row) => {
       row.booking = formatBookingDates(row.booking);
       return row;
     })
     .map(({ booking, person, space }) => ({
       "Ref. No.": booking.id.toString(),
-      "Space": space.name,
-      "Date": new Date(booking.starttime).toLocaleDateString(),
+      Space: space.name,
+      Date: new Date(booking.starttime).toLocaleDateString(),
       "Start Time": new Date(booking.starttime).toLocaleTimeString(),
       "End Time": new Date(booking.endtime).toLocaleTimeString(),
-      ...(checkIn ? {
-        "Check-in Time": booking.checkintime ? new Date(booking.checkintime).toLocaleTimeString() : "N/A",
-        "Check-out Time": booking.checkouttime ? new Date(booking.checkouttime).toLocaleTimeString() : "N/A",
-      } : {}),
+      ...(checkIn
+        ? {
+            "Check-in Time": booking.checkintime
+              ? new Date(booking.checkintime).toLocaleTimeString()
+              : "N/A",
+            "Check-out Time": booking.checkouttime
+              ? new Date(booking.checkouttime).toLocaleTimeString()
+              : "N/A",
+          }
+        : {}),
       "User zID": "z" + person.zid,
       "User Name": person.title + " " + person.fullname,
       "User Role": person.role ?? "N/A",
@@ -50,7 +58,7 @@ const generateSpreadsheet = async (
   // Set column widths
   if (cleanRows.length) {
     worksheet["!cols"] = Object.keys(cleanRows[0]).map((key) => ({
-      wch: Math.max(key.length, ...cleanRows.map((row) => row[key].length)) + 1
+      wch: Math.max(key.length, ...cleanRows.map((row) => row[key].length)) + 1,
     }));
   }
 
@@ -64,8 +72,8 @@ const generateSpreadsheet = async (
   });
 };
 
-export const generateBookingSpreadsheet: ReportGenerator =
-  (startDate, endDate, spaces) => generateSpreadsheet(startDate, endDate, spaces, false);
+export const generateBookingSpreadsheet: ReportGenerator = (startDate, endDate, spaces) =>
+  generateSpreadsheet(startDate, endDate, spaces, false);
 
-export const generateCheckinSpreadsheet: ReportGenerator =
-  (startDate, endDate, spaces) => generateSpreadsheet(startDate, endDate, spaces, true);
+export const generateCheckinSpreadsheet: ReportGenerator = (startDate, endDate, spaces) =>
+  generateSpreadsheet(startDate, endDate, spaces, true);

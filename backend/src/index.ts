@@ -96,11 +96,11 @@ app.get(
   overlappingBookings,
 );
 
-app.post('/admin/reports/generate', validateToken, authoriseAtLeast('admin'), generateReport);
-app.get('/admin/reports/types', validateToken, authoriseAtLeast('admin'), getReportTypes);
-app.get('/admin/reports/spaces', validateToken, authoriseAtLeast('admin'), getReportSpaces);
+app.post("/admin/reports/generate", validateToken, authoriseAtLeast("admin"), generateReport);
+app.get("/admin/reports/types", validateToken, authoriseAtLeast("admin"), getReportTypes);
+app.get("/admin/reports/spaces", validateToken, authoriseAtLeast("admin"), getReportSpaces);
 
-app.get('/users/:zid', validateToken, userDetails);
+app.get("/users/:zid", validateToken, userDetails);
 
 const server = app.listen(PORT, () => {
   console.log(`Server is running at http://localhost:${PORT}`);
