@@ -1,10 +1,10 @@
-import { Request, Response } from 'express';
-import { Send } from 'express-serve-static-core';
-import { bookingstatusenum } from '../drizzle/schema';
-import { tags } from 'typia';
+import { Request, Response } from "express";
+import { Send } from "express-serve-static-core";
+import { bookingstatusenum } from "../drizzle/schema";
+import { tags } from "typia";
 
 // Order matters - lowest to highest
-export const USER_GROUPS = ['other', 'hdr', 'csestaff', 'admin'] as const;
+export const USER_GROUPS = ["other", "hdr", "csestaff", "admin"] as const;
 export type UserGroup = (typeof USER_GROUPS)[number];
 
 /**
@@ -18,7 +18,8 @@ export interface TokenPayload {
 
 // Voodoo shit to allow adding tokens to Requests
 declare global {
-  namespace Express {
+  // eslint-disable-next-line @typescript-eslint/no-namespace
+  module Express {
     interface Request {
       token: TokenPayload;
     }
@@ -73,13 +74,13 @@ export type Booking = {
 
 export interface BookingEditRequest {
   id: number;
-  starttime?: string & tags.Format<'date-time'>;
-  endtime?: string & tags.Format<'date-time'>;
+  starttime?: string & tags.Format<"date-time">;
+  endtime?: string & tags.Format<"date-time">;
   spaceid?: string;
   description?: string;
 }
 
-export type AnonymousBooking = Omit<Booking, 'description'>;
+export type AnonymousBooking = Omit<Booking, "description">;
 
 /**
  * Room typed response
@@ -102,17 +103,17 @@ export type Desk = {
 
 export type Space = Room | Desk;
 
-export type SpaceType = 'room' | 'desk';
+export type SpaceType = "room" | "desk";
 
 export interface IDatetimeRange {
-  datetimeStart: string & tags.Format<'date-time'>;
-  datetimeEnd: string & tags.Format<'date-time'>;
+  datetimeStart: string & tags.Format<"date-time">;
+  datetimeEnd: string & tags.Format<"date-time">;
 }
 
 export interface BookingDetailsRequest {
   spaceid: string;
-  starttime: string & tags.Format<'date-time'>;
-  endtime: string & tags.Format<'date-time'>;
+  starttime: string & tags.Format<"date-time">;
+  endtime: string & tags.Format<"date-time">;
   description: string;
 }
 
@@ -120,7 +121,7 @@ export type BookingStatus = (typeof bookingstatusenum.enumValues)[number];
 
 export interface EmailRecipient {
   name: string;
-  email: string & tags.Format<'email'>;
+  email: string & tags.Format<"email">;
 }
 
 export interface EmailContents {
@@ -136,6 +137,6 @@ export type User = {
   school: string;
   faculty: string;
   role: string | null;
-  usergrp: 'other' | 'hdr' | 'csestaff' | 'admin';
+  usergrp: "other" | "hdr" | "csestaff" | "admin";
   image: string | null;
 };
