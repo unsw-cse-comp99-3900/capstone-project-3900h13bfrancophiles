@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import { Box, Stack, Typography, Button, Tooltip, Grid, Sheet } from "@mui/joy";
+import { Box, Stack, Typography, Button, Tooltip, Grid } from "@mui/joy";
 import useSpace from "@/hooks/useSpace";
 import useAvailabilities from "@/hooks/useAvailabilities";
 import { Room, Desk } from "@/types";
@@ -9,22 +9,12 @@ import AvailabilityCalendar from "@/components/AvailabilityCalendar";
 import BookingModal from "@/components/BookingModal/BookingModal";
 import Error from "@/components/Error";
 
-import { styled } from "@mui/joy/styles";
 import useRoomCanBook from "@/hooks/useRoomCanBook";
 
 interface AvailabilitesPageProps {
   spaceId: string;
   spaceType: string;
 }
-
-const Item = styled(Sheet)(({ theme }) => ({
-  backgroundColor: theme.palette.mode === "dark" ? theme.palette.background.level1 : "#fff",
-  ...theme.typography["body-sm"],
-  padding: theme.spacing(1),
-  textAlign: "center",
-  borderRadius: 4,
-  color: theme.vars.palette.text.secondary,
-}));
 
 const AvailabilitiesPage: React.FC<AvailabilitesPageProps> = ({ spaceId, spaceType }) => {
   const spaceOutput = useSpace(spaceId);
@@ -110,7 +100,7 @@ const AvailabilitiesPage: React.FC<AvailabilitesPageProps> = ({ spaceId, spaceTy
             >
               {Object.entries(subheadings).map(([heading, value]) => {
                 return (
-                  <Stack>
+                  <Stack key={heading}>
                     <Typography level="h4" sx={{ color: "gray" }}>
                       {heading}
                     </Typography>

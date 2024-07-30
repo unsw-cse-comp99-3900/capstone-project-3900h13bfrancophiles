@@ -4,6 +4,7 @@ import {
   addMinutes,
   addWeeks,
   differenceInMinutes,
+  endOfDay,
   format,
   getHours,
   getMinutes,
@@ -20,6 +21,8 @@ import React from "react";
 import { InputProps } from "@mui/joy/Input";
 import { JoyTimePickerProps } from "@/components/JoyTimePicker";
 import { TimeRange } from "@/types";
+
+const SINGLE_COLUMN_THRESHOLD = 12;
 
 type UseTimeRangeOptions = {
   date?: Date;
@@ -126,19 +129,24 @@ export default function useTimeRange(options: UseTimeRangeOptions = {}) {
 
   // End time can always be midnight, but must be at least start + 15m
   const shouldDisableEndTime = (time: Date) => {
-    if (time.getHours() == 0 && time.getMinutes() == 0) return false;
-
     for (const blocked of blockedTimes) {
       if (isBefore(start, blocked.start)) {
         if (isBefore(blocked.start, time)) return true;
+        if (time.getHours() == 0 && time.getMinutes() == 0) return true;
         break;
       }
     }
+
+    if (time.getHours() == 0 && time.getMinutes() == 0) return false;
 
     const adjustedEnd = new Date(start);
     adjustedEnd.setHours(time.getHours(), time.getMinutes());
     return isBefore(adjustedEnd, addMinutes(start, 15));
   };
+
+  const firstBlockedAfter = blockedTimes.find((blocked) => isBefore(start, blocked.start));
+  const numValidEndTimes =
+    differenceInMinutes(firstBlockedAfter?.start ?? endOfDay(start), start) / 15;
 
   const endTimePickerProps: JoyTimePickerProps = {
     value: end,
@@ -152,6 +160,7 @@ export default function useTimeRange(options: UseTimeRangeOptions = {}) {
     minutesStep: 15,
     referenceDate: date,
     showMidnightButton: true,
+    singleColumn: numValidEndTimes <= SINGLE_COLUMN_THRESHOLD,
   };
 
   return {
