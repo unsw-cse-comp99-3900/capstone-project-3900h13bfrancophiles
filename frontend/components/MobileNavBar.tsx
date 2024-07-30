@@ -127,7 +127,7 @@ const MenuDrawer: React.FC<MenuDrawerProps> = ({ open, setOpen, navItems }) => {
           <Divider sx={{ marginTop: 1}} />
         </List>
         <Box>
-          <LogoutButton paddingRight={0}/>
+          <LogoutButton justifyContent="center"/>
         </Box>
       </Stack>
     </Drawer>

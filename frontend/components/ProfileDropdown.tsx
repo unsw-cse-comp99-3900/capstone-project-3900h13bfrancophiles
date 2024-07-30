@@ -71,7 +71,7 @@ export default function ProfileDropdown() {
           </Box>
         </Stack>
         <ListDivider />
-        <LogoutButton paddingRight={8}/>
+        <LogoutButton justifyContent="flex-start"/>
       </Menu>
     </Dropdown>
   );
@@ -80,7 +80,7 @@ export default function ProfileDropdown() {
 const roleNames: { [key in UserGroup]: string } = {
   admin: "Admin",
   csestaff: "CSE Staff",
-  hdr: "HDR student",
+  hdr: "HDR Student",
   other: "Other",
 };
 

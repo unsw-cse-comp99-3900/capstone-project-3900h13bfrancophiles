@@ -10,10 +10,10 @@ import { deleteCookie } from "cookies-next";
 import Typography from "@mui/joy/Typography";
 
 interface LogoutButtonProps {
-  paddingRight: number;
+  justifyContent: string;
 }
 
-const LogoutButton = ({paddingRight} : LogoutButtonProps) => {
+const LogoutButton = ({justifyContent} : LogoutButtonProps) => {
   const router = useRouter();
 
   const handleLogout = async () => {
@@ -29,7 +29,7 @@ const LogoutButton = ({paddingRight} : LogoutButtonProps) => {
 
   return (
     <IconButton onClick={handleLogout}>
-      <Stack direction="row" spacing={1} p={0.5} alignItems="center" pr={paddingRight}>
+      <Stack direction="row" spacing={1} p={0.5} alignItems="center" justifyContent={justifyContent} width="100%">
         <LogoutIcon width={25} height={25} sx={{ color: pink[500] }} />
         <Typography level="body-sm">Logout</Typography>
       </Stack>
