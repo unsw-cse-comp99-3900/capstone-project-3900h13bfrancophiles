@@ -1,12 +1,12 @@
-import { decodeJwt, jwtVerify, SignJWT } from 'jose';
-import * as crypto from 'node:crypto';
-import { person } from '../../drizzle/schema';
-import { eq } from 'drizzle-orm';
+import { decodeJwt, jwtVerify, SignJWT } from "jose";
+import * as crypto from "node:crypto";
+import { person } from "../../drizzle/schema";
+import { eq } from "drizzle-orm";
 
-import { AUTH_SECRET } from '../../config';
-import { db } from '../index';
-import { TokenPayload, UserGroup } from '../types';
-import { now } from '../utils';
+import { AUTH_SECRET } from "../../config";
+import { db } from "../index";
+import { TokenPayload, UserGroup } from "../types";
+import { now } from "../utils";
 
 // Helpers for validating user and password
 export function validateLogin(zid: number, zpass: string): boolean {
@@ -35,7 +35,7 @@ export async function createToken(user: number, group: UserGroup) {
   const exp = iat + EXPIRY_TIME_MS / 1000;
 
   const token = await new SignJWT({ ...payload })
-    .setProtectedHeader({ alg: 'HS256', typ: 'JWT' })
+    .setProtectedHeader({ alg: "HS256", typ: "JWT" })
     .setExpirationTime(exp)
     .setIssuedAt(iat)
     .sign(ENCODED_SECRET);
