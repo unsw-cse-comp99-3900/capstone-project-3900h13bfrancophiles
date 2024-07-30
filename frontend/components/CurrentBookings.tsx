@@ -115,7 +115,7 @@ function CurrentBookingCard({ booking }: CurrentBookingCardProps) {
   const createMailToLink = () => {
     const subject = `Support Request for Booking ID: ${booking.id}`;
     const body = encodeURIComponent(messageContent);
-    return `mailto:s.de_bellis@unsw.edu.au?subject=${encodeURIComponent(subject)}&body=${body}`;
+    return `mailto:ss@cse.unsw.edu.au?subject=${encodeURIComponent(subject)}&body=${body}`;
   };
 
   const handleContactSupport = () => {
@@ -158,7 +158,7 @@ function CurrentBookingCard({ booking }: CurrentBookingCardProps) {
             >
               <Button
                 size="sm"
-                color="success"
+                color={checkedIn ? "danger" : "success"}
                 onClick={() => setIsConfirmationOpen(true)}
                 sx={{ borderRadius: "20px", width: "100px" }}
                 loading={isCheckingInOrOut}
