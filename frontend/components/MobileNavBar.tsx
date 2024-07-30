@@ -6,8 +6,8 @@ import {
   Drawer,
   IconButton,
   Link,
-  List, ListDivider,
-  ListItemButton, Menu, MenuItem,
+  List,
+  ListItemButton,
   Sheet, Skeleton,
   Stack,
   Typography,
@@ -126,9 +126,9 @@ const MenuDrawer: React.FC<MenuDrawerProps> = ({ open, setOpen, navItems }) => {
           ))}
           <Divider sx={{ marginTop: 1}} />
         </List>
-        <Box>
-          <LogoutButton justifyContent="center"/>
-        </Box>
+        <Stack width="100%">
+          <LogoutButton paddingRight={0}/>
+        </Stack>
       </Stack>
     </Drawer>
   );

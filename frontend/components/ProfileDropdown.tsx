@@ -4,7 +4,6 @@ import {
   ListDivider,
   Menu,
   MenuButton,
-  MenuItem,
   Skeleton,
   Stack,
 } from "@mui/joy";
@@ -71,7 +70,7 @@ export default function ProfileDropdown() {
           </Box>
         </Stack>
         <ListDivider />
-        <LogoutButton justifyContent="flex-start"/>
+        <LogoutButton paddingRight={12}/>
       </Menu>
     </Dropdown>
   );
