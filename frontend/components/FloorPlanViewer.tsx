@@ -5,13 +5,13 @@ import { TransformComponent, TransformWrapper } from "react-zoom-pan-pinch";
 import { Box } from "@mui/joy";
 import Image from "next/image";
 import DeskIcon from "./DeskIcon";
-import { StatusResponse, UserData, DeskPosition } from "@/types";
+import { StatusResponse, UserData, DeskPosition, Booking } from "@/types";
 
 interface FloorPlanViewerProps {
   selectedDesk: string;
   setSelectedDesk: React.Dispatch<React.SetStateAction<string>>;
+  setSelectedBooking: React.Dispatch<React.SetStateAction<Booking | null>>;
   setSelectedUser: React.Dispatch<React.SetStateAction<UserData | null>>;
-  setAvailable: React.Dispatch<React.SetStateAction<boolean>>;
   setDeskName: React.Dispatch<React.SetStateAction<string>>;
   floor: string;
   desks: DeskPosition[];
@@ -25,8 +25,8 @@ const coordToPercent = (x: number) => {
 const FloorPlanViewer = ({
   selectedDesk,
   setSelectedDesk,
+  setSelectedBooking,
   setSelectedUser,
-  setAvailable,
   setDeskName,
   floor,
   desks,
@@ -70,8 +70,8 @@ const FloorPlanViewer = ({
               y={coordToPercent(desk.ycoord)}
               selectedDesk={selectedDesk}
               setSelectedDesk={setSelectedDesk}
+              setSelectedBooking={setSelectedBooking}
               setSelectedUser={setSelectedUser}
-              setAvailable={setAvailable}
               setDeskName={setDeskName}
               status={statuses[desk.id]}
             />
