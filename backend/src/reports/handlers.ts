@@ -40,23 +40,12 @@ export async function generateReport(
   const fileData = await reportType.formats[req.body.format](
     startDate,
     endDate,
-    await toSpaceIds(req.body.spaces),
+    req.body.spaces,
   );
 
   res.attachment(`${reportType.name}.${req.body.format}`);
   res.header("Access-Control-Expose-Headers", "Content-Disposition");
   res.send(fileData);
-}
-
-// Convert a list of spaces to individual space IDs
-// This is mostly to convert from desk room IDs to desks
-async function toSpaceIds(spaces: string[]) {
-  const res = await db
-    .select({ id: space.id })
-    .from(space)
-    .where(sql`${space.id} ~* ${sql.raw("'^(" + spaces.join("|") + ")'")}`);
-
-  return res.map(res => res.id);
 }
 
 type ReportTypeReturn = {

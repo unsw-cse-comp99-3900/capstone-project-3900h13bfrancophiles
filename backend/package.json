@@ -14,7 +14,6 @@
     "format": "npx prettier --write ."
   },
   "dependencies": {
-    "@observablehq/plot": "^0.6.15",
     "@typescript-eslint/eslint-plugin": "^7.16.1",
     "@typescript-eslint/parser": "^7.16.1",
     "cors": "^2.8.5",

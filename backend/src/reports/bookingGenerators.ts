@@ -1,6 +1,6 @@
 import { ReportGenerator } from "./index";
 import { booking, person, space } from "../../drizzle/schema";
-import { and, desc, eq, gte, inArray, lte } from "drizzle-orm";
+import { and, desc, eq, gte, inArray, lte, sql } from "drizzle-orm";
 import { db } from "../index";
 import XLSX from "xlsx";
 import { formatBookingDates } from "../utils";
@@ -17,6 +17,7 @@ const generateSpreadsheet = async (
     .innerJoin(person, eq(booking.zid, person.zid))
     .innerJoin(space, eq(booking.spaceid, space.id))
     .where(and(
+      sql`${booking.spaceid} ~* ${sql.raw("'^(" + spaces.join("|") + ")'")}`,
       gte(booking.starttime, startDate.toISOString()),
       lte(booking.endtime, endDate.toISOString()),
       inArray(booking.currentstatus, ["confirmed", "checkedin", "completed"]),
