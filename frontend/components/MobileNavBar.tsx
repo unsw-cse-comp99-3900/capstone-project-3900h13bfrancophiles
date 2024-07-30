@@ -1,14 +1,16 @@
 "use client";
 
 import {
-  AspectRatio, Avatar,
+  AspectRatio,
+  Avatar,
   Divider,
   Drawer,
   IconButton,
   Link,
   List,
   ListItemButton,
-  Sheet, Skeleton,
+  Sheet,
+  Skeleton,
   Stack,
   Typography,
 } from "@mui/joy";
@@ -17,13 +19,13 @@ import NextLink from "next/link";
 import React from "react";
 import { Menu as MenuIcon } from "@mui/icons-material";
 import LogoutButton from "@/components/LogoutButton";
-import {NavData, TokenPayload} from "@/types";
-import {getInitials} from "@/components/PendingBookingsRow";
+import { NavData, TokenPayload } from "@/types";
+import { getInitials } from "@/components/PendingBookingsRow";
 import Box from "@mui/joy/Box";
-import {getCookie} from "cookies-next";
-import {decodeJwt} from "jose";
+import { getCookie } from "cookies-next";
+import { decodeJwt } from "jose";
 import useUser from "@/hooks/useUser";
-import {getRoleName} from "@/components/ProfileDropdown";
+import { getRoleName } from "@/components/ProfileDropdown";
 
 const NavBar = ({ navItems }: { navItems: NavData[] }) => {
   const [open, setOpen] = React.useState(false);
@@ -73,7 +75,7 @@ const MenuDrawer: React.FC<MenuDrawerProps> = ({ open, setOpen, navItems }) => {
             <Image fill src="/roomalloclogo.svg" alt="logo" />
           </AspectRatio>
         </Link>
-        <Divider/>
+        <Divider />
         <Stack p={1} direction="row" alignItems="center">
           <Skeleton loading={isLoading}>
             <Avatar
@@ -94,7 +96,7 @@ const MenuDrawer: React.FC<MenuDrawerProps> = ({ open, setOpen, navItems }) => {
             </Typography>
           </Box>
         </Stack>
-        <Divider/>
+        <Divider />
         <List
           size="lg"
           component="nav"
@@ -105,7 +107,6 @@ const MenuDrawer: React.FC<MenuDrawerProps> = ({ open, setOpen, navItems }) => {
             "& > div": { justifyContent: "center" },
           }}
         >
-
           {navItems.map(({ text, href }) => (
             <ListItemButton
               key={href}
@@ -124,10 +125,10 @@ const MenuDrawer: React.FC<MenuDrawerProps> = ({ open, setOpen, navItems }) => {
               </Link>
             </ListItemButton>
           ))}
-          <Divider sx={{ marginTop: 1}} />
+          <Divider sx={{ marginTop: 1 }} />
         </List>
         <Stack width="100%">
-          <LogoutButton paddingRight={0}/>
+          <LogoutButton paddingRight={0} />
         </Stack>
       </Stack>
     </Drawer>

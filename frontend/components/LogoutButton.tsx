@@ -13,7 +13,7 @@ interface LogoutButtonProps {
   paddingRight: number;
 }
 
-const LogoutButton = ({paddingRight} : LogoutButtonProps) => {
+const LogoutButton = ({ paddingRight }: LogoutButtonProps) => {
   const router = useRouter();
 
   const handleLogout = async () => {

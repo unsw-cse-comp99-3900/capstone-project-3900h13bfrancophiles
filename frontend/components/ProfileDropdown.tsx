@@ -1,12 +1,4 @@
-import {
-  Avatar,
-  Dropdown,
-  ListDivider,
-  Menu,
-  MenuButton,
-  Skeleton,
-  Stack,
-} from "@mui/joy";
+import { Avatar, Dropdown, ListDivider, Menu, MenuButton, Skeleton, Stack } from "@mui/joy";
 import Box from "@mui/joy/Box";
 import Typography from "@mui/joy/Typography";
 import LogoutButton from "@/components/LogoutButton";
@@ -70,7 +62,7 @@ export default function ProfileDropdown() {
           </Box>
         </Stack>
         <ListDivider />
-        <LogoutButton paddingRight={12}/>
+        <LogoutButton paddingRight={12} />
       </Menu>
     </Dropdown>
   );
