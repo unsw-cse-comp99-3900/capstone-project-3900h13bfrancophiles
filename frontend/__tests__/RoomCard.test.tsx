@@ -30,8 +30,8 @@ describe("RoomCard", () => {
       <RoomCard
         room={mockRoom}
         handleBook={mockHandleBook}
-        datetimeStart="2024-07-29T10:00:00Z"
-        datetimeEnd="2024-07-29T11:00:00Z"
+        datetimeStart="2024-07-29T10:00"
+        datetimeEnd="2024-07-29T11:00"
       />
     );
 
