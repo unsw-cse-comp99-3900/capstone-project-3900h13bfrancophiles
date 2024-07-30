@@ -1,6 +1,6 @@
 // Authentication and authorisation middleware
 import { Request, Response, NextFunction } from "express";
-import jose from "jose";
+import * as jose from "jose";
 import typia from "typia";
 
 import { invalidateToken, tokenIdIsActive, verifyToken } from "./service";
