@@ -10,7 +10,7 @@
     "drizzle": "drizzle-kit introspect",
     "prepare": "ts-patch install && typia patch",
     "test": "jest --runInBand --detectOpenHandles",
-    "lint": "eslint ./src/** __tests__/* --fix",
+    "lint": "eslint src/** __tests__/** --fix",
     "format": "npx prettier --write ."
   },
   "dependencies": {
