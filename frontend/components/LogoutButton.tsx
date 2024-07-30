@@ -9,7 +9,11 @@ import { logout } from "@/api";
 import { deleteCookie } from "cookies-next";
 import Typography from "@mui/joy/Typography";
 
-const LogoutButton = () => {
+interface LogoutButtonProps {
+  paddingRight: number;
+}
+
+const LogoutButton = ({paddingRight} : LogoutButtonProps) => {
   const router = useRouter();
 
   const handleLogout = async () => {
@@ -25,7 +29,7 @@ const LogoutButton = () => {
 
   return (
     <IconButton onClick={handleLogout}>
-      <Stack direction="row" spacing={1} p={0.5} alignItems="center" pr={6}>
+      <Stack direction="row" spacing={1} p={0.5} alignItems="center" pr={paddingRight}>
         <LogoutIcon width={25} height={25} sx={{ color: pink[500] }} />
         <Typography level="body-sm">Logout</Typography>
       </Stack>

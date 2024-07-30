@@ -71,9 +71,7 @@ export default function ProfileDropdown() {
           </Box>
         </Stack>
         <ListDivider />
-        <MenuItem>
-          <LogoutButton />
-        </MenuItem>
+        <LogoutButton paddingRight={8}/>
       </Menu>
     </Dropdown>
   );
@@ -86,6 +84,6 @@ const roleNames: { [key in UserGroup]: string } = {
   other: "Other",
 };
 
-function getRoleName(role: UserGroup): string {
+export function getRoleName(role: UserGroup): string {
   return roleNames[role] || "Unknown role";
 }
