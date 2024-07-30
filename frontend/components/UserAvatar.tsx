@@ -2,7 +2,7 @@
 
 import React from "react";
 import { Avatar } from "@mui/joy";
-import { Booking, UserData } from "@/types";
+import { UserData } from "@/types";
 import useUser from "@/hooks/useUser";
 
 interface UserAvatarProps {

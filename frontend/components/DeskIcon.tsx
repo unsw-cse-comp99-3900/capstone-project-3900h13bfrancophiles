@@ -104,9 +104,9 @@ const DeskIcon = ({
   const handleClick = () => {
     if (selectedDesk === id) {
       setSelectedDesk("");
-      setSelectedBooking(null)
+      setSelectedBooking(null);
       setSelectedUser(null);
-      setDeskName("")
+      setDeskName("");
     } else {
       setSelectedDesk(id);
       setSelectedBooking(status?.status === "Unavailable" ? status.booking : null);
