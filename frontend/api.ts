@@ -78,7 +78,7 @@ export const login = (zid: string, zpass: string): Promise<{ token: string }> =>
   return apiCall("/auth/login", "POST", { zid, zpass });
 };
 
-export const logout = (): Promise<{}> => {
+export const logout = (): Promise<object> => {
   return authApiCall("/auth/logout", "POST", {});
 };
 
@@ -101,23 +101,23 @@ export const editBooking = (
   return authApiCall("/bookings/edit", "PUT", { id, starttime, endtime, spaceid, description });
 };
 
-export const deleteBooking = (id: number): Promise<{}> => {
+export const deleteBooking = (id: number): Promise<object> => {
   return authApiCall("/bookings/delete", "DELETE", { id });
 };
 
-export const checkIn = (id: number): Promise<{}> => {
+export const checkIn = (id: number): Promise<object> => {
   return authApiCall("/bookings/checkin", "POST", { id });
 };
 
-export const checkOut = (id: number): Promise<{}> => {
+export const checkOut = (id: number): Promise<object> => {
   return authApiCall("/bookings/checkout", "POST", { id });
 };
 
-export const approveBooking = (id: number): Promise<{}> => {
+export const approveBooking = (id: number): Promise<object> => {
   return authApiCall("/admin/bookings/approve", "PUT", { id });
 };
 
-export const declineBooking = (id: number): Promise<{}> => {
+export const declineBooking = (id: number): Promise<object> => {
   return authApiCall("/admin/bookings/decline", "PUT", { id });
 };
 

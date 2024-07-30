@@ -10,182 +10,10 @@ import FormLabel from "@mui/joy/FormLabel";
 import IconButton from "@mui/joy/IconButton";
 import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
-import {
-  Button,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  Divider,
-  Modal,
-  ModalDialog,
-  Sheet,
-  Skeleton,
-  Stack,
-} from "@mui/joy";
-import { format } from "date-fns";
-import useSpace from "@/hooks/useSpace";
+import { Sheet, Stack } from "@mui/joy";
 import usePendingBookings from "@/hooks/usePendingBookings";
-import CheckIcon from "@mui/icons-material/Check";
-import CloseIcon from "@mui/icons-material/Close";
-import Avatar from "@mui/joy/Avatar";
-import useUser from "@/hooks/useUser";
-
+import PendingBookingsRow from "@/components/PendingBookingsRow";
 import { NoBookingsRow } from "@/components/NoBookingsRow";
-import { Booking } from "@/types";
-import { approveBooking, declineBooking } from "@/api";
-import { mutate } from "swr";
-
-export interface PendingBookingRowProps {
-  row: Booking;
-  page: number;
-  rowsPerPage: number;
-  sort: string;
-}
-
-function PendingBookingsRow({ row, page, rowsPerPage, sort }: PendingBookingRowProps) {
-  const { space, isLoading: spaceIsLoading } = useSpace(row.spaceid);
-  const { user, isLoading: userIsLoading } = useUser(row.zid);
-
-  const [isConfirmationOpen, setIsConfirmationOpen] = React.useState(false);
-  const [isApprovingOrDeclining, setIsApprovingOrDeclining] = React.useState(false);
-  const [approving, setApproving] = React.useState(false);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [approveDeclineError, setApproveDeclineError] = React.useState<string | null>(null);
-
-  const handleApproveDecline = async () => {
-    setIsApprovingOrDeclining(true);
-    if (approving) {
-      // approve booking
-      try {
-        await approveBooking(row.id);
-        await mutate(`/admin/bookings/pending?page=${page + 1}&limit=${rowsPerPage}&sort=${sort}`);
-      } catch (error) {
-        if (error instanceof Error) {
-          setApproveDeclineError(error.message);
-        } else {
-          setApproveDeclineError("An unexpected error occurred");
-        }
-        // TODO: handle error
-      } finally {
-        setIsApprovingOrDeclining(false);
-        setIsConfirmationOpen(false);
-      }
-      return;
-    } else {
-      // Decline booking
-      try {
-        await declineBooking(row.id);
-        await mutate(`/admin/bookings/pending?page=${page + 1}&limit=${rowsPerPage}&sort=${sort}`);
-      } catch (error) {
-        if (error instanceof Error) {
-          setApproveDeclineError(error.message);
-        } else {
-          setApproveDeclineError("An unexpected error occurred");
-        }
-        // TODO: handle error
-      } finally {
-        setIsApprovingOrDeclining(false);
-        setIsConfirmationOpen(false);
-      }
-    }
-  };
-
-  return (
-    <>
-      <tr>
-        <td>
-          <Typography level="body-sm">
-            {format(new Date(row.starttime), "dd/MM/yy H:mm")} -{" "}
-            {format(new Date(row.endtime), "H:mm")}
-          </Typography>
-        </td>
-        <td>
-          <Skeleton loading={spaceIsLoading}>
-            <Typography level="body-sm">{space?.name}</Typography>
-          </Skeleton>
-        </td>
-        <td>
-          <Skeleton loading={userIsLoading}>
-            <Stack direction="row" alignItems="center" gap={2}>
-              <Avatar color="primary">
-                {user?.fullname === undefined ? "" : getInitials(user?.fullname)}
-              </Avatar>
-              <Stack direction="column">
-                <Typography level="body-sm" fontWeight="lg">
-                  {user?.fullname}
-                </Typography>
-                <Typography level="body-sm">{user?.email}</Typography>
-              </Stack>
-            </Stack>
-          </Skeleton>
-        </td>
-        <td>
-          <Typography level="body-sm">{row.description}</Typography>
-        </td>
-        <td>
-          <Stack direction="row" justifyContent="flex-end" px={1}>
-            <IconButton
-              variant="plain"
-              color="success"
-              onClick={() => {
-                setIsConfirmationOpen(true);
-                setApproving(true);
-              }}
-            >
-              <CheckIcon />
-            </IconButton>
-            <IconButton
-              variant="plain"
-              color="danger"
-              onClick={() => {
-                setIsConfirmationOpen(true);
-                setApproving(false);
-              }}
-            >
-              <CloseIcon />
-            </IconButton>
-          </Stack>
-        </td>
-      </tr>
-      <Modal open={isConfirmationOpen} onClose={() => setIsConfirmationOpen(false)}>
-        <ModalDialog variant="outlined" role="alertdialog">
-          <DialogTitle>
-            {approving
-              ? "Booking Request Approval Confirmation"
-              : "Booking Request Decline Confirmation"}
-          </DialogTitle>
-          <Divider />
-          <DialogContent>
-            Are you sure you want to{" "}
-            {approving ? "approve this booking request " : "decline this booking request"}
-            ?
-            <br />
-            {/* TODO: Show the overlapping bookings and display how many there are */}
-            {approving &&
-              "Approving this booking will automatically decline any overlapping bookings."}
-          </DialogContent>
-          <DialogActions>
-            <Button
-              onClick={handleApproveDecline}
-              color={approving ? "success" : "danger"}
-              loading={isApprovingOrDeclining}
-            >
-              {approving ? "Approve" : "Decline"}
-            </Button>
-            <Button variant="plain" color="neutral" onClick={() => setIsConfirmationOpen(false)}>
-              Cancel
-            </Button>
-          </DialogActions>
-        </ModalDialog>
-      </Modal>
-    </>
-  );
-}
-
-export function getInitials(fullname: string): string {
-  const names = fullname.split(" ");
-  return names[0][0] + names[names.length - 1][0];
-}
 
 export default function PendingBookings() {
   const [page, setPage] = React.useState(0);
@@ -217,7 +45,7 @@ export default function PendingBookings() {
     return Math.min(total ?? 0, (page + 1) * rowsPerPage);
   };
 
-  const numColumns = 5;
+  const numColumns = 6;
 
   return (
     <Stack>
@@ -255,6 +83,7 @@ export default function PendingBookings() {
         >
           <thead>
             <tr>
+              <th style={{ width: 60, padding: "12px 6px" }}>Reference No.</th>
               <th style={{ width: 100, padding: "12px 6px" }}>Time</th>
               <th style={{ width: 80, padding: "12px 6px" }}>Location</th>
               <th style={{ width: 140, padding: "12px 6px" }}>User</th>

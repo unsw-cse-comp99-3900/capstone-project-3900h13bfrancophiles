@@ -1,8 +1,8 @@
-import { space, config } from '../drizzle/schema';
-import { eq } from 'drizzle-orm';
+import { space, config } from "../drizzle/schema";
+import { eq } from "drizzle-orm";
 
-import { db } from './index';
-import { AnonymousBooking, Booking, BookingStatus, USER_GROUPS, UserGroup } from './types';
+import { db } from "./index";
+import { AnonymousBooking, Booking, BookingStatus, USER_GROUPS, UserGroup } from "./types";
 
 /**
  * Format the booking dates by adding a Z to the end to signify UTC time. It
@@ -13,8 +13,8 @@ import { AnonymousBooking, Booking, BookingStatus, USER_GROUPS, UserGroup } from
  * time.
  */
 export function formatBookingDates(booking: Booking) {
-  booking.starttime = new Date(booking.starttime + 'Z').toISOString();
-  booking.endtime = new Date(booking.endtime + 'Z').toISOString();
+  booking.starttime = new Date(booking.starttime + "Z").toISOString();
+  booking.endtime = new Date(booking.endtime + "Z").toISOString();
   return booking;
 }
 
@@ -49,9 +49,9 @@ export async function initialBookingStatus(
   if (userGrpIdx < minReqIdx) {
     return null;
   } else if (userGrpIdx < minBookIdx) {
-    return 'pending';
+    return "pending";
   } else {
-    return 'confirmed';
+    return "confirmed";
   }
 }
 
@@ -72,8 +72,11 @@ export function anonymiseBooking(booking: Booking): AnonymousBooking {
  * Utility function to get the current time, which may be mocked for testing
  */
 export async function now(): Promise<Date> {
-  if (process.env.NODE_ENV === 'test') {
-    const res = await db.select({ currentTime: config.value }).from(config).where(eq(config.key, 'current_timestamp'));
+  if (process.env.NODE_ENV === "test") {
+    const res = await db
+      .select({ currentTime: config.value })
+      .from(config)
+      .where(eq(config.key, "current_timestamp"));
 
     const currentTime = res?.[0].currentTime;
     return currentTime ? new Date(currentTime) : new Date();
