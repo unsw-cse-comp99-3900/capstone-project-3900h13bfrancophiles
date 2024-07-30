@@ -3,6 +3,11 @@ import { booking } from "../../drizzle/schema";
 import PDFKit from "pdfkit";
 import { ReportGenerator } from "./index";
 import { db } from "../index";
+import { createCanvas } from "canvas";
+import Chart from "chart.js/auto";
+
+const canvas = createCanvas(700, 350);
+const ctx = canvas.getContext("2d");
 
 const timeSlot = sql<string>`to_char
 (generate_series(
@@ -11,7 +16,7 @@ const timeSlot = sql<string>`to_char
     interval '15 minutes'
     ), 'HH24:MI')`.as("time_slot");
 
-type GraphData = { [spaceId: string]: { timeSlot: string; count: number }[] };
+type GraphData = { spaceId: string, data: { timeSlot: string; count: number }[] }[];
 
 export const generateOccupancyPdf: ReportGenerator = async (startDate, endDate, spaces) => {
   const res = await db
@@ -23,6 +28,7 @@ export const generateOccupancyPdf: ReportGenerator = async (startDate, endDate, 
     .from(booking)
     .groupBy(booking.spaceid, timeSlot)
     .orderBy(booking.spaceid, timeSlot);
+  const maxBookingNum = Math.max(...res.map((row) => row.count));
 
   const bookingCounts: Record<string, Record<string, number>> = {};
   for (const row of res) {
@@ -32,8 +38,8 @@ export const generateOccupancyPdf: ReportGenerator = async (startDate, endDate, 
     bookingCounts[row.spaceId][row.timeSlot] = row.count;
   }
 
-  const graphData: GraphData = Object.fromEntries(spaces.map((space) => [space, []]));
-  for (const spaceId in graphData) {
+  const graphData: GraphData = spaces.map((spaceId) => ({ spaceId, data: [] }));
+  for (const { spaceId, data } of graphData) {
     for (let i = 0; i < 96; i++) {
       const hour = Math.floor(i / 4)
         .toString()
@@ -47,18 +53,62 @@ export const generateOccupancyPdf: ReportGenerator = async (startDate, endDate, 
           count += bookingCounts[returnedSpaceId][timeSlot] ?? 0;
         }
       }
-      graphData[spaceId].push({ timeSlot, count });
+
+      data.push({ timeSlot, count });
     }
   }
 
-  const pdfData = await buildPdfAsync((pdf) => {
-    pdf.text(JSON.stringify(graphData, null, 2));
-  });
+  return buildPdfAsync(async (pdf) => {
+    const imageWidth = 450;
+    const imageHeight = 225;
+    const { top: yMargin, left: xMargin } = pdf.page.margins;
+    let y = yMargin;
 
-  return pdfData;
+    for (const { spaceId, data } of graphData) {
+      if (y + imageHeight > pdf.page.height - yMargin) {
+        pdf.addPage();
+        y = yMargin;
+      }
+
+      const chart = new Chart(
+        ctx as unknown as CanvasRenderingContext2D,
+        {
+          type: "line",
+          data: {
+            labels: data.map((point) => point.timeSlot),
+            datasets: [{
+              yAxisID: "yAxis",
+              label: "Number of Bookings",
+              data: data.map((point) => point.count),
+              fill: true,
+              pointStyle: false,
+            }],
+          },
+          options: {
+            plugins: {
+              title: {
+                display: true,
+                text: `Booking Times for ${spaceId}`,
+              }
+            },
+            scales: {
+              yAxis: {
+                max: maxBookingNum + 2,
+              }
+            }
+          },
+        });
+
+      pdf.image(canvas.toBuffer(), xMargin, y, { width: imageWidth, height: imageHeight });
+      chart.destroy();
+
+      y += imageHeight + yMargin;
+    }
+
+  });
 };
 
-async function buildPdfAsync(builder: (pdf: PDFKit.PDFDocument) => void): Promise<Buffer> {
+async function buildPdfAsync(builder: (pdf: PDFKit.PDFDocument) => Promise<void>): Promise<Buffer> {
   const pdf = new PDFKit();
 
   const buffers: Uint8Array[] = [];
@@ -70,11 +120,8 @@ async function buildPdfAsync(builder: (pdf: PDFKit.PDFDocument) => void): Promis
       resolve(pdfData);
     });
 
-    try {
-      builder(pdf);
-      pdf.end();
-    } catch (error) {
-      reject(error);
-    }
+    builder(pdf)
+      .then(() => pdf.end())
+      .catch((error) => reject(error));
   });
 }
