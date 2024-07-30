@@ -1,6 +1,6 @@
 "use client";
 
-import {IconButton, Stack} from "@mui/joy";
+import { IconButton, Stack } from "@mui/joy";
 import LogoutIcon from "@mui/icons-material/Logout";
 import { pink } from "@mui/material/colors";
 import React from "react";
@@ -25,14 +25,10 @@ const LogoutButton = () => {
 
   return (
     <IconButton onClick={handleLogout}>
-      <Stack direction='row' spacing={1} p={0.5} alignItems="center" pr={6}>
+      <Stack direction="row" spacing={1} p={0.5} alignItems="center" pr={6}>
         <LogoutIcon width={25} height={25} sx={{ color: pink[500] }} />
-        <Typography level='body-sm'>
-          Logout
-        </Typography>
+        <Typography level="body-sm">Logout</Typography>
       </Stack>
-
-
     </IconButton>
   );
 };

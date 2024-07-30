@@ -1,70 +1,91 @@
-import {Avatar, Dropdown, ListDivider, Menu, MenuButton, MenuItem} from "@mui/joy";
+import {
+  Avatar,
+  Dropdown,
+  ListDivider,
+  Menu,
+  MenuButton,
+  MenuItem,
+  Skeleton,
+  Stack,
+} from "@mui/joy";
 import Box from "@mui/joy/Box";
 import Typography from "@mui/joy/Typography";
 import LogoutButton from "@/components/LogoutButton";
-import {getCookie} from "cookies-next";
-import {decodeJwt} from "jose";
-import {TokenPayload} from "@/types";
+import { getCookie } from "cookies-next";
+import { decodeJwt } from "jose";
+import { TokenPayload, UserGroup } from "@/types";
 import useUser from "@/hooks/useUser";
-import {getInitials} from "@/components/PendingBookingsRow";
+import { getInitials } from "@/components/PendingBookingsRow";
 
 export default function ProfileDropdown() {
   const token = getCookie("token");
-  let zid = decodeJwt<TokenPayload>(`${token}`).user;
-  const { user, isLoading, error } = useUser(zid);
-
+  const zid = decodeJwt<TokenPayload>(`${token}`).user;
+  const { user, isLoading } = useUser(zid);
 
   return (
     <Dropdown>
       <MenuButton
         variant="plain"
         size="sm"
-        sx={{ maxWidth: '32px', maxHeight: '32px', borderRadius: '9999999px' }}
+        sx={{ maxWidth: "32px", maxHeight: "32px", borderRadius: "9999999px" }}
       >
-        <Avatar
-          src={user?.image ? user?.image : ""}
-          sx={{ maxWidth: '32px', maxHeight: '32px' }}
-        >
-
-        </Avatar>
+        <Skeleton loading={isLoading}>
+          <Avatar
+            variant="solid"
+            color="primary"
+            size="sm"
+            src={user?.image ? `data:image/jpeg;base64,${user?.image}` : undefined}
+          >
+            {user?.fullname ? getInitials(user?.fullname) : ""}
+          </Avatar>
+        </Skeleton>
       </MenuButton>
       <Menu
         placement="bottom-end"
         size="sm"
         sx={{
-          zIndex: '99999',
+          zIndex: "99999",
           p: 1,
           gap: 1,
-          '--ListItem-radius': 'var(--joy-radius-sm)',
+          "--ListItem-radius": "var(--joy-radius-sm)",
         }}
       >
-          <Box
-            p={0.5}
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-            }}
-          >
+        <Stack p={0.5} direction="row" alignItems="center">
+          <Skeleton loading={isLoading}>
             <Avatar
-              src={user?.image ? user?.image : ""}
-              sx={{ maxWidth: '32px', maxHeight: '32px' }}
+              variant="solid"
+              color="primary"
+              size="sm"
+              src={user?.image ? `data:image/jpeg;base64,${user?.image}` : undefined}
             >
-              {!user?.image && getInitials(user?.fullname ? user?.fullname : "N A")}
+              {user?.fullname ? getInitials(user?.fullname) : ""}
             </Avatar>
-            <Box sx={{ ml: 1.5 }}>
-              <Typography level="title-sm" textColor="text.primary">
-                {user?.fullname}
-              </Typography>
-              <Typography level="body-xs" textColor="text.tertiary">
-                z{user?.zid}
-              </Typography>
-            </Box>
+          </Skeleton>
+          <Box sx={{ ml: 1.5 }}>
+            <Typography level="title-sm" textColor="text.primary">
+              {user?.fullname}
+            </Typography>
+            <Typography level="body-xs" textColor="text.tertiary">
+              z{user?.zid} - {getRoleName(user?.usergrp ? user?.usergrp : "other")}
+            </Typography>
           </Box>
+        </Stack>
         <ListDivider />
         <MenuItem>
-          <LogoutButton/>
+          <LogoutButton />
         </MenuItem>
       </Menu>
     </Dropdown>
   );
+}
+
+const roleNames: { [key in UserGroup]: string } = {
+  admin: "Admin",
+  csestaff: "CSE Staff",
+  hdr: "HDR student",
+  other: "Other",
+};
+
+function getRoleName(role: UserGroup): string {
+  return roleNames[role] || "Unknown role";
 }

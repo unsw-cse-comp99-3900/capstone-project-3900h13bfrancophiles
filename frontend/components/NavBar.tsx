@@ -59,7 +59,7 @@ export default function NavBar({ navItems }: { navItems: NavData[] }) {
               <NavItem title={text} navigateTo={href} key={href} />
             ))}
           </Stack>
-          <ProfileDropdown/>
+          <ProfileDropdown />
         </Stack>
       </Stack>
     </Sheet>
