@@ -96,6 +96,8 @@ export default function Desks() {
           booking={selectedBooking}
           user={user}
           deskName={deskName}
+          start={start}
+          end={end}
           handleClose={() => setSelectedDesk("")}
           openBookingModal={() => setOpen(true)}
         />

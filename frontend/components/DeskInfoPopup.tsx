@@ -14,7 +14,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import * as React from "react";
 import { UserData } from "@/types";
 import NextLink from "next/link";
-import { Booking} from "@/types";
+import { Booking } from "@/types";
 import useSpace from "@/hooks/useSpace";
 
 interface DeskInfoPopupProps {
@@ -22,6 +22,8 @@ interface DeskInfoPopupProps {
   booking: Booking | null,
   user: UserData | null,
   deskName: string,
+  start: Date,
+  end: Date,
   handleClose: () => void,
   openBookingModal: () => void,
 }
@@ -31,6 +33,8 @@ const DeskInfoPopup = ({
   booking,
   user,
   deskName,
+  start,
+  end,
   handleClose,
   openBookingModal
 }: DeskInfoPopupProps) => {
@@ -56,39 +60,39 @@ const DeskInfoPopup = ({
           </IconButton>
         </Stack>
         <Button
-          sx={{ display: available ? "block" : "none", marginTop: 1, width: "100%" }}
+          sx={{ marginTop: 1, width: "100%" }}
           onClick={openBookingModal}
+          disabled={!!booking}
         >
-          Book {deskName}
+          {booking && (
+            <Stack direction="row">
+                <Avatar
+                  variant="solid"
+                  color="primary"
+                  src={
+                    user?.name && user.name !== "anonymous"
+                      ? `data:image/jpeg;base64,${user.image}`
+                      : "defaultUser.svg"
+                  }
+                  alt={user ? user.name : "user"}
+                  sx={{
+                    fontSize: { xs: "14pt", sm: "20pt" },
+                    height: { xs: "70px", sm: "100px" },
+                    width: { xs: "70px", sm: "100px" },
+                    margin: 1,
+                  }}
+                >
+                  {getInitials(user?.name ?? "")}
+                </Avatar>
+              <Stack justifyContent="center">
+                <Typography>{user?.name ?? ""}</Typography>
+                <Typography>START - END</Typography>
+              </Stack>
+            </Stack>
+          )}
+          {!booking && `Book for ${timeNow(start)} - ${timeNow(end)}`}
         </Button>
-        <Box
-          sx={{
-            display: available ? "none" : "flex",
-            flexDirection: { xs: "row", sm: "column" },
-            justifyContent: "space-around",
-            alignItems: "center",
-          }}
-        >
-          <Avatar
-            variant="solid"
-            color="primary"
-            src={
-              user?.name && user.name !== "anonymous"
-                ? `data:image/jpeg;base64,${user.image}`
-                : "defaultUser.svg"
-            }
-            alt={user ? user.name : "user"}
-            sx={{
-              fontSize: { xs: "14pt", sm: "20pt" },
-              height: { xs: "70px", sm: "100px" },
-              width: { xs: "70px", sm: "100px" },
-              margin: 1,
-            }}
-          >
-            {getInitials(user?.name ?? "")}
-          </Avatar>
-          <Typography>{user?.name ?? ""}</Typography>
-        </Box>
+
         <Link
           level="body-xs"
           sx={{ display: selectedDesk ? "block" : "none", paddingTop: 1, margin: "auto" }}
@@ -107,6 +111,10 @@ function getInitials(name: string) {
   const firstLetter = words[0] ? words[0][0] : "";
   const secondLetter = words[1] ? words[1][0] : "";
   return (firstLetter + secondLetter).toUpperCase();
+}
+
+function timeNow(i: Date) {
+  return i.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 }
 
 export default DeskInfoPopup;
