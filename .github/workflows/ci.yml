@@ -2,7 +2,33 @@ name: CI
 on: push
 
 jobs:
+  linting:
+    name: "Lint ${{ matrix.component }}"
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        component: [ backend, frontend ]
+        include:
+          - component: backend
+            command: yarn --frozen-lockfile
+          - component: frontend
+            command: yarn --frozen-lockfile
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+      - name: Configure node toolchain
+        uses: actions/setup-node@v4
+        with:
+          node-version: v22.4.0
+      - name: Install dependencies
+        run: ${{ matrix.command }}
+        working-directory: ${{ matrix.component }}
+      - name: Run linter
+        run: yarn lint
+        working-directory: ${{ matrix.component }}
   tests:
+    name: "Test backend"
     runs-on: ubuntu-latest
     services:
       postgres:
