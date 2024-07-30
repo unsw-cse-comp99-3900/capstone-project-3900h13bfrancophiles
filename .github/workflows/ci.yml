@@ -27,7 +27,7 @@ jobs:
       - name: Run linter
         run: yarn lint
         working-directory: ${{ matrix.component }}
-  tests:
+  test_be:
     name: "Test backend"
     runs-on: ubuntu-latest
     services:
@@ -75,3 +75,19 @@ jobs:
         with:
           gist-id: 3d481eb538d823383b0c03f00e366db3
           token: ${{ secrets.GIST_TOKEN }}
+  test_fe:
+    name: "Test frontend"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+      - name: Configure node toolchain
+        uses: actions/setup-node@v4
+        with:
+          node-version: v22.4.0
+      - name: Install dependencies
+        run: yarn --frozen-lockfile
+        working-directory: frontend
+      - name: Run tests
+        run: yarn test
+        working-directory: frontend
