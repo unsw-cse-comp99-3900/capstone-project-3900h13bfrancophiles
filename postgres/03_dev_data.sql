@@ -133,7 +133,7 @@ INSERT INTO booking (zId, startTime, endTime, spaceId, currentStatus, descriptio
 
     -- DEMO BOOKINGS
     -- Current bookings- 1/8 thursday 11am - 4pm SYD time
-    (1234567, '2024-08-01T01:00', '2024-08-01T06:00', 'K-K17-201-2', 'confirmed', 'current desk booking demo'),
+    (1234567, '2024-07-30T06:45', '2024-07-30T07:45', 'K-K17-201-2', 'confirmed', 'current desk booking demo'),
     (7654321, '2024-08-01T01:00', '2024-08-01T06:00', 'K-K17-G02', 'confirmed', 'current booking demo'),
     -- desks
     (7654322, '2024-08-01T01:00', '2024-08-01T06:00', 'K-K17-201-3', 'confirmed', 'current desk booking demo'),
