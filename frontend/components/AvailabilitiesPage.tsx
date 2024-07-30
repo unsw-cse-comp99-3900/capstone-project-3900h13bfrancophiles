@@ -85,7 +85,7 @@ const AvailabilitiesPage : React.FC<AvailabilitesPageProps> = ({
           >
             <Box>
               <Button
-                color="success"
+                color="primary"
                 variant="solid"
                 disabled={!canBook}
                 onClick={() => {
