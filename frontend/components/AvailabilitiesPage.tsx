@@ -27,7 +27,7 @@ const AvailabilitiesPage: React.FC<AvailabilitesPageProps> = ({ spaceId, spaceTy
   const [openModal, setOpenModal] = React.useState<boolean>(false);
   const { canBook } = useRoomCanBook(spaceId);
 
-  if (spaceType !== spaceOutput.type || spaceOutput.error)
+  if (!spaceLoading && (spaceType !== spaceOutput.type || spaceOutput.error))
     return <Error page={`${spaceType}s/${spaceId}`} message={`${spaceType} ID not found`} />;
 
   if (spaceLoading) return <Loading page="" />;
