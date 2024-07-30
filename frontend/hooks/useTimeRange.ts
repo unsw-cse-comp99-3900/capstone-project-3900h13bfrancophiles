@@ -145,7 +145,8 @@ export default function useTimeRange(options: UseTimeRangeOptions = {}) {
   };
 
   const firstBlockedAfter = blockedTimes.find((blocked) => isBefore(start, blocked.start));
-  const numValidEndTimes = differenceInMinutes(firstBlockedAfter?.start ?? endOfDay(start), start) / 15;
+  const numValidEndTimes =
+    differenceInMinutes(firstBlockedAfter?.start ?? endOfDay(start), start) / 15;
 
   const endTimePickerProps: JoyTimePickerProps = {
     value: end,

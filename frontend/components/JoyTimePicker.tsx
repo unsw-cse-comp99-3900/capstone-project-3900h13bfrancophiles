@@ -2,10 +2,21 @@
 // https://mui.com/x/react-date-pickers/custom-field/#usage-with-joy-ui
 import * as React from "react";
 import Input, { InputProps } from "@mui/joy/Input";
-import { unstable_useTimeField as useTimeField, UseTimeFieldProps } from "@mui/x-date-pickers/TimeField";
+import {
+  unstable_useTimeField as useTimeField,
+  UseTimeFieldProps,
+} from "@mui/x-date-pickers/TimeField";
 import { useClearableField } from "@mui/x-date-pickers/hooks";
-import { BaseSingleInputFieldProps, FieldSection, TimeValidationError } from "@mui/x-date-pickers/models";
-import { DesktopTimePicker, DesktopTimePickerProps, PickersActionBarProps } from "@mui/x-date-pickers";
+import {
+  BaseSingleInputFieldProps,
+  FieldSection,
+  TimeValidationError,
+} from "@mui/x-date-pickers/models";
+import {
+  DesktopTimePicker,
+  DesktopTimePickerProps,
+  PickersActionBarProps,
+} from "@mui/x-date-pickers";
 import { AccessTime } from "@mui/icons-material";
 import { Button, DialogActions, ToggleButtonGroup } from "@mui/joy";
 import { addMinutes, endOfDay, startOfDay } from "date-fns";
@@ -77,8 +88,7 @@ const JoyField = React.forwardRef(function JoyField(
 
 interface JoyTimeFieldProps
   extends UseTimeFieldProps<Date, false>,
-    BaseSingleInputFieldProps<Date | null, Date, FieldSection, false, TimeValidationError> {
-}
+    BaseSingleInputFieldProps<Date | null, Date, FieldSection, false, TimeValidationError> {}
 
 const JoyTimeField = React.forwardRef(function JoyTimeField(
   props: JoyTimeFieldProps,
@@ -121,8 +131,10 @@ const JoyTimePicker = React.forwardRef(function JoyTimePicker(
     }
   };
 
-  const showMidnight = props.showMidnightButton && !props.singleColumn
-    && !(props.value && props.shouldDisableTime?.(endOfDay(props.value), "seconds"));
+  const showMidnight =
+    props.showMidnightButton &&
+    !props.singleColumn &&
+    !(props.value && props.shouldDisableTime?.(endOfDay(props.value), "seconds"));
 
   const renderActionBar = (actionBarProps: PickersActionBarProps) => {
     return (

@@ -30,6 +30,12 @@ export default [
       prettier,
     },
 
+    settings: {
+      react: {
+        version: "detect",
+      },
+    },
+
     languageOptions: {
       globals: {
         ...globals.browser,
