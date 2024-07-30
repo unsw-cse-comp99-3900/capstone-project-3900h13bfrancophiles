@@ -16,7 +16,7 @@ const timeSlot = sql<string>`to_char
     interval '15 minutes'
     ), 'HH24:MI')`.as("time_slot");
 
-type GraphData = { spaceId: string, data: { timeSlot: string; count: number }[] }[];
+type GraphData = { spaceId: string; data: { timeSlot: string; count: number }[] }[];
 
 export const generateOccupancyPdf: ReportGenerator = async (startDate, endDate, spaces) => {
   const res = await db
@@ -70,41 +70,40 @@ export const generateOccupancyPdf: ReportGenerator = async (startDate, endDate, 
         y = yMargin;
       }
 
-      const chart = new Chart(
-        ctx as unknown as CanvasRenderingContext2D,
-        {
-          type: "line",
-          data: {
-            labels: data.map((point) => point.timeSlot),
-            datasets: [{
+      const chart = new Chart(ctx as unknown as CanvasRenderingContext2D, {
+        type: "line",
+        data: {
+          labels: data.map((point) => point.timeSlot),
+          datasets: [
+            {
               yAxisID: "yAxis",
               label: "Number of Bookings",
               data: data.map((point) => point.count),
               fill: true,
               pointStyle: false,
-            }],
-          },
-          options: {
-            plugins: {
-              title: {
-                display: true,
-                text: `Booking Times for ${spaceId}`,
-              }
             },
-            scales: {
-              yAxis: {
-                max: maxBookingNum + 2,
-              }
-            }
+          ],
+        },
+        options: {
+          plugins: {
+            title: {
+              display: true,
+              text: `Booking Times for ${spaceId}`,
+            },
           },
-        });
+          scales: {
+            yAxis: {
+              max: maxBookingNum + 2,
+            },
+          },
+        },
+      });
 
       pdf.image(canvas.toBuffer(), xMargin, y, { width: imageWidth, height: imageHeight });
       chart.destroy();
 
       y += imageHeight + yMargin;
     }
-
   });
 };
 
