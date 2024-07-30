@@ -149,4 +149,4 @@ INSERT INTO booking (zId, startTime, endTime, spaceId, currentStatus, descriptio
 
 -- Reenable triggers for prod
 ALTER TABLE booking ENABLE TRIGGER trg_chk_create_booking_start_future;
-ALTER TABLE booking ENABLE TRIGGER trg_chk_start_future_limit;g
+ALTER TABLE booking ENABLE TRIGGER trg_chk_start_future_limit;
