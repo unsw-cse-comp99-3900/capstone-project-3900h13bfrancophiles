@@ -54,6 +54,8 @@ export const booking = pgTable("booking", {
 	checkintime: timestamp("checkintime", { mode: 'string' }),
 	checkouttime: timestamp("checkouttime", { mode: 'string' }),
 	parent: integer("parent"),
+	created: timestamp("created", { mode: 'string' }).defaultNow().notNull(),
+	modified: timestamp("modified", { mode: 'string' }).defaultNow().notNull(),
 },
 (table) => {
 	return {

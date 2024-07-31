@@ -71,6 +71,8 @@ export type Booking = {
   checkintime: string | null;
   checkouttime: string | null;
   parent: number | null;
+  created: string;
+  modified: string;
 };
 
 export interface BookingEditRequest {
