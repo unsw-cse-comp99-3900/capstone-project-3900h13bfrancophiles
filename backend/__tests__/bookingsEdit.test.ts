@@ -39,7 +39,6 @@ describe("/bookings/edit", () => {
       booking.spaceid,
       "I edited this booking!",
     );
-    console.log(res1);
     expect(res1.status).toStrictEqual(200);
     expect(res1.json).toMatchObject({
       booking: {
@@ -83,7 +82,6 @@ describe("/bookings/edit", () => {
       booking.spaceid,
       "I edited this booking!",
     );
-    console.log(res1);
     expect(res1.status).toStrictEqual(200);
     expect(res1.json).toMatchObject({
       booking: {
