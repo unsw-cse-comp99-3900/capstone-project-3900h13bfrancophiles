@@ -1,14 +1,19 @@
 "use client";
 
-import { IconButton } from "@mui/joy";
+import { IconButton, Stack } from "@mui/joy";
 import LogoutIcon from "@mui/icons-material/Logout";
 import { pink } from "@mui/material/colors";
 import React from "react";
 import { useRouter } from "next/navigation";
 import { logout } from "@/api";
 import { deleteCookie } from "cookies-next";
+import Typography from "@mui/joy/Typography";
 
-const LogoutButton = () => {
+interface LogoutButtonProps {
+  paddingRight: number;
+}
+
+const LogoutButton = ({ paddingRight }: LogoutButtonProps) => {
   const router = useRouter();
 
   const handleLogout = async () => {
@@ -24,7 +29,10 @@ const LogoutButton = () => {
 
   return (
     <IconButton onClick={handleLogout}>
-      <LogoutIcon width={25} height={25} sx={{ color: pink[500] }} />
+      <Stack direction="row" spacing={1} p={0.5} alignItems="center" pr={paddingRight}>
+        <LogoutIcon width={25} height={25} sx={{ color: pink[500] }} />
+        <Typography level="body-sm">Logout</Typography>
+      </Stack>
     </IconButton>
   );
 };

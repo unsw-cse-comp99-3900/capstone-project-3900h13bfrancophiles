@@ -23,7 +23,7 @@ export async function login(
   }
   const zid = parseInt(match[1]);
 
-  if (!validateLogin(zid, req.body.zpass)) {
+  if (!(await validateLogin(zid, req.body.zpass))) {
     res.status(400).json({ error: "Incorrect login" });
     return;
   }

@@ -5,8 +5,8 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 import React from "react";
 import NextLink from "next/link";
-import LogoutButton from "@/components/LogoutButton";
 import { NavData } from "@/types";
+import ProfileDropdown from "@/components/ProfileDropdown";
 
 interface NavProps {
   title: string;
@@ -59,7 +59,7 @@ export default function NavBar({ navItems }: { navItems: NavData[] }) {
               <NavItem title={text} navigateTo={href} key={href} />
             ))}
           </Stack>
-          <LogoutButton />
+          <ProfileDropdown />
         </Stack>
       </Stack>
     </Sheet>

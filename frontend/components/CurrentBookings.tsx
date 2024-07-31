@@ -20,7 +20,7 @@ import { Booking } from "@/types";
 import useSpace from "@/hooks/useSpace";
 import useCurrentBookings from "@/hooks/useCurrentBookings";
 import { format } from "date-fns";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { checkIn, checkOut } from "@/api";
 import { mutate } from "swr";
 import ConstructionIcon from "@mui/icons-material/Construction";
@@ -65,6 +65,8 @@ function CurrentBookingCard({ booking }: CurrentBookingCardProps) {
   const [isConfirmationOpen, setIsConfirmationOpen] = useState(false);
 
   const [contactOpen, setContactOpen] = useState(false);
+  const [messageContent, setMessageContent] = useState("");
+  const mailtoRef = useRef<HTMLAnchorElement | null>(null);
 
   const handleCheckInOut = async () => {
     if (checkedIn) {
@@ -110,6 +112,19 @@ function CurrentBookingCard({ booking }: CurrentBookingCardProps) {
     }
   };
 
+  const createMailToLink = () => {
+    const subject = `Support Request for Booking ID: ${booking.id}`;
+    const body = encodeURIComponent(messageContent);
+    return `mailto:ss@cse.unsw.edu.au?subject=${encodeURIComponent(subject)}&body=${body}`;
+  };
+
+  const handleContactSupport = () => {
+    if (mailtoRef.current) {
+      mailtoRef.current.click();
+      setContactOpen(false);
+    }
+  };
+
   return (
     <>
       <Card variant="outlined">
@@ -143,7 +158,7 @@ function CurrentBookingCard({ booking }: CurrentBookingCardProps) {
             >
               <Button
                 size="sm"
-                color="success"
+                color={checkedIn ? "danger" : "success"}
                 onClick={() => setIsConfirmationOpen(true)}
                 sx={{ borderRadius: "20px", width: "100px" }}
                 loading={isCheckingInOrOut}
@@ -193,20 +208,24 @@ function CurrentBookingCard({ booking }: CurrentBookingCardProps) {
           </DialogTitle>
           <Divider />
           <DialogContent>
-            <Input startDecorator={<MailIcon />} placeholder="Type in here..." />
+            <Input
+              startDecorator={<MailIcon />}
+              placeholder="Type in here..."
+              value={messageContent}
+              onChange={(e) => setMessageContent(e.target.value)}
+            />
           </DialogContent>
           <DialogActions>
-            <Button
-              variant="solid"
-              color="primary"
-              onClick={() => setContactOpen(false)}
-              // TODO: Add functionality to send email on click
-            >
+            <Button variant="solid" color="primary" onClick={handleContactSupport}>
               Message
             </Button>
             <Button variant="plain" color="neutral" onClick={() => setContactOpen(false)}>
               Cancel
             </Button>
+            {/* Hidden link to trigger mailto */}
+            <a href={createMailToLink()} ref={mailtoRef} style={{ display: "none" }}>
+              hidden mailto link
+            </a>
           </DialogActions>
         </ModalDialog>
       </Modal>

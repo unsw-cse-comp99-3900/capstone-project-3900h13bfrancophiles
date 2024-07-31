@@ -3,7 +3,7 @@
 import React from "react";
 import { KeepScale } from "react-zoom-pan-pinch";
 import { Box, Avatar } from "@mui/joy";
-import { Status, UserData } from "@/types";
+import { Booking, Status, UserData } from "@/types";
 import useSpace from "@/hooks/useSpace";
 import UserAvatar from "./UserAvatar";
 
@@ -13,8 +13,8 @@ interface DeskIconProps {
   y: number;
   selectedDesk: string;
   setSelectedDesk: React.Dispatch<React.SetStateAction<string>>;
+  setSelectedBooking: React.Dispatch<React.SetStateAction<Booking | null>>;
   setSelectedUser: React.Dispatch<React.SetStateAction<UserData | null>>;
-  setAvailable: React.Dispatch<React.SetStateAction<boolean>>;
   setDeskName: React.Dispatch<React.SetStateAction<string>>;
   status: Status | undefined;
 }
@@ -93,8 +93,8 @@ const DeskIcon = ({
   y,
   selectedDesk,
   setSelectedDesk,
+  setSelectedBooking,
   setSelectedUser,
-  setAvailable,
   setDeskName,
   status,
 }: DeskIconProps) => {
@@ -103,13 +103,13 @@ const DeskIcon = ({
 
   const handleClick = () => {
     if (selectedDesk === id) {
-      setAvailable(false);
       setSelectedDesk("");
+      setSelectedBooking(null);
       setSelectedUser(null);
       setDeskName("");
     } else {
-      setAvailable(status?.status === "Available");
       setSelectedDesk(id);
+      setSelectedBooking(status?.status === "Unavailable" ? status.booking : null);
       setDeskName(deskName);
     }
   };
