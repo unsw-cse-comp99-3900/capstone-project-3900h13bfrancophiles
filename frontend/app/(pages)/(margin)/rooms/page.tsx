@@ -120,7 +120,7 @@ const CapacitySlider: React.FC<CapacitySliderProps> = ({ label, min, max, value,
 
 export default function Rooms() {
   const [filtersOpen, setFiltersOpen] = React.useState<boolean>(false);
-  const [sort, setSort] = React.useState<boolean>(false);
+  const [sort, setSort] = React.useState<boolean>(true);
   const [searchQuery, setSearchQuery] = React.useState<string>("");
 
   const [filters, setFilters] = React.useState<Filters>({
@@ -251,28 +251,30 @@ export default function Rooms() {
               />
             </FormControl>
           </Stack>
-          <FormControl>
-            <Button
-              startDecorator={<FilterListIcon />}
-              variant={isFiltered ? "solid" : "outlined"}
-              color="neutral"
-              size="sm"
-              onClick={toggleFilters}
-            >
-              Filter
-            </Button>
-          </FormControl>
-          <FormControl>
-            <Button
-              startDecorator={<SwapVertIcon />}
-              variant={sort ? "solid" : "outlined"}
-              color="neutral"
-              size="sm"
-              onClick={toggleSort}
-            >
-              Sort
-            </Button>
-          </FormControl>
+          <Stack direction={"row"} spacing={2}>
+            <FormControl>
+              <Button
+                startDecorator={<FilterListIcon />}
+                variant={isFiltered ? "solid" : "outlined"}
+                color="neutral"
+                size="sm"
+                onClick={toggleFilters}
+              >
+                Filter
+              </Button>
+            </FormControl>
+            <FormControl>
+              <Button
+                startDecorator={<SwapVertIcon />}
+                variant={sort ? "solid" : "outlined"}
+                color="neutral"
+                size="sm"
+                onClick={toggleSort}
+              >
+                Sort
+              </Button>
+            </FormControl>
+          </Stack>
         </Stack>
       </Stack>
 
