@@ -26,6 +26,7 @@ import Error from "@/components/Error";
 import useTimeRange from "@/hooks/useTimeRange";
 import BookingModal from "@/components/BookingModal/BookingModal";
 import JoyTimePicker from "@/components/JoyTimePicker";
+import useSpaceStatus from "@/hooks/useSpaceStatus";
 
 interface FilterOption {
   value: string;
@@ -137,6 +138,8 @@ export default function Rooms() {
   const { roomsData = [], isLoading, error } = useRoomDetails();
   const [isFiltered, setIsFiltered] = React.useState<boolean>(false);
 
+  const { statusResponse } = useSpaceStatus(start.toISOString(), end.toISOString());
+
   if (isLoading) return <Loading page="Rooms" />;
   if (error) return <Error page="Rooms" message="Error loading rooms" />;
 
@@ -168,7 +171,19 @@ export default function Rooms() {
     });
   };
 
-  const sortedRooms = [...roomsData].sort((a, b) => a.name.localeCompare(b.name));
+  const getRoomAvailability = (roomId: string) => {
+    if (statusResponse && statusResponse[roomId]) {
+      return statusResponse[roomId].status;
+    }
+    return "Unknown";
+  };
+
+  const sortedRooms = [...roomsData].sort((a, b) => {
+    const availabilityA = getRoomAvailability(a.id);
+    const availabilityB = getRoomAvailability(b.id);
+    return availabilityA.localeCompare(availabilityB);
+  });
+
   const displayedRooms = filterRooms(sort ? sortedRooms : sortedRooms.reverse());
 
   return (
@@ -273,23 +288,26 @@ export default function Rooms() {
         >
           <h2 id="modal-title">Filter Rooms</h2>
           {renderFilters(tempFilters, setTempFilters)}
-          <Box sx={{ mt: 2, display: "flex", justifyContent: "space-between" }}>
-            <Button variant="outlined" color="neutral" onClick={() => setFiltersOpen(false)}>
+          <Box sx={{ mt: 2, display: "flex", gap: 1.5, justifyContent: "flex-end" }}>
+            <Button variant="plain" color="neutral" onClick={toggleFilters}>
               Cancel
             </Button>
-            <Button variant="outlined" color="primary" onClick={applyFilters}>
-              Apply filters
-            </Button>
+            <Button onClick={applyFilters}>Apply</Button>
           </Box>
         </ModalDialog>
       </Modal>
+
       <Box
-        width="100%"
-        display="grid"
-        gridTemplateColumns="repeat(auto-fill, minmax(350px, 1fr))"
-        mt={4}
-        mb={5}
-        sx={{ gridGap: 30 }}
+        sx={{
+          display: "grid",
+          gridTemplateColumns: {
+            xs: "repeat(1, 1fr)",
+            sm: "repeat(2, 1fr)",
+            lg: "repeat(3, 1fr)",
+          },
+          gap: 2,
+          mt: 3,
+        }}
       >
         {displayedRooms.map((room) => (
           <RoomCard
