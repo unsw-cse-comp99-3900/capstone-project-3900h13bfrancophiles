@@ -9,24 +9,18 @@ import {
   Tabs,
   Stack,
   Input,
-  Button,
-  Box,
   Sheet,
-  Avatar,
   Typography,
-  Link,
   FormControl,
-  IconButton,
 } from "@mui/joy";
-import CloseIcon from "@mui/icons-material/Close";
 import * as React from "react";
-import { UserData } from "@/types";
+import { Booking, UserData } from "@/types";
 import useTimeRange from "@/hooks/useTimeRange";
-import NextLink from "next/link";
 import useSpaceStatus from "@/hooks/useSpaceStatus";
 import JoyTimePicker from "@/components/JoyTimePicker";
 import useDesks from "@/hooks/useDesks";
 import Loading from "@/components/Loading";
+import DeskInfoPopup from "@/components/DeskInfoPopup";
 
 const floors = ["K17 L2", "K17 L3", "K17 L4", "K17 L5"];
 
@@ -35,9 +29,10 @@ export default function Desks() {
     useTimeRange();
 
   const [selectedDesk, setSelectedDesk] = React.useState("");
-  const [available, setAvailable] = React.useState(false);
-  const [user, setUser] = React.useState<null | UserData>(null);
+  const [selectedBooking, setSelectedBooking] = React.useState<Booking | null>(null);
   const [deskName, setDeskName] = React.useState("");
+  const [user, setUser] = React.useState<null | UserData>(null);
+
   const [open, setOpen] = React.useState(false);
 
   const { desks } = useDesks();
@@ -63,6 +58,7 @@ export default function Desks() {
       )}
       <Stack
         direction="column"
+        alignItems="flex-end"
         sx={{
           zIndex: 2,
           position: "absolute",
@@ -96,67 +92,16 @@ export default function Desks() {
             </Stack>
           </Stack>
         </Sheet>
-        <Sheet
-          variant="plain"
-          sx={{
-            display: selectedDesk ? "block" : "none",
-            boxShadow: "md",
-            borderRadius: 10,
-            padding: 1.5,
-            width: "100%",
-          }}
-        >
-          <Stack direction="column">
-            <Stack direction="row" justifyContent="space-between" alignItems="center">
-              <Typography component="h2">{deskName}</Typography>
-              <IconButton size="sm" onClick={() => setSelectedDesk("")}>
-                <CloseIcon />
-              </IconButton>
-            </Stack>
-            <Button
-              sx={{ display: available ? "block" : "none", marginTop: 1, width: "100%" }}
-              onClick={() => setOpen(true)}
-            >
-              Book {deskName}
-            </Button>
-            <Box
-              sx={{
-                display: available ? "none" : "flex",
-                flexDirection: { xs: "row", sm: "column" },
-                justifyContent: "space-around",
-                alignItems: "center",
-              }}
-            >
-              <Avatar
-                variant="solid"
-                color="primary"
-                src={
-                  user?.name && user.name !== "anonymous"
-                    ? `data:image/jpeg;base64,${user.image}`
-                    : "defaultUser.svg"
-                }
-                alt={user ? user.name : "user"}
-                sx={{
-                  fontSize: { xs: "14pt", sm: "20pt" },
-                  height: { xs: "70px", sm: "100px" },
-                  width: { xs: "70px", sm: "100px" },
-                  margin: 1,
-                }}
-              >
-                {getInitials(user?.name ?? "")}
-              </Avatar>
-              <Typography>{user?.name ?? ""}</Typography>
-            </Box>
-            <Link
-              level="body-xs"
-              sx={{ display: selectedDesk ? "block" : "none", paddingTop: 1, margin: "auto" }}
-              component={NextLink}
-              href={`/desks/${selectedDesk}`}
-            >
-              <Typography> View all availabilities</Typography>
-            </Link>
-          </Stack>
-        </Sheet>
+        <DeskInfoPopup
+          selectedDesk={selectedDesk}
+          booking={selectedBooking}
+          user={user}
+          deskName={deskName}
+          start={start}
+          end={end}
+          handleClose={() => setSelectedDesk("")}
+          openBookingModal={() => setOpen(true)}
+        />
       </Stack>
       <Tabs aria-label="level select" defaultValue={"K17 L2"} sx={{ height: "calc(100vh - 60px)" }}>
         {floors.map((floor, index) => (
@@ -173,8 +118,8 @@ export default function Desks() {
             <FloorPlanViewer
               selectedDesk={selectedDesk}
               setSelectedDesk={setSelectedDesk}
+              setSelectedBooking={setSelectedBooking}
               setSelectedUser={setUser}
-              setAvailable={setAvailable}
               setDeskName={setDeskName}
               floor={floor}
               desks={desks?.filter((desk) => desk.floor === floor) || []}
@@ -192,11 +137,4 @@ export default function Desks() {
       </Tabs>
     </React.Fragment>
   );
-}
-
-function getInitials(name: string) {
-  const words = name.trim().split(" ", 2);
-  const firstLetter = words[0] ? words[0][0] : "";
-  const secondLetter = words[1] ? words[1][0] : "";
-  return (firstLetter + secondLetter).toUpperCase();
 }
