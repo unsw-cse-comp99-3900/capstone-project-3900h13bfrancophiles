@@ -3,7 +3,6 @@
 import RoomCard from "@/components/RoomCard";
 import SearchIcon from "@mui/icons-material/Search";
 import FilterListIcon from "@mui/icons-material/FilterList";
-import SwapVertIcon from "@mui/icons-material/SwapVert";
 import * as React from "react";
 import {
   Box,
@@ -18,6 +17,7 @@ import {
   Stack,
   Slider,
   Typography,
+  Switch,
 } from "@mui/joy";
 import useRoomDetails from "@/hooks/useRoomDetails";
 import { Room } from "@/types";
@@ -26,6 +26,7 @@ import Error from "@/components/Error";
 import useTimeRange from "@/hooks/useTimeRange";
 import BookingModal from "@/components/BookingModal/BookingModal";
 import JoyTimePicker from "@/components/JoyTimePicker";
+import useSpaceStatus from "@/hooks/useSpaceStatus";
 
 interface FilterOption {
   value: string;
@@ -35,6 +36,7 @@ interface FilterOption {
 interface Filters {
   type: string;
   capacity: number;
+  hideUnavailable: boolean;
 }
 
 interface FilterControlProps {
@@ -88,6 +90,22 @@ const renderFilters = (
         }))
       }
     />
+    <FormControl size="sm">
+      <Stack alignSelf={"flex-start"}>
+        <FormLabel>Hide Unavailable</FormLabel>
+        <Switch
+          sx={{ alignSelf: "flex-start" }}
+          size="md"
+          checked={tempFilters.hideUnavailable}
+          onChange={() =>
+            setTempFilters((prevFilters) => ({
+              ...prevFilters,
+              hideUnavailable: !prevFilters.hideUnavailable,
+            }))
+          }
+        />
+      </Stack>
+    </FormControl>
   </React.Fragment>
 );
 
@@ -119,16 +137,17 @@ const CapacitySlider: React.FC<CapacitySliderProps> = ({ label, min, max, value,
 
 export default function Rooms() {
   const [filtersOpen, setFiltersOpen] = React.useState<boolean>(false);
-  const [sort, setSort] = React.useState<boolean>(false);
   const [searchQuery, setSearchQuery] = React.useState<string>("");
 
   const [filters, setFilters] = React.useState<Filters>({
     type: "all",
     capacity: 1,
+    hideUnavailable: false,
   });
   const [tempFilters, setTempFilters] = React.useState<Filters>({
     type: "all",
     capacity: 1,
+    hideUnavailable: false,
   });
   const { date, start, end, dateInputProps, startTimePickerProps, endTimePickerProps } =
     useTimeRange();
@@ -137,6 +156,8 @@ export default function Rooms() {
   const { roomsData = [], isLoading, error } = useRoomDetails();
   const [isFiltered, setIsFiltered] = React.useState<boolean>(false);
 
+  const { statusResponse } = useSpaceStatus(start.toISOString(), end.toISOString());
+
   if (isLoading) return <Loading page="Rooms" />;
   if (error) return <Error page="Rooms" message="Error loading rooms" />;
 
@@ -144,13 +165,9 @@ export default function Rooms() {
     setFiltersOpen(!filtersOpen);
   };
 
-  const toggleSort = () => {
-    setSort(!sort);
-  };
-
   const applyFilters = () => {
     setFilters(tempFilters);
-    if (tempFilters.type !== "all" || tempFilters.capacity !== 1) {
+    if (tempFilters.type !== "all" || tempFilters.capacity !== 1 || tempFilters.hideUnavailable) {
       setIsFiltered(true);
     } else {
       setIsFiltered(false);
@@ -164,12 +181,24 @@ export default function Rooms() {
         filters.type === "all" || room.type.toLowerCase().replace(" ", "-") === filters.type;
       const matchesCapacity = room.capacity >= filters.capacity;
       const matchesSearchQuery = room.name.toLowerCase().includes(searchQuery.toLowerCase());
-      return matchesType && matchesCapacity && matchesSearchQuery;
+      const roomStatus = getRoomAvailability(room.id);
+      const matchesStatus = filters.hideUnavailable ? roomStatus !== "Unavailable" : true;
+      return matchesType && matchesCapacity && matchesSearchQuery && matchesStatus;
     });
   };
 
-  const sortedRooms = [...roomsData].sort((a, b) => a.name.localeCompare(b.name));
-  const displayedRooms = filterRooms(sort ? sortedRooms : sortedRooms.reverse());
+  const getRoomAvailability = (roomId: string) => {
+    if (statusResponse && statusResponse[roomId]) {
+      return statusResponse[roomId].status;
+    }
+    return "Unknown";
+  };
+
+  const sortedRooms = [...roomsData].sort((a, b) => {
+    return a.capacity - b.capacity;
+  });
+
+  const displayedRooms = filterRooms(sortedRooms);
 
   return (
     <>
@@ -247,17 +276,6 @@ export default function Rooms() {
               Filter
             </Button>
           </FormControl>
-          <FormControl>
-            <Button
-              startDecorator={<SwapVertIcon />}
-              variant={sort ? "solid" : "outlined"}
-              color="neutral"
-              size="sm"
-              onClick={toggleSort}
-            >
-              Sort
-            </Button>
-          </FormControl>
         </Stack>
       </Stack>
 
@@ -273,23 +291,26 @@ export default function Rooms() {
         >
           <h2 id="modal-title">Filter Rooms</h2>
           {renderFilters(tempFilters, setTempFilters)}
-          <Box sx={{ mt: 2, display: "flex", justifyContent: "space-between" }}>
-            <Button variant="outlined" color="neutral" onClick={() => setFiltersOpen(false)}>
+          <Box sx={{ mt: 2, display: "flex", gap: 1.5, justifyContent: "flex-end" }}>
+            <Button variant="plain" color="neutral" onClick={toggleFilters}>
               Cancel
             </Button>
-            <Button variant="outlined" color="primary" onClick={applyFilters}>
-              Apply filters
-            </Button>
+            <Button onClick={applyFilters}>Apply</Button>
           </Box>
         </ModalDialog>
       </Modal>
+
       <Box
-        width="100%"
-        display="grid"
-        gridTemplateColumns="repeat(auto-fill, minmax(350px, 1fr))"
-        mt={4}
-        mb={5}
-        sx={{ gridGap: 30 }}
+        sx={{
+          display: "grid",
+          gridTemplateColumns: {
+            xs: "repeat(1, 1fr)",
+            sm: "repeat(2, 1fr)",
+            lg: "repeat(3, 1fr)",
+          },
+          gap: 2,
+          mt: 3,
+        }}
       >
         {displayedRooms.map((room) => (
           <RoomCard
