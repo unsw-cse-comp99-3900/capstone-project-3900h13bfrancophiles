@@ -108,7 +108,7 @@ export async function approveBooking(
       const approvedBookingDetails = approvedBooking[0];
 
       const formattedBooking = formatBookingDates(approvedBookingDetails);
-      await sendBookingEmail(req.token.user, formattedBooking, BOOKING_APPROVE);
+      await sendBookingEmail(formattedBooking.zid, formattedBooking, BOOKING_APPROVE);
     });
     res.status(200).json({ message: "Booking approved and overlapping bookings declined" });
   } catch (error) {
@@ -137,7 +137,7 @@ export async function declineBooking(
     }
 
     const formattedBooking = formatBookingDates(updatedBooking[0]);
-    await sendBookingEmail(req.token.user, formattedBooking, BOOKING_DECLINE);
+    await sendBookingEmail(formattedBooking.zid, formattedBooking, BOOKING_DECLINE);
     res.status(200).json({ message: "Booking declined" });
   } catch (error) {
     res.status(500).json({ error: "Internal server error" });
