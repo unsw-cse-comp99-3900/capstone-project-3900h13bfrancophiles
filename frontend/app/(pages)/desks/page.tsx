@@ -58,6 +58,7 @@ export default function Desks() {
       )}
       <Stack
         direction="column"
+        alignItems="flex-end"
         sx={{
           zIndex: 2,
           position: "absolute",

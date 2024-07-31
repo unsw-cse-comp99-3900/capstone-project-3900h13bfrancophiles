@@ -41,24 +41,29 @@ const DeskInfoPopup = ({
         width: "100%",
       }}
     >
-      <Stack direction="column">
+      <Stack direction="column" alignItems="left">
         <Stack direction="row" justifyContent="space-between" alignItems="center">
-          <Typography component="h2">{deskName}</Typography>
+          <Typography level="h3">{deskName}</Typography>
           <IconButton size="sm" onClick={handleClose}>
             <CloseIcon />
           </IconButton>
         </Stack>
         <Button
-          sx={{ marginTop: 1, width: "100%" }}
+          sx={{ marginTop: 1, height: "60px", width: "100%", display: "block" }}
           onClick={openBookingModal}
           disabled={!!booking}
         >
-          {available && `Book for ${timeNow(start)} - ${timeNow(end)}`}
+          {available && (
+            <Typography sx={{ color: "white" }}>
+              Book for {timeNow(start)} - {timeNow(end)}
+            </Typography>
+          )}
           {!available && (
             <Stack direction="row">
               <Avatar
                 variant="solid"
                 color="primary"
+                size="lg"
                 src={
                   user?.name && user.name !== "anonymous"
                     ? `data:image/jpeg;base64,${user.image}`
@@ -67,16 +72,18 @@ const DeskInfoPopup = ({
                 alt={user ? user.name : "user"}
                 sx={{
                   fontSize: { xs: "14pt", sm: "20pt" },
-                  height: { xs: "70px", sm: "100px" },
-                  width: { xs: "70px", sm: "100px" },
-                  margin: 1,
+                  marginRight: 1.7,
+                  // height: { xs: "70px", sm: "100px" },
+                  // width: { xs: "70px", sm: "100px" },
                 }}
               >
                 {getInitials(user?.name ?? "")}
               </Avatar>
-              <Stack justifyContent="center">
+              <Stack alignItems="flex-start">
                 <Typography>{user?.name ?? ""}</Typography>
-                <Typography>START - END</Typography>
+                <Typography level="body-xs">
+                  {timeNow(new Date(booking.starttime))} - {timeNow(new Date(booking.endtime))}
+                </Typography>
               </Stack>
             </Stack>
           )}
