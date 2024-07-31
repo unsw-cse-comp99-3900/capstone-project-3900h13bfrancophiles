@@ -107,7 +107,11 @@ function PendingBookingsRow({ row, page, rowsPerPage, sort }: PendingBookingRowP
           setApproveDeclineError={setApproveDeclineError}
         />
       )}
-      {approveDeclineError && <ErrorSnackbar errorMessage={approveDeclineError} open={true} />}
+      <ErrorSnackbar
+        errorMessage={approveDeclineError ?? ""}
+        open={!!approveDeclineError}
+        onClose={() => setApproveDeclineError(null)}
+      />
     </>
   );
 }

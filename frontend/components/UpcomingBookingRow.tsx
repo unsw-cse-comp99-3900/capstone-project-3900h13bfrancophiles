@@ -125,7 +125,11 @@ export default function UpcomingBookingRow({ row, mutate }: UpcomingBookingRowPr
           </DialogActions>
         </ModalDialog>
       </Modal>
-      {deleteBookingError && <ErrorSnackbar errorMessage={deleteBookingError} open={true} />}
+      <ErrorSnackbar
+        errorMessage={deleteBookingError ?? ""}
+        open={!!deleteBookingError}
+        onClose={() => setDeleteBookingError(null)}
+      />
       <BookingModal
         open={editModalOpen}
         onClose={() => handleCloseEditModal()}
