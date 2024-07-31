@@ -1,6 +1,6 @@
-import { eq, and, asc, sql, lte, gte, inArray } from 'drizzle-orm';
-import { hotdesk, room, space, booking } from '../../drizzle/schema';
-import { db } from '../index';
+import { eq, and, asc, sql, lte, gte, inArray } from "drizzle-orm";
+import { hotdesk, room, space, booking } from "../../drizzle/schema";
+import { db } from "../index";
 import {
   TypedGETRequest,
   TypedResponse,
@@ -11,10 +11,9 @@ import {
   UserGroup,
   USER_GROUPS,
   IDatetimeRange,
-} from '../types';
-import { anonymiseBooking, formatBookingDates, now } from '../utils';
-import typia from 'typia';
-
+} from "../types";
+import { anonymiseBooking, formatBookingDates, now } from "../utils";
+import typia from "typia";
 
 export async function roomDetails(_req: TypedGETRequest, res: TypedResponse<{ rooms: Room[] }>) {
   try {
@@ -108,18 +107,15 @@ export async function spaceAvailabilities(
   try {
     const parsedQuery = typia.http.isQuery<IDatetimeRange>(new URLSearchParams(req.query));
 
-    const currentTime = (await now())
-    const oneWeekFromNow = currentTime
+    const currentTime = await now();
+    const oneWeekFromNow = currentTime;
     oneWeekFromNow.setDate(oneWeekFromNow.getDate() + 7);
-    const datetimeStart = parsedQuery ? parsedQuery.datetimeStart : new Date("01/01/2024").toISOString();
+    const datetimeStart = parsedQuery
+      ? parsedQuery.datetimeStart
+      : new Date("01/01/2024").toISOString();
     const datetimeEnd = parsedQuery ? parsedQuery.datetimeEnd : oneWeekFromNow.toISOString();
 
-    const spaceExists = await db
-      .select()
-      .from(space)
-      .where(
-        eq(space.id, req.params.spaceId)
-      );
+    const spaceExists = await db.select().from(space).where(eq(space.id, req.params.spaceId));
 
     if (spaceExists.length == 0) {
       res.status(404).json({ error: "Space ID does not exist" });
@@ -134,8 +130,8 @@ export async function spaceAvailabilities(
           eq(booking.spaceid, req.params.spaceId),
           lte(booking.starttime, datetimeEnd),
           gte(booking.endtime, datetimeStart),
-          inArray(booking.currentstatus, ['confirmed', 'checkedin', 'completed']),
-        )
+          inArray(booking.currentstatus, ["confirmed", "checkedin", "completed"]),
+        ),
       )
       .orderBy(asc(booking.starttime));
 

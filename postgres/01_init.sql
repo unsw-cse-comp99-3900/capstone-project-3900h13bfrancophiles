@@ -81,18 +81,35 @@ CREATE TABLE IF NOT EXISTS booking (
 
 create function trg_chk_overlap() returns trigger as $$
 begin
-    if exists (
-        select *
-        from booking b
-        where b.spaceId = new.spaceId
-              and b.starttime < new.endtime
-              and b.endtime > new.starttime
-              and b.currentStatus <> 'pending'
-              and b.currentStatus <> 'declined'
-              and b.currentStatus <> 'deleted'
-              and b.id != new.id
-    ) then
-        raise exception 'Overlapping booking found';
+    if new.parent is NULL then
+        if exists (
+            select *
+            from booking b
+            where b.spaceId = new.spaceId
+                and b.starttime < new.endtime
+                and b.endtime > new.starttime
+                and b.currentStatus <> 'pending'
+                and b.currentStatus <> 'declined'
+                and b.currentStatus <> 'deleted'
+                and b.id != new.id
+        ) then
+            raise exception 'Overlapping booking found';
+        end if;
+    else
+        if exists (
+            select *
+            from booking b
+            where b.spaceId = new.spaceId
+                and b.starttime < new.endtime
+                and b.endtime > new.starttime
+                and b.currentStatus <> 'pending'
+                and b.currentStatus <> 'declined'
+                and b.currentStatus <> 'deleted'
+                and b.id != new.id
+                and b.id != new.parent
+        ) then
+            raise exception 'Overlapping booking found';
+        end if;
     end if;
 
     return new;

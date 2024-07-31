@@ -254,7 +254,8 @@ export async function editBooking(
     if (
       !(
         existingBooking[0].currentstatus === "pending" ||
-        existingBooking[0].currentstatus === "confirmed"
+        existingBooking[0].currentstatus === "confirmed" ||
+        existingBooking[0].currentstatus === "declined"
       )
     ) {
       res
