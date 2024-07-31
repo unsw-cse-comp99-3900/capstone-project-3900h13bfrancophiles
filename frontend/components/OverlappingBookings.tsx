@@ -6,6 +6,7 @@ import { Sheet, Skeleton, Stack } from "@mui/joy";
 import { format } from "date-fns";
 import Avatar from "@mui/joy/Avatar";
 import useUser from "@/hooks/useUser";
+import { getInitials } from "@/utils/icons";
 
 import { Booking } from "@/types";
 
@@ -45,11 +46,6 @@ function OverlappingBookingsRow({ row }: { row: Booking }) {
       </tr>
     </>
   );
-}
-
-export function getInitials(fullname: string): string {
-  const names = fullname.split(" ");
-  return names[0][0] + names[names.length - 1][0];
 }
 
 export default function OverlappingBookings({

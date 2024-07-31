@@ -68,46 +68,48 @@ const ApproveDeclineModal: React.FC<ApproveDeclineModalProps> = ({
   };
 
   return (
-    <Modal open={isOpen} onClose={onClose}>
-      <ModalDialog variant="outlined" role="alertdialog">
-        <DialogTitle>
-          {approving
-            ? "Booking Request Approval Confirmation"
-            : "Booking Request Decline Confirmation"}
-        </DialogTitle>
-        <Divider />
-        <DialogContent>
-          {approving ? (
-            <Stack gap={3}>
-              <Typography>Are you sure you want to approve this booking request?</Typography>
-              {countOverlapping > 0 && overlappingBookings && (
-                <Stack gap={1}>
-                  <Typography>
-                    Approving this booking will automatically decline the following overlapping
-                    bookings:
-                  </Typography>
-                  <OverlappingBookings overlappingBookings={overlappingBookings} />
-                </Stack>
-              )}
-            </Stack>
-          ) : (
-            <Typography>Are you sure you want to decline this booking request?</Typography>
-          )}
-        </DialogContent>
-        <DialogActions>
-          <Button
-            onClick={handleApproveDecline}
-            color={approving ? "success" : "danger"}
-            loading={isApprovingOrDeclining}
-          >
-            {approving ? "Approve" : "Decline"}
-          </Button>
-          <Button variant="plain" color="neutral" onClick={onClose}>
-            Cancel
-          </Button>
-        </DialogActions>
-      </ModalDialog>
-    </Modal>
+    <>
+      <Modal open={isOpen} onClose={onClose}>
+        <ModalDialog variant="outlined" role="alertdialog">
+          <DialogTitle>
+            {approving
+              ? "Booking Request Approval Confirmation"
+              : "Booking Request Decline Confirmation"}
+          </DialogTitle>
+          <Divider />
+          <DialogContent>
+            {approving ? (
+              <Stack gap={3}>
+                <Typography>Are you sure you want to approve this booking request?</Typography>
+                {countOverlapping > 0 && overlappingBookings && (
+                  <Stack gap={1}>
+                    <Typography>
+                      Approving this booking will automatically decline the following overlapping
+                      bookings:
+                    </Typography>
+                    <OverlappingBookings overlappingBookings={overlappingBookings} />
+                  </Stack>
+                )}
+              </Stack>
+            ) : (
+              <Typography>Are you sure you want to decline this booking request?</Typography>
+            )}
+          </DialogContent>
+          <DialogActions>
+            <Button
+              onClick={handleApproveDecline}
+              color={approving ? "success" : "danger"}
+              loading={isApprovingOrDeclining}
+            >
+              {approving ? "Approve" : "Decline"}
+            </Button>
+            <Button variant="plain" color="neutral" onClick={onClose}>
+              Cancel
+            </Button>
+          </DialogActions>
+        </ModalDialog>
+      </Modal>
+    </>
   );
 };
 

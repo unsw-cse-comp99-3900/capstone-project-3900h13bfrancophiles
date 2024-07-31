@@ -2,15 +2,17 @@
 import * as React from "react";
 import Typography from "@mui/joy/Typography";
 import IconButton from "@mui/joy/IconButton";
-import { Link, Skeleton, Stack } from "@mui/joy";
+import { Alert, Link, Skeleton, Stack } from "@mui/joy";
 import { format } from "date-fns";
 import useSpace from "@/hooks/useSpace";
 import CheckIcon from "@mui/icons-material/Check";
-import CloseIcon from "@mui/icons-material/Close";
 import Avatar from "@mui/joy/Avatar";
 import useUser from "@/hooks/useUser";
 import NextLink from "next/link";
 import ApproveDeclineModal from "@/components/ApproveDeclineModal";
+import WarningIcon from "@mui/icons-material/Warning";
+import CloseIcon from "@mui/icons-material/Close";
+import { getInitials } from "@/utils/icons";
 
 import { Booking } from "@/types";
 
@@ -109,13 +111,29 @@ function PendingBookingsRow({ row, page, rowsPerPage, sort }: PendingBookingRowP
           setApproveDeclineError={setApproveDeclineError}
         />
       )}
+      {approveDeclineError && (
+        <Alert
+          startDecorator={<WarningIcon />}
+          variant="soft"
+          color="danger"
+          endDecorator={
+            <React.Fragment>
+              <IconButton
+                variant="soft"
+                size="sm"
+                color="danger"
+                onClick={() => setApproveDeclineError(null)}
+              >
+                <CloseIcon />
+              </IconButton>
+            </React.Fragment>
+          }
+        >
+          {approveDeclineError}
+        </Alert>
+      )}
     </>
   );
-}
-
-export function getInitials(fullname: string): string {
-  const names = fullname.split(" ");
-  return names[0][0] + names[names.length - 1][0];
 }
 
 export default PendingBookingsRow;
