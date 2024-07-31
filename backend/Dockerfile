@@ -1,9 +1,11 @@
-FROM node:20.11-alpine as builder
+FROM node:20 AS builder
 
 # Set the current working directory inside the container
 WORKDIR /app
 
 # Install dependencies
+RUN apt-get update && apt-get install -y build-essential libcairo2-dev libpango1.0-dev libjpeg-dev
+
 COPY package.json yarn.lock ./
 RUN yarn install --frozen-lockfile
 
@@ -12,8 +14,10 @@ COPY . .
 
 RUN yarn build
 
-FROM node:20.11-alpine as runner
+FROM node:20 AS runner
 WORKDIR /app
+
+RUN apt-get update && apt-get install -y build-essential libcairo2-dev libpango1.0-dev libjpeg-dev
 
 COPY package.json yarn.lock ./
 RUN yarn install --frozen-lockfile --production
