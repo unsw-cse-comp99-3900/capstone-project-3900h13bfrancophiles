@@ -230,7 +230,11 @@ function CurrentBookingCard({ booking }: CurrentBookingCardProps) {
           </DialogActions>
         </ModalDialog>
       </Modal>
-      {checkInOrOutError && <ErrorSnackbar errorMessage={checkInOrOutError} open={true} />}
+      <ErrorSnackbar
+        errorMessage={checkInOrOutError ?? ""}
+        open={!!checkInOrOutError}
+        onClose={() => setCheckInOrOutError(null)}
+      />
     </>
   );
 }

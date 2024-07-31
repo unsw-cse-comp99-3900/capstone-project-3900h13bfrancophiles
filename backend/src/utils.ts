@@ -1,8 +1,10 @@
-import { space, config } from "../drizzle/schema";
-import { eq } from "drizzle-orm";
+import { space, config, booking } from "../drizzle/schema";
+import { and, eq, gt, lt, ne } from "drizzle-orm";
 
 import { db } from "./index";
 import { AnonymousBooking, Booking, BookingStatus, USER_GROUPS, UserGroup } from "./types";
+import { sendBookingEmail } from "./email/service";
+import { BOOKING_DECLINE } from "./email/template";
 
 /**
  * Format the booking dates by adding a Z to the end to signify UTC time. It
@@ -86,5 +88,38 @@ export async function now(): Promise<Date> {
     return currentTime ? new Date(currentTime) : new Date();
   } else {
     return new Date();
+  }
+}
+
+/**
+ * Before a booking is confirmed (by edit, approval, or create), overlapping pending bookings
+ * must be declined
+ */
+export async function declineOverlapping(
+  tx: typeof db,
+  spaceId: string,
+  startTime: string,
+  endTime: string,
+  updatedBookingId?: number,
+) {
+  // Decline overlapping bookings and get the updated records
+  const declinedBookings = await tx
+    .update(booking)
+    .set({ currentstatus: "declined" })
+    .where(
+      and(
+        eq(booking.currentstatus, "pending"),
+        eq(booking.spaceid, spaceId),
+        lt(booking.starttime, endTime),
+        gt(booking.endtime, startTime),
+        ...(updatedBookingId ? [ne(booking.id, updatedBookingId)] : []),
+      ),
+    )
+    .returning();
+
+  // Notify users about declined overlapping bookings
+  const formattedDeclinedBookings = declinedBookings.map(formatBookingDates);
+  for (const declinedBooking of formattedDeclinedBookings) {
+    await sendBookingEmail(declinedBooking.zid, declinedBooking, BOOKING_DECLINE);
   }
 }

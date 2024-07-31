@@ -6,9 +6,10 @@ import WarningRoundedIcon from "@mui/icons-material/WarningRounded";
 interface ErrorSnackbarProps {
   errorMessage: string;
   open: boolean;
+  onClose: () => void;
 }
-export default function ErrorSnackbar(body: ErrorSnackbarProps) {
-  const [open, setOpen] = React.useState(body.open);
+
+export default function ErrorSnackbar(props: ErrorSnackbarProps) {
   const [left, setLeft] = React.useState<undefined | number>();
   const timer = React.useRef<undefined | number>();
   const duration = 5000;
@@ -18,13 +19,13 @@ export default function ErrorSnackbar(body: ErrorSnackbarProps) {
     }, 100);
   };
   React.useEffect(() => {
-    if (open && duration !== undefined && duration > 0) {
+    if (props.open && duration !== undefined && duration > 0) {
       setLeft(duration);
       countdown();
     } else {
       window.clearInterval(timer.current);
     }
-  }, [open, duration]);
+  }, [props.open, duration]);
   const handlePause = () => {
     window.clearInterval(timer.current);
   };
@@ -40,19 +41,19 @@ export default function ErrorSnackbar(body: ErrorSnackbarProps) {
       onFocus={handlePause}
       onBlur={handleResume}
       onUnmount={() => setLeft(undefined)}
-      open={open}
+      open={props.open}
       variant="soft"
       color="danger"
-      onClose={() => setOpen(false)}
+      onClose={props.onClose}
       anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
       startDecorator={<WarningRoundedIcon />}
       endDecorator={
-        <Button onClick={() => setOpen(false)} size="sm" variant="soft" color="danger">
+        <Button onClick={props.onClose} size="sm" variant="soft" color="danger">
           Dismiss
         </Button>
       }
     >
-      {body.errorMessage}
+      {props.errorMessage}
     </Snackbar>
   );
 }

@@ -55,6 +55,7 @@ const ApproveDeclineModal: React.FC<ApproveDeclineModalProps> = ({
       }
       await mutatePendingBookings();
       await mutateOverlappingBookings();
+      onClose();
     } catch (error) {
       if (error instanceof Error) {
         setApproveDeclineError(error.message);
@@ -63,7 +64,6 @@ const ApproveDeclineModal: React.FC<ApproveDeclineModalProps> = ({
       }
     } finally {
       setIsApprovingOrDeclining(false);
-      onClose();
     }
   };
 

@@ -13,7 +13,13 @@ import {
   TypedRequest,
   TypedResponse,
 } from "../types";
-import { formatBookingDates, initialBookingStatus, withinDateRange, now } from "../utils";
+import {
+  formatBookingDates,
+  initialBookingStatus,
+  withinDateRange,
+  now,
+  declineOverlapping,
+} from "../utils";
 
 export async function checkInBooking(
   req: TypedRequest<{ id: number }>,
@@ -168,25 +174,29 @@ export async function createBooking(
     return;
   }
 
-  let createdBooking: Booking;
   try {
-    const res = await db
-      .insert(booking)
-      .values({
-        zid: req.token.user,
-        currentstatus: status,
-        ...req.body,
-      })
-      .returning();
+    const createdBooking = await db.transaction(async (tx) => {
+      if (status === "confirmed") {
+        await declineOverlapping(tx, req.body.spaceid, req.body.starttime, req.body.endtime);
+      }
 
-    createdBooking = formatBookingDates(res[0]);
+      const res = await tx
+        .insert(booking)
+        .values({
+          zid: req.token.user,
+          currentstatus: status,
+          ...req.body,
+        })
+        .returning();
+
+      return formatBookingDates(res[0]);
+    });
+
     await sendBookingEmail(req.token.user, createdBooking, BOOKING_REQUEST);
+    res.json({ booking: createdBooking });
   } catch (e) {
     res.status(400).json({ error: `${e}` });
-    return;
   }
-
-  res.json({ booking: createdBooking });
 }
 
 export async function deleteBooking(
@@ -266,32 +276,39 @@ export async function editBooking(
       return;
     }
 
-    let formattedBooking: Booking;
     try {
-      const res = await db
-        .update(booking)
-        .set({
-          starttime: editedBooking.starttime,
-          endtime: editedBooking.endtime,
-          spaceid: editedBooking.spaceid,
-          currentstatus: newBookingStatus,
-          description: editedBooking.description,
-        })
-        .where(and(eq(booking.id, req.body.id), eq(booking.zid, req.token.user)))
-        .returning();
+      const returnedBooking = await db.transaction(async (tx) => {
+        if (newBookingStatus === "confirmed") {
+          await declineOverlapping(
+            tx,
+            editedBooking.spaceid,
+            editedBooking.starttime,
+            editedBooking.endtime,
+            editedBooking.id,
+          );
+        }
 
-      formattedBooking = formatBookingDates(res[0]);
-      // TODO: This email should show the old details, and the new details too...
-      await sendBookingEmail(req.token.user, formattedBooking, BOOKING_EDIT);
+        const res = await tx
+          .update(booking)
+          .set({
+            starttime: editedBooking.starttime,
+            endtime: editedBooking.endtime,
+            spaceid: editedBooking.spaceid,
+            currentstatus: newBookingStatus,
+            description: editedBooking.description,
+          })
+          .where(and(eq(booking.id, req.body.id), eq(booking.zid, req.token.user)))
+          .returning();
+
+        return formatBookingDates(res[0]);
+      });
+
+      await sendBookingEmail(req.token.user, returnedBooking, BOOKING_EDIT);
+      res.json({ booking: returnedBooking });
     } catch (e) {
       res.status(400).json({ error: `${e}` });
-      return;
     }
-
-    // TODO: trigger admin reapproval if newStatus is pending
-
-    res.json({ booking: formattedBooking });
   } catch (error) {
-    res.status(204);
+    res.status(500).json({ error: "Internal server error" });
   }
 }
