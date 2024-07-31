@@ -49,6 +49,17 @@ function createBooking(
   return apiCall("/bookings/create", "POST", { spaceid, starttime, endtime, description }, token);
 }
 
+function editBooking(
+  token: string,
+  id: number,
+  starttime: Date | string,
+  endtime: Date | string,
+  spaceid: string,
+  description: string,
+) {
+  return apiCall("/bookings/edit", "PUT", { id, starttime, endtime, spaceid, description }, token);
+}
+
 function deleteBooking(id: number, token: string) {
   return apiCall("/bookings/delete", "DELETE", { id }, token);
 }
@@ -95,6 +106,7 @@ export default {
   login,
   logout,
   createBooking,
+  editBooking,
   deleteBooking,
   currentBookings,
   upcomingBookings,

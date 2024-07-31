@@ -223,6 +223,8 @@ export async function deleteBooking(
       return;
     }
 
+    // Deleting a pending edit does NOT delete original booking
+
     res.json({ booking: formattedBooking });
   } catch (error) {
     res.status(500);
@@ -249,6 +251,18 @@ export async function editBooking(
       return;
     }
 
+    if (
+      !(
+        existingBooking[0].currentstatus === "pending" ||
+        existingBooking[0].currentstatus === "confirmed"
+      )
+    ) {
+      res
+        .status(404)
+        .json({ error: `Cannot edit a booking with status ${existingBooking[0].currentstatus}` });
+      return;
+    }
+
     const editedBooking = { ...existingBooking[0], ...req.body };
 
     if (isEqual(editedBooking, existingBooking[0])) {
@@ -267,28 +281,52 @@ export async function editBooking(
     }
 
     let formattedBooking: Booking;
-    try {
-      const res = await db
-        .update(booking)
-        .set({
-          starttime: editedBooking.starttime,
-          endtime: editedBooking.endtime,
-          spaceid: editedBooking.spaceid,
-          currentstatus: newBookingStatus,
-          description: editedBooking.description,
-        })
-        .where(and(eq(booking.id, req.body.id), eq(booking.zid, req.token.user)))
-        .returning();
+    if (existingBooking[0].currentstatus === "pending" || newBookingStatus === "confirmed") {
+      // If booking is still pending or new approval is not required, update the old booking in place
+      try {
+        const res = await db
+          .update(booking)
+          .set({
+            starttime: editedBooking.starttime,
+            endtime: editedBooking.endtime,
+            spaceid: editedBooking.spaceid,
+            currentstatus: newBookingStatus,
+            description: editedBooking.description,
+          })
+          .where(and(eq(booking.id, req.body.id), eq(booking.zid, req.token.user)))
+          .returning();
 
-      formattedBooking = formatBookingDates(res[0]);
-      // TODO: This email should show the old details, and the new details too...
-      await sendBookingEmail(req.token.user, formattedBooking, BOOKING_EDIT);
-    } catch (e) {
-      res.status(400).json({ error: `${e}` });
-      return;
+        formattedBooking = formatBookingDates(res[0]);
+        // TODO: This email should show the old details, and the new details too...
+        await sendBookingEmail(req.token.user, formattedBooking, BOOKING_EDIT);
+      } catch (e) {
+        res.status(400).json({ error: `${e}` });
+        return;
+      }
+    } else {
+      // If approval is required; create new booking request with original booking as parent
+      editedBooking.parent = existingBooking[0].id;
+      try {
+        const res = await db
+          .insert(booking)
+          .values({
+            zid: req.token.user,
+            starttime: editedBooking.starttime,
+            endtime: editedBooking.endtime,
+            spaceid: editedBooking.spaceid,
+            description: editedBooking.description,
+            currentstatus: newBookingStatus,
+            parent: existingBooking[0].id,
+          })
+          .returning();
+
+        formattedBooking = formatBookingDates(res[0]);
+        await sendBookingEmail(req.token.user, formattedBooking, BOOKING_EDIT);
+      } catch (e) {
+        res.status(400).json({ error: `${e}` });
+        return;
+      }
     }
-
-    // TODO: trigger admin reapproval if newStatus is pending
 
     res.json({ booking: formattedBooking });
   } catch (error) {
