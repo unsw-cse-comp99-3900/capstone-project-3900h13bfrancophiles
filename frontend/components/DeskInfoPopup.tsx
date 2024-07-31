@@ -73,8 +73,6 @@ const DeskInfoPopup = ({
                 sx={{
                   fontSize: { xs: "14pt", sm: "20pt" },
                   marginRight: 1.7,
-                  // height: { xs: "70px", sm: "100px" },
-                  // width: { xs: "70px", sm: "100px" },
                 }}
               >
                 {getInitials(user?.name ?? "")}
