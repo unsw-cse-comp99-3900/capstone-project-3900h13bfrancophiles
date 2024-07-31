@@ -1,17 +1,26 @@
-import { decodeJwt, jwtVerify, SignJWT } from 'jose';
-import * as crypto from 'node:crypto';
-import { person } from '../../drizzle/schema';
-import { eq } from 'drizzle-orm';
+import { decodeJwt, jwtVerify, SignJWT } from "jose";
+import * as crypto from "node:crypto";
+import { person } from "../../drizzle/schema";
+import { eq } from "drizzle-orm";
 
-import { AUTH_SECRET } from '../../config';
-import { db } from '../index';
-import { TokenPayload, UserGroup } from '../types';
-import { now } from '../utils';
+import { AUTH_SECRET } from "../../config";
+import { db } from "../index";
+import { TokenPayload, UserGroup } from "../types";
+import { now } from "../utils";
 
 // Helpers for validating user and password
-export function validateLogin(zid: number, zpass: string): boolean {
-  // TODO: Integrate with UNSW db
-  return `z${zid}` === zpass;
+export async function validateLogin(zid: number, zpass: string): Promise<boolean> {
+  // TODO: Remove the escape hatch
+  if (`z${zid}` === zpass) return true;
+
+  // TODO: Use something official rather than the CSESoc API
+  const res = await fetch("https://id.csesoc.unsw.edu.au/api/", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ username: `z${zid}`, password: zpass }),
+  });
+
+  return res.ok;
 }
 
 // Helpers for managing permissions
@@ -35,7 +44,7 @@ export async function createToken(user: number, group: UserGroup) {
   const exp = iat + EXPIRY_TIME_MS / 1000;
 
   const token = await new SignJWT({ ...payload })
-    .setProtectedHeader({ alg: 'HS256', typ: 'JWT' })
+    .setProtectedHeader({ alg: "HS256", typ: "JWT" })
     .setExpirationTime(exp)
     .setIssuedAt(iat)
     .sign(ENCODED_SECRET);

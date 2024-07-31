@@ -15,7 +15,8 @@ import {
 import { anonymiseBooking, formatBookingDates, now } from '../utils';
 import typia from 'typia';
 
-export async function roomDetails(req: TypedGETRequest, res: TypedResponse<{ rooms: Room[] }>) {
+
+export async function roomDetails(_req: TypedGETRequest, res: TypedResponse<{ rooms: Room[] }>) {
   try {
     const rooms = await db
       .select({
@@ -31,7 +32,7 @@ export async function roomDetails(req: TypedGETRequest, res: TypedResponse<{ roo
 
     res.json({ rooms });
   } catch (error) {
-    res.status(500).json({ error: 'Failed to fetch rooms' });
+    res.status(500).json({ error: "Failed to fetch rooms" });
   }
 }
 
@@ -56,7 +57,7 @@ export async function singleSpaceDetails(
       .where(eq(room.id, req.params.spaceId));
 
     if (roomRes.length) {
-      res.json({ space: roomRes[0], type: 'room' });
+      res.json({ space: roomRes[0], type: "room" });
       return;
     }
 
@@ -74,18 +75,18 @@ export async function singleSpaceDetails(
       .where(eq(hotdesk.id, req.params.spaceId));
 
     if (deskRes.length) {
-      res.json({ space: deskRes[0], type: 'desk' });
+      res.json({ space: deskRes[0], type: "desk" });
       return;
     }
 
     res.status(404).json({ error: `No space found with id "${req.params.spaceId}"` });
   } catch (error) {
-    res.status(500).json({ error: 'Failed to fetch rooms' });
+    res.status(500).json({ error: "Failed to fetch rooms" });
   }
 }
 
 export async function allSpaces(
-  req: TypedGETRequest,
+  _req: TypedGETRequest,
   res: TypedResponse<{ spaces: { id: string; name: string; isRoom: boolean }[] }>,
 ) {
   const subquery = db.select({ data: room.id }).from(room);
@@ -121,7 +122,7 @@ export async function spaceAvailabilities(
       );
 
     if (spaceExists.length == 0) {
-      res.status(404).json({ error: 'Space ID does not exist' });
+      res.status(404).json({ error: "Space ID does not exist" });
       return;
     }
 
@@ -141,13 +142,16 @@ export async function spaceAvailabilities(
     res.json({ bookings: existingBookings.map(formatBookingDates).map(anonymiseBooking) });
     return;
   } catch (error) {
-    res.status(500).json({ error: 'Failed to fetch rooms' });
+    res.status(500).json({ error: "Failed to fetch rooms" });
   }
 }
 
 type canBookReq = { spaceId: string };
 
-export async function roomCanBook(req: TypedGETRequest<canBookReq>, res: TypedResponse<{ canBook: boolean }>) {
+export async function roomCanBook(
+  req: TypedGETRequest<canBookReq>,
+  res: TypedResponse<{ canBook: boolean }>,
+) {
   try {
     const roomRes = await db
       .select({
@@ -163,7 +167,7 @@ export async function roomCanBook(req: TypedGETRequest<canBookReq>, res: TypedRe
 
     res.status(404).json({ error: `No room found with id "${req.params.spaceId}"` });
   } catch (error) {
-    res.status(500).json({ error: 'Failed to fetch rooms' });
+    res.status(500).json({ error: "Failed to fetch rooms" });
   }
 }
 
@@ -175,7 +179,7 @@ export function hasMinimumAuthority(userGrp: UserGroup, minReqGrp: UserGroup): b
 }
 
 export async function deskPositions(
-  req: TypedGETRequest,
+  _req: TypedGETRequest,
   res: TypedResponse<{ desks: { id: string; floor: string; xcoord: number; ycoord: number }[] }>,
 ) {
   const desks = await db

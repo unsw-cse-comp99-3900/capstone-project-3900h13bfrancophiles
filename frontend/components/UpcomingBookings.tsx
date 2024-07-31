@@ -49,6 +49,7 @@ export default function UpcomingBookings() {
   const handleChangeFilter = (event: unknown, newValue: string | null) => {
     if (newValue !== null) {
       setFilter(newValue);
+      setPage(0);
     }
   };
 
@@ -112,7 +113,7 @@ export default function UpcomingBookings() {
         >
           <thead>
             <tr>
-              <th style={{ width: 50, padding: "12px 6px" }}>Reference No.</th>
+              <th style={{ width: 60, padding: "12px 6px" }}>Reference No.</th>
               <th style={{ width: 100, padding: "12px 6px" }}>Status</th>
               <th style={{ width: 140, padding: "12px 6px" }}>Time</th>
               <th style={{ width: 140, padding: "12px 6px" }}>Location</th>

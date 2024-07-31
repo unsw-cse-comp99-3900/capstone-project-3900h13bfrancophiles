@@ -1,26 +1,27 @@
-import { eq, and, isNotNull } from 'drizzle-orm';
-import { person, config } from '../../drizzle/schema';
+import { eq } from "drizzle-orm";
+import { config, person } from "../../drizzle/schema";
 
-import { db, emailTransporter } from '../index';
-import { fillEmailTemplate } from './template';
-import { Booking, EmailContents, EmailRecipient } from '../types';
+import { db, emailTransporter } from "../index";
+import { fillEmailTemplate } from "./template";
+import { Booking, EmailContents, EmailRecipient } from "../types";
 
 // For testing
 const EMAIL_SENDER = '"Wilma 👻" <wilma44@ethereal.email>';
-const EMAIL_PASS = 'GWCxu8xEeJAwGAMGzF';
 
 export async function emailsEnabledGlobally(): Promise<boolean> {
   try {
-    const result = await db.select({ value: config.value }).from(config).where(eq(config.key, 'global-email')).limit(1);
+    const result = await db
+      .select({ value: config.value })
+      .from(config)
+      .where(eq(config.key, "global-email"))
+      .limit(1);
 
     if (result.length !== 1) {
       return false;
     }
 
-    const value = (result[0]?.value ?? '').toLowerCase() === 'true';
-
-    return value;
-  } catch (e: any) {
+    return (result[0]?.value ?? "").toLowerCase() === "true";
+  } catch (e) {
     throw new Error(`Error fetching global-email config: ${e}`);
   }
 }
@@ -36,13 +37,17 @@ export async function getEmailRecipient(zid: number): Promise<EmailRecipient> {
     .limit(1);
 
   if (res.length != 1) {
-    throw new Error('Invalid zid: could not get email address');
+    throw new Error("Invalid zid: could not get email address");
   }
 
   return res[0];
 }
 
-export async function sendBookingEmail(zid: number, booking: Booking, template: EmailContents): Promise<boolean> {
+export async function sendBookingEmail(
+  zid: number,
+  booking: Booking,
+  template: EmailContents,
+): Promise<boolean> {
   // Check that email sending is enabled globally
   const sendEmail = await emailsEnabledGlobally();
   if (!sendEmail) {
@@ -65,7 +70,7 @@ export async function sendBookingEmail(zid: number, booking: Booking, template: 
 
   const email = await fillEmailTemplate(template, emailContent);
 
-  const emailInfo = await emailTransporter.sendMail({
+  await emailTransporter.sendMail({
     from: EMAIL_SENDER,
     to: emailRecipient.email,
     subject: email.subject,

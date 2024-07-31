@@ -19,14 +19,14 @@ import {
 } from "@mui/x-date-pickers";
 import { AccessTime } from "@mui/icons-material";
 import { Button, DialogActions, ToggleButtonGroup } from "@mui/joy";
-import { addMinutes, startOfDay } from "date-fns";
+import { addMinutes, endOfDay, startOfDay } from "date-fns";
 
 interface JoyFieldProps extends InputProps {
   label?: React.ReactNode;
   inputRef?: React.Ref<HTMLInputElement>;
   enableAccessibleFieldDOMStructure?: boolean;
   InputProps?: {
-    ref?: React.Ref<unknown>;
+    ref?: React.Ref<HTMLDivElement>;
     endAdornment?: React.ReactNode;
     startAdornment?: React.ReactNode;
   };
@@ -114,6 +114,7 @@ const JoyTimeField = React.forwardRef(function JoyTimeField(
 export interface JoyTimePickerProps extends DesktopTimePickerProps<Date> {
   showMidnightButton?: boolean;
   size?: "sm" | "md" | "lg";
+  singleColumn?: boolean;
 }
 
 const JoyTimePicker = React.forwardRef(function JoyTimePicker(
@@ -130,9 +131,14 @@ const JoyTimePicker = React.forwardRef(function JoyTimePicker(
     }
   };
 
+  const showMidnight =
+    props.showMidnightButton &&
+    !props.singleColumn &&
+    !(props.value && props.shouldDisableTime?.(endOfDay(props.value), "seconds"));
+
   const renderActionBar = (actionBarProps: PickersActionBarProps) => {
     return (
-      props.showMidnightButton && (
+      showMidnight && (
         <DialogActions className={actionBarProps.className}>
           <ToggleButtonGroup
             variant="plain"
@@ -160,7 +166,7 @@ const JoyTimePicker = React.forwardRef(function JoyTimePicker(
       onClose={() => setOpen(false)}
       disableOpenPicker
       closeOnSelect={false}
-      thresholdToRenderTimeInASingleColumn={48}
+      thresholdToRenderTimeInASingleColumn={props.singleColumn ? 2000 : undefined}
       skipDisabled
       slots={{
         ...props.slots,

@@ -37,7 +37,7 @@ const AvailabilitiesPage: React.FC<AvailabilitesPageProps> = ({ spaceId, spaceTy
 
   if (spaceLoading) return <Loading page="" />;
 
-  if (spaceType !== spaceOutput.type || spaceOutput.error)
+  if (!spaceLoading && (spaceType !== spaceOutput.type || spaceOutput.error))
     return <Error page={`${spaceType}s/${spaceId}`} message={`${spaceType} ID not found`} />;
 
   const subheadings = {
@@ -79,7 +79,7 @@ const AvailabilitiesPage: React.FC<AvailabilitesPageProps> = ({ spaceId, spaceTy
           >
             <Box>
               <Button
-                color="success"
+                color="primary"
                 variant="solid"
                 disabled={!canBook}
                 onClick={() => {
