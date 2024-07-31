@@ -160,7 +160,6 @@ const DeskIcon = ({
           {status && status.status === "Available" && (
             <Avatar
               variant="solid"
-              //onCLicK
               size="sm"
               color={"success"}
               src={"DeskIcon1.svg"}
