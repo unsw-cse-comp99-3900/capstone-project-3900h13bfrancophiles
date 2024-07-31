@@ -3,7 +3,6 @@
 import RoomCard from "@/components/RoomCard";
 import SearchIcon from "@mui/icons-material/Search";
 import FilterListIcon from "@mui/icons-material/FilterList";
-import SwapVertIcon from "@mui/icons-material/SwapVert";
 import * as React from "react";
 import {
   Box,
@@ -18,6 +17,7 @@ import {
   Stack,
   Slider,
   Typography,
+  Checkbox,
 } from "@mui/joy";
 import useRoomDetails from "@/hooks/useRoomDetails";
 import { Room } from "@/types";
@@ -36,6 +36,8 @@ interface FilterOption {
 interface Filters {
   type: string;
   capacity: number;
+  available: boolean;
+  unavailable: boolean;
 }
 
 interface FilterControlProps {
@@ -89,6 +91,31 @@ const renderFilters = (
         }))
       }
     />
+    <FormControl size="sm">
+      <FormLabel>Status</FormLabel>
+      <Stack direction={"row"} spacing={4}>
+        <Checkbox
+          label="Available"
+          checked={tempFilters.available}
+          onChange={() =>
+            setTempFilters((prevFilters) => ({
+              ...prevFilters,
+              available: !prevFilters.available,
+            }))
+          }
+        />
+        <Checkbox
+          label="Unavailable"
+          checked={tempFilters.unavailable}
+          onChange={() =>
+            setTempFilters((prevFilters) => ({
+              ...prevFilters,
+              unavailable: !prevFilters.unavailable,
+            }))
+          }
+        />
+      </Stack>
+    </FormControl>
   </React.Fragment>
 );
 
@@ -120,16 +147,19 @@ const CapacitySlider: React.FC<CapacitySliderProps> = ({ label, min, max, value,
 
 export default function Rooms() {
   const [filtersOpen, setFiltersOpen] = React.useState<boolean>(false);
-  const [sort, setSort] = React.useState<boolean>(true);
   const [searchQuery, setSearchQuery] = React.useState<string>("");
 
   const [filters, setFilters] = React.useState<Filters>({
     type: "all",
     capacity: 1,
+    available: false,
+    unavailable: false,
   });
   const [tempFilters, setTempFilters] = React.useState<Filters>({
     type: "all",
     capacity: 1,
+    available: false,
+    unavailable: false,
   });
   const { date, start, end, dateInputProps, startTimePickerProps, endTimePickerProps } =
     useTimeRange();
@@ -147,13 +177,14 @@ export default function Rooms() {
     setFiltersOpen(!filtersOpen);
   };
 
-  const toggleSort = () => {
-    setSort(!sort);
-  };
-
   const applyFilters = () => {
     setFilters(tempFilters);
-    if (tempFilters.type !== "all" || tempFilters.capacity !== 1) {
+    if (
+      tempFilters.type !== "all" ||
+      tempFilters.capacity !== 1 ||
+      tempFilters.available ||
+      tempFilters.unavailable
+    ) {
       setIsFiltered(true);
     } else {
       setIsFiltered(false);
@@ -167,7 +198,12 @@ export default function Rooms() {
         filters.type === "all" || room.type.toLowerCase().replace(" ", "-") === filters.type;
       const matchesCapacity = room.capacity >= filters.capacity;
       const matchesSearchQuery = room.name.toLowerCase().includes(searchQuery.toLowerCase());
-      return matchesType && matchesCapacity && matchesSearchQuery;
+      const roomStatus = getRoomAvailability(room.id);
+      const matchesStatus =
+        (filters.available && roomStatus === "Available") ||
+        (filters.unavailable && roomStatus === "Unavailable") ||
+        (!filters.available && !filters.unavailable);
+      return matchesType && matchesCapacity && matchesSearchQuery && matchesStatus;
     });
   };
 
@@ -179,12 +215,10 @@ export default function Rooms() {
   };
 
   const sortedRooms = [...roomsData].sort((a, b) => {
-    const availabilityA = getRoomAvailability(a.id);
-    const availabilityB = getRoomAvailability(b.id);
-    return availabilityA.localeCompare(availabilityB);
+    return a.capacity - b.capacity;
   });
 
-  const displayedRooms = filterRooms(sort ? sortedRooms : sortedRooms.reverse());
+  const displayedRooms = filterRooms(sortedRooms);
 
   return (
     <>
@@ -251,30 +285,17 @@ export default function Rooms() {
               />
             </FormControl>
           </Stack>
-          <Stack direction={"row"} spacing={2}>
-            <FormControl>
-              <Button
-                startDecorator={<FilterListIcon />}
-                variant={isFiltered ? "solid" : "outlined"}
-                color="neutral"
-                size="sm"
-                onClick={toggleFilters}
-              >
-                Filter
-              </Button>
-            </FormControl>
-            <FormControl>
-              <Button
-                startDecorator={<SwapVertIcon />}
-                variant={sort ? "solid" : "outlined"}
-                color="neutral"
-                size="sm"
-                onClick={toggleSort}
-              >
-                Sort
-              </Button>
-            </FormControl>
-          </Stack>
+          <FormControl>
+            <Button
+              startDecorator={<FilterListIcon />}
+              variant={isFiltered ? "solid" : "outlined"}
+              color="neutral"
+              size="sm"
+              onClick={toggleFilters}
+            >
+              Filter
+            </Button>
+          </FormControl>
         </Stack>
       </Stack>
 
