@@ -23,8 +23,7 @@ import { deleteBooking } from "@/api";
 import BookingModal from "./BookingModal/BookingModal";
 import NextLink from "next/link";
 import { Booking } from "@/types";
-import ErrorModal from "@/components/ErrorModal";
-
+import ErrorSnackbar from "@/components/ErrorSnackbar";
 export interface UpcomingBookingRowProps {
   row: Booking;
   mutate: () => void;
@@ -126,13 +125,7 @@ export default function UpcomingBookingRow({ row, mutate }: UpcomingBookingRowPr
           </DialogActions>
         </ModalDialog>
       </Modal>
-      {deleteBookingError && (
-        <ErrorModal
-          open={deleteBookingError != null}
-          errorMessage={deleteBookingError}
-          onClose={() => setDeleteBookingError(null)}
-        />
-      )}
+      {deleteBookingError && <ErrorSnackbar errorMessage={deleteBookingError} open={true} />}
       <BookingModal
         open={editModalOpen}
         onClose={() => handleCloseEditModal()}

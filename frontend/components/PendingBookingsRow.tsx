@@ -12,8 +12,7 @@ import ApproveDeclineModal from "@/components/ApproveDeclineModal";
 import CloseIcon from "@mui/icons-material/Close";
 import { getInitials } from "@/utils/icons";
 import { Booking } from "@/types";
-import ErrorModal from "@/components/ErrorModal";
-
+import ErrorSnackbar from "@/components/ErrorSnackbar";
 export interface PendingBookingRowProps {
   row: Booking;
   page: number;
@@ -108,13 +107,7 @@ function PendingBookingsRow({ row, page, rowsPerPage, sort }: PendingBookingRowP
           setApproveDeclineError={setApproveDeclineError}
         />
       )}
-      {approveDeclineError && (
-        <ErrorModal
-          open={approveDeclineError != null}
-          errorMessage={approveDeclineError}
-          onClose={() => setApproveDeclineError(null)}
-        />
-      )}
+      {approveDeclineError && <ErrorSnackbar errorMessage={approveDeclineError} open={true} />}
     </>
   );
 }
