@@ -284,6 +284,7 @@ export async function editBooking(
             editedBooking.spaceid,
             editedBooking.starttime,
             editedBooking.endtime,
+            editedBooking.id,
           );
         }
 
