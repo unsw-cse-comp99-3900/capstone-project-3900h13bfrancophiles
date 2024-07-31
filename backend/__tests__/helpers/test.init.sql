@@ -19,15 +19,15 @@ VALUES (1111111, 'admin1@email.com', 'Admin One', 'Mr', 'CSE', 'ENG', 'Professio
 
 -- 2 rooms and 2 desks - different combinations of min grps
 INSERT INTO space(id, name, minreqgrp, minbookgrp)
-VALUES ('K-K17-111', 'Room 1', 'hdr', 'admin'),
+VALUES ('K-K17-LG1', 'Room 1', 'hdr', 'admin'),
        ('K-K17-222', 'Room 2', 'csestaff', 'csestaff'),
        ('K-K17-333-1', 'Desk 1', 'hdr', 'hdr'),
-       ('K-K17-444-1', 'Desk 2', 'csestaff', 'admin');
+       ('K-K17-200-1', 'Desk 2', 'csestaff', 'admin');
 
 INSERT INTO room(id, capacity, roomnumber, type)
-VALUES ('K-K17-111', 5, '111', 'Meeting Room'),
+VALUES ('K-K17-LG1', 5, '111', 'Meeting Room'),
        ('K-K17-222', 100, '222', 'Seminar Room');
 
 INSERT INTO hotdesk(id, floor, xcoord, ycoord)
 VALUES ('K-K17-333-1', 'K17 L3', 30, 30),
-       ('K-K17-444-1', 'K17 L4', 40, 40);
+       ('K-K17-200-1', 'K17 L2', 40, 40);
