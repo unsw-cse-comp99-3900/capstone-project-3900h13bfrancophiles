@@ -3,7 +3,7 @@ import { REPORT_TYPES } from "./index";
 import typia from "typia";
 import { db } from "../index";
 import { hotdesk, room, space } from "../../drizzle/schema";
-import { eq, sql } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 
 interface GenerateReportRequest {
   type: string;
@@ -34,11 +34,7 @@ export async function generateReport(req: TypedRequest<GenerateReportRequest>, r
   const endDate = new Date(req.body.endDate);
   endDate.setDate(endDate.getDate() + 1);
 
-  const fileData = await reportType.formats[req.body.format](
-    startDate,
-    endDate,
-    req.body.spaces,
-  );
+  const fileData = await reportType.formats[req.body.format](startDate, endDate, req.body.spaces);
 
   res.attachment(`${reportType.name}.${req.body.format}`);
   res.header("Access-Control-Expose-Headers", "Content-Disposition");
@@ -53,7 +49,7 @@ type ReportTypeReturn = {
   }[];
 };
 
-export async function getReportTypes(req: TypedRequest, res: TypedResponse<ReportTypeReturn>) {
+export async function getReportTypes(_req: TypedRequest, res: TypedResponse<ReportTypeReturn>) {
   const types = Object.values(REPORT_TYPES).map((reportType) => ({
     type: reportType.key,
     name: reportType.name,
@@ -71,7 +67,7 @@ interface ReportSpace {
 }
 
 export async function getReportSpaces(
-  req: TypedRequest,
+  _req: TypedRequest,
   res: TypedResponse<{ spaces: ReportSpace[] }>,
 ) {
   const spaces: ReportSpace[] = [];
