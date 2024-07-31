@@ -23,6 +23,7 @@ import { deleteBooking } from "@/api";
 import BookingModal from "./BookingModal/BookingModal";
 import NextLink from "next/link";
 import { Booking } from "@/types";
+import ErrorModal from "@/components/ErrorModal";
 
 export interface UpcomingBookingRowProps {
   row: Booking;
@@ -34,6 +35,7 @@ export default function UpcomingBookingRow({ row, mutate }: UpcomingBookingRowPr
   const [bookingToDelete, setBookingToDelete] = React.useState<number | null>(null);
   const [modalOpen, setModalOpen] = React.useState(false);
   const [editModalOpen, setEditModalOpen] = React.useState(false);
+  const [deleteBookingError, setDeleteBookingError] = React.useState<string | null>(null);
 
   const handleDelete = async () => {
     if (bookingToDelete !== null) {
@@ -42,7 +44,7 @@ export default function UpcomingBookingRow({ row, mutate }: UpcomingBookingRowPr
         mutate();
         handleCloseModal();
       } catch (err) {
-        console.error(err);
+        setDeleteBookingError("An unexpected error occurred");
       }
     }
   };
@@ -124,6 +126,13 @@ export default function UpcomingBookingRow({ row, mutate }: UpcomingBookingRowPr
           </DialogActions>
         </ModalDialog>
       </Modal>
+      {deleteBookingError && (
+        <ErrorModal
+          open={deleteBookingError != null}
+          errorMessage={deleteBookingError}
+          onClose={() => setDeleteBookingError(null)}
+        />
+      )}
       <BookingModal
         open={editModalOpen}
         onClose={() => handleCloseEditModal()}

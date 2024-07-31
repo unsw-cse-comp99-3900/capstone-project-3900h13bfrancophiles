@@ -25,6 +25,7 @@ import { checkIn, checkOut } from "@/api";
 import { mutate } from "swr";
 import ConstructionIcon from "@mui/icons-material/Construction";
 import MailIcon from "@mui/icons-material/Mail";
+import ErrorModal from "@/components/ErrorModal";
 
 function CurrentBookings() {
   const { currentBookings } = useCurrentBookings();
@@ -229,6 +230,13 @@ function CurrentBookingCard({ booking }: CurrentBookingCardProps) {
           </DialogActions>
         </ModalDialog>
       </Modal>
+      {checkInOrOutError && (
+        <ErrorModal
+          open={checkInOrOutError != null}
+          errorMessage={checkInOrOutError}
+          onClose={() => setCheckInOrOutError(null)}
+        />
+      )}
     </>
   );
 }

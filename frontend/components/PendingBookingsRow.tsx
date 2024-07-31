@@ -1,8 +1,7 @@
-// PendingBookingsRow.tsx
 import * as React from "react";
 import Typography from "@mui/joy/Typography";
 import IconButton from "@mui/joy/IconButton";
-import { Alert, Link, Skeleton, Stack } from "@mui/joy";
+import { Link, Skeleton, Stack } from "@mui/joy";
 import { format } from "date-fns";
 import useSpace from "@/hooks/useSpace";
 import CheckIcon from "@mui/icons-material/Check";
@@ -10,11 +9,10 @@ import Avatar from "@mui/joy/Avatar";
 import useUser from "@/hooks/useUser";
 import NextLink from "next/link";
 import ApproveDeclineModal from "@/components/ApproveDeclineModal";
-import WarningIcon from "@mui/icons-material/Warning";
 import CloseIcon from "@mui/icons-material/Close";
 import { getInitials } from "@/utils/icons";
-
 import { Booking } from "@/types";
+import ErrorModal from "@/components/ErrorModal";
 
 export interface PendingBookingRowProps {
   row: Booking;
@@ -29,7 +27,6 @@ function PendingBookingsRow({ row, page, rowsPerPage, sort }: PendingBookingRowP
 
   const [isConfirmationOpen, setIsConfirmationOpen] = React.useState(false);
   const [approving, setApproving] = React.useState(false);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [approveDeclineError, setApproveDeclineError] = React.useState<string | null>(null);
 
   return (
@@ -112,25 +109,11 @@ function PendingBookingsRow({ row, page, rowsPerPage, sort }: PendingBookingRowP
         />
       )}
       {approveDeclineError && (
-        <Alert
-          startDecorator={<WarningIcon />}
-          variant="soft"
-          color="danger"
-          endDecorator={
-            <React.Fragment>
-              <IconButton
-                variant="soft"
-                size="sm"
-                color="danger"
-                onClick={() => setApproveDeclineError(null)}
-              >
-                <CloseIcon />
-              </IconButton>
-            </React.Fragment>
-          }
-        >
-          {approveDeclineError}
-        </Alert>
+        <ErrorModal
+          open={approveDeclineError != null}
+          errorMessage={approveDeclineError}
+          onClose={() => setApproveDeclineError(null)}
+        />
       )}
     </>
   );
