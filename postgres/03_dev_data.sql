@@ -1,8 +1,7 @@
 -- Disable triggers to permit past bookings for testing
-ALTER TABLE booking
-    DISABLE TRIGGER trg_chk_create_booking_start_future;
-ALTER TABLE booking
-    DISABLE TRIGGER trg_chk_start_future_limit;
+ALTER TABLE booking DISABLE TRIGGER trg_chk_edit_booking_started;
+ALTER TABLE booking DISABLE TRIGGER trg_chk_create_booking_start_future;
+ALTER TABLE booking DISABLE TRIGGER trg_chk_start_future_limit;
 
 -- hdr student franco reyes
 INSERT INTO person
@@ -157,7 +156,6 @@ VALUES
     (5361092, '2024-08-06T08:00', '2024-08-06T12:00', 'K-K17-403', 'pending', 'overlapping booking 3');
 
 -- Reenable triggers for prod
-ALTER TABLE booking
-    ENABLE TRIGGER trg_chk_create_booking_start_future;
-ALTER TABLE booking
-    ENABLE TRIGGER trg_chk_start_future_limit;
+ALTER TABLE booking ENABLE TRIGGER trg_chk_edit_booking_started;
+ALTER TABLE booking ENABLE TRIGGER trg_chk_create_booking_start_future;
+ALTER TABLE booking ENABLE TRIGGER trg_chk_start_future_limit;

@@ -56,15 +56,17 @@ CREATE TYPE BookingStatusEnum AS ENUM (
 );
 
 CREATE TABLE IF NOT EXISTS booking (
-    id            SERIAL PRIMARY KEY,
-    zId           INT NOT NULL,
-    startTime     TIMESTAMP NOT NULL,
-    endTime       TIMESTAMP NOT NULL,
-    spaceId       TEXT NOT NULL,
-    currentStatus BookingStatusEnum NOT NULL,
-    description   VARCHAR(255) NOT NULL,
-    checkInTime   TIMESTAMP,
-    checkOutTime  TIMESTAMP,
+    id              SERIAL PRIMARY KEY,
+    zId             INT NOT NULL,
+    startTime       TIMESTAMP NOT NULL,
+    endTime         TIMESTAMP NOT NULL,
+    spaceId         TEXT NOT NULL,
+    currentStatus   BookingStatusEnum NOT NULL,
+    description     VARCHAR(255) NOT NULL,
+    checkInTime     TIMESTAMP,
+    checkOutTime    TIMESTAMP,
+    created         TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    modified        TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY(zId) REFERENCES person(zId),
     FOREIGN KEY(spaceId) REFERENCES space(id),
     CONSTRAINT chk_start_lt_end CHECK (startTime < endTime),
@@ -76,6 +78,26 @@ CREATE TABLE IF NOT EXISTS booking (
         date_trunc('day', (endTime - interval '1 second') AT TIME ZONE 'UTC' AT TIME ZONE 'Australia/Sydney')
     )
 );
+
+CREATE OR REPLACE FUNCTION set_timestamp_log()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF (TG_OP = 'INSERT') THEN
+        NEW.created = CURRENT_TIMESTAMP;
+        NEW.modified = CURRENT_TIMESTAMP;
+    ELSIF (TG_OP = 'UPDATE') THEN
+        NEW.created = OLD.created;
+        NEW.modified = CURRENT_TIMESTAMP;
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER set_timestamp_log_before_insert
+BEFORE INSERT ON booking FOR EACH ROW EXECUTE FUNCTION set_timestamp_log();
+
+CREATE TRIGGER set_timestamp_log_before_update
+BEFORE UPDATE ON booking FOR EACH ROW EXECUTE FUNCTION set_timestamp_log();
 
 create function trg_chk_overlap() returns trigger as $$
 begin
@@ -127,6 +149,9 @@ begin
     return new;
 end;
 $$ language plpgsql;
+
+create trigger trg_chk_edit_booking_started before insert or update
+on booking for each row execute procedure trg_chk_edit_booking_started();
 
 create function trg_chk_start_future_limit() returns trigger as $$
 declare
