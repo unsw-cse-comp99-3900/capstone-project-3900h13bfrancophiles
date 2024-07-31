@@ -47,8 +47,6 @@ yarn drizzle
 ```
 The `yarn drizzle` above generates a Drizzle schema from the database, so will need to be re-run whenever the database schema changes.
 
-The above may fail if you are using a Node version greater than 20. If so, you sh
-
 You will need to configure the `.env` file, there is an example file provided. The required environment variables are:
 - `PORT` - the port to run the backend on
 - `DATABASE_URL` - connection string for the database, in the format `postgresql://$USER:$PASSWORD@localhost:5432/$DATABASE` where `$USER` and `$PASSWORD` are (by default) your username on your device, and `$DATABASE` is whatever you named the database when setting it up (e.g. `3900`)
