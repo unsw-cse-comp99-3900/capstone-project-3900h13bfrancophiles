@@ -1,14 +1,14 @@
-import api from './helpers/api';
+import api from "./helpers/api";
 import { ADMINS, DESK, HDR, ROOM } from "./helpers/constants";
-import { minutesFromBase, mockCurrentTime } from './helpers/helpers';
+import { minutesFromBase, mockCurrentTime } from "./helpers/helpers";
 
 const defaultStatus = Object.fromEntries([
   ...DESK.map(({ id }) => [id, { status: "Available" }]),
   ...ROOM.map(({ id }) => [id, { status: "Available" }]),
 ]);
 
-describe('/status', () => {
-  test('No bookings', async () => {
+describe("/status", () => {
+  test("No bookings", async () => {
     let res = await api.login(`z${ADMINS[0].zid}`, `z${ADMINS[0].zid}`);
     const token = res.json.token;
 
@@ -16,7 +16,7 @@ describe('/status', () => {
     expect(res.json).toMatchObject(defaultStatus);
   });
 
-  test('Confirmed bookings', async () => {
+  test("Confirmed bookings", async () => {
     let res = await api.login(`z${ADMINS[0].zid}`, `z${ADMINS[0].zid}`);
     const token = res.json.token;
 
@@ -27,7 +27,6 @@ describe('/status', () => {
     res = await api.createBooking(token, ROOM[0].id, minutesFromBase(15), minutesFromBase(75), "");
     const booking2 = res.json.booking;
     expect(booking2.currentstatus).toStrictEqual("confirmed");
-
 
     res = await api.status(token, minutesFromBase(30), minutesFromBase(60));
     expect(res.json).toMatchObject({
@@ -43,7 +42,7 @@ describe('/status', () => {
     });
   });
 
-  test('Pending booking', async () => {
+  test("Pending booking", async () => {
     let res = await api.login(`z${HDR[0].zid}`, `z${HDR[0].zid}`);
     const token = res.json.token;
 
@@ -55,7 +54,7 @@ describe('/status', () => {
     expect(res.json).toMatchObject(defaultStatus);
   });
 
-  test('Deleted booking', async () => {
+  test("Deleted booking", async () => {
     let res = await api.login(`z${ADMINS[0].zid}`, `z${ADMINS[0].zid}`);
     const token = res.json.token;
 
@@ -70,11 +69,17 @@ describe('/status', () => {
     expect(res.json).toMatchObject(defaultStatus);
   });
 
-  test('Declined booking', async () => {
+  test("Declined booking", async () => {
     let res = await api.login(`z${HDR[0].zid}`, `z${HDR[0].zid}`);
     const hdrToken = res.json.token;
 
-    res = await api.createBooking(hdrToken, ROOM[0].id, minutesFromBase(15), minutesFromBase(75), "");
+    res = await api.createBooking(
+      hdrToken,
+      ROOM[0].id,
+      minutesFromBase(15),
+      minutesFromBase(75),
+      "",
+    );
     const booking = res.json.booking;
     expect(booking.currentstatus).toStrictEqual("pending");
 
@@ -85,7 +90,7 @@ describe('/status', () => {
     expect(res.json).toMatchObject(defaultStatus);
   });
 
-  test('Checked-in booking', async () => {
+  test("Checked-in booking", async () => {
     let res = await api.login(`z${ADMINS[0].zid}`, `z${ADMINS[0].zid}`);
     const token = res.json.token;
 
@@ -102,8 +107,8 @@ describe('/status', () => {
       ...defaultStatus,
       [ROOM[0].id]: {
         status: "Unavailable",
-        booking
-      }
+        booking,
+      },
     });
   });
 });

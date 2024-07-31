@@ -1,9 +1,9 @@
-import { person } from '../../drizzle/schema';
-import { eq } from 'drizzle-orm';
-import typia, { tags } from 'typia';
+import { person } from "../../drizzle/schema";
+import { eq } from "drizzle-orm";
+import typia, { tags } from "typia";
 
-import { db } from '../index';
-import { TypedGETRequest, TypedResponse, User } from '../types';
+import { db } from "../index";
+import { TypedGETRequest, TypedResponse, User } from "../types";
 
 interface UserRequest {
   zid: number & tags.Minimum<1000000> & tags.Maximum<9999999>;
@@ -13,7 +13,7 @@ export async function userDetails(req: TypedGETRequest, res: TypedResponse<{ use
   try {
     const parsedQuery = typia.http.isQuery<UserRequest>(new URLSearchParams(req.params));
     if (!parsedQuery) {
-      res.status(400).json({ error: 'Invalid input' });
+      res.status(400).json({ error: "Invalid input" });
       return;
     }
     const zid = parsedQuery.zid;
@@ -27,6 +27,6 @@ export async function userDetails(req: TypedGETRequest, res: TypedResponse<{ use
 
     res.status(404).json({ error: `No user found with id "${req.params.zid}"` });
   } catch (error) {
-    res.status(500).json({ error: 'Failed to fetch user' });
+    res.status(500).json({ error: "Failed to fetch user" });
   }
 }

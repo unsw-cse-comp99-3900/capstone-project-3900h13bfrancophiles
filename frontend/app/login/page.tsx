@@ -26,16 +26,20 @@ export default function Login() {
   const [zid, setZid] = React.useState("");
   const [zpass, setZpass] = React.useState("");
   const [error, setError] = React.useState<string>();
+  const [isLoading, setIsLoading] = React.useState(false);
 
   const onSubmit = async () => {
+    setIsLoading(true);
     setError(undefined);
 
     if (!zid) {
       setError("Error: zID required");
+      setIsLoading(false);
       return;
     }
     if (!zpass) {
       setError("Error: Password required");
+      setIsLoading(false);
       return;
     }
 
@@ -47,11 +51,13 @@ export default function Login() {
     } catch (e: unknown) {
       setError(`${e}`);
     }
+    setIsLoading(false);
   };
 
   const handleKeyDown = async (e: React.KeyboardEvent<HTMLInputElement>) => {
     // Allows pressing enter to submit form
     if (e.key === "Enter") {
+      setIsLoading(true);
       await onSubmit();
     }
   };
@@ -108,7 +114,7 @@ export default function Login() {
               />
             </FormControl>
           </Stack>
-          <Button size="lg" color="primary" onClick={onSubmit}>
+          <Button size="lg" color="primary" loading={isLoading} onClick={onSubmit}>
             Sign In
           </Button>
         </Stack>

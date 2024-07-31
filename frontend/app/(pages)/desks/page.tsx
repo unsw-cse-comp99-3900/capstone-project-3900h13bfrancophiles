@@ -26,19 +26,13 @@ import NextLink from "next/link";
 import useSpaceStatus from "@/hooks/useSpaceStatus";
 import JoyTimePicker from "@/components/JoyTimePicker";
 import useDesks from "@/hooks/useDesks";
+import Loading from "@/components/Loading";
 
 const floors = ["K17 L2", "K17 L3", "K17 L4", "K17 L5"];
 
 export default function Desks() {
   const { date, start, end, dateInputProps, startTimePickerProps, endTimePickerProps } =
     useTimeRange();
-
-  const getInitials = (name: string) => {
-    const words = name.trim().split(" ", 2);
-    const firstLetter = words[0] ? words[0][0] : "";
-    const secondLetter = words[1] ? words[1][0] : "";
-    return (firstLetter + secondLetter).toUpperCase();
-  };
 
   const [selectedDesk, setSelectedDesk] = React.useState("");
   const [available, setAvailable] = React.useState(false);
@@ -47,11 +41,13 @@ export default function Desks() {
   const [open, setOpen] = React.useState(false);
 
   const { desks } = useDesks();
-  const { statusResponse } = useSpaceStatus(start.toISOString(), end.toISOString());
+  const { statusResponse, isLoading } = useSpaceStatus(start.toISOString(), end.toISOString());
 
   React.useEffect(() => {
     setSelectedDesk("");
   }, [date, start, end]);
+
+  if (isLoading) return <Loading page="" />;
 
   return (
     <React.Fragment>
@@ -141,6 +137,7 @@ export default function Desks() {
                 }
                 alt={user ? user.name : "user"}
                 sx={{
+                  fontSize: { xs: "14pt", sm: "20pt" },
                   height: { xs: "70px", sm: "100px" },
                   width: { xs: "70px", sm: "100px" },
                   margin: 1,
@@ -195,4 +192,11 @@ export default function Desks() {
       </Tabs>
     </React.Fragment>
   );
+}
+
+function getInitials(name: string) {
+  const words = name.trim().split(" ", 2);
+  const firstLetter = words[0] ? words[0][0] : "";
+  const secondLetter = words[1] ? words[1][0] : "";
+  return (firstLetter + secondLetter).toUpperCase();
 }
