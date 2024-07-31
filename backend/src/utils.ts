@@ -15,6 +15,8 @@ import { AnonymousBooking, Booking, BookingStatus, USER_GROUPS, UserGroup } from
 export function formatBookingDates(booking: Booking) {
   booking.starttime = new Date(booking.starttime + "Z").toISOString();
   booking.endtime = new Date(booking.endtime + "Z").toISOString();
+  booking.created = new Date(booking.created + "Z").toISOString();
+  booking.modified = new Date(booking.modified + "Z").toISOString();
   return booking;
 }
 
@@ -65,6 +67,8 @@ export function anonymiseBooking(booking: Booking): AnonymousBooking {
     currentstatus: booking.currentstatus,
     checkintime: booking.checkintime,
     checkouttime: booking.checkouttime,
+    created: booking.created,
+    modified: booking.modified,
   };
 }
 

@@ -38,8 +38,8 @@ CREATE TABLE IF NOT EXISTS space (
 CREATE TABLE IF NOT EXISTS hotdesk (
     id            TEXT PRIMARY KEY,
     floor         TEXT NOT NULL,
-    xCoord        DECIMAL NOT NULL,
-    yCoord        DECIMAL NOT NULL,
+    xCoord        REAL NOT NULL,
+    yCoord        REAL NOT NULL,
     FOREIGN KEY(id) REFERENCES space(id) ON DELETE CASCADE
 );
 
@@ -65,8 +65,8 @@ CREATE TABLE IF NOT EXISTS booking (
     description     VARCHAR(255) NOT NULL,
     checkInTime     TIMESTAMP,
     checkOutTime    TIMESTAMP,
-    created         TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    modified        TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    created         TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    modified        TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY(zId) REFERENCES person(zId),
     FOREIGN KEY(spaceId) REFERENCES space(id),
     CONSTRAINT chk_start_lt_end CHECK (startTime < endTime),

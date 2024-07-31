@@ -70,6 +70,8 @@ export type Booking = {
   description: string;
   checkintime: string | null;
   checkouttime: string | null;
+  created: string;
+  modified: string;
 };
 
 export interface BookingEditRequest {

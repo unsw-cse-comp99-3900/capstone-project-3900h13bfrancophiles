@@ -1,12 +1,13 @@
-import { pgTable, pgEnum, text, foreignKey, integer, serial, timestamp, varchar } from 'drizzle-orm/pg-core';
-import { sql } from 'drizzle-orm';
+import { pgTable, pgEnum, text, foreignKey, real, integer, serial, timestamp, varchar } from "drizzle-orm/pg-core"
+  import { sql } from "drizzle-orm"
 
 export const bookingstatusenum = pgEnum("bookingstatusenum", ['pending', 'confirmed', 'declined', 'checkedin', 'completed', 'deleted'])
 export const usergroupenum = pgEnum("usergroupenum", ['other', 'hdr', 'csestaff', 'admin'])
 
-export const config = pgTable('config', {
-  key: text('key').primaryKey().notNull(),
-  value: text('value'),
+
+export const config = pgTable("config", {
+	key: text("key").primaryKey().notNull(),
+	value: text("value"),
 });
 
 export const space = pgTable("space", {
@@ -16,14 +17,11 @@ export const space = pgTable("space", {
 	minbookgrp: usergroupenum("minbookgrp").notNull(),
 });
 
-export const hotdesk = pgTable('hotdesk', {
-  id: text('id')
-    .primaryKey()
-    .notNull()
-    .references(() => space.id, { onDelete: 'cascade' }),
-  floor: text('floor').notNull(),
-  xcoord: integer('xcoord').notNull(),
-  ycoord: integer('ycoord').notNull(),
+export const hotdesk = pgTable("hotdesk", {
+	id: text("id").primaryKey().notNull().references(() => space.id, { onDelete: "cascade" } ),
+	floor: text("floor").notNull(),
+	xcoord: real("xcoord").notNull(),
+	ycoord: real("ycoord").notNull(),
 });
 
 export const room = pgTable("room", {
@@ -55,6 +53,6 @@ export const booking = pgTable("booking", {
 	description: varchar("description", { length: 255 }).notNull(),
 	checkintime: timestamp("checkintime", { mode: 'string' }),
 	checkouttime: timestamp("checkouttime", { mode: 'string' }),
-	created: timestamp("created", { mode: 'string' }).defaultNow(),
-	modified: timestamp("modified", { mode: 'string' }).defaultNow(),
+	created: timestamp("created", { mode: 'string' }).defaultNow().notNull(),
+	modified: timestamp("modified", { mode: 'string' }).defaultNow().notNull(),
 });
