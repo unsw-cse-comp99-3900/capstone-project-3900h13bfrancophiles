@@ -8,6 +8,7 @@ import Loading from "@/components/Loading";
 import AvailabilityCalendar from "@/components/AvailabilityCalendar";
 import BookingModal from "@/components/BookingModal/BookingModal";
 import Error from "@/components/Error";
+import { endOfWeek, startOfWeek } from "date-fns";
 
 import useRoomCanBook from "@/hooks/useRoomCanBook";
 
@@ -20,17 +21,24 @@ const AvailabilitiesPage: React.FC<AvailabilitesPageProps> = ({ spaceId, spaceTy
   const spaceOutput = useSpace(spaceId);
   const space = spaceOutput.space;
   const spaceLoading = spaceOutput.isLoading;
-  const { bookings, mutate } = useAvailabilities(spaceId);
+
+  const [calendarStart, setCalendarStart] = React.useState<Date>(startOfWeek(new Date()));
+  const [calendarEnd, setCalendarEnd] = React.useState<Date>(endOfWeek(new Date()));
+  const { mutate } = useAvailabilities(
+    spaceId,
+    calendarStart.toISOString(),
+    calendarEnd.toISOString(),
+  );
   const room = space as Room;
   const desk = space as Desk;
 
   const [openModal, setOpenModal] = React.useState<boolean>(false);
   const { canBook } = useRoomCanBook(spaceId);
 
+  if (spaceLoading) return <Loading page="" />;
+
   if (!spaceLoading && (spaceType !== spaceOutput.type || spaceOutput.error))
     return <Error page={`${spaceType}s/${spaceId}`} message={`${spaceType} ID not found`} />;
-
-  if (spaceLoading) return <Loading page="" />;
 
   const subheadings = {
     "Room ID": room?.id,
@@ -121,7 +129,7 @@ const AvailabilitiesPage: React.FC<AvailabilitesPageProps> = ({ spaceId, spaceTy
             >
               {Object.entries(subheadings).map(([heading, value]) => {
                 return (
-                  <>
+                  <Box key={heading}>
                     <Grid xs={4}>
                       <Typography level="h4" sx={{ color: "gray" }}>
                         {heading}
@@ -130,13 +138,19 @@ const AvailabilitiesPage: React.FC<AvailabilitesPageProps> = ({ spaceId, spaceTy
                     <Grid xs={8}>
                       <Typography level="h3">{value}</Typography>
                     </Grid>
-                  </>
+                  </Box>
                 );
               })}
             </Grid>
           </>
         )}
-        <AvailabilityCalendar bookings={bookings ?? []} />
+        <AvailabilityCalendar
+          spaceId={spaceId}
+          calendarStart={calendarStart}
+          calendarEnd={calendarEnd}
+          setCalendarStart={setCalendarStart}
+          setCalendarEnd={setCalendarEnd}
+        />
       </Stack>
     </>
   );
