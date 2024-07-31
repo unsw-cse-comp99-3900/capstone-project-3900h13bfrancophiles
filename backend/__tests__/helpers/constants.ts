@@ -96,12 +96,13 @@ export const OTHER = [
 
 export const ROOM = [
   {
-    id: "K-K17-111",
+    id: "K-K17-LG1",
     name: "Room 1",
     minreqgrp: "hdr",
     minbookgrp: "admin",
     capacity: 5,
-    roomnumber: "111",
+    roomnumber: "LG1",
+    floor: "K17 LG",
     type: "Meeting Room",
   },
   {
@@ -111,6 +112,7 @@ export const ROOM = [
     minbookgrp: "csestaff",
     capacity: 100,
     roomnumber: "222",
+    floor: "K17 L2",
     type: "Seminar Room",
   },
 ];
@@ -121,17 +123,21 @@ export const DESK = [
     name: "Desk 1",
     minreqgrp: "hdr",
     minbookgrp: "hdr",
-    floor: "K17L3",
+    floor: "K17 L3",
     room: "333",
+    roomId: "K-K17-333",
+    roomName: "K17 Room 333 Desks",
     desknumber: 1,
   },
   {
-    id: "K-K17-444-1",
+    id: "K-K17-200-1",
     name: "Desk 2",
     minreqgrp: "csestaff",
     minbookgrp: "admin",
-    floor: "K17L4",
-    room: "444",
+    floor: "K17 L2",
+    room: "200",
+    roomId: "K-K17-200",
+    roomName: "K17 Room 200 Desks",
     desknumber: 1,
   },
 ];

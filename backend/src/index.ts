@@ -39,6 +39,7 @@ import {
 } from "./spaces/handlers";
 import { spaceStatus } from "./status/handlers";
 import { userDetails } from "./user/handlers";
+import { generateReport, getReportSpaces, getReportTypes } from "./reports/handlers";
 
 const pool = new Pool({
   connectionString: DATABASE_URL,
@@ -94,6 +95,10 @@ app.get(
   authoriseAtLeast("admin"),
   overlappingBookings,
 );
+
+app.post("/admin/reports/generate", validateToken, authoriseAtLeast("admin"), generateReport);
+app.get("/admin/reports/types", validateToken, authoriseAtLeast("admin"), getReportTypes);
+app.get("/admin/reports/spaces", validateToken, authoriseAtLeast("admin"), getReportSpaces);
 
 app.get("/users/:zid", validateToken, userDetails);
 
