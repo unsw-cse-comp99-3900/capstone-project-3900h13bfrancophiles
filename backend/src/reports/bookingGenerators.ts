@@ -18,11 +18,10 @@ const generateSpreadsheet = async (
     .innerJoin(space, eq(booking.spaceid, space.id))
     .where(
       and(
-        sql`${booking.spaceid} ~* ${sql.raw("'^(" + spaces.join("|") + ")'")}`,
         gte(booking.starttime, startDate.toISOString()),
         lte(booking.endtime, endDate.toISOString()),
         inArray(booking.currentstatus, ["confirmed", "checkedin", "completed"]),
-        inArray(booking.spaceid, spaces),
+        sql`${booking.spaceid} ~* ${sql.raw("'^(" + spaces.join("|") + ")'")}`,
       ),
     )
     .orderBy(desc(booking.endtime));
