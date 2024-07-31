@@ -17,7 +17,7 @@ import {
   Stack,
   Slider,
   Typography,
-  Checkbox,
+  Switch,
 } from "@mui/joy";
 import useRoomDetails from "@/hooks/useRoomDetails";
 import { Room } from "@/types";
@@ -36,8 +36,7 @@ interface FilterOption {
 interface Filters {
   type: string;
   capacity: number;
-  available: boolean;
-  unavailable: boolean;
+  hideUnavailable: boolean;
 }
 
 interface FilterControlProps {
@@ -92,25 +91,16 @@ const renderFilters = (
       }
     />
     <FormControl size="sm">
-      <FormLabel>Status</FormLabel>
-      <Stack direction={"row"} spacing={4}>
-        <Checkbox
-          label="Available"
-          checked={tempFilters.available}
+      <Stack alignSelf={"flex-start"}>
+        <FormLabel>Hide Unavailable</FormLabel>
+        <Switch
+          sx={{ alignSelf: "flex-start" }}
+          size="md"
+          checked={tempFilters.hideUnavailable}
           onChange={() =>
             setTempFilters((prevFilters) => ({
               ...prevFilters,
-              available: !prevFilters.available,
-            }))
-          }
-        />
-        <Checkbox
-          label="Unavailable"
-          checked={tempFilters.unavailable}
-          onChange={() =>
-            setTempFilters((prevFilters) => ({
-              ...prevFilters,
-              unavailable: !prevFilters.unavailable,
+              hideUnavailable: !prevFilters.hideUnavailable,
             }))
           }
         />
@@ -152,14 +142,12 @@ export default function Rooms() {
   const [filters, setFilters] = React.useState<Filters>({
     type: "all",
     capacity: 1,
-    available: false,
-    unavailable: false,
+    hideUnavailable: false,
   });
   const [tempFilters, setTempFilters] = React.useState<Filters>({
     type: "all",
     capacity: 1,
-    available: false,
-    unavailable: false,
+    hideUnavailable: false,
   });
   const { date, start, end, dateInputProps, startTimePickerProps, endTimePickerProps } =
     useTimeRange();
@@ -179,12 +167,7 @@ export default function Rooms() {
 
   const applyFilters = () => {
     setFilters(tempFilters);
-    if (
-      tempFilters.type !== "all" ||
-      tempFilters.capacity !== 1 ||
-      tempFilters.available ||
-      tempFilters.unavailable
-    ) {
+    if (tempFilters.type !== "all" || tempFilters.capacity !== 1 || tempFilters.hideUnavailable) {
       setIsFiltered(true);
     } else {
       setIsFiltered(false);
@@ -199,10 +182,7 @@ export default function Rooms() {
       const matchesCapacity = room.capacity >= filters.capacity;
       const matchesSearchQuery = room.name.toLowerCase().includes(searchQuery.toLowerCase());
       const roomStatus = getRoomAvailability(room.id);
-      const matchesStatus =
-        (filters.available && roomStatus === "Available") ||
-        (filters.unavailable && roomStatus === "Unavailable") ||
-        (!filters.available && !filters.unavailable);
+      const matchesStatus = filters.hideUnavailable ? roomStatus !== "Unavailable" : true;
       return matchesType && matchesCapacity && matchesSearchQuery && matchesStatus;
     });
   };
