@@ -20,7 +20,7 @@ import React from "react";
 import { Menu as MenuIcon } from "@mui/icons-material";
 import LogoutButton from "@/components/LogoutButton";
 import { NavData, TokenPayload } from "@/types";
-import { getInitials } from "@/components/PendingBookingsRow";
+import { getInitials } from "@/utils/icons";
 import Box from "@mui/joy/Box";
 import { getCookie } from "cookies-next";
 import { decodeJwt } from "jose";
