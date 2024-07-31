@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import { Box, Stack, Typography, Button, Tooltip, Grid, Sheet } from "@mui/joy";
+import { Box, Stack, Typography, Button, Tooltip, Grid } from "@mui/joy";
 import useSpace from "@/hooks/useSpace";
 import useAvailabilities from "@/hooks/useAvailabilities";
 import { Room, Desk } from "@/types";
@@ -10,7 +10,6 @@ import BookingModal from "@/components/BookingModal/BookingModal";
 import Error from "@/components/Error";
 import { endOfWeek, startOfWeek } from "date-fns";
 
-import { styled } from '@mui/joy/styles';
 import useRoomCanBook from "@/hooks/useRoomCanBook";
 
 interface AvailabilitesPageProps {
@@ -18,27 +17,18 @@ interface AvailabilitesPageProps {
   spaceType: string;
 }
 
-const Item = styled(Sheet)(({ theme }) => ({
-  backgroundColor:
-    theme.palette.mode === 'dark' ? theme.palette.background.level1 : '#fff',
-  ...theme.typography['body-sm'],
-  padding: theme.spacing(1),
-  textAlign: 'center',
-  borderRadius: 4,
-  color: theme.vars.palette.text.secondary,
-}));
-
-const AvailabilitiesPage : React.FC<AvailabilitesPageProps> = ({
-  spaceId,
-  spaceType,
-}) => {
+const AvailabilitiesPage: React.FC<AvailabilitesPageProps> = ({ spaceId, spaceType }) => {
   const spaceOutput = useSpace(spaceId);
   const space = spaceOutput.space;
   const spaceLoading = spaceOutput.isLoading;
 
   const [calendarStart, setCalendarStart] = React.useState<Date>(startOfWeek(new Date()));
   const [calendarEnd, setCalendarEnd] = React.useState<Date>(endOfWeek(new Date()));
-  const { mutate } = useAvailabilities(spaceId, calendarStart.toISOString(), calendarEnd.toISOString());
+  const { mutate } = useAvailabilities(
+    spaceId,
+    calendarStart.toISOString(),
+    calendarEnd.toISOString(),
+  );
   const room = space as Room;
   const desk = space as Desk;
 
@@ -52,9 +42,9 @@ const AvailabilitiesPage : React.FC<AvailabilitesPageProps> = ({
 
   const subheadings = {
     "Room ID": room?.id,
-    "Usage": room?.type,
-    "Capacity": room?.capacity
-  }
+    Usage: room?.type,
+    Capacity: room?.capacity,
+  };
 
   return (
     <>
@@ -71,9 +61,9 @@ const AvailabilitiesPage : React.FC<AvailabilitesPageProps> = ({
       <Stack>
         <Stack
           justifyContent="space-between"
-          alignItems={{xs: "", sm: "center"}}
-          direction={{xs: "column", sm: "row"}}
-          mb={{xs: 3, sm: 0}}
+          alignItems={{ xs: "", sm: "center" }}
+          direction={{ xs: "column", sm: "row" }}
+          mb={{ xs: 3, sm: 0 }}
           gap={3}
         >
           <Typography level="h1">
@@ -84,7 +74,7 @@ const AvailabilitiesPage : React.FC<AvailabilitesPageProps> = ({
             title={canBook ? "" : "You do not have permission to book this space"}
             variant="solid"
             sx={{
-              marginTop: {xs: -4, sm: 0}
+              marginTop: { xs: -4, sm: 0 },
             }}
           >
             <Box>
@@ -93,11 +83,11 @@ const AvailabilitiesPage : React.FC<AvailabilitesPageProps> = ({
                 variant="solid"
                 disabled={!canBook}
                 onClick={() => {
-                  setOpenModal(true)
+                  setOpenModal(true);
                 }}
                 sx={{
                   height: 40,
-                  width: {xs: "100%", sm: 130},
+                  width: { xs: "100%", sm: 130 },
                 }}
               >
                 Book Now
@@ -105,7 +95,7 @@ const AvailabilitiesPage : React.FC<AvailabilitesPageProps> = ({
             </Box>
           </Tooltip>
         </Stack>
-        {spaceType === "room" &&
+        {spaceType === "room" && (
           <>
             {/* display for desktop */}
             <Stack
@@ -114,22 +104,18 @@ const AvailabilitiesPage : React.FC<AvailabilitesPageProps> = ({
               gap={5}
               borderRadius="sm"
               mb={3}
-              sx={{ display: {xs: "none", sm: "flex"}}}
+              sx={{ display: { xs: "none", sm: "flex" } }}
             >
-              {
-                Object.entries(subheadings).map(([heading, value]) => {
-                  return (
-                    <Stack>
-                      <Typography level="h4" sx={{ color: "gray" }}>
-                        {heading}
-                      </Typography>
-                      <Typography level="h3">
-                        {value}
-                      </Typography>
-                    </Stack>
-                  )
-                })
-              }
+              {Object.entries(subheadings).map(([heading, value]) => {
+                return (
+                  <Stack key={heading}>
+                    <Typography level="h4" sx={{ color: "gray" }}>
+                      {heading}
+                    </Typography>
+                    <Typography level="h3">{value}</Typography>
+                  </Stack>
+                );
+              })}
             </Stack>
             {/* display for mobile */}
             <Grid
@@ -137,31 +123,27 @@ const AvailabilitiesPage : React.FC<AvailabilitesPageProps> = ({
               spacing={1}
               sx={{
                 flexGrow: 1,
-                display: {xs: "flex", sm: "none"}
+                display: { xs: "flex", sm: "none" },
               }}
               mb={2}
             >
-              {
-                Object.entries(subheadings).map(([heading, value]) => {
-                  return (
-                    <>
-                      <Grid xs={4}>
-                        <Typography level="h4" sx={{ color: "gray" }}>
-                          {heading}
-                        </Typography>
-                      </Grid>
-                      <Grid xs={8}>
-                        <Typography level="h3">
-                          {value}
-                        </Typography>
-                      </Grid>
-                    </>
-                  )
-                })
-              }
+              {Object.entries(subheadings).map(([heading, value]) => {
+                return (
+                  <Box key={heading}>
+                    <Grid xs={4}>
+                      <Typography level="h4" sx={{ color: "gray" }}>
+                        {heading}
+                      </Typography>
+                    </Grid>
+                    <Grid xs={8}>
+                      <Typography level="h3">{value}</Typography>
+                    </Grid>
+                  </Box>
+                );
+              })}
             </Grid>
           </>
-        }
+        )}
         <AvailabilityCalendar
           spaceId={spaceId}
           calendarStart={calendarStart}

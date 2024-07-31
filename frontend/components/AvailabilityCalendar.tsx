@@ -1,6 +1,5 @@
 import * as React from "react";
 
-import { AnonymousBooking } from "@/types";
 import { Calendar, dateFnsLocalizer, ToolbarProps, EventProps, View } from "react-big-calendar";
 import { format, getDay, parse, startOfWeek, endOfWeek, startOfDay, endOfDay } from "date-fns";
 import { enAU } from "date-fns/locale";
@@ -63,11 +62,15 @@ export default function AvailabilityCalendar({
   calendarStart,
   calendarEnd,
   setCalendarStart,
-  setCalendarEnd
+  setCalendarEnd,
 }: AvailabilityCalendarProps) {
   const [date, setDate] = React.useState<Date>(new Date());
   const [view, setView] = React.useState<View>("week");
-  const { bookings, isLoading } = useAvailabilities(spaceId, calendarStart.toISOString(), calendarEnd.toISOString());
+  const { bookings, isLoading } = useAvailabilities(
+    spaceId,
+    calendarStart.toISOString(),
+    calendarEnd.toISOString(),
+  );
 
   const isMobile: boolean = useMediaQuery(theme.breakpoints.down("md")) ?? false;
   React.useEffect(() => {
@@ -82,9 +85,9 @@ export default function AvailabilityCalendar({
       setCalendarStart(startOfDay(date));
       setCalendarEnd(endOfDay(date));
     }
-  }, [date, view])
+  }, [date, view]);
 
-  if (isLoading) return <Loading page=""/>
+  if (isLoading) return <Loading page="" />;
 
   const events: Event[] = bookings!.map((b) => {
     return {

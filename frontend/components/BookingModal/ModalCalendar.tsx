@@ -87,9 +87,13 @@ export default function ModalCalendar({
   React.useEffect(() => {
     setCalendarStart(startOfDay(date));
     setCalendarEnd(endOfDay(date));
-  }, [date])
+  }, [date]);
 
-  const { bookings, isLoading } = useAvailabilities(space!, calendarStart.toISOString(), calendarEnd.toISOString());
+  const { bookings, isLoading } = useAvailabilities(
+    space!,
+    calendarStart.toISOString(),
+    calendarEnd.toISOString(),
+  );
   React.useEffect(() => {
     if (bookings) {
       setBlockedTimes(
