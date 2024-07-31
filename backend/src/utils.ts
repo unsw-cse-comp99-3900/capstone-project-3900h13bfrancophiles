@@ -98,8 +98,8 @@ export async function now(): Promise<Date> {
 export async function declineOverlapping(
   tx: typeof db,
   spaceId: string,
-  endTime: string,
   startTime: string,
+  endTime: string,
   updatedBookingId?: number,
 ) {
   // Decline overlapping bookings and get the updated records

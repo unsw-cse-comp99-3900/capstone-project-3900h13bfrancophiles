@@ -74,8 +74,8 @@ export async function approveBooking(
       await declineOverlapping(
         trx,
         updatedBookingDetails.spaceid,
-        updatedBookingDetails.endtime,
         updatedBookingDetails.starttime,
+        updatedBookingDetails.endtime,
         updatedBookingDetails.id,
       );
 
@@ -156,10 +156,8 @@ export async function overlappingBookings(
             eq(booking.currentstatus, "pending"),
             eq(booking.spaceid, updatedBookingDetails.spaceid),
             ne(booking.id, updatedBookingDetails.id),
-            and(
-              lt(booking.starttime, updatedBookingDetails.endtime),
-              gt(booking.endtime, updatedBookingDetails.starttime),
-            ),
+            lt(booking.starttime, updatedBookingDetails.endtime),
+            gt(booking.endtime, updatedBookingDetails.starttime),
           ),
         );
 

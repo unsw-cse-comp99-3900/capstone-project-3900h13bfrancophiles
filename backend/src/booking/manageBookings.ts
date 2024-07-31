@@ -13,7 +13,13 @@ import {
   TypedRequest,
   TypedResponse,
 } from "../types";
-import { formatBookingDates, initialBookingStatus, withinDateRange, now } from "../utils";
+import {
+  formatBookingDates,
+  initialBookingStatus,
+  withinDateRange,
+  now,
+  declineOverlapping,
+} from "../utils";
 
 export async function checkInBooking(
   req: TypedRequest<{ id: number }>,
@@ -168,25 +174,29 @@ export async function createBooking(
     return;
   }
 
-  let createdBooking: Booking;
   try {
-    const res = await db
-      .insert(booking)
-      .values({
-        zid: req.token.user,
-        currentstatus: status,
-        ...req.body,
-      })
-      .returning();
+    const createdBooking = await db.transaction(async (tx) => {
+      if (status === "confirmed") {
+        await declineOverlapping(tx, req.body.spaceid, req.body.starttime, req.body.endtime);
+      }
 
-    createdBooking = formatBookingDates(res[0]);
+      const res = await tx
+        .insert(booking)
+        .values({
+          zid: req.token.user,
+          currentstatus: status,
+          ...req.body,
+        })
+        .returning();
+
+      return formatBookingDates(res[0]);
+    });
+
     await sendBookingEmail(req.token.user, createdBooking, BOOKING_REQUEST);
+    res.json({ booking: createdBooking });
   } catch (e) {
     res.status(400).json({ error: `${e}` });
-    return;
   }
-
-  res.json({ booking: createdBooking });
 }
 
 export async function deleteBooking(
