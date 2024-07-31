@@ -129,7 +129,7 @@ const AvailabilitiesPage: React.FC<AvailabilitesPageProps> = ({ spaceId, spaceTy
             >
               {Object.entries(subheadings).map(([heading, value]) => {
                 return (
-                  <Box key={heading}>
+                  <>
                     <Grid xs={4}>
                       <Typography level="h4" sx={{ color: "gray" }}>
                         {heading}
@@ -138,7 +138,7 @@ const AvailabilitiesPage: React.FC<AvailabilitesPageProps> = ({ spaceId, spaceTy
                     <Grid xs={8}>
                       <Typography level="h3">{value}</Typography>
                     </Grid>
-                  </Box>
+                  </>
                 );
               })}
             </Grid>
