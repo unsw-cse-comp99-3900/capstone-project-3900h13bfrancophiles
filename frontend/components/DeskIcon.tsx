@@ -3,20 +3,21 @@
 import React from "react";
 import { KeepScale } from "react-zoom-pan-pinch";
 import { Box, Avatar } from "@mui/joy";
-import { Booking, Status, UserData } from "@/types";
+import { Status, UserData } from "@/types";
 import useSpace from "@/hooks/useSpace";
-import UserAvatar from "./UserAvatar";
+import UserAvatar from "@/components/UserAvatar";
+import DeskInfoPopup from "@/components/DeskInfoPopup";
 
 interface DeskIconProps {
   id: string;
   x: number;
   y: number;
+  date: Date;
+  start: Date;
+  end: Date;
+  status: Status | undefined;
   selectedDesk: string;
   setSelectedDesk: React.Dispatch<React.SetStateAction<string>>;
-  setSelectedBooking: React.Dispatch<React.SetStateAction<Booking | null>>;
-  setSelectedUser: React.Dispatch<React.SetStateAction<UserData | null>>;
-  setDeskName: React.Dispatch<React.SetStateAction<string>>;
-  status: Status | undefined;
 }
 
 interface PinProps {
@@ -91,88 +92,99 @@ const DeskIcon = ({
   id,
   x,
   y,
+  date,
+  start,
+  end,
+  status,
   selectedDesk,
   setSelectedDesk,
-  setSelectedBooking,
-  setSelectedUser,
-  setDeskName,
-  status,
 }: DeskIconProps) => {
   const { space } = useSpace(id);
   const deskName = space ? space.name : "Desk";
 
+  const buttonRef = React.useRef(null);
+  const [selected, setSelected] = React.useState<boolean>(false);
+  const [user, setUser] = React.useState<UserData | null>(null);
+
   const handleClick = () => {
-    if (selectedDesk === id) {
-      setSelectedDesk("");
-      setSelectedBooking(null);
-      setSelectedUser(null);
-      setDeskName("");
-    } else {
-      setSelectedDesk(id);
-      setSelectedBooking(status?.status === "Unavailable" ? status.booking : null);
-      setDeskName(deskName);
-    }
+    selected ? setSelectedDesk("") : setSelectedDesk(id);
   };
+
+  React.useEffect(() => {
+    selectedDesk === id ? setSelected(true) : setSelected(false);
+  }, [selectedDesk]);
 
   if (!status) return <></>;
 
   return (
-    <Box
-      key={id}
-      sx={{
-        "--size-var": { xs: "25px", sm: "30px", md: "35px" },
-        position: "absolute",
-        overflow: "visible",
-        transform: "translate(-50%, -50%)",
-        zIndex: selectedDesk === id ? 3 : 2,
-        "&:hover": {
-          zIndex: 4,
-        },
-        left: `${x}%`,
-        top: `${y}%`,
-      }}
-    >
-      <KeepScale
-        style={{ height: "var(--size-var)", width: "var(--size-var)", overflow: "visible" }}
+    <React.Fragment>
+      <Box
+        key={id}
+        ref={buttonRef}
+        sx={{
+          "--size-var": { xs: "25px", sm: "30px", md: "35px" },
+          position: "absolute",
+          overflow: "visible",
+          transform: "translate(-50%, -50%)",
+          zIndex: selected ? 3 : 2,
+          "&:hover": {
+            zIndex: 4,
+          },
+          left: `${x}%`,
+          top: `${y}%`,
+        }}
       >
-        <Box
-          onClick={() => handleClick()}
-          sx={{
-            height: "var(--size-var)",
-            width: "var(--size-var)",
-            "&:hover": {
-              transform: selectedDesk === id ? "scale(1.2)" : "",
-            },
-            transition: "transform 0.1s",
-          }}
+        <KeepScale
+          style={{ height: "var(--size-var)", width: "var(--size-var)", overflow: "visible" }}
         >
-          <Pin
-            color={status.status === "Available" ? "#207920" : "#0B6BCB"}
-            on={selectedDesk === id ? true : false}
-          />
-          {status && status.status === "Unavailable" && (
-            <UserAvatar
-              zid={status.booking.zid}
-              selected={selectedDesk === id}
-              setSelectedUser={setSelectedUser}
+          <Box
+            onClick={handleClick}
+            sx={{
+              height: "var(--size-var)",
+              width: "var(--size-var)",
+              "&:hover": {
+                transform: selected ? "scale(1.2)" : "",
+              },
+              transition: "transform 0.1s",
+            }}
+          >
+            <Pin
+              color={status.status === "Available" ? "#207920" : "#0B6BCB"}
+              on={selected ? true : false}
+            />
+            {status && status.status === "Unavailable" && (
+              <UserAvatar zid={status.booking.zid} selected={selected} setUser={setUser} />
+            )}
+            {status && status.status === "Available" && (
+              <Avatar
+                variant="solid"
+                size="sm"
+                color={"success"}
+                src={"DeskIcon1.svg"}
+                sx={{
+                  ...deskStyle,
+                  ...(selected ? activeStyle : inactiveStyle),
+                  transition: "transform 0.1s, box-shadow 0.1s",
+                }}
+              />
+            )}
+          </Box>
+          {selected && (
+            <DeskInfoPopup
+              id={id}
+              deskName={deskName}
+              booking={status?.status === "Unavailable" ? status.booking : null}
+              user={user}
+              date={date}
+              start={start}
+              end={end}
+              handleClose={() => setSelectedDesk("")}
+              reference={buttonRef.current}
             />
           )}
-          {status && status.status === "Available" && (
-            <Avatar
-              variant="solid"
-              size="sm"
-              color={"success"}
-              src={"DeskIcon1.svg"}
-              sx={{
-                ...deskStyle,
-                ...(selectedDesk === id ? activeStyle : inactiveStyle),
-                transition: "transform 0.1s, box-shadow 0.1s",
-              }}
-            />
-          )}
-        </Box>
-      </KeepScale>
-    </Box>
+        </KeepScale>
+      </Box>
+    </React.Fragment>
   );
 };
 
