@@ -83,6 +83,7 @@ const DeskInfoPopup = ({
           <Button
             sx={{ marginTop: 1, height: "60px", width: "100%", display: "block" }}
             onClick={() => setOpen(true)}
+            color="success"
             disabled={!!booking}
           >
             {available && (
