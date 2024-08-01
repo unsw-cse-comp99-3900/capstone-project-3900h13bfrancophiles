@@ -90,12 +90,20 @@ function status(token: string, start: Date, end: Date) {
   );
 }
 
+function approveBooking(token: string, id: number) {
+  return apiCall("/admin/bookings/approve", "PUT", { id }, token);
+}
+
 function declineBooking(token: string, id: number) {
   return apiCall("/admin/bookings/decline", "PUT", { id }, token);
 }
 
 function checkinBooking(token: string, id: number) {
   return apiCall("/bookings/checkin", "POST", { id }, token);
+}
+
+function checkoutBooking(token: string, id: number) {
+  return apiCall("/bookings/checkout", "POST", { id }, token);
 }
 
 function spaces(token: string) {
@@ -117,8 +125,10 @@ export default {
   upcomingBookings,
   pastBookings,
   status,
+  approveBooking,
   declineBooking,
   checkinBooking,
+  checkoutBooking,
   spaces,
   reportSpaces,
 };

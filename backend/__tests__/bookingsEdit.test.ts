@@ -1,5 +1,5 @@
 import api from "./helpers/api";
-import { DESK, HDR, ROOM } from "./helpers/constants";
+import { DESK, HDR, ADMINS, ROOM } from "./helpers/constants";
 import { minutesFromBase } from "./helpers/helpers";
 
 describe("/bookings/edit", () => {
@@ -122,6 +122,54 @@ describe("/bookings/edit", () => {
     });
   });
 
+  test("Success - declined booking is edited", async () => {
+    const res = await api.createBooking(
+      token,
+      ROOM[0].id,
+      minutesFromBase(15),
+      minutesFromBase(45),
+      "fun times",
+    );
+    expect(res.status).toStrictEqual(200);
+    expect(res.json).toMatchObject({
+      booking: {
+        zid: HDR[0].zid,
+        starttime: minutesFromBase(15).toISOString(),
+        endtime: minutesFromBase(45).toISOString(),
+        spaceid: ROOM[0].id,
+        currentstatus: "pending",
+        description: "fun times",
+      },
+    });
+    const booking = res.json.booking;
+
+    const res1 = await api.login(`z${ADMINS[0].zid}`, `z${ADMINS[0].zid}`);
+    const admintoken = res1.json.token;
+
+    await api.declineBooking(admintoken, booking.id);
+
+    const res2 = await api.editBooking(
+      token,
+      booking.id,
+      booking.starttime,
+      booking.endtime,
+      booking.spaceid,
+      "I edited this booking!",
+    );
+    expect(res2.status).toStrictEqual(200);
+    expect(res2.json).toMatchObject({
+      booking: {
+        id: booking.id,
+        zid: HDR[0].zid,
+        starttime: minutesFromBase(15).toISOString(),
+        endtime: minutesFromBase(45).toISOString(),
+        spaceid: ROOM[0].id,
+        currentstatus: "pending",
+        description: "I edited this booking!",
+      },
+    });
+  });
+
   test("Success - pending booking is edited with no changes  made", async () => {
     const res = await api.createBooking(
       token,
@@ -143,14 +191,7 @@ describe("/bookings/edit", () => {
     });
 
     const booking = res.json.booking;
-    const res1 = await api.editBooking(
-      token,
-      booking.id,
-      booking.starttime,
-      booking.endtime,
-      booking.spaceid,
-      booking.description,
-    );
+    const res1 = await api.apiCall("/bookings/edit", "PUT", { id: booking.id, description: booking.description }, token);
     expect(res1.status).toStrictEqual(200);
     expect(res1.json).toMatchObject({
       booking: {
@@ -203,6 +244,88 @@ describe("/bookings/edit", () => {
         endtime: minutesFromBase(45).toISOString(),
         spaceid: DESK[0].id,
         currentstatus: "confirmed",
+        description: "I edited this booking!",
+      },
+    });
+  });
+
+  test("Failure - pending edited to space with no permissions", async () => {
+    const res1 = await api.login(`z${HDR[0].zid}`, `z${HDR[0].zid}`);
+    token = res1.json.token;
+
+    const res = await api.createBooking(
+      token,
+      DESK[0].id,
+      minutesFromBase(15),
+      minutesFromBase(45),
+      "fun times",
+    );
+    expect(res.status).toStrictEqual(200);
+    expect(res.json).toMatchObject({
+      booking: {
+        zid: HDR[0].zid,
+        starttime: minutesFromBase(15).toISOString(),
+        endtime: minutesFromBase(45).toISOString(),
+        spaceid: DESK[0].id,
+        currentstatus: "confirmed",
+        description: "fun times",
+      },
+    });
+
+    const booking = res.json.booking;
+    const res2 = await api.editBooking(
+      token,
+      booking.id,
+      booking.starttime,
+      booking.endtime,
+      ROOM[1].id,
+      "I edited this booking!",
+    );
+    expect(res2.status).toStrictEqual(403);
+  });
+
+  test("Success - approved booking is edited", async () => {
+    const res = await api.createBooking(
+      token,
+      ROOM[0].id,
+      minutesFromBase(15),
+      minutesFromBase(45),
+      "fun times",
+    );
+    expect(res.status).toStrictEqual(200);
+    expect(res.json).toMatchObject({
+      booking: {
+        zid: HDR[0].zid,
+        starttime: minutesFromBase(15).toISOString(),
+        endtime: minutesFromBase(45).toISOString(),
+        spaceid: ROOM[0].id,
+        currentstatus: "pending",
+        description: "fun times",
+      },
+    });
+    const booking = res.json.booking;
+
+    const res1 = await api.login(`z${ADMINS[0].zid}`, `z${ADMINS[0].zid}`);
+    const admintoken = res1.json.token;
+
+    await api.approveBooking(admintoken, booking.id);
+
+    const res2 = await api.editBooking(
+      token,
+      booking.id,
+      booking.starttime,
+      booking.endtime,
+      booking.spaceid,
+      "I edited this booking!",
+    );
+    expect(res2.status).toStrictEqual(200);
+    expect(res2.json).toMatchObject({
+      booking: {
+        zid: HDR[0].zid,
+        starttime: minutesFromBase(15).toISOString(),
+        endtime: minutesFromBase(45).toISOString(),
+        spaceid: ROOM[0].id,
+        currentstatus: "pending",
         description: "I edited this booking!",
       },
     });

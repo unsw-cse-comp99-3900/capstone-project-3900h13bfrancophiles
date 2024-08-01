@@ -292,8 +292,8 @@ export async function editBooking(
     }
 
     let formattedBooking: Booking;
-    if (existingBooking[0].currentstatus === "pending" || newBookingStatus === "confirmed") {
-      // If booking is still pending or new approval is not required, update the old booking in place
+    if (existingBooking[0].currentstatus === "pending" || existingBooking[0].currentstatus === "declined" || newBookingStatus === "confirmed") {
+      // If booking is still pending/declined or new approval is not required, update the old booking in place
       try {
         const res = await db
           .update(booking)
