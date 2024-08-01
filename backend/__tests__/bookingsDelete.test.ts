@@ -3,11 +3,15 @@ import { ADMINS, ROOM } from "./helpers/constants";
 import { minutesFromBase } from "./helpers/helpers";
 
 describe("/bookings/delete", () => {
-  test("Success - deleted one booking", async () => {
-    let res = await api.login(`z${ADMINS[0].zid}`, `z${ADMINS[0].zid}`);
-    const token = res.json.token;
+  let token: string;
 
-    res = await api.createBooking(
+  beforeEach(async () => {
+    const res = await api.login(`z${ADMINS[0].zid}`, `z${ADMINS[0].zid}`);
+    token = res.json.token;
+  });
+
+  test("Success - deleted one booking", async () => {
+    let res = await api.createBooking(
       token,
       ROOM[0].id,
       minutesFromBase(15),
@@ -27,5 +31,18 @@ describe("/bookings/delete", () => {
     expect(res.json).toEqual({
       bookings: [],
     });
+  });
+
+  test("Failure - Invalid input", async () => {
+    let res = await api.apiCall("/bookings/delete", "DELETE", { input: "input" }, token);
+    expect(res.status).toStrictEqual(400);
+  });
+
+  test("Failure - Booking ID does not exist", async () => {
+    let res = await api.deleteBooking(
+      1,
+      token,
+    );
+    expect(res.status).toStrictEqual(404);
   });
 });

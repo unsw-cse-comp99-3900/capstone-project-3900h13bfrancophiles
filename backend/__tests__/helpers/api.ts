@@ -107,6 +107,7 @@ function reportSpaces(token: string) {
 }
 
 export default {
+  apiCall,
   login,
   logout,
   createBooking,
