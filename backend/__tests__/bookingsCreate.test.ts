@@ -244,4 +244,34 @@ describe("/bookings/create", () => {
     );
     expect(res.status).toStrictEqual(400);
   });
+
+  test("Success - booking overwrites existing pending booking", async () => {
+    let res = await api.login(`z${HDR[0].zid}`, `z${HDR[0].zid}`);
+    const hdrToken = res.json.token;
+
+    res = await api.createBooking(
+      hdrToken,
+      ROOM[0].id,
+      minutesFromBase(15),
+      minutesFromBase(75),
+      "",
+    );
+    expect(res.json.booking.currentstatus).toStrictEqual("pending");
+
+    res = await api.login(`z${ADMINS[0].zid}`, `z${ADMINS[0].zid}`);
+    const adminToken = res.json.token;
+
+    res = await api.createBooking(
+      adminToken,
+      ROOM[0].id,
+      minutesFromBase(30),
+      minutesFromBase(90),
+      "",
+    );
+    expect(res.json.booking.currentstatus).toStrictEqual("confirmed");
+
+    res = await api.upcomingBookings(hdrToken);
+    expect(res.json.bookings).toHaveLength(1);
+    expect(res.json.bookings[0].currentstatus).toStrictEqual("declined");
+  });
 });

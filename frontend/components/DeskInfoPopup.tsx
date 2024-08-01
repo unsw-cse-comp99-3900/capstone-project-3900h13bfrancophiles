@@ -6,6 +6,7 @@ import * as React from "react";
 import { UserData } from "@/types";
 import NextLink from "next/link";
 import { Booking } from "@/types";
+import { getInitials } from "@/utils/icons";
 
 interface DeskInfoPopupProps {
   selectedDesk: string;
@@ -98,13 +99,6 @@ const DeskInfoPopup = ({
     </Sheet>
   );
 };
-
-function getInitials(name: string) {
-  const words = name.trim().split(" ", 2);
-  const firstLetter = words[0] ? words[0][0] : "";
-  const secondLetter = words[1] ? words[1][0] : "";
-  return (firstLetter + secondLetter).toUpperCase();
-}
 
 function timeNow(i: Date) {
   return i.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });

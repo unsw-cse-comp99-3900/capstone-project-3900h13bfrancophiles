@@ -1,5 +1,5 @@
 import * as React from "react";
-import '@testing-library/jest-dom'
+import "@testing-library/jest-dom";
 import { render, screen } from "@testing-library/react";
 import RoomCard from "../components/RoomCard";
 import { Room } from "../types";
@@ -23,7 +23,11 @@ const mockHandleBook = jest.fn();
 
 describe("RoomCard", () => {
   it("renders RoomCard component with correct details", () => {
-    mockedUseSpaceStatus.mockReturnValue({ statusResponse: { "K-K17-B01": { status: "Available" } }, isLoading: false, error: null });
+    mockedUseSpaceStatus.mockReturnValue({
+      statusResponse: { "K-K17-B01": { status: "Available" } },
+      isLoading: false,
+      error: null,
+    });
     mockedUseRoomCanBook.mockReturnValue({ canBook: true, isLoading: false, error: null });
 
     render(
@@ -32,7 +36,7 @@ describe("RoomCard", () => {
         handleBook={mockHandleBook}
         datetimeStart="2024-07-29T10:00"
         datetimeEnd="2024-07-29T11:00"
-      />
+      />,
     );
 
     expect(screen.getByText("K17 CSE Basement")).toBeInTheDocument();

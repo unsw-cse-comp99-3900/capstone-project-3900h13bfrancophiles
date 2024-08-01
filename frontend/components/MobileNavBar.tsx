@@ -19,15 +19,13 @@ import NextLink from "next/link";
 import React from "react";
 import { Menu as MenuIcon } from "@mui/icons-material";
 import LogoutButton from "@/components/LogoutButton";
-import { NavData, TokenPayload } from "@/types";
-import { getInitials } from "@/components/PendingBookingsRow";
+import { NavData } from "@/types";
+import { getInitials } from "@/utils/icons";
 import Box from "@mui/joy/Box";
-import { getCookie } from "cookies-next";
-import { decodeJwt } from "jose";
 import useUser from "@/hooks/useUser";
 import { getRoleName } from "@/components/ProfileDropdown";
 
-const NavBar = ({ navItems }: { navItems: NavData[] }) => {
+const NavBar = ({ navItems, zid }: { navItems: NavData[]; zid: number }) => {
   const [open, setOpen] = React.useState(false);
 
   return (
@@ -51,7 +49,7 @@ const NavBar = ({ navItems }: { navItems: NavData[] }) => {
           </IconButton>
         </Stack>
       </Sheet>
-      <MenuDrawer open={open} setOpen={setOpen} navItems={navItems} />
+      <MenuDrawer open={open} setOpen={setOpen} navItems={navItems} zid={zid} />
     </>
   );
 };
@@ -60,11 +58,10 @@ interface MenuDrawerProps {
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
   navItems: NavData[];
+  zid: number;
 }
 
-const MenuDrawer: React.FC<MenuDrawerProps> = ({ open, setOpen, navItems }) => {
-  const token = getCookie("token");
-  const zid = decodeJwt<TokenPayload>(`${token}`).user;
+const MenuDrawer: React.FC<MenuDrawerProps> = ({ open, setOpen, navItems, zid }) => {
   const { user, isLoading } = useUser(zid);
 
   return (
