@@ -37,7 +37,7 @@ function NavItem({ title, navigateTo }: NavProps) {
   );
 }
 
-export default function NavBar({ navItems }: { navItems: NavData[] }) {
+export default function NavBar({ navItems, zid }: { navItems: NavData[]; zid: number }) {
   return (
     <Sheet sx={{ zIndex: 2, boxShadow: "md", height: 60, display: { xs: "none", sm: "flex" } }}>
       <Stack width="100%" height="100%" direction="row" alignItems="center" px={2}>
@@ -59,7 +59,7 @@ export default function NavBar({ navItems }: { navItems: NavData[] }) {
               <NavItem title={text} navigateTo={href} key={href} />
             ))}
           </Stack>
-          <ProfileDropdown />
+          <ProfileDropdown zid={zid} />
         </Stack>
       </Stack>
     </Sheet>

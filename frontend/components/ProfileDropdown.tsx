@@ -11,15 +11,11 @@ import {
 import Box from "@mui/joy/Box";
 import Typography from "@mui/joy/Typography";
 import LogoutButton from "@/components/LogoutButton";
-import { getCookie } from "cookies-next";
-import { decodeJwt } from "jose";
-import { TokenPayload, UserGroup } from "@/types";
+import { UserGroup } from "@/types";
 import useUser from "@/hooks/useUser";
 import { getInitials } from "@/utils/icons";
 
-export default function ProfileDropdown() {
-  const token = getCookie("token");
-  const zid = decodeJwt<TokenPayload>(`${token}`).user;
+export default function ProfileDropdown({ zid }: { zid: number }) {
   const { user, isLoading } = useUser(zid);
 
   return (
