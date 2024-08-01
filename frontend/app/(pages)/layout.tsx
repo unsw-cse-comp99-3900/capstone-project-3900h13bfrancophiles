@@ -21,7 +21,7 @@ export default function Layout({
   ];
 
   const token = getCookie("token", { cookies });
-  if (!token) redirect("/login");
+  if (!token) return redirect("/login");
 
   let tokenPayload: TokenPayload;
   try {
