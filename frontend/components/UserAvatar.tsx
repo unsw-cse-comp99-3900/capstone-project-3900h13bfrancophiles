@@ -8,7 +8,7 @@ import useUser from "@/hooks/useUser";
 interface UserAvatarProps {
   zid: number;
   selected: boolean;
-  setSelectedUser: React.Dispatch<React.SetStateAction<UserData | null>>;
+  setUser: React.Dispatch<React.SetStateAction<UserData | null>>;
 }
 
 const anonymousUser: UserData = {
@@ -36,13 +36,16 @@ function getInitials(name: string) {
   return (firstLetter + secondLetter).toUpperCase();
 }
 
-const UserAvatar = ({ zid, selected, setSelectedUser }: UserAvatarProps) => {
+const UserAvatar = ({ zid, selected, setUser }: UserAvatarProps) => {
   const { user } = useUser(zid);
   const userData = user ? { name: user.fullname, image: user.image } : anonymousUser;
 
+  React.useEffect(() => {
+    setUser(userData);
+  }, [user]);
+
   return (
     <Avatar
-      onClick={() => setSelectedUser(userData)}
       variant="solid"
       size="sm"
       color={"primary"}

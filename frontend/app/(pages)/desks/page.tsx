@@ -1,7 +1,6 @@
 "use client";
 
 import FloorPlanViewer from "@/components/FloorPlanViewer";
-import BookingModal from "@/components/BookingModal/BookingModal";
 import {
   Tab,
   TabList,
@@ -14,13 +13,10 @@ import {
   FormControl,
 } from "@mui/joy";
 import * as React from "react";
-import { Booking, UserData } from "@/types";
 import useTimeRange from "@/hooks/useTimeRange";
 import useSpaceStatus from "@/hooks/useSpaceStatus";
 import JoyTimePicker from "@/components/JoyTimePicker";
 import useDesks from "@/hooks/useDesks";
-import Loading from "@/components/Loading";
-import DeskInfoPopup from "@/components/DeskInfoPopup";
 
 const floors = ["K17 L2", "K17 L3", "K17 L4", "K17 L5"];
 
@@ -28,34 +24,11 @@ export default function Desks() {
   const { date, start, end, dateInputProps, startTimePickerProps, endTimePickerProps } =
     useTimeRange();
 
-  const [selectedDesk, setSelectedDesk] = React.useState("");
-  const [selectedBooking, setSelectedBooking] = React.useState<Booking | null>(null);
-  const [deskName, setDeskName] = React.useState("");
-  const [user, setUser] = React.useState<null | UserData>(null);
-
-  const [open, setOpen] = React.useState(false);
-
   const { desks } = useDesks();
   const { statusResponse, isLoading } = useSpaceStatus(start.toISOString(), end.toISOString());
 
-  React.useEffect(() => {
-    setSelectedDesk("");
-  }, [date, start, end]);
-
-  if (isLoading) return <Loading page="" />;
-
   return (
     <React.Fragment>
-      {open && (
-        <BookingModal
-          open={open}
-          onClose={() => setOpen(false)}
-          space={{ id: selectedDesk, name: deskName, isRoom: false }}
-          date={date}
-          start={start}
-          end={end}
-        />
-      )}
       <Stack
         direction="column"
         alignItems="flex-end"
@@ -92,16 +65,6 @@ export default function Desks() {
             </Stack>
           </Stack>
         </Sheet>
-        <DeskInfoPopup
-          selectedDesk={selectedDesk}
-          booking={selectedBooking}
-          user={user}
-          deskName={deskName}
-          start={start}
-          end={end}
-          handleClose={() => setSelectedDesk("")}
-          openBookingModal={() => setOpen(true)}
-        />
       </Stack>
       <Tabs aria-label="level select" defaultValue={"K17 L2"} sx={{ height: "calc(100vh - 60px)" }}>
         {floors.map((floor, index) => (
@@ -116,14 +79,13 @@ export default function Desks() {
             }}
           >
             <FloorPlanViewer
-              selectedDesk={selectedDesk}
-              setSelectedDesk={setSelectedDesk}
-              setSelectedBooking={setSelectedBooking}
-              setSelectedUser={setUser}
-              setDeskName={setDeskName}
+              date={date}
+              start={start}
+              end={end}
               floor={floor}
               desks={desks?.filter((desk) => desk.floor === floor) || []}
               statuses={statusResponse || {}}
+              isLoading={isLoading}
             />
           </TabPanel>
         ))}

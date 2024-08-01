@@ -2,20 +2,19 @@
 
 import React from "react";
 import { TransformComponent, TransformWrapper } from "react-zoom-pan-pinch";
-import { Box } from "@mui/joy";
+import { Box, CircularProgress } from "@mui/joy";
 import Image from "next/image";
 import DeskIcon from "./DeskIcon";
-import { StatusResponse, UserData, DeskPosition, Booking } from "@/types";
+import { StatusResponse, DeskPosition } from "@/types";
 
 interface FloorPlanViewerProps {
-  selectedDesk: string;
-  setSelectedDesk: React.Dispatch<React.SetStateAction<string>>;
-  setSelectedBooking: React.Dispatch<React.SetStateAction<Booking | null>>;
-  setSelectedUser: React.Dispatch<React.SetStateAction<UserData | null>>;
-  setDeskName: React.Dispatch<React.SetStateAction<string>>;
+  date: Date;
+  start: Date;
+  end: Date;
   floor: string;
   desks: DeskPosition[];
   statuses: StatusResponse;
+  isLoading: boolean;
 }
 
 const coordToPercent = (x: number) => {
@@ -23,15 +22,16 @@ const coordToPercent = (x: number) => {
 };
 
 const FloorPlanViewer = ({
-  selectedDesk,
-  setSelectedDesk,
-  setSelectedBooking,
-  setSelectedUser,
-  setDeskName,
+  date,
+  start,
+  end,
   floor,
   desks,
   statuses,
+  isLoading,
 }: FloorPlanViewerProps) => {
+  const [selectedDesk, setSelectedDesk] = React.useState("");
+
   return (
     <Box
       sx={{
@@ -62,20 +62,38 @@ const FloorPlanViewer = ({
             alt={`${floor} floorplan`}
             style={{ position: "absolute" }}
           />
-          {desks.map((desk, index) => (
-            <DeskIcon
-              key={index}
-              id={desk.id}
-              x={coordToPercent(desk.xcoord)}
-              y={coordToPercent(desk.ycoord)}
-              selectedDesk={selectedDesk}
-              setSelectedDesk={setSelectedDesk}
-              setSelectedBooking={setSelectedBooking}
-              setSelectedUser={setSelectedUser}
-              setDeskName={setDeskName}
-              status={statuses[desk.id]}
-            />
-          ))}
+          {isLoading && (
+            <Box
+              sx={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                width: "100%",
+                height: "100%",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                backgroundColor: "rgba(255, 255, 255, 0.25)",
+              }}
+            >
+              <CircularProgress size="lg" />
+            </Box>
+          )}
+          {!isLoading &&
+            desks.map((desk, index) => (
+              <DeskIcon
+                key={index}
+                id={desk.id}
+                x={coordToPercent(desk.xcoord)}
+                y={coordToPercent(desk.ycoord)}
+                date={date}
+                start={start}
+                end={end}
+                status={statuses[desk.id]}
+                selectedDesk={selectedDesk}
+                setSelectedDesk={setSelectedDesk}
+              />
+            ))}
         </TransformComponent>
       </TransformWrapper>
     </Box>
