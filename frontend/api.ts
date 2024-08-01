@@ -120,3 +120,23 @@ export const approveBooking = (id: number): Promise<object> => {
 export const declineBooking = (id: number): Promise<object> => {
   return authApiCall("/admin/bookings/decline", "PUT", { id });
 };
+
+// This one is special because it returns a file, not JSON
+export const generateReport = async (
+  type: string,
+  format: string,
+  startDate: Date,
+  endDate: Date,
+  spaces: string[]
+) => {
+  const options: RequestInit = {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${getCookie("token")}`,
+    },
+    body: JSON.stringify({ type, format, startDate, endDate, spaces }),
+  };
+
+  return fetch(BACKEND_URL + "/admin/reports/generate", options);
+}

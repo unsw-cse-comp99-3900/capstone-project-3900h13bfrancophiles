@@ -5,8 +5,8 @@ import { booking } from "../../drizzle/schema";
 import { and, asc, count, desc, eq, gt, lt, ne } from "drizzle-orm";
 
 import { sendBookingEmail } from "../email/service";
-import { BOOKING_DECLINE, BOOKING_APPROVE } from "../email/template";
-import { formatBookingDates, now } from "../utils";
+import { BOOKING_APPROVE, BOOKING_DECLINE } from "../email/template";
+import { declineOverlapping, formatBookingDates, now } from "../utils";
 
 interface PendingBookingsRequest {
   page: number & tags.Minimum<1>;
@@ -71,29 +71,13 @@ export async function approveBooking(
       }
 
       const updatedBookingDetails = updatedBooking[0];
-
-      // Decline overlapping bookings and get the updated records
-      const declinedBookings = await trx
-        .update(booking)
-        .set({ currentstatus: "declined" })
-        .where(
-          and(
-            eq(booking.currentstatus, "pending"),
-            eq(booking.spaceid, updatedBookingDetails.spaceid),
-            ne(booking.id, updatedBookingDetails.id),
-            and(
-              lt(booking.starttime, updatedBookingDetails.endtime),
-              gt(booking.endtime, updatedBookingDetails.starttime),
-            ),
-          ),
-        )
-        .returning();
-
-      // Notify users about declined overlapping bookings
-      const formattedDeclinedBookings = declinedBookings.map(formatBookingDates);
-      for (const declinedBooking of formattedDeclinedBookings) {
-        await sendBookingEmail(req.token.user, declinedBooking, BOOKING_DECLINE);
-      }
+      await declineOverlapping(
+        trx,
+        updatedBookingDetails.spaceid,
+        updatedBookingDetails.starttime,
+        updatedBookingDetails.endtime,
+        updatedBookingDetails.id,
+      );
 
       const approvedBooking = await trx
         .update(booking)
@@ -108,7 +92,7 @@ export async function approveBooking(
       const approvedBookingDetails = approvedBooking[0];
 
       const formattedBooking = formatBookingDates(approvedBookingDetails);
-      await sendBookingEmail(req.token.user, formattedBooking, BOOKING_APPROVE);
+      await sendBookingEmail(approvedBookingDetails.zid, formattedBooking, BOOKING_APPROVE);
     });
     res.status(200).json({ message: "Booking approved and overlapping bookings declined" });
   } catch (error) {
@@ -137,7 +121,7 @@ export async function declineBooking(
     }
 
     const formattedBooking = formatBookingDates(updatedBooking[0]);
-    await sendBookingEmail(req.token.user, formattedBooking, BOOKING_DECLINE);
+    await sendBookingEmail(formattedBooking.zid, formattedBooking, BOOKING_DECLINE);
     res.status(200).json({ message: "Booking declined" });
   } catch (error) {
     res.status(500).json({ error: "Internal server error" });
@@ -172,10 +156,8 @@ export async function overlappingBookings(
             eq(booking.currentstatus, "pending"),
             eq(booking.spaceid, updatedBookingDetails.spaceid),
             ne(booking.id, updatedBookingDetails.id),
-            and(
-              lt(booking.starttime, updatedBookingDetails.endtime),
-              gt(booking.endtime, updatedBookingDetails.starttime),
-            ),
+            lt(booking.starttime, updatedBookingDetails.endtime),
+            gt(booking.endtime, updatedBookingDetails.starttime),
           ),
         );
 

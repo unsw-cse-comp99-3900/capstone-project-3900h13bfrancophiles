@@ -8,6 +8,7 @@ import NextLink from "next/link";
 import { Booking } from "@/types";
 import { useFloating, flip, shift, autoUpdate, ReferenceType } from "@floating-ui/react";
 import BookingModal from "@/components/BookingModal/BookingModal";
+import { getInitials } from "@/utils/icons";
 
 interface DeskInfoPopupProps {
   id: string;
@@ -131,13 +132,6 @@ const DeskInfoPopup = ({
     </React.Fragment>
   );
 };
-
-function getInitials(name: string) {
-  const words = name.trim().split(" ", 2);
-  const firstLetter = words[0] ? words[0][0] : "";
-  const secondLetter = words[1] ? words[1][0] : "";
-  return (firstLetter + secondLetter).toUpperCase();
-}
 
 function timeNow(i: Date) {
   return i.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });

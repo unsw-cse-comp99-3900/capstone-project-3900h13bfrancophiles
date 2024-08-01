@@ -23,54 +23,44 @@ import {
 import DownloadIcon from "@mui/icons-material/Download";
 import * as React from "react";
 import { useRef } from "react";
-import {
-  AutocompleteRenderGetTagProps,
-  AutocompleteRenderOptionState,
-} from "@mui/joy/Autocomplete/AutocompleteProps";
+import { AutocompleteRenderGetTagProps, AutocompleteRenderOptionState } from "@mui/joy/Autocomplete/AutocompleteProps";
 import { addDays, format, startOfToday } from "date-fns";
 import { useResizeObserver } from "usehooks-ts";
-
-interface Option {
-  text: string;
-  value: string;
-  type: "room" | "desk";
-  level?: string;
-}
-
-// TODO: Fetch from backend
-const options: Option[] = [
-  { text: "All Desks", value: "all", type: "desk" },
-  { text: "All Rooms", value: "all", type: "room" },
-  { text: "K17 Room 201-B", value: "K-K17-201B", type: "room", level: "K17 L2" },
-  { text: "K17 Room 201 Desks", value: "K-K17-201", type: "desk", level: "K17 L2" },
-  { text: "K17 Room 217 Desks", value: "K-K17-217", type: "desk", level: "K17 L2" },
-  { text: "K17 Room 401 K", value: "K-K17-401K", type: "room", level: "K17 L4" },
-  { text: "K17 Room 402", value: "K-K17-402", type: "room", level: "K17 L4" },
-  { text: "K17 Room 403", value: "K-K17-403", type: "room", level: "K17 L4" },
-  { text: "K17 Room 401 Desks", value: "K-K17-401", type: "desk", level: "K17 L4" },
-  { text: "K17 Room 412 Desks", value: "K-K17-412", type: "desk", level: "K17 L4" },
-];
+import useReportTypes from "@/hooks/useReportTypes";
+import * as api from "@/api";
+import { ReportSpace } from "@/types";
+import useReportSpaces from "@/hooks/useReportSpaces";
 
 interface ReportType {
   type: string;
   name: string;
-  supportedFormats: string[];
+  formats: string[];
 }
 
-// TODO: Fetch from backend?
-const reportTypes: ReportType[] = [
-  { type: "booking", name: "Booking Information", supportedFormats: ["xlsx"] },
-  { type: "checkin", name: "Booking & Check-in Information", supportedFormats: ["xlsx"] },
-];
-
 export function ReportGenerationForm() {
+  const { types: reportTypes = [], isLoading: typesIsLoading } = useReportTypes();
   const [reportType, setReportType] = React.useState<ReportType>();
+  React.useEffect(() => {
+    if (!reportType) setReportType(reportTypes[0]);
+  }, [reportTypes]);
+
+  const [fileFormat, setFileFormat] = React.useState<string | null>(null);
+  React.useEffect(() => {
+    if (reportType) setFileFormat(reportType.formats[0]);
+  }, [reportType]);
+
+  const { spaces: reportSpaces, isLoading: spacesIsLoading } = useReportSpaces();
+  const options: ReportSpace[] = [
+    { text: "All Desks", value: "all", type: "desk" },
+    { text: "All Rooms", value: "all", type: "room" },
+    ...(reportSpaces ?? [])
+  ];
 
   const today = startOfToday();
   const [startDate, setStartDate] = React.useState(addDays(today, -7));
   const [endDate, setEndDate] = React.useState(today);
 
-  const [spaces, setSpaces] = React.useState<Option[]>([]);
+  const [spaces, setSpaces] = React.useState<ReportSpace[]>([]);
   const totals = {
     room: options.filter((space) => space.type === "room").length - 1,
     desk: options.filter((space) => space.type === "desk").length - 1,
@@ -80,7 +70,11 @@ export function ReportGenerationForm() {
     desk: spaces.filter((space) => space.type === "desk").length,
   };
 
-  const handleAllSwitch = (type: Option["type"]) => {
+  const [spacesInteracted, setSpacesInteracted] = React.useState(false);
+  const spacesError = (spacesInteracted && spaces.length == 0)
+    ? "Select at least one space" : undefined;
+
+  const handleAllSwitch = (type: ReportSpace["type"]) => {
     if (totals[type] == selected[type]) {
       setSpaces((spaces) => spaces.filter((space) => space.type !== type));
     } else {
@@ -99,7 +93,7 @@ export function ReportGenerationForm() {
 
   const renderOption = (
     props: Omit<React.HTMLAttributes<HTMLLIElement>, "color">,
-    option: Option,
+    option: ReportSpace,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     _state: AutocompleteRenderOptionState,
   ) => {
@@ -133,6 +127,32 @@ export function ReportGenerationForm() {
     }
   };
 
+  const handleSubmit = async () => {
+    setSpacesInteracted(true);
+    if (!reportType || !fileFormat || !spaces.length) return;
+    const res = await api.generateReport(
+      reportType.type,
+      fileFormat,
+      startDate,
+      endDate,
+      spaces.map((option) => option.value),
+    );
+
+    const blob = await res.blob();
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+
+    // Extract filename
+    const header = res.headers.get('Content-Disposition');
+    const parts = header!.split(';');
+    const quotedFilename = parts[1].split('=')[1];
+    a.download = quotedFilename.substring(1, quotedFilename.length - 1);
+
+    a.click();
+    window.URL.revokeObjectURL(url);
+  }
+
   return (
     <Stack
       direction={{ xs: "column", lg: "row" }}
@@ -142,19 +162,33 @@ export function ReportGenerationForm() {
       spacing={2}
     >
       <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
-        <FormControl sx={{ minWidth: 300, flexGrow: { xs: 1, sm: 0 } }}>
-          <FormLabel>Report Type</FormLabel>
-          <Select
-            placeholder="Select one..."
-            value={reportType?.type}
-            onChange={(_e, value) => {
-              setReportType(reportTypes.find((rt) => rt.type === value));
-            }}
-          >
-            <Option value="booking">Booking Information</Option>
-            <Option value="checkin">Booking & Check-in Information</Option>
-          </Select>
-        </FormControl>
+        <Stack direction="row" spacing={2}>
+          <FormControl sx={{ minWidth: 200, flexGrow: { xs: 1, sm: 0 } }}>
+            <FormLabel>Report Type</FormLabel>
+            <Select
+              placeholder="Select one..."
+              value={reportType?.type}
+              onChange={(_e, value) => {
+                setReportType(reportTypes.find((rt) => rt.type === value));
+              }}
+            >
+              {reportTypes && reportTypes.map((rt) => (
+                <Option key={rt.type} value={rt.type}>{rt.name}</Option>
+              ))}
+            </Select>
+          </FormControl>
+          <FormControl sx={{ minWidth: 70, flexGrow: { xs: 1, sm: 0 } }}>
+            <FormLabel>Format</FormLabel>
+            <Select
+              value={fileFormat}
+              onChange={(_e, value) => setFileFormat(value)}
+            >
+              {reportType && reportType.formats.map((format) => (
+                <Option key={format} value={format}>.{format}</Option>
+              ))}
+            </Select>
+          </FormControl>
+        </Stack>
         <Stack direction="row" spacing={2}>
           <FormControl>
             <FormLabel>Start Date</FormLabel>
@@ -193,6 +227,7 @@ export function ReportGenerationForm() {
         <FormLabel sx={{ marginBottom: "6px" }}>Spaces</FormLabel>
         <Autocomplete
           placeholder={spaces.length ? undefined : "Select spaces to include in report..."}
+          color={spacesError ? "danger" : "neutral"}
           multiple
           disableCloseOnSelect
           limitTags={width ? Math.floor((width - 80) / 150) : -1}
@@ -203,11 +238,18 @@ export function ReportGenerationForm() {
           renderOption={renderOption}
           renderTags={renderTags}
           value={spaces}
+          loading={spacesIsLoading}
           onChange={(_e, values) => setSpaces(values)}
+          onBlur={() => setSpacesInteracted(true)}
           slotProps={{
             root: { ref: autocompleteRef },
           }}
         />
+        {spacesError && (
+          <Typography color="danger" level="body-xs" fontWeight={400} ml={0.5}>
+            {spacesError}
+          </Typography>
+        )}
       </Box>
       <Button
         endDecorator={<DownloadIcon />}
@@ -216,6 +258,8 @@ export function ReportGenerationForm() {
           mt: "20px !important",
           flexShrink: 0,
         }}
+        loading={spacesIsLoading || typesIsLoading}
+        onClick={handleSubmit}
       >
         Download Report
       </Button>
@@ -234,7 +278,7 @@ const renderGroup = (params: AutocompleteRenderGroupParams) => {
 };
 
 // Stolen from JoyUI Autocomplete source code
-const renderTags = (tags: Option[], getTagProps: AutocompleteRenderGetTagProps) =>
+const renderTags = (tags: ReportSpace[], getTagProps: AutocompleteRenderGetTagProps) =>
   tags.map((item, index) => {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { key, onClick, ...tagProps } = getTagProps({ index });
@@ -242,7 +286,12 @@ const renderTags = (tags: Option[], getTagProps: AutocompleteRenderGetTagProps) 
       <Chip
         variant="soft"
         color="neutral"
-        endDecorator={<ChipDelete key={key} variant="soft" {...tagProps} />}
+        endDecorator={<ChipDelete
+          variant="soft"
+          key={key}
+          onDelete={onClick}
+          {...tagProps}
+        />}
         sx={{ minWidth: 0 }}
         key={key}
       >

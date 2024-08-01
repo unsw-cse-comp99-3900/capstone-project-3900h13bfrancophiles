@@ -3,7 +3,7 @@
 import React from "react";
 import { KeepScale } from "react-zoom-pan-pinch";
 import { Box, Avatar } from "@mui/joy";
-import { Status, UserData } from "@/types";
+import { Booking, Status, UserData } from "@/types";
 import useSpace from "@/hooks/useSpace";
 import UserAvatar from "@/components/UserAvatar";
 import DeskInfoPopup from "@/components/DeskInfoPopup";

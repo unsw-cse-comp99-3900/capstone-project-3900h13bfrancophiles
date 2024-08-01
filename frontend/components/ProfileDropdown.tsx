@@ -15,7 +15,7 @@ import { getCookie } from "cookies-next";
 import { decodeJwt } from "jose";
 import { TokenPayload, UserGroup } from "@/types";
 import useUser from "@/hooks/useUser";
-import { getInitials } from "@/components/PendingBookingsRow";
+import { getInitials } from "@/utils/icons";
 
 export default function ProfileDropdown() {
   const token = getCookie("token");

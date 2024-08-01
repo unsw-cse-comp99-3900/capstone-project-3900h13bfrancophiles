@@ -38,6 +38,8 @@ Set a password for postgres `sudo passwd postgres`, then `sudo service postgresq
 ### Backend
 The following instructions assume you have yarn installed and are working in the `backend` directory.
 
+If you are using Node version >20, you may need to install some packages on your machine so that the `node-canvas` library used for chart generation can build. Find the appropriate installation commands [here](https://github.com/Automattic/node-canvas?tab=readme-ov-file#compiling).
+
 To install necessary dependencies:
 ```
 yarn install

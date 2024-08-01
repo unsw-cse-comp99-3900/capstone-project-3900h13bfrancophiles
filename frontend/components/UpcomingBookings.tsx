@@ -11,7 +11,6 @@ import {
   Stack,
   Table,
   Typography,
-  CircularProgress,
 } from "@mui/joy";
 import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
@@ -64,10 +63,6 @@ export default function UpcomingBookings() {
   };
 
   const numColumns = 6;
-
-  if (isLoading) {
-    return <CircularProgress />;
-  }
 
   return (
     <Stack>

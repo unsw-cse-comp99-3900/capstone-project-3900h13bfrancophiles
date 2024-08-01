@@ -20,7 +20,7 @@ jobs:
       - name: Configure node toolchain
         uses: actions/setup-node@v4
         with:
-          node-version: v22.4.0
+          node-version: v20
       - name: Install dependencies
         run: ${{ matrix.command }}
         working-directory: ${{ matrix.component }}
@@ -48,7 +48,7 @@ jobs:
       - name: Configure node toolchain
         uses: actions/setup-node@v4
         with:
-            node-version: v22.4.0
+            node-version: v20
       - name: Install dependencies
         run: yarn --frozen-lockfile
         working-directory: backend
@@ -84,7 +84,7 @@ jobs:
       - name: Configure node toolchain
         uses: actions/setup-node@v4
         with:
-          node-version: v22.4.0
+          node-version: v20
       - name: Install dependencies
         run: yarn --frozen-lockfile
         working-directory: frontend
