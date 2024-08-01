@@ -7,6 +7,7 @@ import { getCookie } from "cookies-next";
 import { cookies } from "next/headers";
 import { decodeJwt } from "jose";
 import { NavData, TokenPayload } from "@/types";
+import { redirect } from "next/navigation";
 config.autoAddCss = false;
 
 export default function Layout({
@@ -20,22 +21,28 @@ export default function Layout({
   ];
 
   const token = getCookie("token", { cookies });
-  if (token) {
-    const tokenPayload = decodeJwt<TokenPayload>(`${token}`);
-    // HDR and above can book desks, Other cannot
-    if (tokenPayload.group !== "other") {
-      navItems.push({ text: "Desks", href: "/desks" });
-    }
+  if (!token) redirect("/login");
 
-    if (tokenPayload.group === "admin") {
-      navItems.push({ text: "Admin", href: "/admin" });
-    }
+  let tokenPayload: TokenPayload;
+  try {
+    tokenPayload = decodeJwt<TokenPayload>(`${token}`);
+  } catch (e) {
+    return redirect("/login");
+  }
+
+  // HDR and above can book desks, Other cannot
+  if (tokenPayload.group !== "other") {
+    navItems.push({ text: "Desks", href: "/desks" });
+  }
+
+  if (tokenPayload.group === "admin") {
+    navItems.push({ text: "Admin", href: "/admin" });
   }
 
   return (
     <>
-      <NavBar navItems={navItems} />
-      <MobileNavBar navItems={navItems} />
+      <NavBar navItems={navItems} zid={tokenPayload.user} />
+      <MobileNavBar navItems={navItems} zid={tokenPayload.user} />
       {children}
     </>
   );
