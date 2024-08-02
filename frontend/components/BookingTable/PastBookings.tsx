@@ -57,9 +57,9 @@ export default function PastBookings() {
       <BookingTable
         columns={[
           { heading: "Reference No.", width: 120 },
-          { heading: "Time", width: 150 },
-          { heading: "Location", width: 150 },
-          { heading: "Description", width: 200 },
+          { heading: "Time", width: 200 },
+          { heading: "Location", width: 200 },
+          { heading: "Description", width: 250 },
         ]}
         data={pastBookings}
         total={total}

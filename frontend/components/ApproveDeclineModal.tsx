@@ -22,22 +22,22 @@ interface ApproveDeclineModalProps {
   isOpen: boolean;
   onClose: () => void;
   approving: boolean;
-  row: Booking;
+  booking: Booking;
   page: number;
   rowsPerPage: number;
   sort: string;
-  setApproveDeclineError: (error: string | null) => void;
+  setError: (error: string | undefined) => void;
 }
 
 const ApproveDeclineModal: React.FC<ApproveDeclineModalProps> = ({
   isOpen,
   onClose,
   approving,
-  row,
+  booking,
   page,
   rowsPerPage,
   sort,
-  setApproveDeclineError,
+  setError,
 }) => {
   const [isApprovingOrDeclining, setIsApprovingOrDeclining] = React.useState(false);
 
@@ -45,7 +45,7 @@ const ApproveDeclineModal: React.FC<ApproveDeclineModalProps> = ({
     overlappingBookings,
     isLoading,
     mutate: mutateOverlappingBookings,
-  } = useOverlappingBookings(row.id);
+  } = useOverlappingBookings(booking.id);
   const countOverlapping = overlappingBookings ? overlappingBookings.length : 0;
   const { mutate: mutatePendingBookings } = usePendingBookings(page + 1, rowsPerPage, sort);
 
@@ -53,18 +53,18 @@ const ApproveDeclineModal: React.FC<ApproveDeclineModalProps> = ({
     setIsApprovingOrDeclining(true);
     try {
       if (approving) {
-        await approveBooking(row.id);
+        await approveBooking(booking.id);
       } else {
-        await declineBooking(row.id);
+        await declineBooking(booking.id);
       }
       await mutatePendingBookings();
       await mutateOverlappingBookings();
       onClose();
     } catch (error) {
       if (error instanceof Error) {
-        setApproveDeclineError(error.message);
+        setError(error.message);
       } else {
-        setApproveDeclineError("An unexpected error occurred");
+        setError("An unexpected error occurred");
       }
     } finally {
       setIsApprovingOrDeclining(false);
