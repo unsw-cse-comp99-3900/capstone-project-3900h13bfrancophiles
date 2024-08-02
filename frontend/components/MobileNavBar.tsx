@@ -10,7 +10,6 @@ import {
   List,
   ListItemButton,
   Sheet,
-  Skeleton,
   Stack,
   Typography,
 } from "@mui/joy";
@@ -62,7 +61,7 @@ interface MenuDrawerProps {
 }
 
 const MenuDrawer: React.FC<MenuDrawerProps> = ({ open, setOpen, navItems, zid }) => {
-  const { user, isLoading } = useUser(zid);
+  const { user } = useUser(zid);
 
   return (
     <Drawer anchor="right" open={open} onClose={() => setOpen(false)}>
@@ -74,16 +73,14 @@ const MenuDrawer: React.FC<MenuDrawerProps> = ({ open, setOpen, navItems, zid })
         </Link>
         <Divider />
         <Stack p={1} direction="row" alignItems="center">
-          <Skeleton loading={isLoading}>
-            <Avatar
-              variant="solid"
-              color="primary"
-              size="sm"
-              src={user?.image ? `data:image/jpeg;base64,${user?.image}` : undefined}
-            >
-              {user?.fullname ? getInitials(user?.fullname) : ""}
-            </Avatar>
-          </Skeleton>
+          <Avatar
+            variant="soft"
+            color="neutral"
+            size="sm"
+            src={user?.image ? `data:image/jpeg;base64,${user?.image}` : undefined}
+          >
+            {user?.fullname ? getInitials(user.fullname) : undefined}
+          </Avatar>
           <Box sx={{ ml: 1.5 }}>
             <Typography level="title-sm" textColor="text.primary">
               {user?.fullname}
