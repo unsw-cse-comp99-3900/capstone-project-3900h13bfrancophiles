@@ -7,7 +7,7 @@ import DialogTitle from "@mui/joy/DialogTitle";
 import Stack from "@mui/joy/Stack";
 import { Alert, Box, IconButton, ModalOverflow, Typography } from "@mui/joy";
 import { format } from "date-fns";
-import { Booking, SpaceOption, TimeRange } from "@/types";
+import { Booking, TimeRange } from "@/types";
 import BookingForm from "@/components/BookingModal/BookingForm";
 import BookingConfirmation from "@/components/BookingModal/BookingConfirmation";
 import ModalCalendar from "./ModalCalendar";
@@ -21,7 +21,7 @@ type ModalState = "form" | "confirm" | "submitted";
 interface BookingModalProps {
   open: boolean;
   onClose: () => void;
-  space?: SpaceOption;
+  space?: string;
   date?: Date;
   start?: Date;
   end?: Date;
@@ -48,7 +48,7 @@ const BookingModal: React.FC<BookingModalProps> = ({
   const [isLoading, setIsLoading] = React.useState(false);
 
   // Form state
-  const [space, setSpace] = React.useState<SpaceOption | null>(initialSpace ?? null);
+  const [space, setSpace] = React.useState<string | undefined>(initialSpace);
   React.useEffect(() => {
     setSpace(initialSpace!);
   }, [initialSpace]);
@@ -87,8 +87,8 @@ const BookingModal: React.FC<BookingModalProps> = ({
       }
       setIsLoading(true);
       const res = editing
-        ? await editBooking(editedBooking!, start.toISOString(), end.toISOString(), space.id, desc)
-        : await createBooking(space.id, start.toISOString(), end.toISOString(), desc);
+        ? await editBooking(editedBooking!, start.toISOString(), end.toISOString(), space, desc)
+        : await createBooking(space, start.toISOString(), end.toISOString(), desc);
       setIsLoading(false);
       setBooking(res.booking);
       setState("submitted");
@@ -141,7 +141,7 @@ const BookingModal: React.FC<BookingModalProps> = ({
                 </Typography>
                 {space ? (
                   <ModalCalendar
-                    space={space?.id}
+                    space={space}
                     date={date}
                     start={start}
                     end={end}
@@ -160,8 +160,7 @@ const BookingModal: React.FC<BookingModalProps> = ({
         return (
           space && (
             <BookingConfirmation
-              spaceName={space.name}
-              spaceId={space.id}
+              spaceId={space}
               date={date}
               start={start}
               end={end}
@@ -179,8 +178,7 @@ const BookingModal: React.FC<BookingModalProps> = ({
           space &&
           booking && (
             <BookingConfirmation
-              spaceName={space.name}
-              spaceId={space.id}
+              spaceId={space}
               date={date}
               start={start}
               end={end}
