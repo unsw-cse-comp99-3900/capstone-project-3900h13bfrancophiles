@@ -61,26 +61,11 @@ export default function UpcomingBookings() {
   };
 
   const columns: BookingTableColumn[] = [
-    {
-      heading: "Reference No.",
-      width: 120,
-    },
-    {
-      heading: "Status",
-      width: 100,
-    },
-    {
-      heading: "Time",
-      width: 200,
-    },
-    {
-      heading: "Location",
-      width: 150,
-    },
-    {
-      heading: "Description",
-      width: 200,
-    },
+    { heading: "Reference No.", width: 120 },
+    { heading: "Status", width: 100 },
+    { heading: "Time", width: 200 },
+    { heading: "Location", width: 150 },
+    { heading: "Description", width: 200 },
     {
       heading: "",
       width: 80,
@@ -104,7 +89,7 @@ export default function UpcomingBookings() {
           <FormControl sx={{ width: 150 }}>
             <FormLabel>Space</FormLabel>
             <Select
-              defaultValue="all"
+              value={filter}
               placeholder="All"
               onChange={(_e, val) => {
                 if (val) {
@@ -121,7 +106,7 @@ export default function UpcomingBookings() {
           <FormControl sx={{ width: 150 }}>
             <FormLabel>Sort</FormLabel>
             <Select
-              defaultValue="soonest"
+              value={sort}
               placeholder="Soonest"
               onChange={(_e, val) => {
                 if (val) {

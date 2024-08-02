@@ -71,7 +71,7 @@ export default function BookingTable({
     <Sheet
       variant="outlined"
       sx={{
-        display: { xs: "initial" },
+        display: "initial",
         width: "100%",
         borderRadius: "sm",
         flexShrink: 1,
