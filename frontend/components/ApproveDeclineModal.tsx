@@ -15,7 +15,6 @@ import {
 import { Booking } from "@/types";
 import { approveBooking, declineBooking } from "@/api";
 import useOverlappingBookings from "@/hooks/useOverlappingBookings";
-import usePendingBookings from "@/hooks/usePendingBookings";
 import BookingTable from "@/components/BookingTable/BookingTable";
 
 interface ApproveDeclineModalProps {
@@ -23,9 +22,6 @@ interface ApproveDeclineModalProps {
   onClose: () => void;
   approving: boolean;
   booking: Booking;
-  page: number;
-  rowsPerPage: number;
-  sort: string;
   setError: (error: string | undefined) => void;
 }
 
@@ -34,20 +30,11 @@ const ApproveDeclineModal: React.FC<ApproveDeclineModalProps> = ({
   onClose,
   approving,
   booking,
-  page,
-  rowsPerPage,
-  sort,
   setError,
 }) => {
   const [isApprovingOrDeclining, setIsApprovingOrDeclining] = React.useState(false);
-
-  const {
-    overlappingBookings,
-    isLoading,
-    mutate: mutateOverlappingBookings,
-  } = useOverlappingBookings(booking.id);
+  const { overlappingBookings, isLoading } = useOverlappingBookings(booking.id);
   const countOverlapping = overlappingBookings ? overlappingBookings.length : 0;
-  const { mutate: mutatePendingBookings } = usePendingBookings(page + 1, rowsPerPage, sort);
 
   const handleApproveDecline = async () => {
     setIsApprovingOrDeclining(true);
@@ -57,8 +44,6 @@ const ApproveDeclineModal: React.FC<ApproveDeclineModalProps> = ({
       } else {
         await declineBooking(booking.id);
       }
-      await mutatePendingBookings();
-      await mutateOverlappingBookings();
       onClose();
     } catch (error) {
       if (error instanceof Error) {

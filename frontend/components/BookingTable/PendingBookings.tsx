@@ -21,7 +21,11 @@ export default function PendingBookings() {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [sort, setSort] = React.useState("soonest");
-  const { pendingBookings, total, isLoading } = usePendingBookings(page + 1, rowsPerPage, sort);
+  const { pendingBookings, total, isLoading, mutate } = usePendingBookings(
+    page + 1,
+    rowsPerPage,
+    sort,
+  );
 
   // Action state
   const [bookingToAction, setBookingToAction] = React.useState<Booking>();
@@ -99,15 +103,13 @@ export default function PendingBookings() {
       {bookingToAction && (
         <ApproveDeclineModal
           isOpen={!!action}
-          onClose={() => {
+          onClose={async () => {
             setBookingToAction(undefined);
             setAction(undefined);
+            await mutate();
           }}
           approving={action === "approving"}
           booking={bookingToAction}
-          page={page}
-          rowsPerPage={rowsPerPage}
-          sort={sort}
           setError={setApproveDeclineError}
         />
       )}
