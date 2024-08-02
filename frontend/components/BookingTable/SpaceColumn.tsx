@@ -3,7 +3,7 @@ import NextLink from "next/link";
 import * as React from "react";
 import useSpace from "@/hooks/useSpace";
 
-export default function SpaceLink({ spaceId }: { spaceId: string }) {
+export default function SpaceColumn({ spaceId }: { spaceId: string }) {
   const { space, type, isLoading } = useSpace(spaceId);
 
   return (

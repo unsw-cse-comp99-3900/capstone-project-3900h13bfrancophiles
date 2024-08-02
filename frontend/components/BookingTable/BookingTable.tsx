@@ -17,7 +17,8 @@ import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import { Property } from "csstype";
 import BookingStatusPill from "@/components/BookingTable/BookingStatusPill";
 import { format } from "date-fns";
-import SpaceLink from "@/components/BookingTable/SpaceLink";
+import SpaceColumn from "@/components/BookingTable/SpaceColumn";
+import UserColumn from "@/components/BookingTable/UserColumn";
 
 const defaultColumnRenderers = {
   "Reference No.": (booking: Booking) => <Typography level="body-sm">#{booking.id}</Typography>,
@@ -28,8 +29,9 @@ const defaultColumnRenderers = {
       {format(new Date(booking.endtime), "H:mm")}
     </Typography>
   ),
-  Location: (booking: Booking) => <SpaceLink spaceId={booking.spaceid} />,
+  Location: (booking: Booking) => <SpaceColumn spaceId={booking.spaceid} />,
   Description: (booking: Booking) => <Typography level="body-sm">{booking.description}</Typography>,
+  User: (booking: Booking) => <UserColumn userId={booking.zid} />,
 } as const;
 
 type DefaultColumn = {
@@ -45,27 +47,29 @@ type CustomColumn = {
 
 export type BookingTableColumn = DefaultColumn | CustomColumn;
 
-interface BookingTableProps {
+interface PaginatedBookingTableProps {
   columns: BookingTableColumn[];
   data?: Booking[];
   total?: number;
   isLoading: boolean;
+  noPagination?: false;
   page: number;
   rowsPerPage: number;
   onChange: (page: number, rowsPerPage: number) => void;
 }
 
-export default function BookingTable({
-  columns,
-  data,
-  total,
-  isLoading,
-  page,
-  rowsPerPage,
-  onChange,
-}: BookingTableProps) {
-  const from = data ? page * rowsPerPage : 0;
-  const to = Math.min(total ?? 0, (page + 1) * rowsPerPage);
+interface UnpaginatedBookingTableProps {
+  columns: BookingTableColumn[];
+  data?: Booking[];
+  total?: number;
+  isLoading: boolean;
+  noPagination: true;
+}
+
+type BookingTableProps = PaginatedBookingTableProps | UnpaginatedBookingTableProps;
+
+export default function BookingTable(props: BookingTableProps) {
+  const { columns, data, total, isLoading, noPagination } = props;
 
   return (
     <Sheet
@@ -117,53 +121,84 @@ export default function BookingTable({
             <NoBookingsRow bookingType="Upcoming" colSpan={columns.length} isLoading={isLoading} />
           )}
         </tbody>
-        <tfoot>
-          <tr>
-            <td colSpan={columns.length}>
-              <Stack direction="row" alignItems="center" justifyContent="flex-end" gap={2}>
-                <FormControl orientation="horizontal" size="sm">
-                  <FormLabel>Rows per page:</FormLabel>
-                  <Select
-                    required
-                    onChange={(_e, val) => val && onChange(0, val)}
-                    placeholder="5"
-                    value={rowsPerPage}
-                  >
-                    <Option value={5}>5</Option>
-                    <Option value={10}>10</Option>
-                    <Option value={25}>25</Option>
-                  </Select>
-                </FormControl>
-                <Typography textAlign="center" sx={{ minWidth: 80 }}>
-                  {from}-{to} of {total ?? 0}
-                </Typography>
-                <Stack direction="row" gap={1}>
-                  <IconButton
-                    size="sm"
-                    color="neutral"
-                    variant="outlined"
-                    disabled={page === 0}
-                    onClick={() => onChange(page - 1, rowsPerPage)}
-                    sx={{ bgcolor: "background.surface" }}
-                  >
-                    <KeyboardArrowLeftIcon />
-                  </IconButton>
-                  <IconButton
-                    size="sm"
-                    color="neutral"
-                    variant="outlined"
-                    disabled={page >= Math.ceil((total ?? 0) / rowsPerPage) - 1}
-                    onClick={() => onChange(page + 1, rowsPerPage)}
-                    sx={{ bgcolor: "background.surface" }}
-                  >
-                    <KeyboardArrowRightIcon />
-                  </IconButton>
-                </Stack>
-              </Stack>
-            </td>
-          </tr>
-        </tfoot>
+        {!noPagination && (
+          <PaginationFooter
+            numColumns={columns.length}
+            total={total}
+            page={props.page}
+            rowsPerPage={props.rowsPerPage}
+            onChange={props.onChange}
+          />
+        )}
       </Table>
     </Sheet>
+  );
+}
+
+interface PaginationFooterProps {
+  numColumns: number;
+  total?: number;
+  page: number;
+  rowsPerPage: number;
+  onChange: (page: number, rowsPerPage: number) => void;
+}
+
+function PaginationFooter({
+  numColumns,
+  total = 0,
+  page,
+  rowsPerPage,
+  onChange,
+}: PaginationFooterProps) {
+  const from = page * rowsPerPage + 1;
+  const to = Math.min(total, (page + 1) * rowsPerPage);
+
+  return (
+    <tfoot>
+      <tr>
+        <td colSpan={numColumns}>
+          <Stack direction="row" alignItems="center" justifyContent="flex-end" gap={2}>
+            <FormControl orientation="horizontal" size="sm">
+              <FormLabel>Rows per page:</FormLabel>
+              <Select
+                required
+                onChange={(_e, val) => val && onChange(0, val)}
+                placeholder="5"
+                value={rowsPerPage}
+              >
+                <Option value={5}>5</Option>
+                <Option value={10}>10</Option>
+                <Option value={25}>25</Option>
+              </Select>
+            </FormControl>
+            <Typography textAlign="center" sx={{ minWidth: 80 }}>
+              {from}-{to} of {total}
+            </Typography>
+            <Stack direction="row" gap={1}>
+              <IconButton
+                size="sm"
+                color="neutral"
+                variant="outlined"
+                disabled={page === 0}
+                onClick={() => onChange(page - 1, rowsPerPage)}
+                sx={{ bgcolor: "background.surface" }}
+              >
+                <KeyboardArrowLeftIcon />
+              </IconButton>
+              <IconButton
+                size="sm"
+                color="neutral"
+                variant="outlined"
+                disabled={page >= Math.ceil((total ?? 0) / rowsPerPage) - 1}
+                onClick={() => onChange(page + 1, rowsPerPage)}
+                sx={{ bgcolor: "background.surface" }}
+              >
+                <KeyboardArrowRightIcon />
+              </IconButton>
+            </Stack>
+          </Stack>
+        </td>
+      </tr>
+    </tfoot>
   );
 }
