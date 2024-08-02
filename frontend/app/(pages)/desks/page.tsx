@@ -2,21 +2,22 @@
 
 import FloorPlanViewer from "@/components/FloorPlanViewer";
 import {
+  FormControl,
+  Input,
+  Sheet,
+  Stack,
   Tab,
   TabList,
   TabPanel,
   Tabs,
-  Stack,
-  Input,
-  Sheet,
   Typography,
-  FormControl,
 } from "@mui/joy";
 import * as React from "react";
 import useTimeRange from "@/hooks/useTimeRange";
 import useSpaceStatus from "@/hooks/useSpaceStatus";
 import JoyTimePicker from "@/components/JoyTimePicker";
 import useDesks from "@/hooks/useDesks";
+import Box from "@mui/joy/Box";
 
 const floors = ["K17 L2", "K17 L3", "K17 L4", "K17 L5"];
 
@@ -27,8 +28,20 @@ export default function Desks() {
   const { desks } = useDesks();
   const { statusResponse, isLoading } = useSpaceStatus(start.toISOString(), end.toISOString());
 
+  // Prevent zooming (https://stackoverflow.com/a/38573198)
+  React.useEffect(() => {
+    const preventZoom = (event: TouchEvent) => {
+      if ("scale" in event && event.scale !== 1) {
+        event.preventDefault();
+      }
+    };
+
+    document.addEventListener("touchmove", preventZoom, false);
+    return () => document.removeEventListener("touchmove", preventZoom, false);
+  }, []);
+
   return (
-    <React.Fragment>
+    <Box height="calc(100% - 60px)" sx={{ touchAction: "none" }}>
       <Stack
         direction="column"
         alignItems="flex-end"
@@ -38,7 +51,8 @@ export default function Desks() {
           top: 60,
           right: 0,
           padding: 1,
-          margin: 1,
+          marginY: 1,
+          marginX: { xs: "16px", sm: 1 },
           width: { xs: "calc(100vw - 32px)", sm: "auto" },
         }}
       >
@@ -54,7 +68,7 @@ export default function Desks() {
         >
           <Stack direction="column">
             <Typography level="h4">Search for available desks:</Typography>
-            <Stack direction={{ xs: "column", sm: "row" }} spacing={2} sx={{ mt: 1, mb: 1 }}>
+            <Stack direction={{ xs: "column", sm: "row" }} spacing={{ xs: 1, sm: 2 }} mt={1} mb={1}>
               <FormControl sx={{ xs: "100%", sm: 150 }}>
                 <Input {...dateInputProps} />
               </FormControl>
@@ -66,7 +80,7 @@ export default function Desks() {
           </Stack>
         </Sheet>
       </Stack>
-      <Tabs aria-label="level select" defaultValue={"K17 L2"} sx={{ height: "calc(100vh - 60px)" }}>
+      <Tabs aria-label="level select" defaultValue={"K17 L2"} sx={{ height: "100%" }}>
         {floors.map((floor, index) => (
           <TabPanel
             key={index}
@@ -97,6 +111,6 @@ export default function Desks() {
           ))}
         </TabList>
       </Tabs>
-    </React.Fragment>
+    </Box>
   );
 }
