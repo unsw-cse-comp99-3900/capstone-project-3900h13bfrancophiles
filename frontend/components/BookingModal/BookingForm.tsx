@@ -91,7 +91,7 @@ function SpaceInput({ space, setSpace }: SpaceInputProps) {
   return (
     <Autocomplete
       required
-      value={options?.find((option) => option.id === space)}
+      value={options?.find((option) => option.id === space) ?? null}
       onChange={(_, value) => setSpace(value?.id)}
       options={options ?? []}
       getOptionLabel={(option) => option.name}

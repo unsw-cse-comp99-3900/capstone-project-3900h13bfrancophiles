@@ -120,7 +120,7 @@ export default function BookingTable({
         <tfoot>
           <tr>
             <td colSpan={columns.length}>
-              <Stack alignItems="center" justifyContent="flex-end" gap={2}>
+              <Stack direction="row" alignItems="center" justifyContent="flex-end" gap={2}>
                 <FormControl orientation="horizontal" size="sm">
                   <FormLabel>Rows per page:</FormLabel>
                   <Select
@@ -135,9 +135,9 @@ export default function BookingTable({
                   </Select>
                 </FormControl>
                 <Typography textAlign="center" sx={{ minWidth: 80 }}>
-                  {from}-${to} of ${total ?? 0}
+                  {from}-{to} of {total ?? 0}
                 </Typography>
-                <Stack gap={1}>
+                <Stack direction="row" gap={1}>
                   <IconButton
                     size="sm"
                     color="neutral"

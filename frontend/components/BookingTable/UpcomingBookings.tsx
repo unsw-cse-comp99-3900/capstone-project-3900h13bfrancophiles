@@ -63,15 +63,15 @@ export default function UpcomingBookings() {
   const columns: BookingTableColumn[] = [
     {
       heading: "Reference No.",
-      width: 150,
+      width: 120,
     },
     {
       heading: "Status",
-      width: 150,
+      width: 100,
     },
     {
       heading: "Time",
-      width: 150,
+      width: 200,
     },
     {
       heading: "Location",
@@ -79,11 +79,11 @@ export default function UpcomingBookings() {
     },
     {
       heading: "Description",
-      width: 150,
+      width: 200,
     },
     {
       heading: "",
-      width: 150,
+      width: 80,
       render: (booking: Booking) => (
         <Stack direction="row" justifyContent="flex-end" px={1}>
           <IconButton variant="plain" color="neutral" onClick={() => setBookingToEdit(booking)}>
@@ -138,6 +138,7 @@ export default function UpcomingBookings() {
         <BookingTable
           columns={columns}
           data={upcomingBookings?.slice(page * rowsPerPage, (page + 1) * rowsPerPage)}
+          total={upcomingBookings?.length}
           isLoading={isLoading}
           page={page}
           rowsPerPage={rowsPerPage}
