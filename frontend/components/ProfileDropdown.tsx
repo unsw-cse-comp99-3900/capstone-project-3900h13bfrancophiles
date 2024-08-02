@@ -1,12 +1,4 @@
-import {
-  Avatar,
-  Dropdown,
-  ListDivider,
-  Menu,
-  MenuButton,
-  MenuItem,
-  Stack,
-} from "@mui/joy";
+import { Avatar, Dropdown, ListDivider, Menu, MenuButton, MenuItem, Stack } from "@mui/joy";
 import Box from "@mui/joy/Box";
 import Typography from "@mui/joy/Typography";
 import LogoutButton from "@/components/LogoutButton";

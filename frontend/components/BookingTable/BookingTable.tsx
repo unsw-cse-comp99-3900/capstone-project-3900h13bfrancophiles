@@ -50,9 +50,9 @@ export type BookingTableColumn = DefaultColumn | CustomColumn;
 interface PaginatedBookingTableProps {
   columns: BookingTableColumn[];
   data?: Booking[];
-  total?: number;
   isLoading: boolean;
   noPagination?: false;
+  total?: number;
   page: number;
   rowsPerPage: number;
   onChange: (page: number, rowsPerPage: number) => void;
@@ -61,7 +61,6 @@ interface PaginatedBookingTableProps {
 interface UnpaginatedBookingTableProps {
   columns: BookingTableColumn[];
   data?: Booking[];
-  total?: number;
   isLoading: boolean;
   noPagination: true;
 }
@@ -69,7 +68,7 @@ interface UnpaginatedBookingTableProps {
 type BookingTableProps = PaginatedBookingTableProps | UnpaginatedBookingTableProps;
 
 export default function BookingTable(props: BookingTableProps) {
-  const { columns, data, total, isLoading, noPagination } = props;
+  const { columns, data, isLoading, noPagination } = props;
 
   return (
     <Sheet
@@ -124,7 +123,7 @@ export default function BookingTable(props: BookingTableProps) {
         {!noPagination && (
           <PaginationFooter
             numColumns={columns.length}
-            total={total}
+            total={props.total}
             page={props.page}
             rowsPerPage={props.rowsPerPage}
             onChange={props.onChange}

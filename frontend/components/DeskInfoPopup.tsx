@@ -54,7 +54,7 @@ const DeskInfoPopup = ({
         <BookingModal
           open={open}
           onClose={() => setOpen(false)}
-          space={{ id, name: deskName, isRoom: false }}
+          space={id}
           date={date}
           start={start}
           end={end}

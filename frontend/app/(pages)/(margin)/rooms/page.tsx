@@ -206,11 +206,7 @@ export default function Rooms() {
         <BookingModal
           open={!!selectedRoom}
           onClose={() => setSelectedRoom(undefined)}
-          space={
-            selectedRoom
-              ? { id: selectedRoom.id, name: selectedRoom.name, isRoom: true }
-              : undefined
-          }
+          space={selectedRoom.id}
           date={date}
           start={start}
           end={end}

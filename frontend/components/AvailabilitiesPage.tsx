@@ -50,13 +50,11 @@ const AvailabilitiesPage: React.FC<AvailabilitesPageProps> = ({ spaceId, spaceTy
     <>
       <BookingModal
         open={openModal}
-        onClose={() => {
+        onClose={async () => {
           setOpenModal(false);
-          mutate();
+          await mutate();
         }}
-        space={
-          space ? { id: space?.id, name: space?.name, isRoom: spaceType === "room" } : undefined
-        }
+        space={space?.id}
       />
       <Stack>
         <Stack

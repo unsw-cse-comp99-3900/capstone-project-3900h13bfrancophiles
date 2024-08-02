@@ -78,12 +78,11 @@ const ApproveDeclineModal: React.FC<ApproveDeclineModalProps> = ({
                   <BookingTable
                     columns={[
                       { heading: "Reference No.", width: 120 },
-                      { heading: "Time", width: 150 },
+                      { heading: "Time", width: 200 },
                       { heading: "User", width: 200 },
                       { heading: "Description", width: 200 },
                     ]}
                     data={overlappingBookings}
-                    total={overlappingBookings.length}
                     isLoading={isLoading}
                     noPagination
                   />
