@@ -37,23 +37,6 @@ mockedUseSpaces.mockReturnValue({
 
 jest.mock("@/hooks/useAvailabilities");
 const mockedUseAvailabilities = jest.mocked(useAvailabilities);
-mockedUseAvailabilities.mockReturnValue({
-  bookings: [
-    {
-      id: 0,
-      zid: mockUser.zid,
-      starttime: "2024-08-03T14:00:00Z",
-      endtime: "2024-08-03T15:00:00Z",
-      spaceid: "K-K17-111",
-      currentstatus: "confirmed",
-      checkintime: null,
-      checkouttime: null,
-    },
-  ],
-  isLoading: false,
-  error: undefined,
-  mutate: jest.fn(),
-});
 
 jest.mock("@/hooks/useUser");
 const mockedUseUser = jest.mocked(useUser);
@@ -115,6 +98,24 @@ describe("BookingModal", () => {
   });
 
   it("pre-fills with props", () => {
+    mockedUseAvailabilities.mockReturnValue({
+      bookings: [
+        {
+          id: 0,
+          zid: mockUser.zid,
+          starttime: "2024-08-05T14:00:00",
+          endtime: "2024-08-05T15:00:00",
+          spaceid: "K-K17-111",
+          currentstatus: "confirmed",
+          checkintime: null,
+          checkouttime: null,
+        },
+      ],
+      isLoading: false,
+      error: undefined,
+      mutate: jest.fn(),
+    });
+
     render(
       <LocalizationProvider dateAdapter={AdapterDateFns}>
         <BookingModal
@@ -136,18 +137,37 @@ describe("BookingModal", () => {
     expect(screen.getByLabelText("Description")).toHaveDisplayValue("fun times");
 
     expect(screen.getByText("New Booking")).toBeInTheDocument();
+    expect(screen.getByText("Mock User")).toBeInTheDocument();
   });
 
   it("renders the edit booking modal", () => {
+    mockedUseAvailabilities.mockReturnValue({
+      bookings: [
+        {
+          id: 0,
+          zid: mockUser.zid,
+          starttime: "2024-08-03T14:00:00",
+          endtime: "2024-08-03T15:00:00",
+          spaceid: "K-K17-111",
+          currentstatus: "confirmed",
+          checkintime: null,
+          checkouttime: null,
+        },
+      ],
+      isLoading: false,
+      error: undefined,
+      mutate: jest.fn(),
+    });
+
     render(
       <LocalizationProvider dateAdapter={AdapterDateFns}>
         <BookingModal
           open={true}
           onClose={jest.fn()}
           space="K-K17-111"
-          date={new Date("2024-08-05")}
-          start={new Date("2024-08-05T14:00:00")}
-          end={new Date("2024-08-05T15:00:00")}
+          date={new Date("2024-08-03")}
+          start={new Date("2024-08-03T14:00:00")}
+          end={new Date("2024-08-03T15:00:00")}
           desc="fun times"
           editedBookingId={0}
         />
@@ -157,7 +177,7 @@ describe("BookingModal", () => {
     expect(screen.getByText("Edit booking")).toBeInTheDocument();
 
     expect(screen.getByLabelText("Space")).toHaveDisplayValue("Room 1");
-    expect(screen.getByLabelText("Date")).toHaveValue("2024-08-05");
+    expect(screen.getByLabelText("Date")).toHaveValue("2024-08-03");
     expect(screen.getByLabelText("Time")).toHaveDisplayValue("02:00 PM");
     expect(screen.getByLabelText("End Time")).toHaveDisplayValue("03:00 PM");
     expect(screen.getByLabelText("Description")).toHaveDisplayValue("fun times");
