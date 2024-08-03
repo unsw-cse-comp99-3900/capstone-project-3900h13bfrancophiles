@@ -218,18 +218,13 @@ describe("BookingModal", () => {
   });
 
   it("hides invalid start and end times", async () => {
+    jest.setSystemTime(new Date("2024-08-05T13:00:00"));
+
     const user = userEvent.setup({ delay: null });
 
     render(
       <LocalizationProvider dateAdapter={AdapterDateFns}>
-        <BookingModal
-          open={true}
-          onClose={jest.fn()}
-          space="K-K17-111"
-          date={new Date("2024-08-05")}
-          start={new Date("2024-08-05T13:00:00")}
-          end={new Date("2024-08-05T13:30:00")}
-        />
+        <BookingModal open={true} onClose={jest.fn()} space="K-K17-111" />
       </LocalizationProvider>,
     );
 
@@ -237,7 +232,10 @@ describe("BookingModal", () => {
     const endInput = screen.getByLabelText("End Time");
 
     await user.click(startInput);
+    expect(screen.queryByRole("option", { name: /12 hours/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole("option", { name: /^1 hour/i })).toBeInTheDocument();
     expect(screen.queryByRole("option", { name: /^2 hours/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole("option", { name: /3 hours/i })).toBeInTheDocument();
 
     await user.click(endInput);
     expect(screen.queryByRole("option", { name: /01:00 pm/i })).not.toBeInTheDocument();
@@ -246,5 +244,7 @@ describe("BookingModal", () => {
     expect(screen.queryByRole("option", { name: /01:45 pm/i })).toBeInTheDocument();
     expect(screen.queryByRole("option", { name: /02:00 pm/i })).toBeInTheDocument();
     expect(screen.queryByRole("option", { name: /02:15 pm/i })).not.toBeInTheDocument();
+
+    jest.setSystemTime(mockTime);
   });
 });
