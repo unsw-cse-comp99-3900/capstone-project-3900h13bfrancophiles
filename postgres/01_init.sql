@@ -103,35 +103,19 @@ BEFORE UPDATE ON booking FOR EACH ROW EXECUTE FUNCTION set_timestamp_log();
 
 create function trg_chk_overlap() returns trigger as $$
 begin
-    if new.parent is NULL then
-        if exists (
-            select *
-            from booking b
-            where b.spaceId = new.spaceId
-                and b.starttime < new.endtime
-                and b.endtime > new.starttime
-                and b.currentStatus <> 'pending'
-                and b.currentStatus <> 'declined'
-                and b.currentStatus <> 'deleted'
-                and b.id != new.id
-        ) then
-            raise exception 'Overlapping booking found';
-        end if;
-    else
-        if exists (
-            select *
-            from booking b
-            where b.spaceId = new.spaceId
-                and b.starttime < new.endtime
-                and b.endtime > new.starttime
-                and b.currentStatus <> 'pending'
-                and b.currentStatus <> 'declined'
-                and b.currentStatus <> 'deleted'
-                and b.id != new.id
-                and b.id != new.parent
-        ) then
-            raise exception 'Overlapping booking found';
-        end if;
+    if exists (
+        select *
+        from booking b
+        where b.spaceId = new.spaceId
+            and b.starttime < new.endtime
+            and b.endtime > new.starttime
+            and b.currentStatus <> 'pending'
+            and b.currentStatus <> 'declined'
+            and b.currentStatus <> 'deleted'
+            and b.id != new.id
+            and coalesce(b.id != new.parent, true)
+    ) then
+        raise exception 'Overlapping booking found';
     end if;
 
     return new;
