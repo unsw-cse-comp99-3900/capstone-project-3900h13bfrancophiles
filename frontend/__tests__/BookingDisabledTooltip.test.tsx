@@ -1,20 +1,20 @@
 import * as React from "react";
 import "@testing-library/jest-dom";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import RoomCard from "../components/RoomCard";
-import AvailabilitiesPage from "../components/availability/AvailabilitiesPage"
+import AvailabilitiesPage from "../components/availability/AvailabilitiesPage";
 import { Room } from "../types";
 import useSpaceStatus from "../hooks/useSpaceStatus";
 import useRoomCanBook from "../hooks/useRoomCanBook";
 import useAvailabilities from "../hooks/useAvailabilities";
-import useSpace from "../hooks/useSpace"
-import BookingModal from "../components/booking-modal/BookingModal"
+import useSpace from "../hooks/useSpace";
+import BookingModal from "../components/booking-modal/BookingModal";
 
 jest.mock("@/hooks/useAvailabilities");
 jest.mock("@/hooks/useSpaceStatus");
 jest.mock("@/hooks/useRoomCanBook");
 jest.mock("@/hooks/useSpace");
-jest.mock("@/components/booking-modal/BookingModal", () => jest.fn(() => null))
+jest.mock("@/components/booking-modal/BookingModal", () => jest.fn(() => null));
 
 const mockedUseSpaceStatus = useSpaceStatus as jest.MockedFunction<typeof useSpaceStatus>;
 const mockedUseRoomCanBook = useRoomCanBook as jest.MockedFunction<typeof useRoomCanBook>;
@@ -50,10 +50,10 @@ describe("BookingDisabledTooltip", () => {
     );
 
     expect(screen.getByText("K17 CSE Basement")).toBeInTheDocument();
-    expect(screen.getByRole('button')).toBeDisabled();
-    fireEvent.mouseEnter(screen.getByRole('button'));
+    expect(screen.getByRole("button")).toBeDisabled();
+    fireEvent.mouseEnter(screen.getByRole("button"));
     expect(
-        await screen.findByText("You do not have permission to book this space")
+      await screen.findByText("You do not have permission to book this space"),
     ).toBeInTheDocument();
   });
 
@@ -64,25 +64,25 @@ describe("BookingDisabledTooltip", () => {
       error: null,
     });
     mockedUseRoomCanBook.mockReturnValue({ canBook: false, isLoading: false, error: null });
-    mockedUseAvailabilities.mockReturnValue({ bookings: [], isLoading: false, error: null, mutate: jest.fn() })
+    mockedUseAvailabilities.mockReturnValue({
+      bookings: [],
+      isLoading: false,
+      error: null,
+      mutate: jest.fn(),
+    });
     mockedUseSpace.mockReturnValue({
       space: mockRoom,
       type: "room",
       isLoading: false,
-      error: null
-    })
+      error: null,
+    });
 
-    render(
-      <AvailabilitiesPage
-        spaceId="K-K17-B01"
-        spaceType="room"
-      />
-    );
-    expect(BookingModal).toHaveBeenCalled()
-    expect(screen.getByText('Book Now')).toBeDisabled();
-    fireEvent.mouseEnter(screen.getByText('Book Now'));
+    render(<AvailabilitiesPage spaceId="K-K17-B01" spaceType="room" />);
+    expect(BookingModal).toHaveBeenCalled();
+    expect(screen.getByText("Book Now")).toBeDisabled();
+    fireEvent.mouseEnter(screen.getByText("Book Now"));
     expect(
-        await screen.findByText("You do not have permission to book this space")
+      await screen.findByText("You do not have permission to book this space"),
     ).toBeInTheDocument();
   });
 });
