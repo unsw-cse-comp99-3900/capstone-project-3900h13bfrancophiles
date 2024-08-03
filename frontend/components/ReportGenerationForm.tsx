@@ -40,14 +40,14 @@ interface ReportType {
   formats: string[];
 }
 
-export function ReportGenerationForm() {
+export default function ReportGenerationForm() {
   const { types: reportTypes = [], isLoading: typesIsLoading } = useReportTypes();
   const [reportType, setReportType] = React.useState<ReportType>();
   React.useEffect(() => {
     if (!reportType) setReportType(reportTypes[0]);
   }, [reportTypes]);
 
-  const [fileFormat, setFileFormat] = React.useState<string | null>(null);
+  const [fileFormat, setFileFormat] = React.useState(reportType?.formats[0]);
   React.useEffect(() => {
     if (reportType) setFileFormat(reportType.formats[0]);
   }, [reportType]);
@@ -114,8 +114,11 @@ export function ReportGenerationForm() {
           p={1.5}
           py={1}
         >
-          <Typography>{option.text}</Typography>
+          <Typography component="label" htmlFor={`all-${option.type}`}>
+            {option.text}
+          </Typography>
           <Switch
+            id={`all-${option.type}`}
             onChange={() => handleAllSwitch(option.type)}
             checked={totals[option.type] == selected[option.type]}
           />
@@ -185,7 +188,7 @@ export function ReportGenerationForm() {
           </FormControl>
           <FormControl sx={{ minWidth: 70, flexGrow: { xs: 1, sm: 0 } }}>
             <FormLabel>Format</FormLabel>
-            <Select value={fileFormat} onChange={(_e, value) => setFileFormat(value)}>
+            <Select value={fileFormat ?? null} onChange={(_e, value) => setFileFormat(value!)}>
               {reportType &&
                 reportType.formats.map((format) => (
                   <Option key={format} value={format}>
