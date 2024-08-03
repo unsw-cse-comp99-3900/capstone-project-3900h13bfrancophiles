@@ -1,6 +1,7 @@
 import bodyParser from "body-parser";
 import cors from "cors";
-import express from "express";
+import express, { NextFunction, Request, Response } from "express";
+import wrap from "express-async-handler";
 import morgan from "morgan";
 import nodemailer from "nodemailer";
 
@@ -11,8 +12,8 @@ import { drizzle } from "drizzle-orm/node-postgres";
 import {
   approveBooking,
   declineBooking,
-  pendingBookings,
   overlappingBookings,
+  pendingBookings,
 } from "./admin/handlers";
 import { login, logout } from "./auth/handlers";
 import { authoriseAtLeast, validateToken } from "./auth/middleware";
@@ -25,17 +26,17 @@ import {
 import {
   checkInBooking,
   checkOutBooking,
-  deleteBooking,
   createBooking,
+  deleteBooking,
   editBooking,
 } from "./booking/manageBookings";
 import {
   allSpaces,
+  deskPositions,
+  roomCanBook,
   roomDetails,
   singleSpaceDetails,
   spaceAvailabilities,
-  roomCanBook,
-  deskPositions,
 } from "./spaces/handlers";
 import { spaceStatus } from "./status/handlers";
 import { userDetails } from "./user/handlers";
@@ -62,45 +63,52 @@ app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-app.post("/auth/login", login);
-app.post("/auth/logout", validateToken, logout);
+app.post("/auth/login", wrap(login));
+app.post("/auth/logout", validateToken, wrap(logout));
 
-app.get("/bookings/current", validateToken, currentBookings);
-app.get("/bookings/upcoming", validateToken, upcomingBookings);
-app.get("/bookings/past", validateToken, pastBookings);
-app.get("/bookings/range", validateToken, rangeOfBookings);
+app.get("/bookings/current", validateToken, wrap(currentBookings));
+app.get("/bookings/upcoming", validateToken, wrap(upcomingBookings));
+app.get("/bookings/past", validateToken, wrap(pastBookings));
+app.get("/bookings/range", validateToken, wrap(rangeOfBookings));
 
-app.delete("/bookings/delete", validateToken, deleteBooking);
+app.delete("/bookings/delete", validateToken, wrap(deleteBooking));
 
-app.post("/bookings/checkin", validateToken, checkInBooking);
-app.post("/bookings/checkout", validateToken, checkOutBooking);
-app.delete("/bookings/delete", validateToken, authoriseAtLeast("hdr"), deleteBooking);
-app.post("/bookings/create", validateToken, authoriseAtLeast("hdr"), createBooking);
-app.put("/bookings/edit", validateToken, editBooking);
+app.post("/bookings/checkin", validateToken, wrap(checkInBooking));
+app.post("/bookings/checkout", validateToken, wrap(checkOutBooking));
+app.delete("/bookings/delete", validateToken, authoriseAtLeast("hdr"), wrap(deleteBooking));
+app.post("/bookings/create", validateToken, authoriseAtLeast("hdr"), wrap(createBooking));
+app.put("/bookings/edit", validateToken, wrap(editBooking));
 
-app.get("/spaces", validateToken, allSpaces);
-app.get("/spaces/:spaceId", validateToken, singleSpaceDetails);
-app.get("/rooms", validateToken, roomDetails);
-app.get("/status", validateToken, spaceStatus);
-app.get("/availabilities/:spaceId", validateToken, spaceAvailabilities);
-app.get("/bookable/:spaceId", validateToken, roomCanBook);
-app.get("/desks", validateToken, deskPositions);
+app.get("/spaces", validateToken, wrap(allSpaces));
+app.get("/spaces/:spaceId", validateToken, wrap(singleSpaceDetails));
+app.get("/rooms", validateToken, wrap(roomDetails));
+app.get("/status", validateToken, wrap(spaceStatus));
+app.get("/availabilities/:spaceId", validateToken, wrap(spaceAvailabilities));
+app.get("/bookable/:spaceId", validateToken, wrap(roomCanBook));
+app.get("/desks", validateToken, wrap(deskPositions));
 
-app.get("/admin/bookings/pending", validateToken, authoriseAtLeast("admin"), pendingBookings);
-app.put("/admin/bookings/approve", validateToken, authoriseAtLeast("admin"), approveBooking);
-app.put("/admin/bookings/decline", validateToken, authoriseAtLeast("admin"), declineBooking);
+app.get("/admin/bookings/pending", validateToken, authoriseAtLeast("admin"), wrap(pendingBookings));
+app.put("/admin/bookings/approve", validateToken, authoriseAtLeast("admin"), wrap(approveBooking));
+app.put("/admin/bookings/decline", validateToken, authoriseAtLeast("admin"), wrap(declineBooking));
 app.get(
   "/admin/bookings/overlapping/:bookingId",
   validateToken,
   authoriseAtLeast("admin"),
-  overlappingBookings,
+  wrap(overlappingBookings),
 );
 
-app.post("/admin/reports/generate", validateToken, authoriseAtLeast("admin"), generateReport);
-app.get("/admin/reports/types", validateToken, authoriseAtLeast("admin"), getReportTypes);
-app.get("/admin/reports/spaces", validateToken, authoriseAtLeast("admin"), getReportSpaces);
+app.post("/admin/reports/generate", validateToken, authoriseAtLeast("admin"), wrap(generateReport));
+app.get("/admin/reports/types", validateToken, authoriseAtLeast("admin"), wrap(getReportTypes));
+app.get("/admin/reports/spaces", validateToken, authoriseAtLeast("admin"), wrap(getReportSpaces));
 
-app.get("/users/:zid", validateToken, userDetails);
+app.get("/users/:zid", validateToken, wrap(userDetails));
+
+// Error-handling middleware
+app.use((err: Error, _req: Request, res: Response, next: NextFunction) => {
+  console.error(err.stack ?? err);
+  res.status(500).json({ error: "Internal server error" });
+  next();
+});
 
 const server = app.listen(PORT, () => {
   console.log(`Server is running at http://localhost:${PORT}`);
