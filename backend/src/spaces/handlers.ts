@@ -15,6 +15,15 @@ import {
 import { anonymiseBooking, formatBookingDates, now } from "../utils";
 import typia from "typia";
 
+type canBookReq = { spaceId: string };
+type SingleSpaceRequest = { spaceId: string };
+
+/**
+ * Fetches and returns the details of all rooms.
+ *
+ * @param {TypedGETRequest} _req - The request object.
+ * @param {TypedResponse<{ rooms: Room[] }>} res - The response object containing the list of rooms.
+ */
 export async function roomDetails(_req: TypedGETRequest, res: TypedResponse<{ rooms: Room[] }>) {
   try {
     const rooms = await db
@@ -35,8 +44,12 @@ export async function roomDetails(_req: TypedGETRequest, res: TypedResponse<{ ro
   }
 }
 
-type SingleSpaceRequest = { spaceId: string };
-
+/**
+ * Fetches and returns the details of a single space, either a room or a desk.
+ *
+ * @param {TypedGETRequest<SingleSpaceRequest>} req - The request object containing the space ID.
+ * @param {TypedResponse<{ space: Space; type: SpaceType }>} res - The response object containing the space details and type.
+ */
 export async function singleSpaceDetails(
   req: TypedGETRequest<SingleSpaceRequest>,
   res: TypedResponse<{ space: Space; type: SpaceType }>,
@@ -84,6 +97,12 @@ export async function singleSpaceDetails(
   }
 }
 
+/**
+ * Fetches and returns the details of all spaces, indicating whether each space is a room.
+ *
+ * @param {TypedGETRequest} _req - The request object.
+ * @param {TypedResponse<{ spaces: { id: string; name: string; isRoom: boolean }[] }>} res - The response object containing the list of spaces.
+ */
 export async function allSpaces(
   _req: TypedGETRequest,
   res: TypedResponse<{ spaces: { id: string; name: string; isRoom: boolean }[] }>,
@@ -100,6 +119,12 @@ export async function allSpaces(
   res.json({ spaces });
 }
 
+/**
+ * Fetches and returns the availability of bookings for a specific space within a given date range.
+ *
+ * @param {TypedGETRequest<SingleSpaceRequest>} req - The request object containing the space ID and date range.
+ * @param {TypedResponse<{ bookings: AnonymousBooking[] }>} res - The response object containing the list of bookings.
+ */
 export async function spaceAvailabilities(
   req: TypedGETRequest<SingleSpaceRequest>,
   res: TypedResponse<{ bookings: AnonymousBooking[] }>,
@@ -142,8 +167,12 @@ export async function spaceAvailabilities(
   }
 }
 
-type canBookReq = { spaceId: string };
-
+/**
+ * Determines if a user has the authority to book a specific space.
+ *
+ * @param {TypedGETRequest<canBookReq>} req - The request object containing the space ID.
+ * @param {TypedResponse<{ canBook: boolean }>} res - The response object indicating if the user can book the space.
+ */
 export async function roomCanBook(
   req: TypedGETRequest<canBookReq>,
   res: TypedResponse<{ canBook: boolean }>,
@@ -167,6 +196,13 @@ export async function roomCanBook(
   }
 }
 
+/**
+ * Checks if a user group has the minimum required authority to book a space.
+ *
+ * @param {UserGroup} userGrp - The user group of the requester.
+ * @param {UserGroup} minReqGrp - The minimum required user group to book the space.
+ * @returns {boolean} - True if the user group has the required authority, false otherwise.
+ */
 export function hasMinimumAuthority(userGrp: UserGroup, minReqGrp: UserGroup): boolean {
   const userGrpIndex = USER_GROUPS.indexOf(userGrp);
   const minReqGrpIndex = USER_GROUPS.indexOf(minReqGrp);
@@ -174,6 +210,12 @@ export function hasMinimumAuthority(userGrp: UserGroup, minReqGrp: UserGroup): b
   return userGrpIndex >= minReqGrpIndex;
 }
 
+/**
+ * Fetches and returns the positions of all hot desks.
+ *
+ * @param {TypedGETRequest} _req - The request object.
+ * @param {TypedResponse<{ desks: { id: string; floor: string; xcoord: number; ycoord: number }[] }>} res - The response object containing the list of hot desks.
+ */
 export async function deskPositions(
   _req: TypedGETRequest,
   res: TypedResponse<{ desks: { id: string; floor: string; xcoord: number; ycoord: number }[] }>,

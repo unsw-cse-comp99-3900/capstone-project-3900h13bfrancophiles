@@ -6,6 +6,24 @@ import { db } from "../index";
 import { Booking, IDatetimeRange, TypedGETRequest, TypedResponse } from "../types";
 import { formatBookingDates, now } from "../utils";
 
+interface UpcomingBookingsRequest {
+  type: "desks" | "rooms" | "all";
+  sort: "soonest" | "latest";
+}
+
+interface PastBookingsRequest {
+  page: number & tags.Minimum<1>;
+  limit: number & tags.Minimum<1>;
+  type: "desks" | "rooms" | "all";
+  sort: "newest" | "oldest";
+}
+
+/**
+ * Fetches the current bookings for the logged-in user.
+ *
+ * @param {TypedGETRequest} req - The typed GET request containing the user's token.
+ * @param {TypedResponse<{ bookings: Booking[] }>} res - The typed response containing an array of current bookings.
+ */
 export async function currentBookings(
   req: TypedGETRequest,
   res: TypedResponse<{ bookings: Booking[] }>,
@@ -32,11 +50,12 @@ export async function currentBookings(
   }
 }
 
-interface UpcomingBookingsRequest {
-  type: "desks" | "rooms" | "all";
-  sort: "soonest" | "latest";
-}
-
+/**
+ * Fetches the upcoming bookings for the logged-in user.
+ *
+ * @param {TypedGETRequest} req - The typed GET request containing the user's token and query parameters.
+ * @param {TypedResponse<{ bookings: Booking[] }>} res - The typed response containing an array of upcoming bookings.
+ */
 export async function upcomingBookings(
   req: TypedGETRequest,
   res: TypedResponse<{ bookings: Booking[] }>,
@@ -82,16 +101,12 @@ export async function upcomingBookings(
   }
 }
 
-interface PastBookingsRequest {
-  page: number & tags.Minimum<1>;
-  limit: number & tags.Minimum<1>;
-  type: "desks" | "rooms" | "all";
-  sort: "newest" | "oldest";
-}
-
-// Past bookings are either completed (checked out but not necessarily
-// in the past), or in the past but confirmed/checkedin (never checked
-// in or out)
+/**
+ * Determines if a booking is considered a past booking based on the current time.
+ *
+ * @param {string} currentTime - The current time as a string.
+ * @returns {boolean} A boolean that indicates if a booking is a past booking.
+ */
 function isPastBooking(currentTime: string) {
   return or(
     eq(booking.currentstatus, "completed"),
@@ -102,6 +117,12 @@ function isPastBooking(currentTime: string) {
   );
 }
 
+/**
+ * Fetches the past bookings for the logged-in user.
+ *
+ * @param {TypedGETRequest} req - The typed GET request containing the user's token and query parameters.
+ * @param {TypedResponse<{ bookings: Booking[]; total: number }>} res - The typed response containing an array of past bookings and the total number of past bookings.
+ */
 export async function pastBookings(
   req: TypedGETRequest,
   res: TypedResponse<{ bookings: Booking[]; total: number }>,
@@ -157,6 +178,12 @@ export async function pastBookings(
   }
 }
 
+/**
+ * Fetches the bookings for the logged-in user within a specified date and time range.
+ *
+ * @param {TypedGETRequest} req - The typed GET request containing the user's token and query parameters.
+ * @param {TypedResponse<{ bookings: Booking[] }>} res - The typed response containing an array of bookings within the specified range.
+ */
 export async function rangeOfBookings(
   req: TypedGETRequest,
   res: TypedResponse<{ bookings: Booking[] }>,

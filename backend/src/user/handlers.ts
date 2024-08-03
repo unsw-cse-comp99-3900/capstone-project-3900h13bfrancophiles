@@ -9,6 +9,12 @@ interface UserRequest {
   zid: number & tags.Minimum<1000000> & tags.Maximum<9999999>;
 }
 
+/**
+ * Fetches user details based on the provided zid.
+ *
+ * @param {TypedGETRequest} req - The request object containing query parameters with zid.
+ * @param {TypedResponse<{ user: User }>} res - The response object containing user details or an error message.
+ */
 export async function userDetails(req: TypedGETRequest, res: TypedResponse<{ user: User }>) {
   try {
     const parsedQuery = typia.http.isQuery<UserRequest>(new URLSearchParams(req.params));

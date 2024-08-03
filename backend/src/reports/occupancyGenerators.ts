@@ -9,6 +9,8 @@ import Chart from "chart.js/auto";
 const canvas = createCanvas(700, 350);
 const ctx = canvas.getContext("2d");
 
+type GraphData = { spaceId: string; data: { timeSlot: string; count: number }[] }[];
+
 const timeSlot = sql<string>`to_char
 (generate_series(
     ${booking.starttime} at time zone 'UTC' at time zone 'Australia/Sydney',
@@ -16,8 +18,14 @@ const timeSlot = sql<string>`to_char
     interval '15 minutes'
     ), 'HH24:MI')`.as("time_slot");
 
-type GraphData = { spaceId: string; data: { timeSlot: string; count: number }[] }[];
-
+/**
+ * Generates a PDF report of occupancy based on booking data.
+ *
+ * @param {Date} startDate - The start date for the report.
+ * @param {Date} endDate - The end date for the report.
+ * @param {string[]} spaces - The list of space IDs to include in the report.
+ * @returns {Promise<Buffer>} - A promise that resolves with the generated PDF as a buffer.
+ */
 export const generateOccupancyPdf: ReportGenerator = async (startDate, endDate, spaces) => {
   const res = await db
     .select({
@@ -107,6 +115,12 @@ export const generateOccupancyPdf: ReportGenerator = async (startDate, endDate, 
   });
 };
 
+/**
+ * Builds a PDF asynchronously using the provided builder function.
+ *
+ * @param {(pdf: PDFKit.PDFDocument) => Promise<void>} builder - The function to build the PDF content.
+ * @returns {Promise<Buffer>} - A promise that resolves with the generated PDF as a buffer.
+ */
 async function buildPdfAsync(builder: (pdf: PDFKit.PDFDocument) => Promise<void>): Promise<Buffer> {
   const pdf = new PDFKit();
 

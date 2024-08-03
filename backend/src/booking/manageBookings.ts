@@ -21,6 +21,12 @@ import {
   declineOverlapping,
 } from "../utils";
 
+/**
+ * Checks in a booking for a user.
+ *
+ * @param {TypedRequest<{ id: number }>} req - The request object containing the booking ID.
+ * @param {TypedResponse<{ booking: Booking }>} res - The response object to return the checked-in booking.
+ */
 export async function checkInBooking(
   req: TypedRequest<{ id: number }>,
   res: TypedResponse<{ booking: Booking }>,
@@ -45,7 +51,6 @@ export async function checkInBooking(
 
     const currentBooking = formatBookingDates(currentBookings[0]);
 
-    // 5 minute buffer value too long?
     if (
       !withinDateRange(
         currentTime,
@@ -85,13 +90,18 @@ export async function checkInBooking(
     }
 
     // If prior booking in this space didn't check out, update their checkout time now?
-
     res.json({ booking: updatedBooking });
   } catch (error) {
     res.status(500).json({ error: "Failed to check in" });
   }
 }
 
+/**
+ * Checks out a booking for a user.
+ *
+ * @param {TypedRequest<{ id: number }>} }eq - The request object containing the booking ID.
+ * @param {TypedResponse} res - The response object to return the status.
+ */
 export async function checkOutBooking(req: TypedRequest<{ id: number }>, res: TypedResponse) {
   try {
     if (!typia.is<{ id: number }>(req.body)) {
@@ -113,7 +123,6 @@ export async function checkOutBooking(req: TypedRequest<{ id: number }>, res: Ty
 
     const currentBooking = formatBookingDates(currentBookings[0]);
 
-    // 5 minute buffer value too long?
     if (
       !withinDateRange(
         currentTime,
@@ -155,6 +164,12 @@ export async function checkOutBooking(req: TypedRequest<{ id: number }>, res: Ty
   }
 }
 
+/**
+ * Creates a new booking for a user.
+ *
+ * @param {TypedRequest<BookingDetailsRequest>} req - The request object containing the booking details.
+ * @param {TypedResponse<{ booking: Booking }>} res - The response object to return the created booking.
+ */
 export async function createBooking(
   req: TypedRequest<BookingDetailsRequest>,
   res: TypedResponse<{ booking: Booking }>,
@@ -199,6 +214,12 @@ export async function createBooking(
   }
 }
 
+/**
+ * Deletes an existing booking for a user.
+ *
+ * @param {TypedRequest<{ id: number }>} req - The request object containing the booking ID.
+ * @param {TypedResponse<{ booking: Booking }>} res - The response object to return the deleted booking.
+ */
 export async function deleteBooking(
   req: TypedRequest<{ id: number }>,
   res: TypedResponse<{ bookings: Booking[] }>,
@@ -251,6 +272,12 @@ export async function deleteBooking(
   }
 }
 
+/**
+ * Edits an existing booking for a user.
+ *
+ * @param {TypedRequest<BookingEditRequest>} req - The request object containing the booking edit details.
+ * @param {TypedResponse<{ booking: Booking }>} res - The response object to return the edited booking.
+ */
 export async function editBooking(
   req: TypedRequest<BookingEditRequest>,
   res: TypedResponse<{ booking: Booking }>,

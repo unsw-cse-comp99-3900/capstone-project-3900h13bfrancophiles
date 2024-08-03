@@ -13,6 +13,28 @@ interface GenerateReportRequest {
   endDate: string & typia.tags.Format<"date-time">;
 }
 
+type ReportTypeReturn = {
+  types: {
+    type: string;
+    name: string;
+    formats: string[];
+  }[];
+};
+
+interface ReportSpace {
+  text: string;
+  value: string;
+  type: "room" | "desk";
+  level: string;
+}
+
+/**
+ * Generates a report based on the request parameters and sends it as a file attachment.
+ *
+ * @param {TypedRequest<GenerateReportRequest>} req - The request object containing report parameters.
+ * @param {TypedResponse} res - The response object to send the report file.
+ * @returns {Promise<void>} - A promise that resolves when the report is sent.
+ */
 export async function generateReport(req: TypedRequest<GenerateReportRequest>, res: TypedResponse) {
   if (!typia.is<GenerateReportRequest>(req.body)) {
     res.status(400).json({ error: "Invalid input" });
@@ -41,14 +63,13 @@ export async function generateReport(req: TypedRequest<GenerateReportRequest>, r
   res.send(fileData);
 }
 
-type ReportTypeReturn = {
-  types: {
-    type: string;
-    name: string;
-    formats: string[];
-  }[];
-};
-
+/**
+ * Retrieves the available report types and their supported formats.
+ *
+ * @param {TypedRequest} _req - The request object.
+ * @param {TypedResponse<ReportTypeReturn>} res - The response object to send the report types.
+ * @returns {Promise<void>} - A promise that resolves when the report types are sent.
+ */
 export async function getReportTypes(_req: TypedRequest, res: TypedResponse<ReportTypeReturn>) {
   const types = Object.values(REPORT_TYPES).map((reportType) => ({
     type: reportType.key,
@@ -59,13 +80,13 @@ export async function getReportTypes(_req: TypedRequest, res: TypedResponse<Repo
   res.json({ types });
 }
 
-interface ReportSpace {
-  text: string;
-  value: string;
-  type: "room" | "desk";
-  level: string;
-}
-
+/**
+ * Retrieves the available report spaces for booking reports.
+ *
+ * @param {TypedRequest} _req - The request object.
+ * @param {TypedResponse<{ spaces: ReportSpace[] }>} res - The response object to send the report spaces.
+ * @returns {Promise<void>} - A promise that resolves when the report spaces are sent.
+ */
 export async function getReportSpaces(
   _req: TypedRequest,
   res: TypedResponse<{ spaces: ReportSpace[] }>,
@@ -113,6 +134,12 @@ export async function getReportSpaces(
   res.json({ spaces });
 }
 
+/**
+ * Determines the level of a given space ID.
+ *
+ * @param {string} spaceId - The space ID to determine the level for.
+ * @returns {string | null} - The level of the space, or null if it cannot be determined.
+ */
 function getLevel(spaceId: string) {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [_campus, bldg, roomNum] = spaceId.split("-");
@@ -130,6 +157,13 @@ function getLevel(spaceId: string) {
   return null;
 }
 
+/**
+ * Compares two ReportSpace objects for sorting.
+ *
+ * @param {ReportSpace} a - The first ReportSpace object.
+ * @param {ReportSpace} b - The second ReportSpace object.
+ * @returns {number} - A negative number if a < b, a positive number if a > b, and 0 if they are equal.
+ */
 function compareSpace(a: ReportSpace, b: ReportSpace): number {
   let cmp = a.level.localeCompare(b.level);
   if (cmp) return cmp;
