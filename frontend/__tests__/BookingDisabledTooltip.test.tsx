@@ -2,19 +2,19 @@ import * as React from "react";
 import "@testing-library/jest-dom";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import RoomCard from "../components/RoomCard";
-import AvailabilitiesPage from "../components/AvailabilitiesPage"
+import AvailabilitiesPage from "../components/availability/AvailabilitiesPage"
 import { Room } from "../types";
 import useSpaceStatus from "../hooks/useSpaceStatus";
 import useRoomCanBook from "../hooks/useRoomCanBook";
 import useAvailabilities from "../hooks/useAvailabilities";
 import useSpace from "../hooks/useSpace"
-import BookingModal from "../components/BookingModal/BookingModal"
+import BookingModal from "../components/booking-modal/BookingModal"
 
 jest.mock("@/hooks/useAvailabilities");
 jest.mock("@/hooks/useSpaceStatus");
 jest.mock("@/hooks/useRoomCanBook");
 jest.mock("@/hooks/useSpace");
-jest.mock("@/components/BookingModal/BookingModal", () => jest.fn(() => null))
+jest.mock("@/components/booking-modal/BookingModal", () => jest.fn(() => null))
 
 const mockedUseSpaceStatus = useSpaceStatus as jest.MockedFunction<typeof useSpaceStatus>;
 const mockedUseRoomCanBook = useRoomCanBook as jest.MockedFunction<typeof useRoomCanBook>;
