@@ -76,6 +76,7 @@ const ApproveDeclineModal: React.FC<ApproveDeclineModalProps> = ({
                     bookings:
                   </Typography>
                   <BookingTable
+                    name="Overlapping"
                     columns={[
                       { heading: "Reference No.", width: 120 },
                       { heading: "Time", width: 200 },
