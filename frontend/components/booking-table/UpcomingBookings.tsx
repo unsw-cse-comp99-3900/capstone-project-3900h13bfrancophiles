@@ -121,6 +121,7 @@ export default function UpcomingBookings() {
           </FormControl>
         </Stack>
         <BookingTable
+          name="Upcoming"
           columns={columns}
           data={upcomingBookings?.slice(page * rowsPerPage, (page + 1) * rowsPerPage)}
           total={upcomingBookings?.length}
@@ -165,7 +166,6 @@ export default function UpcomingBookings() {
           start={new Date(bookingToEdit.starttime)}
           end={new Date(bookingToEdit.endtime)}
           desc={bookingToEdit.description}
-          editing
           editedBookingId={bookingToEdit.id}
         />
       )}

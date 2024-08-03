@@ -111,8 +111,7 @@ describe("BookingModal", () => {
     expect(descInput).toBeInTheDocument();
     expect(descInput).toHaveDisplayValue("");
 
-    const submitButton = screen.getByRole("button", { name: /submit/i });
-    expect(submitButton).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Submit" })).toBeInTheDocument();
   });
 
   it("pre-fills with props", () => {
@@ -162,6 +161,7 @@ describe("BookingModal", () => {
     expect(screen.getByLabelText("Time")).toHaveDisplayValue("02:00 PM");
     expect(screen.getByLabelText("End Time")).toHaveDisplayValue("03:00 PM");
     expect(screen.getByLabelText("Description")).toHaveDisplayValue("fun times");
+    expect(screen.getByRole("button", { name: "Submit" })).not.toBeDisabled();
 
     expect(screen.getByText("New Booking")).toBeInTheDocument();
     expect(screen.getByText("Old Booking")).toBeInTheDocument();
