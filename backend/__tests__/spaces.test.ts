@@ -122,4 +122,20 @@ describe("/spaces", () => {
     expect(res.status).toStrictEqual(200);
     expect(res.json).toMatchObject({ canBook: false });
   });
+
+  test("failure - check if invalid space id is bookable", async () => {
+    let res = await api.login(`z${ADMINS[0].zid}`, `z${ADMINS[0].zid}`);
+    const adminToken = res.json.token;
+
+    res = await api.bookable(adminToken, "invalid-id");
+    expect(res.status).toStrictEqual(404);
+  });
+
+  test("failure - single space details of invalid space id", async () => {
+    let res = await api.login(`z${ADMINS[0].zid}`, `z${ADMINS[0].zid}`);
+    const adminToken = res.json.token;
+
+    res = await api.singleSpace(adminToken, "invalid-id");
+    expect(res.status).toStrictEqual(404);
+  });
 });
