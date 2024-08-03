@@ -7,6 +7,12 @@ const ZID_REGEX = /z(\d{7})/;
 
 type LoginRequest = { zid: string; zpass: string };
 
+/**
+ * Handles user login by validating credentials and generating an authentication token.
+ *
+ * @param req - The request object containing the login credentials (zid and zpass).
+ * @param res - The response object to send back the authentication token.
+ */
 export async function login(
   req: TypedRequest<LoginRequest>,
   res: TypedResponse<{ token: string }>,
@@ -38,6 +44,12 @@ export async function login(
   res.json({ token });
 }
 
+/**
+ * Handles user logout by invalidating the authentication token.
+ *
+ * @param req - The request object containing the authentication token.
+ * @param res - The response object to confirm the logout operation.
+ */
 export function logout(req: TypedRequest, res: TypedResponse) {
   invalidateTokenById(req.token.id);
   res.json({});

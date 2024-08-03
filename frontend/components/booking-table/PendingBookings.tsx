@@ -88,6 +88,7 @@ export default function PendingBookings() {
           </Select>
         </FormControl>
         <BookingTable
+          name="Pending"
           columns={columns}
           data={pendingBookings}
           total={total}

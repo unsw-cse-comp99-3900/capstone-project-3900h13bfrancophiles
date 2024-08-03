@@ -69,7 +69,7 @@ export default function Login() {
         ratio="10/3"
         sx={{ backgroundColor: "transparent", width: { xs: 300, sm: 380 } }}
       >
-        <Image src="/roomallocfull.svg" alt="roomalloc logo" fill />
+        <Image priority src="/roomallocfull.svg" alt="roomalloc logo" fill />
       </AspectRatio>
       <Sheet variant="outlined" sx={{ borderRadius: "md", boxShadow: "md" }}>
         <Stack spacing={2} p={3} width={{ xs: 300, sm: 380 }}>

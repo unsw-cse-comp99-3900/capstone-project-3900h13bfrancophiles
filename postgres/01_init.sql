@@ -65,10 +65,12 @@ CREATE TABLE IF NOT EXISTS booking (
     description     VARCHAR(255) NOT NULL,
     checkInTime     TIMESTAMP,
     checkOutTime    TIMESTAMP,
+    parent          INT,
     created         TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     modified        TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY(zId) REFERENCES person(zId),
     FOREIGN KEY(spaceId) REFERENCES space(id),
+    FOREIGN KEY(parent) REFERENCES booking(id),
     CONSTRAINT chk_start_lt_end CHECK (startTime < endTime),
     CONSTRAINT chk_interval_length CHECK (EXTRACT(epoch FROM (endTime - startTime)) % 900 = 0),
     CONSTRAINT chk_interval_bounds CHECK (EXTRACT(minute FROM startTime) % 15 = 0),
@@ -105,12 +107,13 @@ begin
         select *
         from booking b
         where b.spaceId = new.spaceId
-              and b.starttime < new.endtime
-              and b.endtime > new.starttime
-              and b.currentStatus <> 'pending'
-              and b.currentStatus <> 'declined'
-              and b.currentStatus <> 'deleted'
-              and b.id != new.id
+            and b.starttime < new.endtime
+            and b.endtime > new.starttime
+            and b.currentStatus <> 'pending'
+            and b.currentStatus <> 'declined'
+            and b.currentStatus <> 'deleted'
+            and b.id != new.id
+            and coalesce(b.id != new.parent, true)
     ) then
         raise exception 'Overlapping booking found';
     end if;

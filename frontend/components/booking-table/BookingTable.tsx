@@ -37,7 +37,7 @@ const defaultColumnRenderers = {
 
 type DefaultColumn = {
   heading: keyof typeof defaultColumnRenderers;
-  width: number;
+  width: Property.Width<string | number>;
 };
 
 type CustomColumn = {
@@ -50,6 +50,7 @@ export type BookingTableColumn = DefaultColumn | CustomColumn;
 
 // Prop types
 interface PaginatedBookingTableProps {
+  name: string;
   columns: BookingTableColumn[];
   data?: Booking[];
   isLoading: boolean;
@@ -61,6 +62,7 @@ interface PaginatedBookingTableProps {
 }
 
 interface UnpaginatedBookingTableProps {
+  name: string;
   columns: BookingTableColumn[];
   data?: Booking[];
   isLoading: boolean;
@@ -70,7 +72,7 @@ interface UnpaginatedBookingTableProps {
 type BookingTableProps = PaginatedBookingTableProps | UnpaginatedBookingTableProps;
 
 export default function BookingTable(props: BookingTableProps) {
-  const { columns, data, isLoading, noPagination } = props;
+  const { name, columns, data, isLoading, noPagination } = props;
 
   return (
     <Sheet
@@ -119,7 +121,7 @@ export default function BookingTable(props: BookingTableProps) {
               </tr>
             ))
           ) : (
-            <NoBookingsRow bookingType="Upcoming" colSpan={columns.length} isLoading={isLoading} />
+            <NoBookingsRow bookingType={name} colSpan={columns.length} isLoading={isLoading} />
           )}
         </tbody>
         {!noPagination && (

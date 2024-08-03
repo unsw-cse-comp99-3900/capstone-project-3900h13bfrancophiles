@@ -5,6 +5,15 @@ import { db } from "../index";
 import XLSX from "xlsx";
 import { formatBookingDates } from "../utils";
 
+/**
+ * Generates a spreadsheet containing booking details within a specified date range and for specified spaces.
+ *
+ * @param {Date} startDate - The start date of the booking period.
+ * @param {Date} endDate - The end date of the booking period.
+ * @param {string[]} spaces - An array of space identifiers to filter the bookings.
+ * @param {boolean} checkIn - Flag indicating whether to include check-in and check-out times in the report.
+ * @returns {Promise<Buffer>} - A promise that resolves to a buffer containing the generated spreadsheet.
+ */
 const generateSpreadsheet = async (
   startDate: Date,
   endDate: Date,
@@ -72,8 +81,24 @@ const generateSpreadsheet = async (
   });
 };
 
+/**
+ * Generates a booking spreadsheet report for a specified date range and spaces without check-in details.
+ *
+ * @param {Date} startDate - The start date of the booking period.
+ * @param {Date} endDate - The end date of the booking period.
+ * @param {string[]} spaces - An array of space identifiers to filter the bookings.
+ * @returns {Promise<Buffer>} - A promise that resolves to a buffer containing the generated spreadsheet.
+ */
 export const generateBookingSpreadsheet: ReportGenerator = (startDate, endDate, spaces) =>
   generateSpreadsheet(startDate, endDate, spaces, false);
 
+/**
+ * Generates a check-in spreadsheet report for a specified date range and spaces with check-in details.
+ *
+ * @param {Date} startDate - The start date of the booking period.
+ * @param {Date} endDate - The end date of the booking period.
+ * @param {string[]} spaces - An array of space identifiers to filter the bookings.
+ * @returns {Promise<Buffer>} - A promise that resolves to a buffer containing the generated spreadsheet.
+ */
 export const generateCheckinSpreadsheet: ReportGenerator = (startDate, endDate, spaces) =>
   generateSpreadsheet(startDate, endDate, spaces, true);

@@ -70,6 +70,7 @@ export type Booking = {
   description: string;
   checkintime: string | null;
   checkouttime: string | null;
+  parent: number | null;
   created: string;
   modified: string;
 };

@@ -55,6 +55,7 @@ export default function PastBookings() {
         </FormControl>
       </Stack>
       <BookingTable
+        name="Past"
         columns={[
           { heading: "Reference No.", width: 120 },
           { heading: "Time", width: 200 },

@@ -26,8 +26,7 @@ interface BookingModalProps {
   start?: Date;
   end?: Date;
   desc?: string;
-  editing?: boolean;
-  editedBooking?: number;
+  editedBookingId?: number;
 }
 
 const BookingModal: React.FC<BookingModalProps> = ({
@@ -38,10 +37,10 @@ const BookingModal: React.FC<BookingModalProps> = ({
   start: initialStart,
   end: initialEnd,
   desc: initialDesc,
-  editing,
-  editedBooking,
+  editedBookingId,
 }) => {
   // Modal control state
+  const isEditing = editedBookingId !== undefined;
   const [state, setState] = React.useState<ModalState>("form");
   const [error, setError] = React.useState<string>();
   const [booking, setBooking] = React.useState<Booking>();
@@ -86,8 +85,8 @@ const BookingModal: React.FC<BookingModalProps> = ({
         return;
       }
       setIsLoading(true);
-      const res = editing
-        ? await editBooking(editedBooking!, start.toISOString(), end.toISOString(), space, desc)
+      const res = isEditing
+        ? await editBooking(editedBookingId, start.toISOString(), end.toISOString(), space, desc)
         : await createBooking(space, start.toISOString(), end.toISOString(), desc);
       setIsLoading(false);
       setBooking(res.booking);
@@ -103,7 +102,7 @@ const BookingModal: React.FC<BookingModalProps> = ({
       case "form":
         return (
           <>
-            <DialogTitle>{editing ? "Edit booking " : "Create a new booking"}</DialogTitle>
+            <DialogTitle>{isEditing ? "Edit booking" : "Create a new booking"}</DialogTitle>
             {error && (
               <Alert
                 size="md"
@@ -145,8 +144,7 @@ const BookingModal: React.FC<BookingModalProps> = ({
                     date={date}
                     start={start}
                     end={end}
-                    editing={editing ?? false}
-                    editedBooking={editedBooking ?? undefined}
+                    editedBookingId={editedBookingId}
                     setBlockedTimes={setBlockedTimes}
                   />
                 ) : (
@@ -186,7 +184,7 @@ const BookingModal: React.FC<BookingModalProps> = ({
               isSubmitted={true}
               bookingRef={booking.id}
               isPending={booking.currentstatus === "pending"}
-              editing={editing}
+              editing={isEditing}
               handleSubmit={onSubmit}
               handleBack={() => setState("form")}
               handleClose={onModalClose}
