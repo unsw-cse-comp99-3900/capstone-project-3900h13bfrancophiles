@@ -2,9 +2,7 @@ import * as React from "react";
 import "@testing-library/jest-dom";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import DeskInfoPopup from "../components/DeskInfoPopup";
-import { Booking, Desk, UserData } from "../types";
-import useSpace from "../hooks/useSpace";
-import { TransformComponent, TransformWrapper } from "react-zoom-pan-pinch";
+import { Booking, UserData } from "../types";
 
 jest.mock('@/components/BookingModal/BookingModal', () => ({
   __esModule: true,
@@ -12,6 +10,16 @@ jest.mock('@/components/BookingModal/BookingModal', () => ({
     open ? <div data-testid="booking-modal">Booking Modal</div> : null
   ),
 }));
+
+// mock toLocaleString for consistency of tests
+let mockDate;
+beforeAll(() => {
+  mockDate = jest.spyOn(Date.prototype, 'toLocaleTimeString').mockReturnValue('12:00 AM');
+});
+
+afterAll(() => {
+  mockDate.mockRestore();
+});
 
 describe('DeskInfoPopup', () => {
   const handleClose = jest.fn();
@@ -48,7 +56,7 @@ describe('DeskInfoPopup', () => {
 
     expect(screen.getByText('Test Desk')).toBeInTheDocument();
     expect(screen.getByText('Umar')).toBeInTheDocument();
-    expect(screen.getByText('05:00 AM - 06:00 AM')).toBeInTheDocument();
+    expect(screen.getByText('12:00 AM - 12:00 AM')).toBeInTheDocument();
     expect(screen.queryByText('Book for')).not.toBeInTheDocument();
   });
 
@@ -66,11 +74,9 @@ describe('DeskInfoPopup', () => {
         reference={null}
       />
     );
-    await waitFor(() => {
-      expect(screen.getByText('Test Desk')).toBeInTheDocument();
-      expect(screen.queryByText("Book for 11:30 AM - 12:30 PM")).toBeInTheDocument();
-      expect(screen.queryByText('Umar')).not.toBeInTheDocument();
-    });
+    expect(screen.getByText('Test Desk')).toBeInTheDocument();
+    expect(screen.getByText("Book for 12:00 AM - 12:00 AM")).toBeInTheDocument();
+    expect(screen.queryByText('Umar')).not.toBeInTheDocument();
   });
 
   test('calls handleClose on close button click', () => {

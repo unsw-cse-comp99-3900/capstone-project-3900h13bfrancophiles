@@ -1,11 +1,9 @@
 import * as React from "react";
 import "@testing-library/jest-dom";
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { render, screen, } from "@testing-library/react";
 import UserAvatar from "../components/UserAvatar";
-import { Booking, Desk, UserData } from "../types";
 import useUser from "../hooks/useUser";
 import { getInitials } from '../utils/icons';
-import { TransformComponent, TransformWrapper } from "react-zoom-pan-pinch";
 
 jest.mock("@/hooks/useUser");
 const mockedUseUser = useUser as jest.MockedFunction<typeof useUser>;
