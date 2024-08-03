@@ -166,7 +166,7 @@ export default function UpcomingBookings() {
           end={new Date(bookingToEdit.endtime)}
           desc={bookingToEdit.description}
           editing
-          editedBooking={bookingToEdit.id}
+          editedBookingId={bookingToEdit.id}
         />
       )}
     </>

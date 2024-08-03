@@ -23,25 +23,21 @@ interface ModalCalendarProps {
   date: Date;
   start: Date;
   end: Date;
-  editing?: boolean;
-  editedBooking?: number;
+  editedBookingId?: number;
   setBlockedTimes: (val: TimeRange[]) => void;
 }
 
 interface MyEvent extends Event {
   color?: string;
-  new?: boolean;
-  edited?: boolean;
-  old?: boolean;
+  type?: "new" | "old";
   ref?: React.RefObject<HTMLDivElement>;
 }
 
 const CustomEvent: React.FC<EventProps<MyEvent>> = ({ event }) => {
   const { user, isLoading, error } = useUser(event.zid);
   let adjective = "";
-  if (event.new) adjective = "New";
-  if (event.edited) adjective = "New";
-  if (event.old) adjective = "Old";
+  if (event.type === "new") adjective = "New";
+  if (event.type === "old") adjective = "Old";
   return (
     <Box ref={event.ref}>
       {adjective ? `${adjective} Booking` : isLoading || error ? "..." : user!.fullname}
@@ -76,8 +72,7 @@ export default function ModalCalendar({
   date,
   start,
   end,
-  editing,
-  editedBooking,
+  editedBookingId,
   setBlockedTimes,
 }: ModalCalendarProps) {
   const isMobile: boolean = useMediaQuery(theme.breakpoints.down("sm")) ?? false;
@@ -98,14 +93,14 @@ export default function ModalCalendar({
     if (bookings) {
       setBlockedTimes(
         bookings
-          .filter((booking) => booking.id !== editedBooking)
+          .filter((booking) => booking.id !== editedBookingId)
           .map((booking) => ({
             start: new Date(booking.starttime),
             end: new Date(booking.endtime),
           })),
       );
     }
-  }, [bookings, editedBooking, setBlockedTimes]);
+  }, [bookings, editedBookingId, setBlockedTimes]);
 
   // Scroll the calendar when start time changes
   const newBookingEventRef = useRef<HTMLDivElement>(null);
@@ -125,18 +120,18 @@ export default function ModalCalendar({
   if (isLoading) return <Loading page="" />;
 
   const events: MyEvent[] = bookings!.map((b) => {
-    const old = b.id === editedBooking;
+    const old = b.id === editedBookingId;
     return {
       zid: b.zid,
       start: new Date(b.starttime),
       end: new Date(b.endtime),
-      old: old,
-      color: old ? "rgba(49, 116, 173, 0.6)" : "",
+      type: old ? "old" : undefined,
+      color: old ? "rgba(49, 116, 173, 0.6)" : undefined,
     };
   });
   let overlaps = false;
   bookings!.forEach((b) => {
-    if (b.id === editedBooking) return;
+    if (b.id === editedBookingId) return;
     if (new Date(b.starttime) < end && new Date(b.endtime) > start) overlaps = true;
   });
 
@@ -147,8 +142,7 @@ export default function ModalCalendar({
     end: roundToNearestMinutes(end, { nearestTo: 15 }),
     // color: overlaps ? theme.palette.warning.main : theme.palette.primary.main,
     color: overlaps ? "#C70039" : "green",
-    new: !editing,
-    edited: editing,
+    type: "new",
     ref: newBookingEventRef,
   });
 
