@@ -8,6 +8,12 @@ import { Booking, EmailContents, EmailRecipient } from "../types";
 // For testing
 const EMAIL_SENDER = '"Wilma 👻" <wilma44@ethereal.email>';
 
+/**
+ * Checks if email notifications are enabled globally.
+ *
+ * @returns {Promise<boolean>} - Returns true if global email notifications are enabled, false otherwise.
+ * @throws {Error} - Throws an error if there is an issue fetching the global-email config.
+ */
 export async function emailsEnabledGlobally(): Promise<boolean> {
   try {
     const result = await db
@@ -26,6 +32,13 @@ export async function emailsEnabledGlobally(): Promise<boolean> {
   }
 }
 
+/**
+ * Retrieves the email recipient information for a given zid.
+ *
+ * @param {number} zid - The unique identifier for a person.
+ * @returns {Promise<EmailRecipient>} - Returns an object containing the name and email of the recipient.
+ * @throws {Error} - Throws an error if the zid is invalid or email address cannot be retrieved.
+ */
 export async function getEmailRecipient(zid: number): Promise<EmailRecipient> {
   const res = await db
     .select({
@@ -43,6 +56,14 @@ export async function getEmailRecipient(zid: number): Promise<EmailRecipient> {
   return res[0];
 }
 
+/**
+ * Sends a booking confirmation email to the specified recipient.
+ *
+ * @param {number} zid - The unique identifier for a person.
+ * @param {Booking} booking - The booking details.
+ * @param {EmailContents} template - The email template to be used.
+ * @returns {Promise<boolean>} - Returns true if the email was sent successfully, false otherwise.
+ */
 export async function sendBookingEmail(
   zid: number,
   booking: Booking,

@@ -12,6 +12,12 @@ type StatusResponse = {
   [spaceId: string]: Status;
 };
 
+/**
+ * Determines the availability status of all spaces within a specified datetime range.
+ *
+ * @param {TypedGETRequest} req - The request object containing query parameters for datetimeStart and datetimeEnd.
+ * @param {TypedResponse<StatusResponse>} res - The response object containing the availability status of each space.
+ */
 export async function spaceStatus(req: TypedGETRequest, res: TypedResponse<StatusResponse>) {
   try {
     const parsedQuery = typia.http.isQuery<IDatetimeRange>(new URLSearchParams(req.query));
