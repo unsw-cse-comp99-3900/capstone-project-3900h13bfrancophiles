@@ -91,6 +91,10 @@ function spaces(token: string) {
   return apiCall("/spaces", "GET", undefined, token);
 }
 
+function singleSpace(token: string, id: string) {
+  return apiCall("/spaces/" + id, "GET", undefined, token);
+}
+
 function reportSpaces(token: string) {
   return apiCall("/admin/reports/spaces", "GET", undefined, token);
 }
@@ -107,5 +111,6 @@ export default {
   declineBooking,
   checkinBooking,
   spaces,
+  singleSpace,
   reportSpaces,
 };
