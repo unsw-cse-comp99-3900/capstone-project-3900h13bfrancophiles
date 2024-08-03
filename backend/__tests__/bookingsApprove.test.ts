@@ -145,6 +145,66 @@ describe("/bookings/approve", () => {
     expect(res.json.bookings[0].currentstatus).toStrictEqual("confirmed");
   });
 
+  test("Success - approved booking is edited, and the pending edit is approved", async () => {
+    const initialBooking = {
+      zid: HDR[0].zid,
+      starttime: minutesFromBase(15).toISOString(),
+      endtime: minutesFromBase(45).toISOString(),
+      spaceid: ROOM[0].id,
+      currentstatus: "pending",
+      description: "fun times",
+    };
+    const editedBooking = {
+      zid: HDR[0].zid,
+      starttime: minutesFromBase(15).toISOString(),
+      endtime: minutesFromBase(45).toISOString(),
+      spaceid: ROOM[0].id,
+      currentstatus: "pending",
+      description: "I edited this booking!",
+    };
+
+    // Create booking
+    const res = await api.createBooking(
+      hdrToken,
+      ROOM[0].id,
+      minutesFromBase(15),
+      minutesFromBase(45),
+      "fun times",
+    );
+    expect(res.status).toStrictEqual(200);
+    expect(res.json).toMatchObject({
+      booking: initialBooking,
+    });
+    const booking = res.json.booking;
+
+    // Admin approves booking
+    await api.approveBooking(adminToken, booking.id);
+    initialBooking.currentstatus = "confirmed";
+
+    // User edits bookings
+    const res2 = await api.editBooking(
+      hdrToken,
+      booking.id,
+      booking.starttime,
+      booking.endtime,
+      booking.spaceid,
+      "I edited this booking!",
+    );
+    expect(res2.status).toStrictEqual(200);
+    expect(res2.json).toMatchObject({
+      booking: editedBooking,
+    });
+    const booking2 = res2.json.booking;
+    // Admin approves edit
+    await api.approveBooking(adminToken, booking2.id);
+    editedBooking.currentstatus = "confirmed";
+
+    const res3 = await api.upcomingBookings(hdrToken);
+    expect(res3.status).toStrictEqual(200);
+    expect(res3.json.bookings[0]).toMatchObject(editedBooking);
+    expect(res3.json.bookings.length == 1);
+  });
+
   test("Failure - booking cannot be declined by unauthorised user", async () => {
     const bookingRes = await api.createBooking(
       hdrToken,
@@ -158,6 +218,7 @@ describe("/bookings/approve", () => {
     expect(res.status).toStrictEqual(403);
   });
 
+
   test("Failure - booking does not exist", async () => {
     await api.createBooking(
       hdrToken,
@@ -169,5 +230,10 @@ describe("/bookings/approve", () => {
 
     const res = await api.approveBooking(adminToken, 0);
     expect(res.status).toStrictEqual(500);
+  });
+
+  test("Failure - approve invalid inputs", async () => {
+    let res = await api.apiCall("/admin/bookings/approve", "PUT", { input: "invalid" }, adminToken);
+    expect(res.status).toStrictEqual(400);
   });
 });

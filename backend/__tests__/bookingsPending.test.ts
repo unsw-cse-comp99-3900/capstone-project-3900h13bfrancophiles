@@ -102,4 +102,17 @@ describe("/bookings/pending", () => {
       total: 1,
     });
   });
+
+  test("Failure - pending invalid input", async () => {
+    const res1 = await api.login(`z${ADMINS[0].zid}`, `z${ADMINS[0].zid}`);
+    const admintoken = res1.json.token;
+    const res = await api.apiCall(
+      `/admin/bookings/pending?input=invalid`,
+      "GET",
+      undefined,
+      admintoken,
+    );
+    expect(res.status).toStrictEqual(400);
+  });
+
 });

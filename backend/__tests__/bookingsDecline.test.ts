@@ -88,4 +88,9 @@ describe("/bookings/decline", () => {
     const res = await api.declineBooking(adminToken, 0);
     expect(res.status).toStrictEqual(500);
   });
+
+  test("Failure - decline invalid inputs", async () => {
+    let res = await api.apiCall("/admin/bookings/decline", "PUT", { input: "invalid" }, adminToken);
+    expect(res.status).toStrictEqual(400);
+  });
 });
