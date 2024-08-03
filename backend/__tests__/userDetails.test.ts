@@ -19,7 +19,7 @@ describe("/users", () => {
     });
   });
 
-  test("Success - User does not exist", async () => {
+  test("User does not exist", async () => {
     let res = await api.login(`z${ADMINS[0].zid}`, `z${ADMINS[0].zid}`);
     const token = res.json.token;
 
