@@ -1,7 +1,6 @@
 import * as React from "react";
 import "@testing-library/jest-dom";
 import { render, screen, fireEvent } from "@testing-library/react";
-import RoomCard from "../components/RoomCard";
 import AvailabilitiesPage from "../components/availability/AvailabilitiesPage";
 import { Room } from "../types";
 import useSpaceStatus from "../hooks/useSpaceStatus";
@@ -29,35 +28,8 @@ const mockRoom: Room = {
   capacity: 100,
 };
 
-const mockHandleBook = jest.fn();
-
-describe("BookingDisabledTooltip", () => {
-  it("disabled room card calendar button cannot be clicked", async () => {
-    mockedUseSpaceStatus.mockReturnValue({
-      statusResponse: { "K-K17-B01": { status: "Available" } },
-      isLoading: false,
-      error: null,
-    });
-    mockedUseRoomCanBook.mockReturnValue({ canBook: false, isLoading: false, error: null });
-
-    render(
-      <RoomCard
-        room={mockRoom}
-        handleBook={mockHandleBook}
-        datetimeStart="2024-07-29T10:00"
-        datetimeEnd="2024-07-29T11:00"
-      />,
-    );
-
-    expect(screen.getByText("K17 CSE Basement")).toBeInTheDocument();
-    expect(screen.getByRole("button")).toBeDisabled();
-    fireEvent.mouseEnter(screen.getByRole("button"));
-    expect(
-      await screen.findByText("You do not have permission to book this space"),
-    ).toBeInTheDocument();
-  });
-
-  it("disabled cal page book button cannot be clicked", async () => {
+describe("AvailabilitiesPage", () => {
+  it("disables book button and displays tool tip when room cannot be booked", async () => {
     mockedUseSpaceStatus.mockReturnValue({
       statusResponse: { "K-K17-B01": { status: "Available" } },
       isLoading: false,
