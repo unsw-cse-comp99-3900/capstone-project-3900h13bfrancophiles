@@ -52,7 +52,7 @@ describe('DeskInfoPopup', () => {
     expect(screen.queryByText('Book for')).not.toBeInTheDocument();
   });
 
-  test('renders DeskInfoPopup without booking information', () => {
+  test('renders DeskInfoPopup without booking information', async () => {
     render(
       <DeskInfoPopup
         id="desk1"
@@ -66,10 +66,11 @@ describe('DeskInfoPopup', () => {
         reference={null}
       />
     );
-
-    expect(screen.getByText('Test Desk')).toBeInTheDocument();
-    expect(screen.queryByText("Book for 11:30 AM - 12:30 PM")).toBeInTheDocument();
-    expect(screen.queryByText('Umar')).not.toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText('Test Desk')).toBeInTheDocument();
+      expect(screen.queryByText("Book for 11:30 AM - 12:30 PM")).toBeInTheDocument();
+      expect(screen.queryByText('Umar')).not.toBeInTheDocument();
+    });
   });
 
   test('calls handleClose on close button click', () => {
