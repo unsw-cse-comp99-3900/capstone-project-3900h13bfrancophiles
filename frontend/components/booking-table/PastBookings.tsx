@@ -7,7 +7,7 @@ import FormControl from "@mui/joy/FormControl";
 import FormLabel from "@mui/joy/FormLabel";
 import Stack from "@mui/joy/Stack";
 
-import BookingTable from "@/components/BookingTable/BookingTable";
+import BookingTable from "@/components/booking-table/BookingTable";
 import usePastBookings from "@/hooks/usePastBookings";
 
 export default function PastBookings() {

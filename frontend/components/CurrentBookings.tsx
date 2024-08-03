@@ -25,7 +25,7 @@ import { checkIn, checkOut } from "@/api";
 import { mutate } from "swr";
 import ConstructionIcon from "@mui/icons-material/Construction";
 import MailIcon from "@mui/icons-material/Mail";
-import ErrorSnackbar from "@/components/ErrorSnackbar";
+import ErrorSnackbar from "@/components/feedback/ErrorSnackbar";
 
 function CurrentBookings() {
   const { currentBookings } = useCurrentBookings();

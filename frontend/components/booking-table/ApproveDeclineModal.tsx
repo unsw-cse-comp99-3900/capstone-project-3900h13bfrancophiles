@@ -15,7 +15,7 @@ import {
 import { Booking } from "@/types";
 import { approveBooking, declineBooking } from "@/api";
 import useOverlappingBookings from "@/hooks/useOverlappingBookings";
-import BookingTable from "@/components/BookingTable/BookingTable";
+import BookingTable from "@/components/booking-table/BookingTable";
 
 interface ApproveDeclineModalProps {
   isOpen: boolean;

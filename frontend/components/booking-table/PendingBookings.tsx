@@ -11,9 +11,9 @@ import CheckIcon from "@mui/icons-material/Check";
 import CloseIcon from "@mui/icons-material/Close";
 
 import usePendingBookings from "@/hooks/usePendingBookings";
-import BookingTable, { BookingTableColumn } from "@/components/BookingTable/BookingTable";
-import ApproveDeclineModal from "@/components/ApproveDeclineModal";
-import ErrorSnackbar from "@/components/ErrorSnackbar";
+import BookingTable, { BookingTableColumn } from "@/components/booking-table/BookingTable";
+import ApproveDeclineModal from "./ApproveDeclineModal";
+import ErrorSnackbar from "@/components/feedback/ErrorSnackbar";
 import { Booking } from "@/types";
 
 export default function PendingBookings() {

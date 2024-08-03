@@ -7,7 +7,7 @@ import { UserData } from "@/types";
 import NextLink from "next/link";
 import { Booking } from "@/types";
 import { useFloating, flip, shift, autoUpdate, ReferenceType } from "@floating-ui/react";
-import BookingModal from "@/components/BookingModal/BookingModal";
+import BookingModal from "@/components/booking-modal/BookingModal";
 import { getInitials } from "@/utils/icons";
 
 interface DeskInfoPopupProps {

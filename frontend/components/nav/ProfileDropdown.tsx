@@ -1,7 +1,7 @@
 import { Avatar, Dropdown, ListDivider, Menu, MenuButton, MenuItem, Stack } from "@mui/joy";
 import Box from "@mui/joy/Box";
 import Typography from "@mui/joy/Typography";
-import LogoutButton from "@/components/LogoutButton";
+import LogoutButton from "./LogoutButton";
 import { UserGroup } from "@/types";
 import useUser from "@/hooks/useUser";
 import { getInitials } from "@/utils/icons";

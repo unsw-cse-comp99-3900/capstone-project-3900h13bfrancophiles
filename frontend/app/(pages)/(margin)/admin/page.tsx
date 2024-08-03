@@ -1,4 +1,4 @@
-import PendingBookings from "@/components/BookingTable/PendingBookings";
+import PendingBookings from "@/components/booking-table/PendingBookings";
 import { Stack, Typography } from "@mui/joy";
 import Box from "@mui/joy/Box";
 import { ReportGenerationForm } from "@/components/ReportGenerationForm";

@@ -11,14 +11,14 @@ import {
   Table,
   Typography,
 } from "@mui/joy";
-import { NoBookingsRow } from "@/components/BookingTable/NoBookingsRow";
+import { NoBookingsRow } from "@/components/booking-table/NoBookingsRow";
 import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import { Property } from "csstype";
-import BookingStatusPill from "@/components/BookingTable/BookingStatusPill";
+import BookingStatusPill from "@/components/booking-table/BookingStatusPill";
 import { format } from "date-fns";
-import SpaceColumn from "@/components/BookingTable/SpaceColumn";
-import UserColumn from "@/components/BookingTable/UserColumn";
+import SpaceColumn from "@/components/booking-table/SpaceColumn";
+import UserColumn from "@/components/booking-table/UserColumn";
 
 const defaultColumnRenderers = {
   "Reference No.": (booking: Booking) => <Typography level="body-sm">#{booking.id}</Typography>,

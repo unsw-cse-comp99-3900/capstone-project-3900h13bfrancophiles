@@ -21,10 +21,10 @@ import {
 } from "@mui/joy";
 import useRoomDetails from "@/hooks/useRoomDetails";
 import { Room } from "@/types";
-import Loading from "@/components/Loading";
-import Error from "@/components/Error";
+import Loading from "@/components/feedback/Loading";
+import Error from "@/components/feedback/Error";
 import useTimeRange from "@/hooks/useTimeRange";
-import BookingModal from "@/components/BookingModal/BookingModal";
+import BookingModal from "@/components/booking-modal/BookingModal";
 import JoyTimePicker from "@/components/JoyTimePicker";
 import useSpaceStatus from "@/hooks/useSpaceStatus";
 

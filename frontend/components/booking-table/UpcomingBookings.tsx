@@ -22,9 +22,9 @@ import useUpcomingBookings from "@/hooks/useUpcomingBookings";
 import WarningRoundedIcon from "@mui/icons-material/WarningRounded";
 
 import { deleteBooking } from "@/api";
-import BookingTable, { BookingTableColumn } from "@/components/BookingTable/BookingTable";
-import ErrorSnackbar from "@/components/ErrorSnackbar";
-import BookingModal from "@/components/BookingModal/BookingModal";
+import BookingTable, { BookingTableColumn } from "@/components/booking-table/BookingTable";
+import ErrorSnackbar from "@/components/feedback/ErrorSnackbar";
+import BookingModal from "@/components/booking-modal/BookingModal";
 import { Booking } from "@/types";
 
 export default function UpcomingBookings() {

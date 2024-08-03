@@ -5,8 +5,8 @@ import { KeepScale } from "react-zoom-pan-pinch";
 import { Box, Avatar } from "@mui/joy";
 import { Status, UserData } from "@/types";
 import useSpace from "@/hooks/useSpace";
-import UserAvatar from "@/components/UserAvatar";
-import DeskInfoPopup from "@/components/DeskInfoPopup";
+import UserAvatar from "./UserAvatar";
+import DeskInfoPopup from "./DeskInfoPopup";
 
 interface DeskIconProps {
   id: string;
@@ -148,10 +148,7 @@ const DeskIcon = ({
               transition: "transform 0.1s",
             }}
           >
-            <Pin
-              color={status.status === "Available" ? "#207920" : "#0B6BCB"}
-              on={selected ? true : false}
-            />
+            <Pin color={status.status === "Available" ? "#207920" : "#0B6BCB"} on={selected} />
             {status && status.status === "Unavailable" && (
               <UserAvatar zid={status.booking.zid} selected={selected} setUser={setUser} />
             )}

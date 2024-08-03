@@ -9,7 +9,7 @@ import { styled } from "@mui/joy/styles";
 import useUser from "@/hooks/useUser";
 import { Event, StyledCalendarContainer, formatTime, formatTimeRange } from "@/utils/calendar";
 import useAvailabilities from "@/hooks/useAvailabilities";
-import Loading from "../Loading";
+import Loading from "@/components/feedback/Loading";
 import { roundToNearestMinutes } from "date-fns";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { theme } from "@/app/ThemeRegistry";
