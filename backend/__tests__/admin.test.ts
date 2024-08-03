@@ -88,5 +88,6 @@ describe("/admin/bookings/approve", () => {
     const res3 = await api.upcomingBookings(token);
     expect(res3.status).toStrictEqual(200);
     expect(res3.json.bookings[0]).toMatchObject(editedBooking);
+    expect(res3.json.bookings.length == 1);
   });
 });

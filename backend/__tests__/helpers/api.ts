@@ -55,7 +55,7 @@ function editBooking(
   starttime: Date | string,
   endtime: Date | string,
   spaceid: string,
-  description: string,
+  description?: string,
 ) {
   return apiCall("/bookings/edit", "PUT", { id, starttime, endtime, spaceid, description }, token);
 }

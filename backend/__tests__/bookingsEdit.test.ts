@@ -191,11 +191,13 @@ describe("/bookings/edit", () => {
     });
 
     const booking = res.json.booking;
-    const res1 = await api.apiCall(
-      "/bookings/edit",
-      "PUT",
-      { id: booking.id, description: booking.description },
+    const res1 = await api.editBooking(
       token,
+      booking.id,
+      booking.starttime,
+      booking.endtime,
+      booking.spaceid,
+      booking.description,
     );
     expect(res1.status).toStrictEqual(200);
     expect(res1.json).toMatchObject({

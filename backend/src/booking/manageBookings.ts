@@ -311,68 +311,63 @@ export async function editBooking(
       return;
     }
 
-    if (newBookingStatus === "confirmed") {
-      await declineOverlapping(
-        db,
-        editedBooking.spaceid,
-        editedBooking.starttime,
-        editedBooking.endtime,
-        editedBooking.id,
-      );
+    try {
+      const formattedBooking = await db.transaction(async (tx) => {
+        // Decline Overlapping
+        if (newBookingStatus === "confirmed") {
+          await declineOverlapping(
+            tx,
+            editedBooking.spaceid,
+            editedBooking.starttime,
+            editedBooking.endtime,
+            editedBooking.id,
+          );
+        }
+
+        if (
+          existingBooking[0].currentstatus === "pending" ||
+          existingBooking[0].currentstatus === "declined" ||
+          newBookingStatus === "confirmed"
+        ) {
+          // If booking is still pending/declined or new approval is not required, update the old booking in place
+          const res = await db
+            .update(booking)
+            .set({
+              starttime: editedBooking.starttime,
+              endtime: editedBooking.endtime,
+              spaceid: editedBooking.spaceid,
+              currentstatus: newBookingStatus,
+              description: editedBooking.description,
+            })
+            .where(and(eq(booking.id, req.body.id), eq(booking.zid, req.token.user)))
+            .returning();
+
+          return formatBookingDates(res[0]);
+        } else {
+          // If approval is required; create new booking request with original booking as parent
+          editedBooking.parent = existingBooking[0].id;
+          const res = await db
+            .insert(booking)
+            .values({
+              zid: req.token.user,
+              starttime: editedBooking.starttime,
+              endtime: editedBooking.endtime,
+              spaceid: editedBooking.spaceid,
+              description: editedBooking.description,
+              currentstatus: newBookingStatus,
+              parent: existingBooking[0].id,
+            })
+            .returning();
+
+          return formatBookingDates(res[0]);
+        }
+      });
+
+      await sendBookingEmail(req.token.user, formattedBooking, BOOKING_EDIT);
+      res.json({ booking: formattedBooking });
+    } catch (e) {
+      res.status(400).json({ error: `${e}` });
     }
-
-    let formattedBooking: Booking;
-    if (
-      existingBooking[0].currentstatus === "pending" ||
-      existingBooking[0].currentstatus === "declined" ||
-      newBookingStatus === "confirmed"
-    ) {
-      // If booking is still pending/declined or new approval is not required, update the old booking in place
-      try {
-        const res = await db
-          .update(booking)
-          .set({
-            starttime: editedBooking.starttime,
-            endtime: editedBooking.endtime,
-            spaceid: editedBooking.spaceid,
-            currentstatus: newBookingStatus,
-            description: editedBooking.description,
-          })
-          .where(and(eq(booking.id, req.body.id), eq(booking.zid, req.token.user)))
-          .returning();
-
-        formattedBooking = formatBookingDates(res[0]);
-        await sendBookingEmail(req.token.user, formattedBooking, BOOKING_EDIT);
-      } catch (e) {
-        res.status(400).json({ error: `${e}` });
-        return;
-      }
-    } else {
-      // If approval is required; create new booking request with original booking as parent
-      editedBooking.parent = existingBooking[0].id;
-      try {
-        const res = await db
-          .insert(booking)
-          .values({
-            zid: req.token.user,
-            starttime: editedBooking.starttime,
-            endtime: editedBooking.endtime,
-            spaceid: editedBooking.spaceid,
-            description: editedBooking.description,
-            currentstatus: newBookingStatus,
-            parent: existingBooking[0].id,
-          })
-          .returning();
-
-        formattedBooking = formatBookingDates(res[0]);
-        await sendBookingEmail(req.token.user, formattedBooking, BOOKING_EDIT);
-      } catch (e) {
-        res.status(400).json({ error: `${e}` });
-        return;
-      }
-    }
-
-    res.json({ booking: formattedBooking });
   } catch (error) {
     res.status(500).json({ error: "Internal server error" });
   }
