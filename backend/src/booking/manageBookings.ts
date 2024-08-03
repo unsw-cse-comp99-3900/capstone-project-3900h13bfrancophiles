@@ -261,9 +261,9 @@ export async function editBooking(
       return;
     }
 
-    const childBookings= await db
-    .select()
-    .from(booking)
+    const childBookings = await db
+      .select()
+      .from(booking)
       .where(and(eq(booking.parent, req.body.id), eq(booking.zid, req.token.user)));
 
     // If the booking has a child, modify the child instead

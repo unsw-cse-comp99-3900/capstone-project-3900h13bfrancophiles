@@ -83,7 +83,7 @@ export async function approveBooking(
         // Delete parent booking
         await trx
           .update(booking)
-          .set({ currentstatus: "deleted"})
+          .set({ currentstatus: "deleted" })
           .where(eq(booking.id, updatedBookingDetails.parent));
       }
 

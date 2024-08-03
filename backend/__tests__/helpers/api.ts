@@ -100,12 +100,7 @@ function status(token: string, start: Date, end: Date) {
 }
 
 function spaceStatus(token: string, spaceid: string) {
-  return apiCall(
-    `/status?spaceid=${spaceid}`,
-    "GET",
-    undefined,
-    token,
-  );
+  return apiCall(`/status?spaceid=${spaceid}`, "GET", undefined, token);
 }
 
 function approveBooking(token: string, id: number) {

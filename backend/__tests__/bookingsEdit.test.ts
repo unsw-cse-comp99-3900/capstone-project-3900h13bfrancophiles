@@ -1,4 +1,3 @@
-import { initial } from "lodash";
 import api from "./helpers/api";
 import { DESK, HDR, ADMINS, ROOM } from "./helpers/constants";
 import { minutesFromBase } from "./helpers/helpers";
@@ -239,7 +238,7 @@ describe("/bookings/edit", () => {
     );
     expect(res.status).toStrictEqual(200);
     expect(res.json).toMatchObject({
-      booking: initialBooking
+      booking: initialBooking,
     });
 
     const booking = res.json.booking;
@@ -253,7 +252,7 @@ describe("/bookings/edit", () => {
     );
     expect(res1.status).toStrictEqual(200);
     expect(res1.json).toMatchObject({
-      booking: editedBooking
+      booking: editedBooking,
     });
   });
 
@@ -293,7 +292,7 @@ describe("/bookings/edit", () => {
   });
 
   test("Success - approved booking is edited", async () => {
-    let initialBooking = {
+    const initialBooking = {
       zid: HDR[0].zid,
       starttime: minutesFromBase(15).toISOString(),
       endtime: minutesFromBase(45).toISOString(),
@@ -301,7 +300,7 @@ describe("/bookings/edit", () => {
       currentstatus: "pending",
       description: "fun times",
     };
-    let editedBooking = {
+    const editedBooking = {
       zid: HDR[0].zid,
       starttime: minutesFromBase(15).toISOString(),
       endtime: minutesFromBase(45).toISOString(),
@@ -320,7 +319,7 @@ describe("/bookings/edit", () => {
     );
     expect(res.status).toStrictEqual(200);
     expect(res.json).toMatchObject({
-      booking: initialBooking
+      booking: initialBooking,
     });
     const booking = res.json.booking;
 
@@ -342,7 +341,7 @@ describe("/bookings/edit", () => {
     );
     expect(res2.status).toStrictEqual(200);
     expect(res2.json).toMatchObject({
-      booking: editedBooking
+      booking: editedBooking,
     });
 
     const res3 = await api.upcomingBookings(token);
@@ -353,7 +352,7 @@ describe("/bookings/edit", () => {
   });
 
   test("Success - modifying parent should always modify child", async () => {
-    let initialBooking = {
+    const initialBooking = {
       zid: HDR[0].zid,
       starttime: minutesFromBase(15).toISOString(),
       endtime: minutesFromBase(45).toISOString(),
@@ -361,7 +360,7 @@ describe("/bookings/edit", () => {
       currentstatus: "pending",
       description: "fun times",
     };
-    let editedBooking = {
+    const editedBooking = {
       zid: HDR[0].zid,
       starttime: minutesFromBase(15).toISOString(),
       endtime: minutesFromBase(45).toISOString(),
@@ -380,7 +379,7 @@ describe("/bookings/edit", () => {
     );
     expect(res.status).toStrictEqual(200);
     expect(res.json).toMatchObject({
-      booking: initialBooking
+      booking: initialBooking,
     });
     const booking = res.json.booking;
 
@@ -402,7 +401,7 @@ describe("/bookings/edit", () => {
     );
     expect(res.status).toStrictEqual(200);
     expect(res.json).toMatchObject({
-      booking: editedBooking
+      booking: editedBooking,
     });
 
     res = await api.upcomingBookings(token);
@@ -423,7 +422,7 @@ describe("/bookings/edit", () => {
     editedBooking.description = "I edited this booking AGAIN!";
     expect(res.status).toStrictEqual(200);
     expect(res.json).toMatchObject({
-      booking: editedBooking
+      booking: editedBooking,
     });
 
     res = await api.upcomingBookings(token);

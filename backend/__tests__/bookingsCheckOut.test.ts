@@ -3,7 +3,6 @@ import { ADMINS, HDR, ROOM } from "./helpers/constants";
 import { minutesFromBase, mockCurrentTime } from "./helpers/helpers";
 
 describe("/checkout", () => {
-
   test("Failure: Check-out invalid input", async () => {
     let res = await api.login(`z${ADMINS[0].zid}`, `z${ADMINS[0].zid}`);
     const token = res.json.token;

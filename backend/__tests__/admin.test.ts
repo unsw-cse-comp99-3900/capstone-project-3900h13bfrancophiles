@@ -1,4 +1,3 @@
-import { initial } from "lodash";
 import api from "./helpers/api";
 import { HDR, ADMINS, ROOM } from "./helpers/constants";
 import { minutesFromBase } from "./helpers/helpers";
@@ -23,12 +22,17 @@ describe("/admin/bookings/approve", () => {
   });
 
   test("Failure - pending invalid input", async () => {
-    let res = await api.apiCall(`/admin/bookings/pending?input=invalid`, "GET", undefined, admintoken);
+    const res = await api.apiCall(
+      `/admin/bookings/pending?input=invalid`,
+      "GET",
+      undefined,
+      admintoken,
+    );
     expect(res.status).toStrictEqual(400);
   });
 
   test("Success - approved booking is edited, and the pending edit is approved", async () => {
-    let initialBooking = {
+    const initialBooking = {
       zid: HDR[0].zid,
       starttime: minutesFromBase(15).toISOString(),
       endtime: minutesFromBase(45).toISOString(),
@@ -36,7 +40,7 @@ describe("/admin/bookings/approve", () => {
       currentstatus: "pending",
       description: "fun times",
     };
-    let editedBooking = {
+    const editedBooking = {
       zid: HDR[0].zid,
       starttime: minutesFromBase(15).toISOString(),
       endtime: minutesFromBase(45).toISOString(),
@@ -55,7 +59,7 @@ describe("/admin/bookings/approve", () => {
     );
     expect(res.status).toStrictEqual(200);
     expect(res.json).toMatchObject({
-      booking: initialBooking
+      booking: initialBooking,
     });
     const booking = res.json.booking;
 
@@ -74,7 +78,7 @@ describe("/admin/bookings/approve", () => {
     );
     expect(res2.status).toStrictEqual(200);
     expect(res2.json).toMatchObject({
-      booking: editedBooking
+      booking: editedBooking,
     });
     const booking2 = res2.json.booking;
     // Admin approves edit
@@ -84,6 +88,5 @@ describe("/admin/bookings/approve", () => {
     const res3 = await api.upcomingBookings(token);
     expect(res3.status).toStrictEqual(200);
     expect(res3.json.bookings[0]).toMatchObject(editedBooking);
-
   });
 });
