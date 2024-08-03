@@ -23,7 +23,10 @@ import {
 import DownloadIcon from "@mui/icons-material/Download";
 import * as React from "react";
 import { useRef } from "react";
-import { AutocompleteRenderGetTagProps, AutocompleteRenderOptionState } from "@mui/joy/Autocomplete/AutocompleteProps";
+import {
+  AutocompleteRenderGetTagProps,
+  AutocompleteRenderOptionState,
+} from "@mui/joy/Autocomplete/AutocompleteProps";
 import { addDays, format, startOfToday } from "date-fns";
 import { useResizeObserver } from "usehooks-ts";
 import useReportTypes from "@/hooks/useReportTypes";
@@ -53,7 +56,7 @@ export function ReportGenerationForm() {
   const options: ReportSpace[] = [
     { text: "All Desks", value: "all", type: "desk" },
     { text: "All Rooms", value: "all", type: "room" },
-    ...(reportSpaces ?? [])
+    ...(reportSpaces ?? []),
   ];
 
   const today = startOfToday();
@@ -71,8 +74,8 @@ export function ReportGenerationForm() {
   };
 
   const [spacesInteracted, setSpacesInteracted] = React.useState(false);
-  const spacesError = (spacesInteracted && spaces.length == 0)
-    ? "Select at least one space" : undefined;
+  const spacesError =
+    spacesInteracted && spaces.length == 0 ? "Select at least one space" : undefined;
 
   const handleAllSwitch = (type: ReportSpace["type"]) => {
     if (totals[type] == selected[type]) {
@@ -140,18 +143,18 @@ export function ReportGenerationForm() {
 
     const blob = await res.blob();
     const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
+    const a = document.createElement("a");
     a.href = url;
 
     // Extract filename
-    const header = res.headers.get('Content-Disposition');
-    const parts = header!.split(';');
-    const quotedFilename = parts[1].split('=')[1];
+    const header = res.headers.get("Content-Disposition");
+    const parts = header!.split(";");
+    const quotedFilename = parts[1].split("=")[1];
     a.download = quotedFilename.substring(1, quotedFilename.length - 1);
 
     a.click();
     window.URL.revokeObjectURL(url);
-  }
+  };
 
   return (
     <Stack
@@ -172,20 +175,23 @@ export function ReportGenerationForm() {
                 setReportType(reportTypes.find((rt) => rt.type === value));
               }}
             >
-              {reportTypes && reportTypes.map((rt) => (
-                <Option key={rt.type} value={rt.type}>{rt.name}</Option>
-              ))}
+              {reportTypes &&
+                reportTypes.map((rt) => (
+                  <Option key={rt.type} value={rt.type}>
+                    {rt.name}
+                  </Option>
+                ))}
             </Select>
           </FormControl>
           <FormControl sx={{ minWidth: 70, flexGrow: { xs: 1, sm: 0 } }}>
             <FormLabel>Format</FormLabel>
-            <Select
-              value={fileFormat}
-              onChange={(_e, value) => setFileFormat(value)}
-            >
-              {reportType && reportType.formats.map((format) => (
-                <Option key={format} value={format}>.{format}</Option>
-              ))}
+            <Select value={fileFormat} onChange={(_e, value) => setFileFormat(value)}>
+              {reportType &&
+                reportType.formats.map((format) => (
+                  <Option key={format} value={format}>
+                    .{format}
+                  </Option>
+                ))}
             </Select>
           </FormControl>
         </Stack>
@@ -286,12 +292,7 @@ const renderTags = (tags: ReportSpace[], getTagProps: AutocompleteRenderGetTagPr
       <Chip
         variant="soft"
         color="neutral"
-        endDecorator={<ChipDelete
-          variant="soft"
-          key={key}
-          onDelete={onClick}
-          {...tagProps}
-        />}
+        endDecorator={<ChipDelete variant="soft" key={key} onDelete={onClick} {...tagProps} />}
         sx={{ minWidth: 0 }}
         key={key}
       >

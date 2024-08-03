@@ -1,15 +1,7 @@
-import {
-  Avatar,
-  Dropdown,
-  ListDivider,
-  Menu,
-  MenuButton,
-  MenuItem,
-  Stack,
-} from "@mui/joy";
+import { Avatar, Dropdown, ListDivider, Menu, MenuButton, MenuItem, Stack } from "@mui/joy";
 import Box from "@mui/joy/Box";
 import Typography from "@mui/joy/Typography";
-import LogoutButton from "@/components/LogoutButton";
+import LogoutButton from "./LogoutButton";
 import { UserGroup } from "@/types";
 import useUser from "@/hooks/useUser";
 import { getInitials } from "@/utils/icons";
@@ -77,6 +69,10 @@ const roleNames: { [key in UserGroup]: string } = {
   other: "Other",
 };
 
+/**
+ * Convert role key from backend to formatted role name
+ * @param role role key
+ */
 export function getRoleName(role: UserGroup): string {
   return roleNames[role] || "Unknown role";
 }

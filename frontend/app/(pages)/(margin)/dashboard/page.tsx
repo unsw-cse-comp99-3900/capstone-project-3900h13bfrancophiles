@@ -1,7 +1,7 @@
-import PastBookings from "@/components/PastBookings";
+import PastBookings from "@/components/booking-table/PastBookings";
 import { Box, Stack, Typography } from "@mui/joy";
 import CurrentBookings from "@/components/CurrentBookings";
-import UpcomingBookings from "@/components/UpcomingBookings";
+import UpcomingBookings from "@/components/booking-table/UpcomingBookings";
 
 export default function Dashboard() {
   return (

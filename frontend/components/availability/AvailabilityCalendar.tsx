@@ -10,7 +10,7 @@ import { Stack, ButtonGroup, Button, ToggleButtonGroup, Typography } from "@mui/
 import useUser from "@/hooks/useUser";
 import { Event, StyledCalendarContainer, formatTime, formatTimeRange } from "@/utils/calendar";
 import useAvailabilities from "@/hooks/useAvailabilities";
-import Loading from "./Loading";
+import Loading from "@/components/feedback/Loading";
 
 interface AvailabilityCalendarProps {
   spaceId: string;

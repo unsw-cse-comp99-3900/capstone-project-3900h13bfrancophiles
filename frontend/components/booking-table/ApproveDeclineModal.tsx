@@ -11,56 +11,45 @@ import {
   Stack,
   Typography,
 } from "@mui/joy";
+
 import { Booking } from "@/types";
 import { approveBooking, declineBooking } from "@/api";
-import OverlappingBookings from "@/components/OverlappingBookings";
 import useOverlappingBookings from "@/hooks/useOverlappingBookings";
-import usePendingBookings from "@/hooks/usePendingBookings";
+import BookingTable from "@/components/booking-table/BookingTable";
 
 interface ApproveDeclineModalProps {
   isOpen: boolean;
   onClose: () => void;
   approving: boolean;
-  row: Booking;
-  page: number;
-  rowsPerPage: number;
-  sort: string;
-  setApproveDeclineError: (error: string | null) => void;
+  booking: Booking;
+  setError: (error: string | undefined) => void;
 }
 
 const ApproveDeclineModal: React.FC<ApproveDeclineModalProps> = ({
   isOpen,
   onClose,
   approving,
-  row,
-  page,
-  rowsPerPage,
-  sort,
-  setApproveDeclineError,
+  booking,
+  setError,
 }) => {
   const [isApprovingOrDeclining, setIsApprovingOrDeclining] = React.useState(false);
-
-  const { overlappingBookings } = useOverlappingBookings(row.id);
+  const { overlappingBookings, isLoading } = useOverlappingBookings(booking.id);
   const countOverlapping = overlappingBookings ? overlappingBookings.length : 0;
-  const { mutate: mutatePendingBookings } = usePendingBookings(page + 1, rowsPerPage, sort);
-  const { mutate: mutateOverlappingBookings } = useOverlappingBookings(row.id);
 
   const handleApproveDecline = async () => {
     setIsApprovingOrDeclining(true);
     try {
       if (approving) {
-        await approveBooking(row.id);
+        await approveBooking(booking.id);
       } else {
-        await declineBooking(row.id);
+        await declineBooking(booking.id);
       }
-      await mutatePendingBookings();
-      await mutateOverlappingBookings();
       onClose();
     } catch (error) {
       if (error instanceof Error) {
-        setApproveDeclineError(error.message);
+        setError(error.message);
       } else {
-        setApproveDeclineError("An unexpected error occurred");
+        setError("An unexpected error occurred");
       }
     } finally {
       setIsApprovingOrDeclining(false);
@@ -86,7 +75,17 @@ const ApproveDeclineModal: React.FC<ApproveDeclineModalProps> = ({
                     Approving this booking will automatically decline the following overlapping
                     bookings:
                   </Typography>
-                  <OverlappingBookings overlappingBookings={overlappingBookings} />
+                  <BookingTable
+                    columns={[
+                      { heading: "Reference No.", width: 120 },
+                      { heading: "Time", width: 200 },
+                      { heading: "User", width: 200 },
+                      { heading: "Description", width: 200 },
+                    ]}
+                    data={overlappingBookings}
+                    isLoading={isLoading}
+                    noPagination
+                  />
                 </Stack>
               )}
             </Stack>

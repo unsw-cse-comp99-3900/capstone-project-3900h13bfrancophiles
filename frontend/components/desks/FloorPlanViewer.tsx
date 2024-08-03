@@ -17,6 +17,10 @@ interface FloorPlanViewerProps {
   isLoading: boolean;
 }
 
+/**
+ * Convert backend coordinate to offset percentage
+ * @param x coordinate
+ */
 const coordToPercent = (x: number) => {
   return x / 10;
 };
