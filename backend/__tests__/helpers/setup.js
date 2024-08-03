@@ -47,13 +47,9 @@ module.exports = async function () {
 
   process.env["PATH"] +=
     path.delimiter + process.cwd() + path.sep + "node_modules" + path.sep + ".bin";
-  globalThis.__server__ = spawn(
-    "nyc",
-    ["--reporter=cobertura", "--reporter=html", "ts-node", "src/index.ts"],
-    {
-      stdio: ["ignore", out, err],
-    },
-  );
+  globalThis.__server__ = spawn("nyc", ["ts-node", "src/index.ts"], {
+    stdio: ["ignore", out, err],
+  });
 
   // Wait for it to start up
   for (let i = 0; i < 10; i++) {
