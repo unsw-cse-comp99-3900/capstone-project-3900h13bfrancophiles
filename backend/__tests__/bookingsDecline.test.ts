@@ -28,7 +28,39 @@ describe("/bookings/decline", () => {
     expect(res.status).toStrictEqual(200);
     res = await api.pendingBookings(adminToken, 1, 5, "soonest");
     expect(res.json.bookings).toHaveLength(0);
+  });
 
+  test("Success - decline a booking again after editing", async () => {
+    const bookingRes = await api.createBooking(
+      hdrToken,
+      ROOM[0].id,
+      minutesFromBase(15),
+      minutesFromBase(45),
+      "fun times",
+    );
+
+    let res = await api.pendingBookings(adminToken, 1, 5, "soonest");
+    expect(res.json.bookings).toHaveLength(1);
+    res = await api.declineBooking(adminToken, bookingRes.json.booking.id)
+    expect(res.status).toStrictEqual(200);
+    res = await api.pendingBookings(adminToken, 1, 5, "soonest");
+    expect(res.json.bookings).toHaveLength(0);
+
+    const editBookingRes = await api.editBooking(
+      hdrToken,
+      bookingRes.json.booking.id,
+      minutesFromBase(90),
+      minutesFromBase(105),
+      ROOM[0].id,
+      "this booking is edited!",
+    )
+
+    res = await api.pendingBookings(adminToken, 1, 5, "soonest");
+    expect(res.json.bookings).toHaveLength(1);
+    res = await api.declineBooking(adminToken, editBookingRes.json.booking.id)
+    expect(res.status).toStrictEqual(200);
+    res = await api.pendingBookings(adminToken, 1, 5, "soonest");
+    expect(res.json.bookings).toHaveLength(0);
   });
 
   test("Failure - booking cannot be declined by unauthorised user", async () => {

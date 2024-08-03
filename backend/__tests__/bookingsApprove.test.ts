@@ -31,7 +31,7 @@ describe("/bookings/approve", () => {
   });
 
   test("Success - approving a booking declines overlapping requests", async () => {
-    const booking1Res = await api.createBooking(
+    await api.createBooking(
       hdrToken,
       ROOM[0].id,
       minutesFromBase(15),
@@ -45,7 +45,7 @@ describe("/bookings/approve", () => {
       minutesFromBase(60),
       "funner times",
     );
-    const booking3Res = await api.createBooking(
+    await api.createBooking(
       hdrToken,
       ROOM[0].id,
       minutesFromBase(45),
@@ -63,6 +63,86 @@ describe("/bookings/approve", () => {
     expect(res.json.bookings[0].currentstatus).toStrictEqual("declined");
     expect(res.json.bookings[1].currentstatus).toStrictEqual("confirmed");
     expect(res.json.bookings[2].currentstatus).toStrictEqual("declined");
+  });
+
+  test("Success - editing a booking so that it no longer overlaps does not decline old overlapping bookings", async () => {
+    await api.createBooking(
+      hdrToken,
+      ROOM[0].id,
+      minutesFromBase(15),
+      minutesFromBase(45),
+      "fun times",
+    );
+    const booking2Res = await api.createBooking(
+      hdrToken,
+      ROOM[0].id,
+      minutesFromBase(30),
+      minutesFromBase(60),
+      "funner times",
+    );
+    await api.createBooking(
+      hdrToken,
+      ROOM[0].id,
+      minutesFromBase(45),
+      minutesFromBase(75),
+      "funnest times",
+    );
+
+    await api.editBooking(
+      hdrToken,
+      booking2Res.json.booking.id,
+      minutesFromBase(90),
+      minutesFromBase(105),
+      ROOM[0].id,
+      "this booking is edited!",
+    )
+
+    let res = await api.pendingBookings(adminToken, 1, 5, "soonest");
+    expect(res.json.bookings).toHaveLength(3);
+    res = await api.approveBooking(adminToken, booking2Res.json.booking.id)
+    expect(res.status).toStrictEqual(200);
+    res = await api.pendingBookings(adminToken, 1, 5, "soonest");
+    expect(res.json.bookings).toHaveLength(2);
+    res = await api.upcomingBookings(hdrToken);
+    // upcoming bookings by default returns bookings that are furthest in the furture.
+    expect(res.json.bookings[2].currentstatus).toStrictEqual("pending");
+    expect(res.json.bookings[1].currentstatus).toStrictEqual("pending");
+    expect(res.json.bookings[0].currentstatus).toStrictEqual("confirmed");
+  });
+
+  test("Success - edited bookings need to be approved again ", async () => {
+    const bookingRes = await api.createBooking(
+      hdrToken,
+      ROOM[0].id,
+      minutesFromBase(30),
+      minutesFromBase(60),
+      "funner times",
+    );
+
+    let res = await api.pendingBookings(adminToken, 1, 5, "soonest");
+    expect(res.json.bookings).toHaveLength(1);
+    res = await api.approveBooking(adminToken, bookingRes.json.booking.id)
+    expect(res.status).toStrictEqual(200);
+    res = await api.pendingBookings(adminToken, 1, 5, "soonest");
+    expect(res.json.bookings).toHaveLength(0);
+
+    const editBookingRes = await api.editBooking(
+      hdrToken,
+      bookingRes.json.booking.id,
+      minutesFromBase(90),
+      minutesFromBase(105),
+      ROOM[0].id,
+      "this booking is edited!",
+    )
+
+    res = await api.pendingBookings(adminToken, 1, 5, "soonest");
+    expect(res.json.bookings).toHaveLength(1);
+    res = await api.approveBooking(adminToken, editBookingRes.json.booking.id)
+    expect(res.status).toStrictEqual(200);
+    res = await api.pendingBookings(adminToken, 1, 5, "soonest");
+    expect(res.json.bookings).toHaveLength(0);
+    res = await api.upcomingBookings(hdrToken);
+    expect(res.json.bookings[0].currentstatus).toStrictEqual("confirmed");
   });
 
   test("Failure - booking cannot be declined by unauthorised user", async () => {
