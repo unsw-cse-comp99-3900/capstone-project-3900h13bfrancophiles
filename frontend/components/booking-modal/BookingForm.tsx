@@ -20,8 +20,8 @@ import TableRestaurantTwoToneIcon from "@mui/icons-material/TableRestaurantTwoTo
 import JoyTimePicker, { JoyTimePickerProps } from "@/components/JoyTimePicker";
 
 interface BookingFormProps {
-  space: SpaceOption | null;
-  setSpace: React.Dispatch<React.SetStateAction<SpaceOption | null>>;
+  space?: string;
+  setSpace: React.Dispatch<React.SetStateAction<string | undefined>>;
   dateInputProps: InputProps;
   startTimePickerProps: JoyTimePickerProps;
   endTimePickerProps: JoyTimePickerProps;
@@ -81,8 +81,8 @@ const BookingForm: React.FC<BookingFormProps> = ({
 };
 
 interface SpaceInputProps {
-  space: SpaceOption | null;
-  setSpace: React.Dispatch<React.SetStateAction<SpaceOption | null>>;
+  space?: string;
+  setSpace: React.Dispatch<React.SetStateAction<string | undefined>>;
 }
 
 function SpaceInput({ space, setSpace }: SpaceInputProps) {
@@ -91,8 +91,8 @@ function SpaceInput({ space, setSpace }: SpaceInputProps) {
   return (
     <Autocomplete
       required
-      value={space}
-      onChange={(_, value) => setSpace(value)}
+      value={options?.find((option) => option.id === space) ?? null}
+      onChange={(_, value) => setSpace(value?.id)}
       options={options ?? []}
       getOptionLabel={(option) => option.name}
       getOptionKey={(option) => option.id}

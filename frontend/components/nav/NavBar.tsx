@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import React from "react";
 import NextLink from "next/link";
 import { NavData } from "@/types";
-import ProfileDropdown from "@/components/ProfileDropdown";
+import ProfileDropdown from "./ProfileDropdown";
 
 interface NavProps {
   title: string;

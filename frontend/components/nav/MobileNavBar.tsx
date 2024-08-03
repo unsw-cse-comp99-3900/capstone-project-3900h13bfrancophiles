@@ -17,12 +17,12 @@ import Image from "next/image";
 import NextLink from "next/link";
 import React from "react";
 import { Menu as MenuIcon } from "@mui/icons-material";
-import LogoutButton from "@/components/LogoutButton";
+import LogoutButton from "./LogoutButton";
 import { NavData } from "@/types";
 import { getInitials } from "@/utils/icons";
 import Box from "@mui/joy/Box";
 import useUser from "@/hooks/useUser";
-import { getRoleName } from "@/components/ProfileDropdown";
+import { getRoleName } from "./ProfileDropdown";
 
 const NavBar = ({ navItems, zid }: { navItems: NavData[]; zid: number }) => {
   const [open, setOpen] = React.useState(false);

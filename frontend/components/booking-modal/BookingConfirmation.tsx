@@ -3,9 +3,9 @@ import { DialogActions, DialogContent, Divider } from "@mui/joy";
 import { format } from "date-fns";
 import Button from "@mui/joy/Button";
 import React from "react";
+import useSpace from "@/hooks/useSpace";
 
 interface BookingConfirmationProps {
-  spaceName: string;
   spaceId: string;
   date: Date;
   start: Date;
@@ -22,7 +22,6 @@ interface BookingConfirmationProps {
 }
 
 const BookingConfirmation: React.FC<BookingConfirmationProps> = ({
-  spaceName,
   spaceId,
   date,
   start,
@@ -37,6 +36,8 @@ const BookingConfirmation: React.FC<BookingConfirmationProps> = ({
   handleClose,
   isLoading,
 }) => {
+  const { space } = useSpace(spaceId);
+
   return (
     <>
       <DialogTitle>
@@ -54,7 +55,7 @@ const BookingConfirmation: React.FC<BookingConfirmationProps> = ({
         </DialogContent>
       )}
       <DialogContent>
-        <b>Space:</b> {spaceName} ({spaceId})
+        <b>Space:</b> {space?.name ?? ""} ({spaceId})
       </DialogContent>
       <DialogContent>
         <b>Time:</b> {format(date, "EEEE, MMMM d")}, {start && format(start, "p")} -{" "}

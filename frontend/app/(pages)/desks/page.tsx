@@ -1,6 +1,6 @@
 "use client";
 
-import FloorPlanViewer from "@/components/FloorPlanViewer";
+import FloorPlanViewer from "@/components/desks/FloorPlanViewer";
 import {
   FormControl,
   Input,

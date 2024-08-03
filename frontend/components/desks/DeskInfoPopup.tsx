@@ -7,7 +7,7 @@ import { UserData } from "@/types";
 import NextLink from "next/link";
 import { Booking } from "@/types";
 import { useFloating, flip, shift, autoUpdate, ReferenceType, offset } from "@floating-ui/react";
-import BookingModal from "@/components/BookingModal/BookingModal";
+import BookingModal from "@/components/booking-modal/BookingModal";
 import { getInitials } from "@/utils/icons";
 
 interface DeskInfoPopupProps {
@@ -54,7 +54,7 @@ const DeskInfoPopup = ({
         <BookingModal
           open={open}
           onClose={() => setOpen(false)}
-          space={{ id, name: deskName, isRoom: false }}
+          space={id}
           date={date}
           start={start}
           end={end}
@@ -133,8 +133,12 @@ const DeskInfoPopup = ({
   );
 };
 
-function timeNow(i: Date) {
-  return i.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+/**
+ * Format a date into HH:MM
+ * @param date date
+ */
+function timeNow(date: Date) {
+  return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 }
 
 export default DeskInfoPopup;

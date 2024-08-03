@@ -47,6 +47,12 @@ export const StyledCalendarContainer = styled(Box)<BoxProps>(({ theme }) => ({
   },
 }));
 
+/**
+ * Format a time into "8:30 PM" or "8 AM" if on the hour
+ * @param date time to format
+ * @param culture culture for localisation
+ * @param localizer react-big-calendar localisation class
+ */
 export const formatTime = (date: Date, culture: string | undefined, localizer?: DateLocalizer) => {
   if (!localizer) {
     throw new Error("No date localizer");
@@ -60,6 +66,13 @@ export const formatTime = (date: Date, culture: string | undefined, localizer?: 
   return res;
 };
 
+/**
+ * Format a time range using the same formatting as `formatTime`
+ * @param start start of range
+ * @param end end of range
+ * @param culture culture for localisation
+ * @param localizer react-big-calendar localisation class
+ */
 export const formatTimeRange = (
   { start, end }: DateRange,
   culture: string | undefined,

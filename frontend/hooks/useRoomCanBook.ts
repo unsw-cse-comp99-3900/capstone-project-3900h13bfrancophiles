@@ -2,7 +2,8 @@ import useSWR from "swr";
 import { swrFetcher } from "@/api";
 
 /**
- * Hook to fetch the minimum required group to book a space
+ * Hook to fetch whether the user can book this room
+ * @param spaceId ID of space
  */
 export default function useRoomCanBook(spaceId: string) {
   const { data, isLoading, error } = useSWR<{ canBook: boolean }>(

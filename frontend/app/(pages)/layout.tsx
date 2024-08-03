@@ -1,5 +1,5 @@
-import NavBar from "@/components/NavBar";
-import MobileNavBar from "@/components/MobileNavBar";
+import NavBar from "@/components/nav/NavBar";
+import MobileNavBar from "@/components/nav/MobileNavBar";
 import React from "react";
 import "@fortawesome/fontawesome-svg-core/styles.css";
 import { config } from "@fortawesome/fontawesome-svg-core";
