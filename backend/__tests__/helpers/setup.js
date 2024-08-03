@@ -2,6 +2,7 @@ import { spawn } from "child_process";
 import { configDotenv } from "dotenv";
 import * as fs from "fs";
 import { execSync } from "node:child_process";
+import path from "path";
 import { Client } from "pg";
 
 function sleep(ms) {
@@ -43,9 +44,12 @@ module.exports = async function () {
   } catch (e) {
     // If it fails, it was already free
   }
+
+  process.env["PATH"] +=
+    path.delimiter + process.cwd() + path.sep + "node_modules" + path.sep + ".bin";
   globalThis.__server__ = spawn(
-    "npx",
-    ["nyc", "--reporter=cobertura", "--reporter=html", "ts-node", "src/index.ts"],
+    "nyc",
+    ["--reporter=cobertura", "--reporter=html", "ts-node", "src/index.ts"],
     {
       stdio: ["ignore", out, err],
     },
