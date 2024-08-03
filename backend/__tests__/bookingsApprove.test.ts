@@ -1,5 +1,5 @@
 import api from "./helpers/api";
-import { ADMINS, DESK, HDR, ROOM } from "./helpers/constants";
+import { ADMINS, HDR, ROOM } from "./helpers/constants";
 import { minutesFromBase } from "./helpers/helpers";
 
 describe("/bookings/approve", () => {
@@ -24,7 +24,7 @@ describe("/bookings/approve", () => {
     );
     let res = await api.pendingBookings(adminToken, 1, 5, "soonest");
     expect(res.json.bookings).toHaveLength(1);
-    res = await api.approveBooking(adminToken, bookingRes.json.booking.id)
+    res = await api.approveBooking(adminToken, bookingRes.json.booking.id);
     expect(res.status).toStrictEqual(200);
     res = await api.pendingBookings(adminToken, 1, 5, "soonest");
     expect(res.json.bookings).toHaveLength(0);
@@ -55,7 +55,7 @@ describe("/bookings/approve", () => {
 
     let res = await api.pendingBookings(adminToken, 1, 5, "soonest");
     expect(res.json.bookings).toHaveLength(3);
-    res = await api.approveBooking(adminToken, booking2Res.json.booking.id)
+    res = await api.approveBooking(adminToken, booking2Res.json.booking.id);
     expect(res.status).toStrictEqual(200);
     res = await api.pendingBookings(adminToken, 1, 5, "soonest");
     expect(res.json.bookings).toHaveLength(0);
@@ -95,11 +95,11 @@ describe("/bookings/approve", () => {
       minutesFromBase(105),
       ROOM[0].id,
       "this booking is edited!",
-    )
+    );
 
     let res = await api.pendingBookings(adminToken, 1, 5, "soonest");
     expect(res.json.bookings).toHaveLength(3);
-    res = await api.approveBooking(adminToken, booking2Res.json.booking.id)
+    res = await api.approveBooking(adminToken, booking2Res.json.booking.id);
     expect(res.status).toStrictEqual(200);
     res = await api.pendingBookings(adminToken, 1, 5, "soonest");
     expect(res.json.bookings).toHaveLength(2);
@@ -121,7 +121,7 @@ describe("/bookings/approve", () => {
 
     let res = await api.pendingBookings(adminToken, 1, 5, "soonest");
     expect(res.json.bookings).toHaveLength(1);
-    res = await api.approveBooking(adminToken, bookingRes.json.booking.id)
+    res = await api.approveBooking(adminToken, bookingRes.json.booking.id);
     expect(res.status).toStrictEqual(200);
     res = await api.pendingBookings(adminToken, 1, 5, "soonest");
     expect(res.json.bookings).toHaveLength(0);
@@ -133,11 +133,11 @@ describe("/bookings/approve", () => {
       minutesFromBase(105),
       ROOM[0].id,
       "this booking is edited!",
-    )
+    );
 
     res = await api.pendingBookings(adminToken, 1, 5, "soonest");
     expect(res.json.bookings).toHaveLength(1);
-    res = await api.approveBooking(adminToken, editBookingRes.json.booking.id)
+    res = await api.approveBooking(adminToken, editBookingRes.json.booking.id);
     expect(res.status).toStrictEqual(200);
     res = await api.pendingBookings(adminToken, 1, 5, "soonest");
     expect(res.json.bookings).toHaveLength(0);
@@ -154,12 +154,12 @@ describe("/bookings/approve", () => {
       "fun times",
     );
 
-    const res = await api.approveBooking(hdrToken, bookingRes.json.booking.id)
+    const res = await api.approveBooking(hdrToken, bookingRes.json.booking.id);
     expect(res.status).toStrictEqual(403);
   });
 
   test("Failure - booking does not exist", async () => {
-    const bookingRes = await api.createBooking(
+    await api.createBooking(
       hdrToken,
       ROOM[0].id,
       minutesFromBase(15),
@@ -167,7 +167,7 @@ describe("/bookings/approve", () => {
       "fun times",
     );
 
-    const res = await api.approveBooking(adminToken, 0)
+    const res = await api.approveBooking(adminToken, 0);
     expect(res.status).toStrictEqual(500);
   });
 });

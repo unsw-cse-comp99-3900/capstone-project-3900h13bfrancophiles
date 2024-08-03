@@ -1,5 +1,5 @@
 import api from "./helpers/api";
-import { ADMINS, DESK, HDR, ROOM } from "./helpers/constants";
+import { ADMINS, HDR, ROOM } from "./helpers/constants";
 import { minutesFromBase } from "./helpers/helpers";
 
 describe("/bookings/decline", () => {
@@ -24,7 +24,7 @@ describe("/bookings/decline", () => {
     );
     let res = await api.pendingBookings(adminToken, 1, 5, "soonest");
     expect(res.json.bookings).toHaveLength(1);
-    res = await api.declineBooking(adminToken, bookingRes.json.booking.id)
+    res = await api.declineBooking(adminToken, bookingRes.json.booking.id);
     expect(res.status).toStrictEqual(200);
     res = await api.pendingBookings(adminToken, 1, 5, "soonest");
     expect(res.json.bookings).toHaveLength(0);
@@ -41,7 +41,7 @@ describe("/bookings/decline", () => {
 
     let res = await api.pendingBookings(adminToken, 1, 5, "soonest");
     expect(res.json.bookings).toHaveLength(1);
-    res = await api.declineBooking(adminToken, bookingRes.json.booking.id)
+    res = await api.declineBooking(adminToken, bookingRes.json.booking.id);
     expect(res.status).toStrictEqual(200);
     res = await api.pendingBookings(adminToken, 1, 5, "soonest");
     expect(res.json.bookings).toHaveLength(0);
@@ -53,11 +53,11 @@ describe("/bookings/decline", () => {
       minutesFromBase(105),
       ROOM[0].id,
       "this booking is edited!",
-    )
+    );
 
     res = await api.pendingBookings(adminToken, 1, 5, "soonest");
     expect(res.json.bookings).toHaveLength(1);
-    res = await api.declineBooking(adminToken, editBookingRes.json.booking.id)
+    res = await api.declineBooking(adminToken, editBookingRes.json.booking.id);
     expect(res.status).toStrictEqual(200);
     res = await api.pendingBookings(adminToken, 1, 5, "soonest");
     expect(res.json.bookings).toHaveLength(0);
@@ -72,12 +72,12 @@ describe("/bookings/decline", () => {
       "fun times",
     );
 
-    const res = await api.declineBooking(hdrToken, bookingRes.json.booking.id)
+    const res = await api.declineBooking(hdrToken, bookingRes.json.booking.id);
     expect(res.status).toStrictEqual(403);
   });
 
   test("Failure - booking does not exist", async () => {
-    const bookingRes = await api.createBooking(
+    await api.createBooking(
       hdrToken,
       ROOM[0].id,
       minutesFromBase(15),
@@ -85,7 +85,7 @@ describe("/bookings/decline", () => {
       "fun times",
     );
 
-    const res = await api.declineBooking(adminToken, 0)
+    const res = await api.declineBooking(adminToken, 0);
     expect(res.status).toStrictEqual(500);
   });
 });
