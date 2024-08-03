@@ -63,7 +63,7 @@ export default function Login() {
   };
 
   return (
-    <Stack justifyContent="center" alignItems="center" height="100vh" spacing={4}>
+    <Stack justifyContent="center" alignItems="center" height="100%" spacing={4}>
       <AspectRatio
         variant="plain"
         ratio="10/3"

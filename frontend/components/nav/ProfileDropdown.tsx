@@ -1,22 +1,13 @@
-import {
-  Avatar,
-  Dropdown,
-  ListDivider,
-  Menu,
-  MenuButton,
-  MenuItem,
-  Skeleton,
-  Stack,
-} from "@mui/joy";
+import { Avatar, Dropdown, ListDivider, Menu, MenuButton, MenuItem, Stack } from "@mui/joy";
 import Box from "@mui/joy/Box";
 import Typography from "@mui/joy/Typography";
-import LogoutButton from "@/components/LogoutButton";
+import LogoutButton from "./LogoutButton";
 import { UserGroup } from "@/types";
 import useUser from "@/hooks/useUser";
 import { getInitials } from "@/utils/icons";
 
 export default function ProfileDropdown({ zid }: { zid: number }) {
-  const { user, isLoading } = useUser(zid);
+  const { user } = useUser(zid);
 
   return (
     <Dropdown>
@@ -25,16 +16,14 @@ export default function ProfileDropdown({ zid }: { zid: number }) {
         size="sm"
         sx={{ maxWidth: "32px", maxHeight: "32px", borderRadius: "9999999px" }}
       >
-        <Skeleton loading={isLoading}>
-          <Avatar
-            variant="solid"
-            color="primary"
-            size="sm"
-            src={user?.image ? `data:image/jpeg;base64,${user?.image}` : undefined}
-          >
-            {user?.fullname ? getInitials(user?.fullname) : ""}
-          </Avatar>
-        </Skeleton>
+        <Avatar
+          variant="soft"
+          color="neutral"
+          size="sm"
+          src={user?.image ? `data:image/jpeg;base64,${user.image}` : undefined}
+        >
+          {user?.fullname ? getInitials(user.fullname) : undefined}
+        </Avatar>
       </MenuButton>
       <Menu
         placement="bottom-end"
@@ -47,16 +36,14 @@ export default function ProfileDropdown({ zid }: { zid: number }) {
         }}
       >
         <Stack p={0.5} direction="row" alignItems="center">
-          <Skeleton loading={isLoading}>
-            <Avatar
-              variant="solid"
-              color="primary"
-              size="sm"
-              src={user?.image ? `data:image/jpeg;base64,${user?.image}` : undefined}
-            >
-              {user?.fullname ? getInitials(user?.fullname) : ""}
-            </Avatar>
-          </Skeleton>
+          <Avatar
+            variant="soft"
+            color="neutral"
+            size="sm"
+            src={user?.image ? `data:image/jpeg;base64,${user.image}` : undefined}
+          >
+            {user?.fullname ? getInitials(user.fullname) : undefined}
+          </Avatar>
           <Box sx={{ ml: 1.5 }}>
             <Typography level="title-sm" textColor="text.primary">
               {user?.fullname}
@@ -82,6 +69,10 @@ const roleNames: { [key in UserGroup]: string } = {
   other: "Other",
 };
 
+/**
+ * Convert role key from backend to formatted role name
+ * @param role role key
+ */
 export function getRoleName(role: UserGroup): string {
   return roleNames[role] || "Unknown role";
 }

@@ -39,11 +39,20 @@ type UseTimeRangeOptions = {
  * - Times must be on 15-minute boundaries
  * - Times must be at least 15 minutes apart
  * - End must be after start
- * To use this hook:
- * - Extract the { date, start, end } state variables for use where necessary
- * - Extract the XInputProps and provide them as input to each Input component,
- *   which will make it update the values and follow rules
- * - Optionally, extract the handleXChange functions to manually set states
+ * - Times cannot overlap with any current bookings
+ *
+ * @param options.date initial date
+ * @param options.start initial start time
+ * @param options.end initial end time
+ * @param options.blockedTimes list of booked ranges that should be blocked
+ *
+ * @returns Object containing:
+ * - { date, start, end } - state variables
+ * - { dateInputProps, startTimePickerProps, endTimePickerProps } - props to pass to Input or
+ *   JoyTimePicker components to make them follow the rules and update state
+ * - { startError, endError } - whether there is currently an error
+ * - { handleDateChange, handleStartChange, handleEndChange } - functions to manually trigger
+ *   changes
  */
 export default function useTimeRange(options: UseTimeRangeOptions = {}) {
   const now = roundToNearestMinutes(new Date(), { nearestTo: 15, roundingMethod: "ceil" });
@@ -57,18 +66,23 @@ export default function useTimeRange(options: UseTimeRangeOptions = {}) {
   );
 
   const handleDateChange = (newDate: Date) => {
+    // Fix date to start of day
     const startOfDate = startOfDay(newDate);
     setDate(startOfDate);
+
+    // Move start to new date
     const newStart = setHours(setMinutes(newDate, getMinutes(start)), getHours(start));
     handleStartChange(newStart, startOfDate);
   };
 
   const handleStartChange = (newStart: Date, date: Date) => {
+    // Ensure start is in range
     const startTime = max([newStart, now, date]);
     const limitedStart = min([startTime, setHours(setMinutes(date, 45), 23)]);
     const changeInTime = differenceInMinutes(limitedStart, start);
     setStart(limitedStart);
 
+    // Shift end by an equal amount that start was shifted
     const shiftedEnd = min([addMinutes(end, changeInTime), addDays(date, 1)]);
     handleEndChange(shiftedEnd, limitedStart);
   };
@@ -144,6 +158,7 @@ export default function useTimeRange(options: UseTimeRangeOptions = {}) {
     return isBefore(adjustedEnd, addMinutes(start, 15));
   };
 
+  // Total number of valid end times is all between start and next booking
   const firstBlockedAfter = blockedTimes.find((blocked) => isBefore(start, blocked.start));
   const numValidEndTimes =
     differenceInMinutes(firstBlockedAfter?.start ?? endOfDay(start), start) / 15;
@@ -178,6 +193,9 @@ export default function useTimeRange(options: UseTimeRangeOptions = {}) {
   };
 }
 
+/**
+ * Compare two time ranges - for sorting
+ */
 function cmpTimeRange(a: TimeRange, b: TimeRange) {
   return a.start.getTime() - b.start.getTime();
 }

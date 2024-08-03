@@ -4,10 +4,10 @@ import { Box, Stack, Typography, Button, Tooltip, Grid } from "@mui/joy";
 import useSpace from "@/hooks/useSpace";
 import useAvailabilities from "@/hooks/useAvailabilities";
 import { Room, Desk } from "@/types";
-import Loading from "@/components/Loading";
-import AvailabilityCalendar from "@/components/AvailabilityCalendar";
-import BookingModal from "@/components/BookingModal/BookingModal";
-import Error from "@/components/Error";
+import Loading from "@/components/feedback/Loading";
+import AvailabilityCalendar from "./AvailabilityCalendar";
+import BookingModal from "@/components/booking-modal/BookingModal";
+import Error from "@/components/feedback/Error";
 import { endOfWeek, startOfWeek } from "date-fns";
 
 import useRoomCanBook from "@/hooks/useRoomCanBook";
@@ -50,13 +50,11 @@ const AvailabilitiesPage: React.FC<AvailabilitesPageProps> = ({ spaceId, spaceTy
     <>
       <BookingModal
         open={openModal}
-        onClose={() => {
+        onClose={async () => {
           setOpenModal(false);
-          mutate();
+          await mutate();
         }}
-        space={
-          space ? { id: space?.id, name: space?.name, isRoom: spaceType === "room" } : undefined
-        }
+        space={space?.id}
       />
       <Stack>
         <Stack
@@ -129,7 +127,7 @@ const AvailabilitiesPage: React.FC<AvailabilitesPageProps> = ({ spaceId, spaceTy
             >
               {Object.entries(subheadings).map(([heading, value]) => {
                 return (
-                  <Box key={heading}>
+                  <React.Fragment key={heading}>
                     <Grid xs={4}>
                       <Typography level="h4" sx={{ color: "gray" }}>
                         {heading}
@@ -138,7 +136,7 @@ const AvailabilitiesPage: React.FC<AvailabilitesPageProps> = ({ spaceId, spaceTy
                     <Grid xs={8}>
                       <Typography level="h3">{value}</Typography>
                     </Grid>
-                  </Box>
+                  </React.Fragment>
                 );
               })}
             </Grid>

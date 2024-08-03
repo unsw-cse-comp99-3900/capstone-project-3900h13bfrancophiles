@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import React from "react";
+
+import "./globals.css";
 import ThemeRegistry from "@/app/ThemeRegistry";
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars

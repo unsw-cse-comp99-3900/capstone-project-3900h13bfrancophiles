@@ -7,9 +7,9 @@ import DialogTitle from "@mui/joy/DialogTitle";
 import Stack from "@mui/joy/Stack";
 import { Alert, Box, IconButton, ModalOverflow, Typography } from "@mui/joy";
 import { format } from "date-fns";
-import { Booking, SpaceOption, TimeRange } from "@/types";
-import BookingForm from "@/components/BookingModal/BookingForm";
-import BookingConfirmation from "@/components/BookingModal/BookingConfirmation";
+import { Booking, TimeRange } from "@/types";
+import BookingForm from "@/components/booking-modal/BookingForm";
+import BookingConfirmation from "@/components/booking-modal/BookingConfirmation";
 import ModalCalendar from "./ModalCalendar";
 import WarningIcon from "@mui/icons-material/Warning";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
@@ -21,13 +21,12 @@ type ModalState = "form" | "confirm" | "submitted";
 interface BookingModalProps {
   open: boolean;
   onClose: () => void;
-  space?: SpaceOption;
+  space?: string;
   date?: Date;
   start?: Date;
   end?: Date;
   desc?: string;
-  editing?: boolean;
-  editedBooking?: number;
+  editedBookingId?: number;
 }
 
 const BookingModal: React.FC<BookingModalProps> = ({
@@ -38,17 +37,17 @@ const BookingModal: React.FC<BookingModalProps> = ({
   start: initialStart,
   end: initialEnd,
   desc: initialDesc,
-  editing,
-  editedBooking,
+  editedBookingId,
 }) => {
   // Modal control state
+  const isEditing = editedBookingId !== undefined;
   const [state, setState] = React.useState<ModalState>("form");
   const [error, setError] = React.useState<string>();
   const [booking, setBooking] = React.useState<Booking>();
   const [isLoading, setIsLoading] = React.useState(false);
 
   // Form state
-  const [space, setSpace] = React.useState<SpaceOption | null>(initialSpace ?? null);
+  const [space, setSpace] = React.useState<string | undefined>(initialSpace);
   React.useEffect(() => {
     setSpace(initialSpace!);
   }, [initialSpace]);
@@ -86,9 +85,9 @@ const BookingModal: React.FC<BookingModalProps> = ({
         return;
       }
       setIsLoading(true);
-      const res = editing
-        ? await editBooking(editedBooking!, start.toISOString(), end.toISOString(), space.id, desc)
-        : await createBooking(space.id, start.toISOString(), end.toISOString(), desc);
+      const res = isEditing
+        ? await editBooking(editedBookingId, start.toISOString(), end.toISOString(), space, desc)
+        : await createBooking(space, start.toISOString(), end.toISOString(), desc);
       setIsLoading(false);
       setBooking(res.booking);
       setState("submitted");
@@ -103,7 +102,7 @@ const BookingModal: React.FC<BookingModalProps> = ({
       case "form":
         return (
           <>
-            <DialogTitle>{editing ? "Edit booking " : "Create a new booking"}</DialogTitle>
+            <DialogTitle>{isEditing ? "Edit booking" : "Create a new booking"}</DialogTitle>
             {error && (
               <Alert
                 size="md"
@@ -141,12 +140,11 @@ const BookingModal: React.FC<BookingModalProps> = ({
                 </Typography>
                 {space ? (
                   <ModalCalendar
-                    space={space?.id}
+                    space={space}
                     date={date}
                     start={start}
                     end={end}
-                    editing={editing ?? false}
-                    editedBooking={editedBooking ?? undefined}
+                    editedBookingId={editedBookingId}
                     setBlockedTimes={setBlockedTimes}
                   />
                 ) : (
@@ -160,8 +158,7 @@ const BookingModal: React.FC<BookingModalProps> = ({
         return (
           space && (
             <BookingConfirmation
-              spaceName={space.name}
-              spaceId={space.id}
+              spaceId={space}
               date={date}
               start={start}
               end={end}
@@ -179,8 +176,7 @@ const BookingModal: React.FC<BookingModalProps> = ({
           space &&
           booking && (
             <BookingConfirmation
-              spaceName={space.name}
-              spaceId={space.id}
+              spaceId={space}
               date={date}
               start={start}
               end={end}
@@ -188,7 +184,7 @@ const BookingModal: React.FC<BookingModalProps> = ({
               isSubmitted={true}
               bookingRef={booking.id}
               isPending={booking.currentstatus === "pending"}
-              editing={editing}
+              editing={isEditing}
               handleSubmit={onSubmit}
               handleBack={() => setState("form")}
               handleClose={onModalClose}

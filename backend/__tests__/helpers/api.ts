@@ -81,6 +81,15 @@ function pastBookings(token: string, page: number, limit: number, type: string, 
   );
 }
 
+function pendingBookings(token: string, page: number, limit: number, sort: string) {
+  return apiCall(
+    `/admin/bookings/pending?page=${page}&limit=${limit}&sort=${sort}`,
+    "GET",
+    undefined,
+    token,
+  );
+}
+
 function status(token: string, start: Date, end: Date) {
   return apiCall(
     `/status?datetimeStart=${start.toISOString()}&datetimeEnd=${end.toISOString()}`,
@@ -114,6 +123,10 @@ function reportSpaces(token: string) {
   return apiCall("/admin/reports/spaces", "GET", undefined, token);
 }
 
+function userDetails(token: string, zid: number) {
+  return apiCall(`/users/${zid}`, "GET", undefined, token);
+}
+
 export default {
   apiCall,
   login,
@@ -124,6 +137,7 @@ export default {
   currentBookings,
   upcomingBookings,
   pastBookings,
+  pendingBookings,
   status,
   approveBooking,
   declineBooking,
@@ -131,4 +145,5 @@ export default {
   checkoutBooking,
   spaces,
   reportSpaces,
+  userDetails,
 };
