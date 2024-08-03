@@ -2,7 +2,7 @@ import * as React from "react";
 import "@testing-library/jest-dom";
 import { render, screen, waitFor } from "@testing-library/react";
 import DeskIcon from "../components/DeskIcon";
-import { Desk } from "../types";
+import { Booking, Desk } from "../types";
 import useSpace from "../hooks/useSpace";
 import { TransformComponent, TransformWrapper } from "react-zoom-pan-pinch";
 
