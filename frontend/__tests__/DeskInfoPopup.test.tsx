@@ -68,7 +68,7 @@ describe('DeskInfoPopup', () => {
     );
 
     expect(screen.getByText('Test Desk')).toBeInTheDocument();
-    expect(screen.getByText(/book for 11:30 am \- 12:30 pm/i)).toBeInTheDocument();
+    expect(screen.getByText("Book for 11:30 AM - 12:30 PM")).toBeInTheDocument();
     expect(screen.queryByText('Umar')).not.toBeInTheDocument();
   });
 
