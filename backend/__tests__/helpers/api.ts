@@ -49,6 +49,17 @@ function createBooking(
   return apiCall("/bookings/create", "POST", { spaceid, starttime, endtime, description }, token);
 }
 
+function editBooking(
+  token: string,
+  id: number,
+  starttime: Date | string,
+  endtime: Date | string,
+  spaceid: string,
+  description?: string,
+) {
+  return apiCall("/bookings/edit", "PUT", { id, starttime, endtime, spaceid, description }, token);
+}
+
 function deleteBooking(id: number, token: string) {
   return apiCall("/bookings/delete", "DELETE", { id }, token);
 }
@@ -88,12 +99,24 @@ function status(token: string, start: Date, end: Date) {
   );
 }
 
+function spaceStatus(token: string, spaceid: string) {
+  return apiCall(`/status?spaceid=${spaceid}`, "GET", undefined, token);
+}
+
+function approveBooking(token: string, id: number) {
+  return apiCall("/admin/bookings/approve", "PUT", { id }, token);
+}
+
 function declineBooking(token: string, id: number) {
   return apiCall("/admin/bookings/decline", "PUT", { id }, token);
 }
 
 function checkinBooking(token: string, id: number) {
   return apiCall("/bookings/checkin", "POST", { id }, token);
+}
+
+function checkoutBooking(token: string, id: number) {
+  return apiCall("/bookings/checkout", "POST", { id }, token);
 }
 
 function spaces(token: string) {
@@ -109,17 +132,22 @@ function userDetails(token: string, zid: number) {
 }
 
 export default {
+  apiCall,
   login,
   logout,
   createBooking,
+  editBooking,
   deleteBooking,
   currentBookings,
   upcomingBookings,
   pastBookings,
   pendingBookings,
   status,
+  spaceStatus,
+  approveBooking,
   declineBooking,
   checkinBooking,
+  checkoutBooking,
   spaces,
   reportSpaces,
   userDetails,

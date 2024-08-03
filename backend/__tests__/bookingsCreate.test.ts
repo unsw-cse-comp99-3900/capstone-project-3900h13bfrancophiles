@@ -10,6 +10,11 @@ describe("/bookings/create", () => {
     token = res.json.token;
   });
 
+  test("Failure - invalid input", async () => {
+    const res = await api.createBooking(token, "This", "Is", "Formatted", "Poorly");
+    expect(res.status).toStrictEqual(400);
+  });
+
   test("Success - immediately confirmed booking", async () => {
     const res = await api.createBooking(
       token,

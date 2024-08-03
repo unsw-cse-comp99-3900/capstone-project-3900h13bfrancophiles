@@ -69,6 +69,7 @@ export function anonymiseBooking(booking: Booking): AnonymousBooking {
     currentstatus: booking.currentstatus,
     checkintime: booking.checkintime,
     checkouttime: booking.checkouttime,
+    parent: booking.parent,
     created: booking.created,
     modified: booking.modified,
   };

@@ -21,7 +21,7 @@ export const roomRelations = relations(room, ({one}) => ({
 	}),
 }));
 
-export const bookingRelations = relations(booking, ({one}) => ({
+export const bookingRelations = relations(booking, ({one, many}) => ({
 	person: one(person, {
 		fields: [booking.zid],
 		references: [person.zid]
@@ -29,6 +29,14 @@ export const bookingRelations = relations(booking, ({one}) => ({
 	space: one(space, {
 		fields: [booking.spaceid],
 		references: [space.id]
+	}),
+	booking: one(booking, {
+		fields: [booking.parent],
+		references: [booking.id],
+		relationName: "booking_parent_booking_id"
+	}),
+	bookings: many(booking, {
+		relationName: "booking_parent_booking_id"
 	}),
 }));
 

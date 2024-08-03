@@ -79,15 +79,19 @@ export async function approveBooking(
         updatedBookingDetails.id,
       );
 
+      if (updatedBookingDetails.parent !== null) {
+        // Delete parent booking
+        await trx
+          .update(booking)
+          .set({ currentstatus: "deleted" })
+          .where(eq(booking.id, updatedBookingDetails.parent));
+      }
+
       const approvedBooking = await trx
         .update(booking)
-        .set({ currentstatus: "confirmed" })
+        .set({ currentstatus: "confirmed", parent: null })
         .where(eq(booking.id, req.body.id))
         .returning();
-
-      if (updatedBooking.length != 1) {
-        throw new Error("Booking ID does not exist");
-      }
 
       const approvedBookingDetails = approvedBooking[0];
 
