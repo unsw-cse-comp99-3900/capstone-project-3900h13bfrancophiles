@@ -40,7 +40,7 @@ export async function pendingBookings(
         .select()
         .from(booking)
         .where(and(gt(booking.starttime, currentTime), eq(booking.currentstatus, "pending")))
-        .orderBy(parsedQuery.sort == "soonest" ? desc(booking.starttime) : asc(booking.starttime))
+        .orderBy(parsedQuery.sort == "soonest" ? asc(booking.starttime) : desc(booking.starttime))
         .limit(limit)
         .offset(offset);
 
