@@ -53,6 +53,16 @@ export const booking = pgTable("booking", {
 	description: varchar("description", { length: 255 }).notNull(),
 	checkintime: timestamp("checkintime", { mode: 'string' }),
 	checkouttime: timestamp("checkouttime", { mode: 'string' }),
+	parent: integer("parent"),
 	created: timestamp("created", { mode: 'string' }).defaultNow().notNull(),
 	modified: timestamp("modified", { mode: 'string' }).defaultNow().notNull(),
+},
+(table) => {
+	return {
+		booking_parent_fkey: foreignKey({
+			columns: [table.parent],
+			foreignColumns: [table.id],
+			name: "booking_parent_fkey"
+		}),
+	}
 });

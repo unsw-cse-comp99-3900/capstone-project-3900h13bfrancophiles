@@ -7,12 +7,14 @@ import { sendBookingEmail } from "./email/service";
 import { BOOKING_DECLINE } from "./email/template";
 
 /**
- * Format the booking dates by adding a Z to the end to signify UTC time. It
- * modifies the booking in-place.
+ * Formats the booking dates by appending a 'Z' to signify UTC time.
  *
- * This is necessary because our database stores time in UTC but does not
- * store the timezone, so the frontend interprets the returned dates as local
- * time.
+ * This function modifies the booking object in place. The dates are converted
+ * to ISO strings with 'Z' to ensure they are interpreted as UTC time, as the
+ * database stores time in UTC but does not include timezone information.
+ *
+ * @param booking - The booking object to format.
+ * @returns The updated booking object with formatted dates.
  */
 export function formatBookingDates(booking: Booking) {
   booking.starttime = new Date(booking.starttime + "Z").toISOString();
@@ -23,7 +25,16 @@ export function formatBookingDates(booking: Booking) {
 }
 
 /**
- * Determine whether a Date is within specified range, with given buffer in minutes
+ * Checks if a given date is within a specified range, with an optional buffer.
+ *
+ * The function considers a date within the range if it falls between the start
+ * and end dates, taking into account an optional buffer in minutes.
+ *
+ * @param current - The current date to check.
+ * @param start - The start of the date range.
+ * @param end - The end of the date range.
+ * @param bufferMinutes - The number of minutes to extend the range on both sides (default is 0).
+ * @returns True if the current date is within the adjusted range, false otherwise.
  */
 export function withinDateRange(current: Date, start: Date, end: Date, bufferMinutes: number = 0) {
   start.setMinutes(start.getMinutes() - bufferMinutes);
@@ -33,9 +44,17 @@ export function withinDateRange(current: Date, start: Date, end: Date, bufferMin
 }
 
 /**
- * Return whether the initial status of a booking should be pending or confirmed.
- * Returns undefined if the space does not exist, returns null if the user
- * does not have permission to book the space.
+ * Determines the initial booking status based on user group and space requirements.
+ *
+ * Returns:
+ * - `null` if the user does not have permission to book the space.
+ * - `"pending"` if the user has the minimum required group but does not meet the booking group requirement.
+ * - `"confirmed"` if the user meets or exceeds the booking group requirement.
+ * - `undefined` if the space does not exist.
+ *
+ * @param userGroup - The user group of the individual making the booking.
+ * @param spaceId - The ID of the space being booked.
+ * @returns The initial booking status or null/undefined.
  */
 export async function initialBookingStatus(
   userGroup: UserGroup,
@@ -59,6 +78,14 @@ export async function initialBookingStatus(
   }
 }
 
+/**
+ * Converts a booking object into an anonymised format.
+ *
+ * The anonymised format excludes personal information but retains key booking details.
+ *
+ * @param booking - The booking object to anonymise.
+ * @returns The anonymised booking object.
+ */
 export function anonymiseBooking(booking: Booking): AnonymousBooking {
   return {
     id: booking.id,
@@ -69,13 +96,18 @@ export function anonymiseBooking(booking: Booking): AnonymousBooking {
     currentstatus: booking.currentstatus,
     checkintime: booking.checkintime,
     checkouttime: booking.checkouttime,
+    parent: booking.parent,
     created: booking.created,
     modified: booking.modified,
   };
 }
 
 /**
- * Utility function to get the current time, which may be mocked for testing
+ * Retrieves the current time. In a test environment, it may return a mocked time.
+ *
+ * In non-test environments, it returns the current system time.
+ *
+ * @returns The current date and time.
  */
 export async function now(): Promise<Date> {
   if (process.env.NODE_ENV === "test") {
@@ -92,8 +124,17 @@ export async function now(): Promise<Date> {
 }
 
 /**
- * Before a booking is confirmed (by edit, approval, or create), overlapping pending bookings
- * must be declined
+ * Declines overlapping pending bookings for a given space and time range.
+ *
+ * Updates the status of conflicting bookings to "declined" and sends notification emails
+ * to users about these declines. The optional `updatedBookingId` parameter excludes a
+ * specific booking from being declined.
+ *
+ * @param tx - The database transaction object.
+ * @param spaceId - The ID of the space where bookings need to be declined.
+ * @param startTime - The start time of the booking to check against.
+ * @param endTime - The end time of the booking to check against.
+ * @param updatedBookingId - Optional ID of a booking to exclude from decline.
  */
 export async function declineOverlapping(
   tx: typeof db,

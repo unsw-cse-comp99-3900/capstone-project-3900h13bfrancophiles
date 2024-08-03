@@ -24,10 +24,17 @@ async function apiCall(
   }
 
   const res = await fetch(API_URL + route, options);
-  return {
-    status: res.status,
-    json: await res.json(),
-  };
+  if (res.headers.get("Content-Type")?.startsWith("application/json")) {
+    return {
+      status: res.status,
+      json: await res.json(),
+    };
+  } else {
+    return {
+      status: res.status,
+      json: `"${res.body}"`,
+    };
+  }
 }
 
 // Calls for each API route
@@ -47,6 +54,17 @@ function createBooking(
   description: string,
 ) {
   return apiCall("/bookings/create", "POST", { spaceid, starttime, endtime, description }, token);
+}
+
+function editBooking(
+  token: string,
+  id: number,
+  starttime: Date | string,
+  endtime: Date | string,
+  spaceid: string,
+  description?: string,
+) {
+  return apiCall("/bookings/edit", "PUT", { id, starttime, endtime, spaceid, description }, token);
 }
 
 function deleteBooking(id: number, token: string) {
@@ -70,6 +88,15 @@ function pastBookings(token: string, page: number, limit: number, type: string, 
   );
 }
 
+function pendingBookings(token: string, page: number, limit: number, sort: string) {
+  return apiCall(
+    `/admin/bookings/pending?page=${page}&limit=${limit}&sort=${sort}`,
+    "GET",
+    undefined,
+    token,
+  );
+}
+
 function status(token: string, start: Date, end: Date) {
   return apiCall(
     `/status?datetimeStart=${start.toISOString()}&datetimeEnd=${end.toISOString()}`,
@@ -79,12 +106,24 @@ function status(token: string, start: Date, end: Date) {
   );
 }
 
+function spaceStatus(token: string, spaceid: string) {
+  return apiCall(`/status?spaceid=${spaceid}`, "GET", undefined, token);
+}
+
+function approveBooking(token: string, id: number) {
+  return apiCall("/admin/bookings/approve", "PUT", { id }, token);
+}
+
 function declineBooking(token: string, id: number) {
   return apiCall("/admin/bookings/decline", "PUT", { id }, token);
 }
 
 function checkinBooking(token: string, id: number) {
   return apiCall("/bookings/checkin", "POST", { id }, token);
+}
+
+function checkoutBooking(token: string, id: number) {
+  return apiCall("/bookings/checkout", "POST", { id }, token);
 }
 
 function spaces(token: string) {
@@ -107,20 +146,53 @@ function reportSpaces(token: string) {
   return apiCall("/admin/reports/spaces", "GET", undefined, token);
 }
 
+function userDetails(token: string, zid: number) {
+  return apiCall(`/users/${zid}`, "GET", undefined, token);
+}
+
+function reportTypes(token: string) {
+  return apiCall("/admin/reports/types", "GET", undefined, token);
+}
+
+function generateReport(
+  token: string,
+  type: string,
+  format: string,
+  spaces: string[],
+  startDate: string | Date,
+  endDate: string | Date,
+) {
+  return apiCall(
+    "/admin/reports/generate",
+    "POST",
+    { type, format, spaces, startDate, endDate },
+    token,
+  );
+}
+
 export default {
+  apiCall,
   login,
   logout,
   createBooking,
+  editBooking,
   deleteBooking,
   currentBookings,
   upcomingBookings,
   pastBookings,
+  pendingBookings,
   status,
+  spaceStatus,
+  approveBooking,
   declineBooking,
   checkinBooking,
+  checkoutBooking,
   spaces,
   rooms,
   singleSpace,
   bookable,
   reportSpaces,
+  userDetails,
+  reportTypes,
+  generateReport,
 };

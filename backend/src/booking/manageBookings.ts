@@ -1,4 +1,4 @@
-import { and, eq } from "drizzle-orm";
+import { and, eq, or } from "drizzle-orm";
 import { booking } from "../../drizzle/schema";
 import isEqual from "lodash/isEqual";
 import typia from "typia";
@@ -21,6 +21,12 @@ import {
   declineOverlapping,
 } from "../utils";
 
+/**
+ * Checks in a booking for a user.
+ *
+ * @param {TypedRequest<{ id: number }>} req - The request object containing the booking ID.
+ * @param {TypedResponse<{ booking: Booking }>} res - The response object to return the checked-in booking.
+ */
 export async function checkInBooking(
   req: TypedRequest<{ id: number }>,
   res: TypedResponse<{ booking: Booking }>,
@@ -45,7 +51,6 @@ export async function checkInBooking(
 
     const currentBooking = formatBookingDates(currentBookings[0]);
 
-    // 5 minute buffer value too long?
     if (
       !withinDateRange(
         currentTime,
@@ -85,13 +90,18 @@ export async function checkInBooking(
     }
 
     // If prior booking in this space didn't check out, update their checkout time now?
-
     res.json({ booking: updatedBooking });
   } catch (error) {
     res.status(500).json({ error: "Failed to check in" });
   }
 }
 
+/**
+ * Checks out a booking for a user.
+ *
+ * @param {TypedRequest<{ id: number }>} }eq - The request object containing the booking ID.
+ * @param {TypedResponse} res - The response object to return the status.
+ */
 export async function checkOutBooking(req: TypedRequest<{ id: number }>, res: TypedResponse) {
   try {
     if (!typia.is<{ id: number }>(req.body)) {
@@ -113,7 +123,6 @@ export async function checkOutBooking(req: TypedRequest<{ id: number }>, res: Ty
 
     const currentBooking = formatBookingDates(currentBookings[0]);
 
-    // 5 minute buffer value too long?
     if (
       !withinDateRange(
         currentTime,
@@ -155,6 +164,12 @@ export async function checkOutBooking(req: TypedRequest<{ id: number }>, res: Ty
   }
 }
 
+/**
+ * Creates a new booking for a user.
+ *
+ * @param {TypedRequest<BookingDetailsRequest>} req - The request object containing the booking details.
+ * @param {TypedResponse<{ booking: Booking }>} res - The response object to return the created booking.
+ */
 export async function createBooking(
   req: TypedRequest<BookingDetailsRequest>,
   res: TypedResponse<{ booking: Booking }>,
@@ -199,9 +214,15 @@ export async function createBooking(
   }
 }
 
+/**
+ * Deletes an existing booking for a user.
+ *
+ * @param {TypedRequest<{ id: number }>} req - The request object containing the booking ID.
+ * @param {TypedResponse<{ booking: Booking }>} res - The response object to return the deleted booking.
+ */
 export async function deleteBooking(
   req: TypedRequest<{ id: number }>,
-  res: TypedResponse<{ booking: Booking }>,
+  res: TypedResponse<{ bookings: Booking[] }>,
 ) {
   try {
     if (!typia.is<{ id: number }>(req.body)) {
@@ -216,29 +237,47 @@ export async function deleteBooking(
       return;
     }
 
-    let formattedBooking: Booking;
+    const formattedBookings: Booking[] = [];
     try {
-      const res = await db
+      // Delete booking and any child bookings
+      const deleteBookings = await db
         .update(booking)
         .set({
           currentstatus: "deleted",
         })
-        .where(and(eq(booking.id, req.body.id), eq(booking.zid, req.token.user)))
+        .where(
+          and(
+            or(eq(booking.id, req.body.id), eq(booking.parent, req.body.id)),
+            eq(booking.zid, req.token.user),
+          ),
+        )
         .returning();
 
-      formattedBooking = formatBookingDates(res[0]);
-      await sendBookingEmail(req.token.user, formattedBooking, BOOKING_DELETE);
+      deleteBookings.forEach(async (booking) => {
+        formattedBookings.push(formatBookingDates(booking));
+        await sendBookingEmail(
+          req.token.user,
+          formattedBookings[formattedBookings.length - 1],
+          BOOKING_DELETE,
+        );
+      });
     } catch (e) {
       res.status(400).json({ error: `${e}` });
       return;
     }
 
-    res.json({ booking: formattedBooking });
+    res.json({ bookings: formattedBookings });
   } catch (error) {
     res.status(500);
   }
 }
 
+/**
+ * Edits an existing booking for a user.
+ *
+ * @param {TypedRequest<BookingEditRequest>} req - The request object containing the booking edit details.
+ * @param {TypedResponse<{ booking: Booking }>} res - The response object to return the edited booking.
+ */
 export async function editBooking(
   req: TypedRequest<BookingEditRequest>,
   res: TypedResponse<{ booking: Booking }>,
@@ -249,6 +288,16 @@ export async function editBooking(
       return;
     }
 
+    const childBookings = await db
+      .select()
+      .from(booking)
+      .where(and(eq(booking.parent, req.body.id), eq(booking.zid, req.token.user)));
+
+    // If the booking has a child, modify the child instead
+    if (childBookings.length == 1) {
+      req.body.id = childBookings[0].id;
+    }
+
     const existingBooking = await db
       .select()
       .from(booking)
@@ -256,6 +305,19 @@ export async function editBooking(
 
     if (existingBooking.length != 1) {
       res.status(404).json({ error: "User does not have a booking with this id" });
+      return;
+    }
+
+    if (
+      !(
+        existingBooking[0].currentstatus === "pending" ||
+        existingBooking[0].currentstatus === "confirmed" ||
+        existingBooking[0].currentstatus === "declined"
+      )
+    ) {
+      res
+        .status(404)
+        .json({ error: `Cannot edit a booking with status ${existingBooking[0].currentstatus}` });
       return;
     }
 
@@ -277,7 +339,8 @@ export async function editBooking(
     }
 
     try {
-      const returnedBooking = await db.transaction(async (tx) => {
+      const formattedBooking = await db.transaction(async (tx) => {
+        // Decline Overlapping
         if (newBookingStatus === "confirmed") {
           await declineOverlapping(
             tx,
@@ -288,23 +351,47 @@ export async function editBooking(
           );
         }
 
-        const res = await tx
-          .update(booking)
-          .set({
-            starttime: editedBooking.starttime,
-            endtime: editedBooking.endtime,
-            spaceid: editedBooking.spaceid,
-            currentstatus: newBookingStatus,
-            description: editedBooking.description,
-          })
-          .where(and(eq(booking.id, req.body.id), eq(booking.zid, req.token.user)))
-          .returning();
+        if (
+          existingBooking[0].currentstatus === "pending" ||
+          existingBooking[0].currentstatus === "declined" ||
+          newBookingStatus === "confirmed"
+        ) {
+          // If booking is still pending/declined or new approval is not required, update the old booking in place
+          const res = await db
+            .update(booking)
+            .set({
+              starttime: editedBooking.starttime,
+              endtime: editedBooking.endtime,
+              spaceid: editedBooking.spaceid,
+              currentstatus: newBookingStatus,
+              description: editedBooking.description,
+            })
+            .where(and(eq(booking.id, req.body.id), eq(booking.zid, req.token.user)))
+            .returning();
 
-        return formatBookingDates(res[0]);
+          return formatBookingDates(res[0]);
+        } else {
+          // If approval is required; create new booking request with original booking as parent
+          editedBooking.parent = existingBooking[0].id;
+          const res = await db
+            .insert(booking)
+            .values({
+              zid: req.token.user,
+              starttime: editedBooking.starttime,
+              endtime: editedBooking.endtime,
+              spaceid: editedBooking.spaceid,
+              description: editedBooking.description,
+              currentstatus: newBookingStatus,
+              parent: existingBooking[0].id,
+            })
+            .returning();
+
+          return formatBookingDates(res[0]);
+        }
       });
 
-      await sendBookingEmail(req.token.user, returnedBooking, BOOKING_EDIT);
-      res.json({ booking: returnedBooking });
+      await sendBookingEmail(req.token.user, formattedBooking, BOOKING_EDIT);
+      res.json({ booking: formattedBooking });
     } catch (e) {
       res.status(400).json({ error: `${e}` });
     }

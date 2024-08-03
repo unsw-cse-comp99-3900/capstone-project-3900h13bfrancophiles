@@ -9,7 +9,7 @@ import { styled } from "@mui/joy/styles";
 import useUser from "@/hooks/useUser";
 import { Event, StyledCalendarContainer, formatTime, formatTimeRange } from "@/utils/calendar";
 import useAvailabilities from "@/hooks/useAvailabilities";
-import Loading from "../Loading";
+import Loading from "@/components/feedback/Loading";
 import { roundToNearestMinutes } from "date-fns";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { theme } from "@/app/ThemeRegistry";
@@ -23,28 +23,21 @@ interface ModalCalendarProps {
   date: Date;
   start: Date;
   end: Date;
-  editing?: boolean;
-  editedBooking?: number;
+  editedBookingId?: number;
   setBlockedTimes: (val: TimeRange[]) => void;
 }
 
 interface MyEvent extends Event {
   color?: string;
-  new?: boolean;
-  edited?: boolean;
-  old?: boolean;
+  type?: "New" | "Old";
   ref?: React.RefObject<HTMLDivElement>;
 }
 
 const CustomEvent: React.FC<EventProps<MyEvent>> = ({ event }) => {
   const { user, isLoading, error } = useUser(event.zid);
-  let adjective = "";
-  if (event.new) adjective = "New";
-  if (event.edited) adjective = "New";
-  if (event.old) adjective = "Old";
   return (
     <Box ref={event.ref}>
-      {adjective ? `${adjective} Booking` : isLoading || error ? "..." : user!.fullname}
+      {event.type ? `${event.type} Booking` : isLoading || error ? "..." : user!.fullname}
     </Box>
   );
 };
@@ -76,8 +69,7 @@ export default function ModalCalendar({
   date,
   start,
   end,
-  editing,
-  editedBooking,
+  editedBookingId,
   setBlockedTimes,
 }: ModalCalendarProps) {
   const isMobile: boolean = useMediaQuery(theme.breakpoints.down("sm")) ?? false;
@@ -98,21 +90,21 @@ export default function ModalCalendar({
     if (bookings) {
       setBlockedTimes(
         bookings
-          .filter((booking) => booking.id !== editedBooking)
+          .filter((booking) => booking.id !== editedBookingId)
           .map((booking) => ({
             start: new Date(booking.starttime),
             end: new Date(booking.endtime),
           })),
       );
     }
-  }, [bookings, editedBooking, setBlockedTimes]);
+  }, [bookings, editedBookingId, setBlockedTimes]);
 
   // Scroll the calendar when start time changes
   const newBookingEventRef = useRef<HTMLDivElement>(null);
   React.useEffect(() => {
     const calendarEl = newBookingEventRef.current?.closest<HTMLDivElement>(".rbc-time-content");
     const eventEl = newBookingEventRef.current?.closest<HTMLDivElement>(".rbc-event");
-    if (!calendarEl || !eventEl) return;
+    if (!calendarEl || !eventEl || !("scrollTo" in calendarEl)) return;
 
     const calendarHeight = calendarEl.getBoundingClientRect().height;
     calendarEl.scrollTo({
@@ -125,18 +117,18 @@ export default function ModalCalendar({
   if (isLoading) return <Loading page="" />;
 
   const events: MyEvent[] = bookings!.map((b) => {
-    const old = b.id === editedBooking;
+    const old = b.id === editedBookingId;
     return {
       zid: b.zid,
       start: new Date(b.starttime),
       end: new Date(b.endtime),
-      old: old,
-      color: old ? "rgba(49, 116, 173, 0.6)" : "",
+      type: old ? "Old" : undefined,
+      color: old ? "rgba(49, 116, 173, 0.6)" : undefined,
     };
   });
   let overlaps = false;
   bookings!.forEach((b) => {
-    if (b.id === editedBooking) return;
+    if (b.id === editedBookingId) return;
     if (new Date(b.starttime) < end && new Date(b.endtime) > start) overlaps = true;
   });
 
@@ -145,10 +137,8 @@ export default function ModalCalendar({
     zid: tokenPayload.user,
     start: roundToNearestMinutes(start, { nearestTo: 15 }),
     end: roundToNearestMinutes(end, { nearestTo: 15 }),
-    // color: overlaps ? theme.palette.warning.main : theme.palette.primary.main,
     color: overlaps ? "#C70039" : "green",
-    new: !editing,
-    edited: editing,
+    type: "New",
     ref: newBookingEventRef,
   });
 
@@ -159,7 +149,7 @@ export default function ModalCalendar({
         localizer={localizer}
         defaultView="day"
         style={{ height: isMobile ? 230 : 400 }}
-        date={date}
+        defaultDate={date}
         scrollToTime={start}
         events={events}
         slotGroupPropGetter={() => ({ style: { minHeight: "50px" } })}

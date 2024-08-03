@@ -60,6 +60,11 @@ const authApiCall = <T>(
   headers: object = {},
 ): Promise<T> => {
   const token = getCookie("token");
+  if (!token) {
+    window.location.reload();
+    return Promise.reject("Unauthenticated");
+  }
+
   return apiCall(route, method, params, {
     ...headers,
     ...(token ? { Authorization: `Bearer ${token}` } : {}),
@@ -127,7 +132,7 @@ export const generateReport = async (
   format: string,
   startDate: Date,
   endDate: Date,
-  spaces: string[]
+  spaces: string[],
 ) => {
   const options: RequestInit = {
     method: "POST",
@@ -139,4 +144,4 @@ export const generateReport = async (
   };
 
   return fetch(BACKEND_URL + "/admin/reports/generate", options);
-}
+};

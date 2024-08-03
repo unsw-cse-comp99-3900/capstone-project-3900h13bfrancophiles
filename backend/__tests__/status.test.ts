@@ -62,7 +62,7 @@ describe("/status", () => {
     let booking = res.json.booking;
 
     res = await api.deleteBooking(booking.id, token);
-    booking = res.json.booking;
+    booking = res.json.bookings[0];
     expect(booking.currentstatus).toStrictEqual("deleted");
 
     res = await api.status(token, minutesFromBase(30), minutesFromBase(60));
@@ -110,5 +110,13 @@ describe("/status", () => {
         booking,
       },
     });
+  });
+
+  test("Failure: Invalid spaceid", async () => {
+    let res = await api.login(`z${ADMINS[0].zid}`, `z${ADMINS[0].zid}`);
+    const token = res.json.token;
+
+    res = await api.spaceStatus(token, "420");
+    expect(res.status).toStrictEqual(400);
   });
 });

@@ -1,9 +1,7 @@
 import { Chip } from "@mui/joy";
+import * as React from "react";
 
-interface BookingStatusPillProps {
-  status: string;
-}
-export default function BookingStatusPill({ status }: BookingStatusPillProps) {
+export default function BookingStatusPill({ status }: { status: string }) {
   let color: "success" | "warning" | "danger" = "warning";
   let text: "Accepted" | "Declined" | "Pending" = "Pending";
 

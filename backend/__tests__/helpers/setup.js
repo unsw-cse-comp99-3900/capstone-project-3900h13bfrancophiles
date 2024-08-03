@@ -44,8 +44,8 @@ module.exports = async function () {
     // If it fails, it was already free
   }
   globalThis.__server__ = spawn(
-    "nyc",
-    ["--reporter=cobertura", "--reporter=html", "ts-node", "src/index.ts"],
+    "npx",
+    ["nyc", "--reporter=cobertura", "--reporter=html", "ts-node", "src/index.ts"],
     {
       stdio: ["ignore", out, err],
     },

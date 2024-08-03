@@ -14,6 +14,12 @@ interface PendingBookingsRequest {
   sort: "soonest" | "latest";
 }
 
+/**
+ * Fetches pending bookings with pagination and sorting.
+ *
+ * @param {TypedGETRequest} req - The GET request containing query parameters.
+ * @param {TypedResponse<{ bookings: Booking[]; total: number }>} res - The response object to send back the bookings and total count.
+ */
 export async function pendingBookings(
   req: TypedGETRequest,
   res: TypedResponse<{ bookings: Booking[]; total: number }>,
@@ -40,7 +46,7 @@ export async function pendingBookings(
         .select()
         .from(booking)
         .where(and(gt(booking.starttime, currentTime), eq(booking.currentstatus, "pending")))
-        .orderBy(parsedQuery.sort == "soonest" ? desc(booking.starttime) : asc(booking.starttime))
+        .orderBy(parsedQuery.sort == "soonest" ? asc(booking.starttime) : desc(booking.starttime))
         .limit(limit)
         .offset(offset);
 
@@ -54,6 +60,12 @@ export async function pendingBookings(
   }
 }
 
+/**
+ * Approves a booking and declines any overlapping bookings.
+ *
+ * @param {TypedRequest<{ id: number }>} req - The request containing the booking ID to approve.
+ * @param {TypedResponse<object>} res - The response object to send back the approval status.
+ */
 export async function approveBooking(
   req: TypedRequest<{ id: number }>,
   res: TypedResponse<object>,
@@ -79,15 +91,19 @@ export async function approveBooking(
         updatedBookingDetails.id,
       );
 
+      if (updatedBookingDetails.parent !== null) {
+        // Delete parent booking
+        await trx
+          .update(booking)
+          .set({ currentstatus: "deleted" })
+          .where(eq(booking.id, updatedBookingDetails.parent));
+      }
+
       const approvedBooking = await trx
         .update(booking)
-        .set({ currentstatus: "confirmed" })
+        .set({ currentstatus: "confirmed", parent: null })
         .where(eq(booking.id, req.body.id))
         .returning();
-
-      if (updatedBooking.length != 1) {
-        throw new Error("Booking ID does not exist");
-      }
 
       const approvedBookingDetails = approvedBooking[0];
 
@@ -100,6 +116,12 @@ export async function approveBooking(
   }
 }
 
+/**
+ * Declines a booking and sends a notification email.
+ *
+ * @param {TypedRequest<{ id: number }>} req - The request containing the booking ID to decline.
+ * @param {TypedResponse<object>} res - The response object to send back the decline status.
+ */
 export async function declineBooking(
   req: TypedRequest<{ id: number }>,
   res: TypedResponse<object>,
@@ -128,6 +150,12 @@ export async function declineBooking(
   }
 }
 
+/**
+ * Fetches bookings that overlap with a given booking ID.
+ *
+ * @param {TypedGETRequest} req - The GET request containing the booking ID.
+ * @param {TypedResponse<{ bookings: Booking[] }>} res - The response object to send back the overlapping bookings.
+ */
 export async function overlappingBookings(
   req: TypedGETRequest,
   res: TypedResponse<{ bookings: Booking[] }>,
