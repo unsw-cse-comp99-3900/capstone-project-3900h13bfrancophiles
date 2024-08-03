@@ -170,7 +170,7 @@ export function ReportGenerationForm() {
             <FormLabel>Report Type</FormLabel>
             <Select
               placeholder="Select one..."
-              value={reportType?.type}
+              value={reportType?.type ?? null}
               onChange={(_e, value) => {
                 setReportType(reportTypes.find((rt) => rt.type === value));
               }}
@@ -230,8 +230,11 @@ export function ReportGenerationForm() {
         </Stack>
       </Stack>
       <Box sx={{ width: "100%" }}>
-        <FormLabel sx={{ marginBottom: "6px" }}>Spaces</FormLabel>
+        <FormLabel sx={{ marginBottom: "6px" }} htmlFor="spaces-autocomplete">
+          Spaces
+        </FormLabel>
         <Autocomplete
+          id="spaces-autocomplete"
           placeholder={spaces.length ? undefined : "Select spaces to include in report..."}
           color={spacesError ? "danger" : "neutral"}
           multiple
