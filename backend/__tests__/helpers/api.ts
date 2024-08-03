@@ -24,10 +24,17 @@ async function apiCall(
   }
 
   const res = await fetch(API_URL + route, options);
-  return {
-    status: res.status,
-    json: await res.json(),
-  };
+  if (res.headers.get("Content-Type")?.startsWith("application/json")) {
+    return {
+      status: res.status,
+      json: await res.json(),
+    };
+  } else {
+    return {
+      status: res.status,
+      json: `"${res.body}"`,
+    };
+  }
 }
 
 // Calls for each API route
@@ -131,6 +138,26 @@ function userDetails(token: string, zid: number) {
   return apiCall(`/users/${zid}`, "GET", undefined, token);
 }
 
+function reportTypes(token: string) {
+  return apiCall("/admin/reports/types", "GET", undefined, token);
+}
+
+function generateReport(
+  token: string,
+  type: string,
+  format: string,
+  spaces: string[],
+  startDate: string | Date,
+  endDate: string | Date,
+) {
+  return apiCall(
+    "/admin/reports/generate",
+    "POST",
+    { type, format, spaces, startDate, endDate },
+    token,
+  );
+}
+
 export default {
   apiCall,
   login,
@@ -151,4 +178,6 @@ export default {
   spaces,
   reportSpaces,
   userDetails,
+  reportTypes,
+  generateReport,
 };

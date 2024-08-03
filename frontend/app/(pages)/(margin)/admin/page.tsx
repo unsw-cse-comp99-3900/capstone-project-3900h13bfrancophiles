@@ -1,7 +1,7 @@
 import PendingBookings from "@/components/booking-table/PendingBookings";
 import { Stack, Typography } from "@mui/joy";
 import Box from "@mui/joy/Box";
-import { ReportGenerationForm } from "@/components/ReportGenerationForm";
+import ReportGenerationForm from "@/components/ReportGenerationForm";
 
 export default function Admin() {
   return (
