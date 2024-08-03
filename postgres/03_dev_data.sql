@@ -5,16 +5,7 @@ ALTER TABLE booking DISABLE TRIGGER trg_chk_start_future_limit;
 
 -- hdr student franco reyes
 INSERT INTO person
-VALUES (7654321,
-        'z7654321@ad.unsw.edu.au',
-        'Test Man',
-        'Mr',
-        'CSE',
-        'ENG',
-        'Academic',
-        'hdr',
-        null),
-       (5359118,
+VALUES (5359118,
         'z5359118@ad.unsw.edu.au',
         'Tom Forsyth',
         'Mr',
