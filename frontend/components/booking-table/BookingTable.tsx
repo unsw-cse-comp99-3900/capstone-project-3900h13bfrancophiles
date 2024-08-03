@@ -20,6 +20,7 @@ import { format } from "date-fns";
 import SpaceColumn from "@/components/booking-table/SpaceColumn";
 import UserColumn from "@/components/booking-table/UserColumn";
 
+// Column types
 const defaultColumnRenderers = {
   "Reference No.": (booking: Booking) => <Typography level="body-sm">#{booking.id}</Typography>,
   Status: (booking: Booking) => <BookingStatusPill status={booking.currentstatus} />,
@@ -47,6 +48,7 @@ type CustomColumn = {
 
 export type BookingTableColumn = DefaultColumn | CustomColumn;
 
+// Prop types
 interface PaginatedBookingTableProps {
   columns: BookingTableColumn[];
   data?: Booking[];

@@ -69,6 +69,10 @@ const roleNames: { [key in UserGroup]: string } = {
   other: "Other",
 };
 
+/**
+ * Convert role key from backend to formatted role name
+ * @param role role key
+ */
 export function getRoleName(role: UserGroup): string {
   return roleNames[role] || "Unknown role";
 }

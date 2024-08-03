@@ -133,8 +133,12 @@ const DeskInfoPopup = ({
   );
 };
 
-function timeNow(i: Date) {
-  return i.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+/**
+ * Format a date into HH:MM
+ * @param date date
+ */
+function timeNow(date: Date) {
+  return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 }
 
 export default DeskInfoPopup;
