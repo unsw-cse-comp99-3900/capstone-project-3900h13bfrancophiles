@@ -29,18 +29,15 @@ interface ModalCalendarProps {
 
 interface MyEvent extends Event {
   color?: string;
-  type?: "new" | "old";
+  type?: "New" | "Old";
   ref?: React.RefObject<HTMLDivElement>;
 }
 
 const CustomEvent: React.FC<EventProps<MyEvent>> = ({ event }) => {
   const { user, isLoading, error } = useUser(event.zid);
-  let adjective = "";
-  if (event.type === "new") adjective = "New";
-  if (event.type === "old") adjective = "Old";
   return (
     <Box ref={event.ref}>
-      {adjective ? `${adjective} Booking` : isLoading || error ? "..." : user!.fullname}
+      {event.type ? `${event.type} Booking` : isLoading || error ? "..." : user!.fullname}
     </Box>
   );
 };
@@ -125,7 +122,7 @@ export default function ModalCalendar({
       zid: b.zid,
       start: new Date(b.starttime),
       end: new Date(b.endtime),
-      type: old ? "old" : undefined,
+      type: old ? "Old" : undefined,
       color: old ? "rgba(49, 116, 173, 0.6)" : undefined,
     };
   });
@@ -142,7 +139,7 @@ export default function ModalCalendar({
     end: roundToNearestMinutes(end, { nearestTo: 15 }),
     // color: overlaps ? theme.palette.warning.main : theme.palette.primary.main,
     color: overlaps ? "#C70039" : "green",
-    type: "new",
+    type: "New",
     ref: newBookingEventRef,
   });
 
