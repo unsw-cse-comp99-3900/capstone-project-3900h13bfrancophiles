@@ -23,6 +23,9 @@ const config = {
   moduleNameMapper: {
     "^@/(.*)$": "<rootDir>/$1",
   },
+  transformIgnorePatterns: [
+    "/node_modules/"
+  ],
   setupFilesAfterEnv: ["<rootDir>/setupTests.ts"],
 };
 
