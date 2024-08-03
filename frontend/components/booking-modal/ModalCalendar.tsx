@@ -107,7 +107,7 @@ export default function ModalCalendar({
   React.useEffect(() => {
     const calendarEl = newBookingEventRef.current?.closest<HTMLDivElement>(".rbc-time-content");
     const eventEl = newBookingEventRef.current?.closest<HTMLDivElement>(".rbc-event");
-    if (!calendarEl || !eventEl) return;
+    if (!calendarEl || !eventEl || !("scrollTo" in calendarEl)) return;
 
     const calendarHeight = calendarEl.getBoundingClientRect().height;
     calendarEl.scrollTo({
@@ -153,7 +153,7 @@ export default function ModalCalendar({
         localizer={localizer}
         defaultView="day"
         style={{ height: isMobile ? 230 : 400 }}
-        date={date}
+        defaultDate={date}
         scrollToTime={start}
         events={events}
         slotGroupPropGetter={() => ({ style: { minHeight: "50px" } })}
