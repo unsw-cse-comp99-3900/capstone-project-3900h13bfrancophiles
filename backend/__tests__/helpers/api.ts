@@ -88,6 +88,10 @@ function status(token: string, start: Date, end: Date) {
   );
 }
 
+function approveBooking(token: string, id: number) {
+  return apiCall("/admin/bookings/approve", "PUT", { id }, token);
+}
+
 function declineBooking(token: string, id: number) {
   return apiCall("/admin/bookings/decline", "PUT", { id }, token);
 }
@@ -118,6 +122,7 @@ export default {
   pastBookings,
   pendingBookings,
   status,
+  approveBooking,
   declineBooking,
   checkinBooking,
   spaces,
