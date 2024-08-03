@@ -145,7 +145,6 @@ export default function ModalCalendar({
     zid: tokenPayload.user,
     start: roundToNearestMinutes(start, { nearestTo: 15 }),
     end: roundToNearestMinutes(end, { nearestTo: 15 }),
-    // color: overlaps ? theme.palette.warning.main : theme.palette.primary.main,
     color: overlaps ? "#C70039" : "green",
     new: !editing,
     edited: editing,
