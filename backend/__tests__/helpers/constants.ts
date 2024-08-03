@@ -128,6 +128,8 @@ export const DESK = [
     roomId: "K-K17-333",
     roomName: "K17 Room 333 Desks",
     desknumber: 1,
+    xcoord: 30,
+    ycoord: 30,
   },
   {
     id: "K-K17-200-1",
@@ -139,5 +141,7 @@ export const DESK = [
     roomId: "K-K17-200",
     roomName: "K17 Room 200 Desks",
     desknumber: 1,
+    xcoord: 40,
+    ycoord: 40,
   },
 ];
