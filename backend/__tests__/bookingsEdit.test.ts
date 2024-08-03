@@ -1,3 +1,4 @@
+import { initial } from "lodash";
 import api from "./helpers/api";
 import { DESK, HDR, ADMINS, ROOM } from "./helpers/constants";
 import { minutesFromBase } from "./helpers/helpers";
@@ -11,7 +12,7 @@ describe("/bookings/edit", () => {
   });
 
   test("Failure - Invalid input", async () => {
-    let res = await api.apiCall("/bookings/edit", "PUT", { input: "invalid" }, token);
+    const res = await api.apiCall("/bookings/edit", "PUT", { input: "invalid" }, token);
     expect(res.status).toStrictEqual(400);
   });
 
@@ -191,7 +192,12 @@ describe("/bookings/edit", () => {
     });
 
     const booking = res.json.booking;
-    const res1 = await api.apiCall("/bookings/edit", "PUT", { id: booking.id, description: booking.description }, token);
+    const res1 = await api.apiCall(
+      "/bookings/edit",
+      "PUT",
+      { id: booking.id, description: booking.description },
+      token,
+    );
     expect(res1.status).toStrictEqual(200);
     expect(res1.json).toMatchObject({
       booking: {
@@ -207,6 +213,23 @@ describe("/bookings/edit", () => {
   });
 
   test("Success - confirmed booking is edited", async () => {
+    const initialBooking = {
+      zid: HDR[0].zid,
+      starttime: minutesFromBase(15).toISOString(),
+      endtime: minutesFromBase(45).toISOString(),
+      spaceid: DESK[0].id,
+      currentstatus: "confirmed",
+      description: "fun times",
+    };
+    const editedBooking = {
+      zid: HDR[0].zid,
+      starttime: minutesFromBase(15).toISOString(),
+      endtime: minutesFromBase(45).toISOString(),
+      spaceid: DESK[0].id,
+      currentstatus: "confirmed",
+      description: "I edited this booking!",
+    };
+
     const res = await api.createBooking(
       token,
       DESK[0].id,
@@ -216,14 +239,7 @@ describe("/bookings/edit", () => {
     );
     expect(res.status).toStrictEqual(200);
     expect(res.json).toMatchObject({
-      booking: {
-        zid: HDR[0].zid,
-        starttime: minutesFromBase(15).toISOString(),
-        endtime: minutesFromBase(45).toISOString(),
-        spaceid: DESK[0].id,
-        currentstatus: "confirmed",
-        description: "fun times",
-      },
+      booking: initialBooking
     });
 
     const booking = res.json.booking;
@@ -237,15 +253,7 @@ describe("/bookings/edit", () => {
     );
     expect(res1.status).toStrictEqual(200);
     expect(res1.json).toMatchObject({
-      booking: {
-        id: booking.id,
-        zid: HDR[0].zid,
-        starttime: minutesFromBase(15).toISOString(),
-        endtime: minutesFromBase(45).toISOString(),
-        spaceid: DESK[0].id,
-        currentstatus: "confirmed",
-        description: "I edited this booking!",
-      },
+      booking: editedBooking
     });
   });
 
@@ -285,6 +293,24 @@ describe("/bookings/edit", () => {
   });
 
   test("Success - approved booking is edited", async () => {
+    let initialBooking = {
+      zid: HDR[0].zid,
+      starttime: minutesFromBase(15).toISOString(),
+      endtime: minutesFromBase(45).toISOString(),
+      spaceid: ROOM[0].id,
+      currentstatus: "pending",
+      description: "fun times",
+    };
+    let editedBooking = {
+      zid: HDR[0].zid,
+      starttime: minutesFromBase(15).toISOString(),
+      endtime: minutesFromBase(45).toISOString(),
+      spaceid: ROOM[0].id,
+      currentstatus: "pending",
+      description: "I edited this booking!",
+    };
+
+    // Create booking
     const res = await api.createBooking(
       token,
       ROOM[0].id,
@@ -294,22 +320,18 @@ describe("/bookings/edit", () => {
     );
     expect(res.status).toStrictEqual(200);
     expect(res.json).toMatchObject({
-      booking: {
-        zid: HDR[0].zid,
-        starttime: minutesFromBase(15).toISOString(),
-        endtime: minutesFromBase(45).toISOString(),
-        spaceid: ROOM[0].id,
-        currentstatus: "pending",
-        description: "fun times",
-      },
+      booking: initialBooking
     });
     const booking = res.json.booking;
 
+    // Admin approves booking
     const res1 = await api.login(`z${ADMINS[0].zid}`, `z${ADMINS[0].zid}`);
     const admintoken = res1.json.token;
 
     await api.approveBooking(admintoken, booking.id);
+    initialBooking.currentstatus = "confirmed";
 
+    // User edits bookings
     const res2 = await api.editBooking(
       token,
       booking.id,
@@ -320,14 +342,94 @@ describe("/bookings/edit", () => {
     );
     expect(res2.status).toStrictEqual(200);
     expect(res2.json).toMatchObject({
-      booking: {
-        zid: HDR[0].zid,
-        starttime: minutesFromBase(15).toISOString(),
-        endtime: minutesFromBase(45).toISOString(),
-        spaceid: ROOM[0].id,
-        currentstatus: "pending",
-        description: "I edited this booking!",
-      },
+      booking: editedBooking
     });
+
+    const res3 = await api.upcomingBookings(token);
+    expect(res3.status).toStrictEqual(200);
+
+    expect(res3.json.bookings[0]).toMatchObject(initialBooking);
+    expect(res3.json.bookings[1]).toMatchObject(editedBooking);
+  });
+
+  test("Success - modifying parent should always modify child", async () => {
+    let initialBooking = {
+      zid: HDR[0].zid,
+      starttime: minutesFromBase(15).toISOString(),
+      endtime: minutesFromBase(45).toISOString(),
+      spaceid: ROOM[0].id,
+      currentstatus: "pending",
+      description: "fun times",
+    };
+    let editedBooking = {
+      zid: HDR[0].zid,
+      starttime: minutesFromBase(15).toISOString(),
+      endtime: minutesFromBase(45).toISOString(),
+      spaceid: ROOM[0].id,
+      currentstatus: "pending",
+      description: "I edited this booking!",
+    };
+
+    // Create booking
+    let res = await api.createBooking(
+      token,
+      ROOM[0].id,
+      minutesFromBase(15),
+      minutesFromBase(45),
+      "fun times",
+    );
+    expect(res.status).toStrictEqual(200);
+    expect(res.json).toMatchObject({
+      booking: initialBooking
+    });
+    const booking = res.json.booking;
+
+    // Admin approves booking
+    res = await api.login(`z${ADMINS[0].zid}`, `z${ADMINS[0].zid}`);
+    const admintoken = res.json.token;
+    initialBooking.currentstatus = "confirmed";
+
+    await api.approveBooking(admintoken, booking.id);
+
+    // User edits booking
+    res = await api.editBooking(
+      token,
+      booking.id,
+      booking.starttime,
+      booking.endtime,
+      booking.spaceid,
+      "I edited this booking!",
+    );
+    expect(res.status).toStrictEqual(200);
+    expect(res.json).toMatchObject({
+      booking: editedBooking
+    });
+
+    res = await api.upcomingBookings(token);
+    expect(res.status).toStrictEqual(200);
+
+    expect(res.json.bookings[0]).toMatchObject(initialBooking);
+    expect(res.json.bookings[1]).toMatchObject(editedBooking);
+
+    // User edits parent booking, which should modify the child instead
+    res = await api.editBooking(
+      token,
+      booking.id,
+      booking.starttime,
+      booking.endtime,
+      booking.spaceid,
+      "I edited this booking AGAIN!",
+    );
+    editedBooking.description = "I edited this booking AGAIN!";
+    expect(res.status).toStrictEqual(200);
+    expect(res.json).toMatchObject({
+      booking: editedBooking
+    });
+
+    res = await api.upcomingBookings(token);
+    expect(res.status).toStrictEqual(200);
+
+    expect(res.json.bookings[0]).toMatchObject(initialBooking);
+    expect(res.json.bookings[1]).toMatchObject(editedBooking);
   });
 });

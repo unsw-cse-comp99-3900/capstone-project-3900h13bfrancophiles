@@ -1,4 +1,4 @@
-import { and, eq } from "drizzle-orm";
+import { and, eq, or } from "drizzle-orm";
 import { booking } from "../../drizzle/schema";
 import isEqual from "lodash/isEqual";
 import typia from "typia";
@@ -201,7 +201,7 @@ export async function createBooking(
 
 export async function deleteBooking(
   req: TypedRequest<{ id: number }>,
-  res: TypedResponse<{ booking: Booking }>,
+  res: TypedResponse<{ bookings: Booking[] }>,
 ) {
   try {
     if (!typia.is<{ id: number }>(req.body)) {
@@ -216,26 +216,36 @@ export async function deleteBooking(
       return;
     }
 
-    let formattedBooking: Booking;
+    const formattedBookings: Booking[] = [];
     try {
-      const res = await db
+      // Delete booking and any child bookings
+      const deleteBookings = await db
         .update(booking)
         .set({
           currentstatus: "deleted",
         })
-        .where(and(eq(booking.id, req.body.id), eq(booking.zid, req.token.user)))
+        .where(
+          and(
+            or(eq(booking.id, req.body.id), eq(booking.parent, req.body.id)),
+            eq(booking.zid, req.token.user),
+          ),
+        )
         .returning();
 
-      formattedBooking = formatBookingDates(res[0]);
-      await sendBookingEmail(req.token.user, formattedBooking, BOOKING_DELETE);
+      deleteBookings.forEach(async (booking) => {
+        formattedBookings.push(formatBookingDates(booking));
+        await sendBookingEmail(
+          req.token.user,
+          formattedBookings[formattedBookings.length - 1],
+          BOOKING_DELETE,
+        );
+      });
     } catch (e) {
       res.status(400).json({ error: `${e}` });
       return;
     }
 
-    // Deleting a pending edit does NOT delete original booking
-
-    res.json({ booking: formattedBooking });
+    res.json({ bookings: formattedBookings });
   } catch (error) {
     res.status(500);
   }
@@ -249,6 +259,16 @@ export async function editBooking(
     if (!typia.is<BookingEditRequest>(req.body)) {
       res.status(400).json({ error: "Invalid input" });
       return;
+    }
+
+    const childBookings= await db
+    .select()
+    .from(booking)
+      .where(and(eq(booking.parent, req.body.id), eq(booking.zid, req.token.user)));
+
+    // If the booking has a child, modify the child instead
+    if (childBookings.length == 1) {
+      req.body.id = childBookings[0].id;
     }
 
     const existingBooking = await db
@@ -291,8 +311,22 @@ export async function editBooking(
       return;
     }
 
+    if (newBookingStatus === "confirmed") {
+      await declineOverlapping(
+        db,
+        editedBooking.spaceid,
+        editedBooking.starttime,
+        editedBooking.endtime,
+        editedBooking.id,
+      );
+    }
+
     let formattedBooking: Booking;
-    if (existingBooking[0].currentstatus === "pending" || existingBooking[0].currentstatus === "declined" || newBookingStatus === "confirmed") {
+    if (
+      existingBooking[0].currentstatus === "pending" ||
+      existingBooking[0].currentstatus === "declined" ||
+      newBookingStatus === "confirmed"
+    ) {
       // If booking is still pending/declined or new approval is not required, update the old booking in place
       try {
         const res = await db
@@ -308,7 +342,6 @@ export async function editBooking(
           .returning();
 
         formattedBooking = formatBookingDates(res[0]);
-        // TODO: This email should show the old details, and the new details too...
         await sendBookingEmail(req.token.user, formattedBooking, BOOKING_EDIT);
       } catch (e) {
         res.status(400).json({ error: `${e}` });

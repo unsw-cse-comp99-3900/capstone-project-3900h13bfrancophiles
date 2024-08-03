@@ -11,13 +11,7 @@ describe("/bookings/create", () => {
   });
 
   test("Failure - invalid input", async () => {
-    const res = await api.createBooking(
-      token,
-      "This",
-      "Is",
-      "Formatted",
-      "Poorly"
-    );
+    const res = await api.createBooking(token, "This", "Is", "Formatted", "Poorly");
     expect(res.status).toStrictEqual(400);
   });
 

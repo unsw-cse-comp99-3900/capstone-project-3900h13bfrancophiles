@@ -99,6 +99,15 @@ function status(token: string, start: Date, end: Date) {
   );
 }
 
+function spaceStatus(token: string, spaceid: string) {
+  return apiCall(
+    `/status?spaceid=${spaceid}`,
+    "GET",
+    undefined,
+    token,
+  );
+}
+
 function approveBooking(token: string, id: number) {
   return apiCall("/admin/bookings/approve", "PUT", { id }, token);
 }
@@ -139,6 +148,7 @@ export default {
   pastBookings,
   pendingBookings,
   status,
+  spaceStatus,
   approveBooking,
   declineBooking,
   checkinBooking,
