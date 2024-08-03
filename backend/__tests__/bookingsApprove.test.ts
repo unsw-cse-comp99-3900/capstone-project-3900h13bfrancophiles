@@ -218,7 +218,6 @@ describe("/bookings/approve", () => {
     expect(res.status).toStrictEqual(403);
   });
 
-
   test("Failure - booking does not exist", async () => {
     await api.createBooking(
       hdrToken,
@@ -233,7 +232,12 @@ describe("/bookings/approve", () => {
   });
 
   test("Failure - approve invalid inputs", async () => {
-    let res = await api.apiCall("/admin/bookings/approve", "PUT", { input: "invalid" }, adminToken);
+    const res = await api.apiCall(
+      "/admin/bookings/approve",
+      "PUT",
+      { input: "invalid" },
+      adminToken,
+    );
     expect(res.status).toStrictEqual(400);
   });
 });

@@ -114,5 +114,4 @@ describe("/bookings/pending", () => {
     );
     expect(res.status).toStrictEqual(400);
   });
-
 });
