@@ -6,7 +6,7 @@ import * as React from "react";
 import { UserData } from "@/types";
 import NextLink from "next/link";
 import { Booking } from "@/types";
-import { useFloating, flip, shift, autoUpdate, ReferenceType } from "@floating-ui/react";
+import { useFloating, flip, shift, autoUpdate, ReferenceType, offset } from "@floating-ui/react";
 import BookingModal from "@/components/BookingModal/BookingModal";
 import { getInitials } from "@/utils/icons";
 
@@ -38,7 +38,7 @@ const DeskInfoPopup = ({
 
   const { x, y, strategy, refs } = useFloating({
     placement: "right",
-    middleware: [shift(), flip()],
+    middleware: [offset(10), flip({ fallbackAxisSideDirection: "start" }), shift()],
     whileElementsMounted: autoUpdate,
   });
 
