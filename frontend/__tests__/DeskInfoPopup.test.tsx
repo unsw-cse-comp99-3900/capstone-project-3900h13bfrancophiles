@@ -1,7 +1,7 @@
 import * as React from "react";
 import "@testing-library/jest-dom";
 import { fireEvent, render, screen } from "@testing-library/react";
-import DeskInfoPopup from "../components/Desks/DeskInfoPopup";
+import DeskInfoPopup from "../components/desks/DeskInfoPopup";
 import { Booking, UserData } from "../types";
 
 jest.mock("@/components/booking-modal/BookingModal", () => ({
