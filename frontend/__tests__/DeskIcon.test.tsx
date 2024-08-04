@@ -30,6 +30,16 @@ const mockBooking: Booking = {
 
 const mockSetSelectedDesk = jest.fn();
 
+beforeAll(() => {
+  Object.defineProperty(window, "location", {
+    configurable: true,
+    value: {
+      ...window.location,
+      reload: jest.fn(),
+    },
+  });
+});
+
 describe("DeskIcon", () => {
   it("renders available desk with correct icon", () => {
     mockedUseSpace.mockReturnValue({
