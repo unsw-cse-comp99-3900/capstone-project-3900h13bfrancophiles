@@ -1,7 +1,7 @@
 import * as React from "react";
 import "@testing-library/jest-dom";
 import { render, screen } from "@testing-library/react";
-import UserAvatar from "../components/Desks/UserAvatar";
+import UserAvatar from "../components/desks/UserAvatar";
 import useUser from "../hooks/useUser";
 import { getInitials } from "../utils/icons";
 
