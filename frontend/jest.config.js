@@ -10,9 +10,7 @@ const config = {
     "^@/(.*)$": "<rootDir>/$1",
     "^jose": require.resolve("jose"),
   },
-  transformIgnorePatterns: [
-    "/node_modules/"
-  ],
+  transformIgnorePatterns: ["/node_modules/"],
   setupFilesAfterEnv: ["<rootDir>/setupTests.ts"],
 };
 

@@ -1,7 +1,7 @@
 import * as React from "react";
 import "@testing-library/jest-dom";
 import { render, screen, waitFor } from "@testing-library/react";
-import DeskIcon from "../components/DeskIcon";
+import DeskIcon from "../components/Desks/DeskIcon";
 import { Booking, Desk } from "../types";
 import useSpace from "../hooks/useSpace";
 import { TransformComponent, TransformWrapper } from "react-zoom-pan-pinch";
@@ -13,7 +13,7 @@ const mockedUseSpace = useSpace as jest.MockedFunction<typeof useSpace>;
 const mockDesk: Desk = {
   id: "K-K17-201-1",
   name: "test desk",
-  floor: "K17 L2"
+  floor: "K17 L2",
 };
 
 const mockBooking: Booking = {
@@ -25,8 +25,8 @@ const mockBooking: Booking = {
   currentstatus: "",
   description: "",
   checkintime: "",
-  checkouttime: ""
-}
+  checkouttime: "",
+};
 
 const mockSetSelectedDesk = jest.fn();
 
@@ -54,13 +54,13 @@ describe("DeskIcon", () => {
             setSelectedDesk={mockSetSelectedDesk}
           />
         </TransformComponent>
-      </TransformWrapper>
+      </TransformWrapper>,
     );
 
-    const avatarElement = screen.getByRole('img');
+    const avatarElement = screen.getByRole("img");
 
     expect(avatarElement).toBeInTheDocument();
-    expect(avatarElement).toHaveAttribute('src', 'DeskIcon1.svg');
+    expect(avatarElement).toHaveAttribute("src", "DeskIcon1.svg");
   });
 
   it("renders unavailable desk with userAvatar", async () => {
@@ -86,14 +86,14 @@ describe("DeskIcon", () => {
             setSelectedDesk={mockSetSelectedDesk}
           />
         </TransformComponent>
-      </TransformWrapper>
+      </TransformWrapper>,
     );
 
-    const avatarElement = screen.getByRole('img');
+    const avatarElement = screen.getByRole("img");
 
     await waitFor(() => {
       expect(avatarElement).toBeInTheDocument();
-      expect(avatarElement).not.toHaveAttribute('src', 'DeskIcon1.svg');
+      expect(avatarElement).not.toHaveAttribute("src", "DeskIcon1.svg");
     });
   });
 
@@ -120,10 +120,10 @@ describe("DeskIcon", () => {
             setSelectedDesk={mockSetSelectedDesk}
           />
         </TransformComponent>
-      </TransformWrapper>
+      </TransformWrapper>,
     );
 
-    const popupElement = screen.getByText('test desk');
+    const popupElement = screen.getByText("test desk");
     expect(popupElement).toBeInTheDocument();
   });
 
@@ -150,10 +150,10 @@ describe("DeskIcon", () => {
             setSelectedDesk={mockSetSelectedDesk}
           />
         </TransformComponent>
-      </TransformWrapper>
+      </TransformWrapper>,
     );
 
-    const popupElement = screen.queryByText('test desk');
+    const popupElement = screen.queryByText("test desk");
     expect(popupElement).toBeNull();
   });
 });
