@@ -6,7 +6,7 @@ import { Booking, Desk } from "../types";
 import useSpace from "../hooks/useSpace";
 import { TransformComponent, TransformWrapper } from "react-zoom-pan-pinch";
 
-jest.mock("@/hooks/useSpace");
+jest.mock("../hooks/useSpace");
 
 const mockedUseSpace = useSpace as jest.MockedFunction<typeof useSpace>;
 
