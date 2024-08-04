@@ -82,11 +82,11 @@ export type NavData = { text: string; href: string };
 
 export type ReportTypeReturn = {
   types: {
-    type: string,
-    name: string,
-    formats: string[],
-  }[],
-}
+    type: string;
+    name: string;
+    formats: string[];
+  }[];
+};
 
 export interface ReportSpace {
   text: string;

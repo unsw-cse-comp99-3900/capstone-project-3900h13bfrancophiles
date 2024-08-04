@@ -77,7 +77,7 @@ const DeskInfoPopup = ({
         <Stack direction="column" alignItems="left">
           <Stack direction="row" justifyContent="space-between" alignItems="center">
             <Typography level="h3">{deskName}</Typography>
-            <IconButton size="sm" onClick={handleClose}>
+            <IconButton size="sm" onClick={handleClose} aria-label="close">
               <CloseIcon />
             </IconButton>
           </Stack>
